@@ -1,0 +1,29 @@
+@font-face{
+	font-family:roboto;
+	font-weight:400;
+	font-style:normal;
+	src:url(fonts/roboto-400.woff2) format('woff2'),url(fonts/roboto-400.woff) format('woff')
+}
+@font-face{
+	font-family:roboto;
+	font-weight:400;
+	font-style:italic;
+	src:url(fonts/roboto-400i.woff2) format('woff2'),url(fonts/roboto-400i.woff) format('woff')
+}
+@font-face{
+	font-family:roboto;
+	font-weight:700;
+	font-style:normal;
+	src:url(fonts/roboto-700.woff2) format('woff2'),url(fonts/roboto-700.woff) format('woff')
+}
+@font-face{
+	font-family:roboto;
+	font-weight:700;
+	font-style:italic;
+	src:url(fonts/roboto-700i.woff2) format('woff2'),url(fonts/roboto-700i.woff) format('woff')
+}
+
+/*@font-face{font-family:roboto mono;font-weight:400;font-style:normal;src:url(/fonts/roboto_mono/400.woff2) format('woff2'),url(/fonts/roboto_mono/400.woff) format('woff')}
+@font-face{font-family:roboto mono;font-weight:400;font-style:italic;src:url(/fonts/roboto_mono/400i.woff2) format('woff2'),url(/fonts/roboto_mono/400i.woff) format('woff')}
+@font-face{font-family:roboto mono;font-weight:700;font-style:normal;src:url(/fonts/roboto_mono/700.woff2) format('woff2'),url(/fonts/roboto_mono/700.woff) format('woff')}
+@font-face{font-family:roboto mono;font-weight:700;font-style:italic;src:url(/fonts/roboto_mono/700i.woff2) format('woff2'),url(/fonts/roboto_mono/700i.woff) format('woff')}*/

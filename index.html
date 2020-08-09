@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>SmileBASIC Source 2</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, height=device-height">
+
+<link rel="icon" sizes="16x16" href="images/icon16.ico?a"> <!-- compatibility -->
+<link rel="shortcut icon" sizes="16x16" href="images/icon16.png?a"> <!-- firefox -->
+<link rel="icon" sizes="32x32" href="images/icon32.png?a"> <!-- chrome -->
+<link rel="icon" sizes="192x192" href="images/iconbig.png?a"> <!-- large -->
+<link rel="apple-touch-icon" href="images/iconbig.png?a"> <!-- large 2 -->
+<link rel="image_src" href="images/iconbig.png?a"> <!-- large 3 -->
+
+<!--START-->
+<!-- this is where files will be inlined -->
+<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="markup.css">
+<link rel="stylesheet" href="code.css">
+
+<!--END-->
+<body class="" id="$main">
+	<noscript>
+		This web-site requires JavaScript
+	</noscript>
+	<!--
+		 Nav bar
+	  -->
+	<nav class="navPane bar">
+		<a href="#" class="textItem"><img class="item" src="images/iconbig.png?a" alt="SBS"></a> <span id="$navPane" class="path textItem"></span>
+		<span class="rightAlign textItem">
+			<div class="buttonContainer item"><button id="$openSidebar">|||</button></div><!--<button id="$reload" class="item">Reload</button>--><!--<input id="$search" placeholder="Search" class="item">--><div class="loggedIn textItem" id="$loggedIn"><a class="item userLink" id="$myUserLink"><span class="myName username textItem" id="$myName" class="item"></span><img class="myAvatar item avatar" id="$myAvatar" alt=""></a></div>
+			<div class="loggedOut textItem"><a href="#login" class="textItem">Log In or Register</a></div>
+		</span>
+	</nav>
+	
+	<header class="titlePane bar rem2-3" id="$titlePane">
+		<span id="$pageTitleIcon"></span><h1 class="pageTitle textItem pre" id="$pageTitle"></h1><span class="buttonContainer item categoryMode"><a id="$categoryCreatePage"><button tabindex="-1">Create Page</button></a></span><a class="textItem userMode loggedIn myUserPage" href="#usersettings">Settings</a><div class="buttonContainer item loggedIn myUserPage"><button id="$logout">Log Out</button></div><div id="$userPageStatus" class="textItem userMode"></div><input class="item editorMode" id="$titleInput" placeholder="Page Title" required><input class="item cateditMode" id="$cateditTitle" placeholder="Category Title" required><div class="buttonContainer item editorMode"><button id="$submitEdit" >Submit</button></div><span class="cateditMode textItem"><div class="buttonContainer item"><button id="$cateditSubmit">Submit</button></div></span><span class="textItem pageMode" id="$voteBox"><div class="buttonContainer item"><button id="$voteButton_b" class="voteButton" data-vote="b">Bad<br><span id="$voteCount_b">x</span></button></div><div class="buttonContainer item"><button id="$voteButton_o" class="voteButton" data-vote="o">Ok<br><span id="$voteCount_o">x</span></button></div><div class="buttonContainer item"><button id="$voteButton_g" class="voteButton" data-vote="g">Great<br><span id="$voteCount_g">x</span></button></div></span>
+		<label for="$watchCheck" class="textItem pageItem loggedIn">Watching:</label>
+		<input type="checkbox" id="$watchCheck" class="item pageItem loggedIn">
+		<div class="pageCreate textItem rightAlign">
+			<span class="textItem" id="$authorBox"></span><div class="buttonContainer editorMode item"><button id="$deletePage">DELETE</button></div><div class="buttonContainer item canEdit"><a id="$editButton"><button tabindex="-1">Edit</button></a></div>
+		</div>
+	</header>
+
+	<div class="sideBarContainer grow" id="$sidebarContainer">
+		<div class="m grow" id="$m">
+			<div class="infoPane editorMode">
+				<label for="$keywords">Keywords:</label><input placeholder="(space separated, optional)" id="$keywords"><br>
+				<label for="$editPageType">Type:</label><input placeholder="@" id="$editPageType"><br>
+				<label for="$editPageCategory">Category id:</label><input type="number" placeholder="id" id="$editPageCategory"><br>
+				<b>Permissions:</b>
+				<table>
+					<thead><tr><th></th><th>View</th><th>Comment</th><th>Edit</th><th>Delete</th></tr></thead>
+					<tbody id="$permissionBox"></tbody>
+				</table>
+				<input id="$permissionUserInput" placeholder="user ID" type="number"><div class="buttonContainer"><button id="$permissionAddButton">Add</button></div><br>
+				<label for="$markupSelect">Markup language:</label>
+				<select id="$markupSelect">
+					<option value="plaintext">plain text</option>
+					<option value="12y">12-y documentation markup format</option>
+					<option value="bbcode">bbcode</option>
+				</select><button id="$markupUpdate">Update Preview</button>
+			</div>
+
+			<div class="searchMode">
+				<input id="$searchInput"><div class="buttonContainer"><button id="$searchButton">Search</button></div>
+			</div>
+			
+			<div class="fileMode fileNav rem1-7 nav">
+				<div class="buttonContainer item"><a id="$filePrev"><button tabindex="-1">&lt;</button></a></div>
+				<div class="buttonContainer item"><a id="$fileNext"><button tabindex="-1">&gt;</button></a></div>
+				<span class="textItem" id="$filePageNumber"></span>
+				<input class="item" type="file" id="$fileUpload" accept="image/*" class="item loggedIn">
+				<span class="item" contenteditable="" id="$filePaste">paste image here</span>
+			</div>
+
+			<div class="fileMode fileBox bar" id="$fileBox">
+			</div>
+
+			<div class="fileMode">
+				<div class="buttonContainer fileUploading"><button id="$fileUploadButton">Upload Image!</button></div>
+				Click an image to select
+				<div class="fileSelected">
+					<div class="buttonContainer loggedIn"><button id="$setAvatarButton">Use As Avatar</button></div>
+					<table class="form">
+						<tr>
+							<th>User:</th>
+							<td id="$fileUser"></td>
+						</tr>
+						<tr>
+							<th><label for="$fileName">Name:</label></th>
+							<td><input id="$fileName"></td>
+						</tr>
+						<tr>
+							<th><label for="$fileName">Permissions:</label></th>
+							<td><input id="$filePermissions"><br></td>
+						</tr>
+						<tr>
+							<th><label for="$fileName">Values:</label></th>
+							<td><input id="$fileValues"></td>
+						</tr>
+					</table>
+					<div class="buttonContainer canEdit loggedIn"><button id="$fileUpdateButton" class="fileUpdateButton">Save Settings</button></div>
+				</div>
+			</div>
+			
+			
+			<div class="activityMode categoryNav rem1-7 nav bar">
+				<span class="textItem">
+					<div class="buttonContainer item">
+						<a id="$activityPagePrev"><button>&lt;</button></a>
+					</div><div class="buttonContainer item">
+						<a id="$activityPageNext"><button>&gt;</button></a>
+					</div><span class="textItem" id="$activityPageNumber"></span>
+				</span>
+			</div>
+			
+			<div class="membersMode memberNav nav">
+
+				<span class="textItem">
+					<div class="buttonContainer item">
+						<a id="$membersPrev">
+							<button>&lt;</button>
+						</a>
+					</div><div class="buttonContainer item">
+						<a id="$membersNext">
+							<button>&gt;</button>
+						</a>
+					</div>
+				</span>
+			</div>
+
+
+
+			<div class="userPageBox userMode">
+				<a id="$userPageAvatarLink"><img id="$userPageAvatar" class="userPageAvatar avatar" alt=""></a>
+				<div class="pageContents pre userPageContents markup-root" id="$userPageContents"></div>
+			</div>
+			
+			<!--
+				 These panes have the main content
+				 one of them will be visible at a time, depending on the view mode
+			  -->
+			
+			<main class="grow">
+				<div class="searchMode" id="$searchResults"></div>
+				
+				<div class="cateditMode">
+					<label for="$cateditPinned">Pinned pages:</label><input id="$cateditPinned"><br>
+					<label for="$cateditCategory">Parent category:</label><input id="$cateditCategory" type="number"><br>
+					<label for="$cateditPermissions">Permissions:</label><input id="$cateditPermissions"><br>
+					<label for="$cateditLocalSupers">Local Superusers:</label><input id="$cateditLocalSupers"><br>
+					<textarea id="$cateditDescription"></textarea><br>
+				</div>
+				
+				<div id="$categoryDescription" class="categoryDescription pre pageContents categoryMode markup-root"></div>
+				<div id="$categoryCategories" class="categoryMode"></div>
+				<div id="$categoryPinned" class="categoryMode"></div>
+				<div class="categoryMode categoryNav rem1-7 bar">
+					<span class="buttonContainer item">
+						<button id="$categoryPagesPrev">&lt;</button>
+					</span><span class="buttonContainer item">
+						<button id="$categoryPagesNext">&gt;</button>
+					</span>
+					<span class="textItem" id="$categoryPageNumber"></span>
+				</div>
+				<div id="$categoryPages" class="categoryPages categoryMode"></div>
+
+				<div class="userActivity userMode" id="$userActivity"></div>
+
+				<div class="pageInfoPane pageMode px40" id="$pageInfoPane">
+					<span id="$gallery" class="gallery" style="display:none;"><button id="$galleryPrev" class="galleryButton">&lt;</button><img id="$galleryImage"><button id="$galleryNext" class="galleryButton rightAlign">&gt;</button></span>
+					<span class="metaInfo">
+						<span id="$metaKey" class="textItem"></span>
+						<span id="$sbapiInfo" class="textItem"></span>
+					</span>
+					<!-- here we can put
+						  tags, type, sb key info, etc.
+					  -->
+				</div>
+				<div class="pageContents pre pageChatMode" id="$pageContents"></div>
+				<div class="editorPane editorMode">
+					<div class="editorTextarea">
+						<textarea id="$editorTextarea" minlength="2" required=""></textarea>
+					</div>
+					<div class="editorPreview grow markup-root" id="$editorPreview"><div class="markup-root" ></div></div>
+				</div>
+				
+				<div class="homeMode homePane">
+					<a class="categoryPage bar rem2-3" href="#search"><span class="textItem">Search</span></a>
+					<a class="categoryPage bar rem2-3" href="#activity"><span class="textItem">Activity</span></a>
+					<a class="categoryPage bar rem2-3" href="#categories/0"><span class="textItem">Pages</span></a>
+					<a class="categoryPage bar rem2-3" href="#users"><span class="textItem">Users</span></a>
+					<a class="categoryPage bar rem2-3" href="#files"><span class="textItem">Images</span></a>
+					<a class="categoryPage bar rem2-3" href="#test"><span class="textItem">Test</span></a>
+					<a class="categoryPage bar rem2-3" href="#usersettings"><span class="textItem">User Settings</span></a>
+				</div>
+				<div class="membersMode memberPane">
+					<div id="$memberList"></div>
+				</div>
+
+				<div class="registerMode loggedIn">
+					Logged In
+				</div>
+				
+				<div class="registerMode loggedOut">
+					<div class="registerBox">
+						<h2>Log In</h2>
+						<form id="$loginForm">
+							<input placeholder="Username" name="username" id="$username"><br>
+							<input placeholder="Password" name="password" type="password" id="$password"><br>
+							<div class="buttonContainer"><button id="$login" onclick="event.preventDefault()">Log In</button></div>
+						</form>
+						<div id="$loginError"></div>
+					</div>
+					<div class="registerBox">
+						<h2>Register</h2>
+						<form id="$registerForm" autocomplete="off">
+							<input placeholder="Username" name="username" type="username" id="$registerUsername" minlength="3" maxlength="20"> 3 to 20 characters, no spaces<br>
+							<input placeholder="Password" name="password" type="password" id="$registerPassword" minlength="8"><input placeholder="Confirm Password" name="password2" type="password" id="$registerPassword2" minlength="8"> At least 8 characters<br>
+							<input placeholder="Email" name="email" type="email" id="$registerEmail"><input placeholder="Confirm Email" name="email2" type="email" id="$registerEmail2"> Confirmation code will be sent<br>
+							<div class="buttonContainer" style="width: 100%"><button id="$registerButton" onclick="event.preventDefault()">Register</button></div></form>
+						<div class="buttonContainer"><button id="$resendEmail" onclick="event.preventDefault()">Resend Email</button></div>
+						<div id="$registerError" class="pre"> </div>
+						<h3>Confirm Registration</h3>
+						<input placeholder="Confirmation Code" id="$emailCode">
+						<div class="buttonContainer"><button id="$registerConfirm">Confirm</button></div>
+					</div>
+				</div>
+
+				<div class="settingsMode loggedIn">
+					<table class="form">
+						<tr><td><label for="$settingsOldPassword">Old Password: </label></td><td><input type="password" id="$settingsOldPassword" required=""><td></tr>
+						<tr><td><label for="$settingsUsername">New Username (Optional): </label></td><td><input autocomplete="off" id="$settingsUsername"></td></tr>
+						<tr><td><label for="$settingsNewPassword">New Password (Optional): </label></td><td><input autocomplete="new-password" type="password" id="$settingsNewPassword"></td></tr>
+						<tr><td><label for="$settingsEmail">New Email (Optional): </label></td><td><input autocomplete="off" type="email" id="$settingsEmail"></td></tr>
+					</table>
+					<button id="$submitUserSettings">Save</button>
+					<hr>
+					<a href="#files">Change your avatar here</a>
+					<hr>
+					<label for="$settingsUserCSS">User CSS:</label><br>
+					<textarea id="$settingsUserCSS"></textarea><br>
+					<button id="$saveUserCSS">Save</button><br>
+					<label for="$settingsUserJS">User JS:</label><br>
+					<textarea id="$settingsUserJS"></textarea><br>
+					<button id="$saveUserJS">Save</button>
+
+				</div>
+
+				<div class="activityMode" id="$activity">
+				</div>
+
+
+				<div class="fileMode fileViewPane grow">
+					<img id="$fileView" class="fileView">
+				</div>
+
+				<div class="testMode">
+					<textarea id="$testTextarea"></textarea><br>
+					<button id="$testButton">Run</button><br>
+					<div id="$testOut" class="pre"></div>
+				</div>
+				
+				<div class="bottomSpacer"></div>
+			
+				<div id="$messageList" class="messageList pageChatMode grow"></div>
+			</main>
+			<div class="inputPane pageChatMode">
+				<table> <!-- YES it's a TABLE! sorry ... I'm not allowed to use flex so this is the only option -->
+					<tr>
+						<td rowspan="2" class="tableGrow"><textarea class="chatTextarea" id="$chatTextarea" accesskey="z"></textarea></td>
+						<td rowspan="2"><div class="buttonContainer chatSend fill"><button id="$chatSend">Send</button></div></td>
+						<td style="white-space: nowrap"><div class="buttonContainer chatSend hideWhenEdit"><button id="$chatEdit">Edit</button></div><div class="buttonContainer chatSend hideWhenEdit"><button id="$chatDelete">Delete</button></div><div class="buttonContainer chatSend showWhenEdit"><button id="$cancelEdit">Cancel Edit</button></div></td>
+					</tr>
+					<tr>
+						<td><select class="fill" id="$chatMarkupSelect" name="markup"><option value="plaintext">Plaintext</option><option value="12y">12y</option><option value="bbcode">BBCode</option></select></td>
+					</tr>
+				</table>
+			</div>
+			<!--
+				 Bottom of the page
+			  -->
+		</div>
+		<div id="$sidebar">
+			<div class="sidebarInside">
+				<div class="buttonContainer closeSidebar"><button id="$closeSidebar">Close Sidebar</button></div>
+				
+				<div id="$sidebarPinned"></div>
+				
+				<div id="$sidebarPinnedResize" class="resize">resize</div>
+				
+				<div id="$sidebarActivity" class="grow"></div>
+				<div id="$sidebarUserlist" class="userlist bar rem1-5"></div>
+				<span id="$longPollStatus"></span>
+				<div id="buttonContainer"><button id="$hideGlobalStatusButton">Hide (global)</button></div>
+				<!--<div id="buttonContainer"><button id="$hideAllStatusButton">Hide (everywhere)</button></div>-->
+			</div>
+		</div>
+	</div>
+</body>

@@ -1,0 +1,59 @@
+.markup-root pre {
+	background-color: #000;
+	color: #EEE;
+}
+.markup-root pre * {
+	background-color: transparent;
+}
+.markup-root pre .name {
+	color: #7FF5EF;
+}
+.markup-root pre .string {
+	color: #59EE79;
+}
+.markup-root pre .number {
+	color: #f359ab;
+}
+.markup-root pre .keyword {
+	font-weight: bold;
+	color: #2494f0;
+}
+.markup-root pre .comment {
+	color: #a1f198;
+}
+.markup-root pre .variable {
+	color: #fbf4cb;
+}
+.markup-root pre .function {
+	color: #8d7ff5;
+}
+.markup-root pre .statement {
+	color: #7ff5ef;
+}
+.markup-root pre .backslash {
+	color: #777;
+}
+.markup-root pre .operator {
+	color: #EEE;
+}
+.markup-root pre .equals {
+	color: #EEE;
+}
+
+.markup-root pre .label {
+	color: #f4963e;
+}
+
+.markup-root pre .word-operator {
+	color: #2494f0;
+}
+.markup-root pre .to-step {
+	color: #2494f0;
+}
+.markup-root pre .constant {
+	color: #aeb5c2;
+}
+
+
+/*--highlight-question: #2494f0;*/
+

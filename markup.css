@@ -1,0 +1,273 @@
+.markup-root {
+	white-space: pre-wrap;
+	overflow-x: auto;
+	/*display: table;*/
+	vertical-align: baseline;
+}
+
+.markup-root table, .markup-root td, .markup-root th {
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+
+.markup-root td, .markup-root th {
+	padding: 0.2rem 0.3rem;
+}
+
+.markup-root table {
+	
+}
+
+.markup-root a {
+	color: rgb(0, 80, 150);
+	text-decoration: underline;
+}
+
+.markup-root a:visited {
+	color: rgb(0, 80, 150);
+}
+
+.markup-root a:hover {
+	color: rgb(50, 130, 200)
+}
+
+/*.markup-root * {
+	vertical-align: baseline;
+}*/
+
+.markup-root h2, .markup-root h3 {
+	border-bottom: 1px solid #eaecef;
+	margin-bottom: 0.2rem;
+	/*display: inline;*/
+}
+
+.markup-root h4 {
+	/*display: inline;*/
+}
+
+.markup-root h2 {
+	margin-top: 0.5rem;
+}
+
+.markup-root h3 {
+	margin-top: 0.3rem;
+}
+
+.markup-root pre {
+	font-size: 0.9em;
+	font-family: consolas, monospace;
+	color: white;
+	background-color: black;
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.markup-root code {
+	font-size: 0.9em;
+	font-family: consolas, monospace;
+	background-color: rgba(0,0,0,0.1);
+	padding: 0 0.2rem;
+}
+
+.markup-root pre, .markup-root table {
+	box-shadow: 2px 2px 2px #888888;
+}
+
+.markup-root pre {
+	border: 1px solid black;
+	padding: 0.5rem;
+	margin: 0.25rem 0;
+}
+
+.markup-root {
+	padding: 0.5rem;
+}
+
+.markup-root ol {
+	margin-left: 2em;
+	padding-left: 0;
+}
+
+.markup-root ul, .markup-root ol ol, .markup-root ul ol {
+	margin-left: 1.1em;
+	padding-left: 0;
+}
+
+.markup-root img, .markup-root audio, .markup-root video {
+	max-width: 100%;
+	max-height: 10vh;
+	display: block;
+	-webkit-transition: all 0.25s ease;
+	transition: all 0.25s ease;
+	/*margin: 0 1px; why is this here */
+}
+
+.markup-root [loading] {
+	min-height: 10vh;
+}
+
+.markup-root [bigImage] {
+	max-height: 75vh;
+}
+
+markup-root .youtube {
+	display: block;
+	max-width: 100%;
+}
+
+.markup-root .youtube a {
+	width: 320px;
+	height: 180px;
+	max-height: 10vh;
+	max-width: 17.778vh;
+	display: inline-block;
+	vertical-align: top;
+	overflow: hidden;
+	background-size: cover;
+}
+
+.markup-root .playingYoutube a {
+	width: 480px;
+	height: 270px;
+	max-height: none;
+	max-width: 100%;
+	display: inline-block;
+	vertical-align: top;
+	overflow: hidden;
+}
+
+.markup-root .youtube a iframe {
+	width: 100%;
+	height: 100%;
+	border: none;
+	display: inline-block;
+}
+
+.markup-root .videoTitle, .markup-root .videoAuthor {
+	color: white;
+	background-color: rgba(0,0,0,0.3);
+	padding: 0 0.2rem;
+	display: inline-block;
+}
+
+.markup-root .cell {
+	background-color: white; /* needed to reset for nested tables */
+}
+
+.markup-root [data-bgcolor="red"] {
+	background-color: #FCC;
+}
+
+.markup-root [data-bgcolor="green"] {
+	background-color: #CFC;
+}
+
+.markup-root [data-bgcolor="yellow"] {
+	background-color: #FF6;
+}
+
+.markup-root [data-bgcolor="orange"] {
+	background-color: #FEA;
+}
+
+.markup-root [data-bgcolor="blue"] {
+	background-color: #DEF;
+}
+
+.markup-root [data-bgcolor="gray"] {
+	background-color: #DDD;
+}
+
+.markup-root .spoilerButton {
+	padding: 0 0.3rem;
+	background-color: #EEE;
+	border: 2px solid gray;
+	border-style: outset;
+	border-radius: 2px;
+	margin-left: 0.2rem;
+	margin-right: 0.2rem;
+	margin-top: 1px;
+	display: table;
+}
+
+.markup-root .spoilerButton:hover {
+	border-color: #59E;
+}
+
+.markup-root spoilerButton:active {
+	border-style: inset;
+}
+
+.markup-root .spoiler {
+	padding: 0.5rem;
+	border: 1px solid gray;
+	background-color: #F8F8F8;
+	margin-bottom: 1px;
+}
+
+.spoilerButton:not([data-show]) + .spoiler {
+	display: none;
+}
+
+.markup-root .spoilerButton:not([data-show]):before {
+	content: "Show ";
+}
+
+.spoilerButton[data-show] {
+	border-bottom: none;
+}
+
+.markup-root .spoilerButton[data-show]:before {
+	content: "Hide ";
+}
+
+.markup-root .invalid {
+	background-color: pink;
+}
+
+.markup-root .error {
+	background-color: #F55;
+	border: 1px solid black;
+	padding: 0.2rem;
+	border-radius: 5px;
+}
+
+.markup-root .tableContainer {
+	overflow-x: auto;
+	max-width: 100%;
+	margin: 0.2rem 0;
+}
+
+/*.markup-root th.cell {
+	background-color: #222;
+	color: white;
+	border-color: white;
+}*/
+
+.markup-root blockquote {
+	padding: 0.5rem;
+	padding-left: 1.5rem;
+	border: 1px solid gray;
+	background-color: #eee;
+	margin: 1px 0;
+}
+
+.markup-root blockquote > cite {
+	margin-left: -1rem;
+}
+
+/*.markup-root blockquote[cite]::before {
+	content: attr(cite) ":\A";
+	white-space: pre;
+	font-weight: bold;
+	margin-left: -1rem;
+	display: block;
+	margin-bottom: 0.2em;
+}*/
+
+.markup-root > :first-child {
+	margin-top: 0;
+}
+.markup-root > :last-child {
+	margin-bottom: 0;
+}
