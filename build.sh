@@ -7,6 +7,7 @@ cat fonts/fonts.css style.css markup.css code.css >> build.html
 echo "</style>" >> build.html
 
 echo "<script>" >> build.html
+cat request.js >> build.html
 #cat util.js types.js myself.js lp4.js sbhighlight.js parse.js render.js view.js events.js navigate.js main.js >> build.html
 echo "</script>" >> build.html
 
