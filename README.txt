@@ -21,10 +21,6 @@ styling for markup
 ** code.css
 highlighter colors for markup code blocks
 
-** build.sh
-build script (optional)
-generates `build.html` from `index.html` with all css and js inlined
-
 ** fonts/
 font data
 ** fonts/fonts.css
