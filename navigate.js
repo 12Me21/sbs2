@@ -1,23 +1,7 @@
 <!--/* trick indenter
-var Nav = {}
-with (Nav) { //*/
-
-// private variables
-
-var $ = window 
-
-function split1(string, sep) {
-	var n = string.indexOf(sep)
-	if (n == -1)
-		return [string, null]
-	else
-		return [string.substr(0,n), string.substr(n+sep.length)]
-}
-
-<!--/*
-		Object.assign(Nav, { //*/
-
-// public variables
+var Nav = Object.create(null);
+with (Nav) void function($) { "use strict"
+Object.assign(Nav, { //*/
 
 currentPath: null,
 cancel: null,
@@ -39,16 +23,16 @@ initial: function() {
 	$.onhashchange()
 },
 
-parsePath: function (path) {
-	var a = split1(path, "#")
-	var b = split1(a[0], "?")
+parsePath: function(path) {
+	var a = path.split1("#")
+	var b = a[0].split1("?")
 	var base = b[0]
 	var fragment = a[1]
 	var query = b[1]
 	var queryVars = {}
 	if (query) {
 		query.split("&").forEach(function(item) {
-			item = split1(item, "=")
+			item = item.split1("=")
 			if (item[1] == null) {
 				queryVars[item[0]] = true
 			} else {
@@ -83,8 +67,8 @@ render: function(path) {
 		cancel = null
 	}
 	var path = decodePath(path)
-
-	var view = View.views[path.type] || View.views.error
+	
+	var view = $.View.getView(path.type)
 	var cancelled
 	if (view.cleanUp)
 		view.cleanUp()
@@ -111,9 +95,12 @@ render: function(path) {
 	}
 },
 
-<!--/*
-		})} //*/
+<!--/* 
+}) //*/
 
-window.onhashchange = function() {
-	Nav.render(window.location.hash.substr(1))
+$.onhashchange = function() {
+	render($.location.hash.substr(1))
 }
+
+<!--/*
+}(window) //*/
