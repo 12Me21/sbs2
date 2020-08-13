@@ -7,6 +7,10 @@ single page website at index.html
 ** index.html
 main html file
 
+** fill.js
+polyfill
+** entity.js
+recieved data processing
 ** request.js
 http requests, sbs2 api
 ** navigate.js
@@ -24,6 +28,7 @@ highlighter colors for markup code blocks
 ** build.sh
 build script (optional)
 generates `_build.css`, `_build.js`, and `_build.html`
+should be used when site is hosted online (because of caching)
 
 ** fonts/
 font data

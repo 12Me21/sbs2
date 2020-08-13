@@ -91,6 +91,7 @@ render: function(path) {
 		cancelled = true
 	}
 	function after() {
+		$main.className = view.className
 		// todo: scroll to fragment element
 	}
 },
