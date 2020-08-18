@@ -34,8 +34,16 @@ views: {
 			return $.Req.getUserPage(id, render)
 		},
 		className: 'userMode',
-		render: function(user, page) {
+		render: function(user, userpage, activity, ca, content) {
+			$userPageAvatar.src = ""
+			console.log("E", user)
+			if (!user)
+				return //er
 			setTitle(user.name)
+			$userPageAvatarLink.href = Req.fileURL(user.avatar)
+			$userPageAvatar.src = Req.fileURL(user.avatar, "size=400&crop=true")
+			setPath([["users","Users"], ["user/"+user.id, user.name]])
+			$userPageContents.replaceChildren(Draw.markup(userpage))
 		}
 	}
 },
@@ -55,7 +63,7 @@ setTitle: function(text, icon) {
 	$.document.title = text
 },
 setPath: function(path) {
-	$navPane.replaceChildren()
+	$navPane.replaceChildren(Draw.titlePath(path))
 },
 
 <!--/* 

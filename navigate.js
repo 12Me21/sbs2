@@ -33,11 +33,11 @@ parsePath: function(path) {
 	if (query) {
 		query.split("&").forEach(function(item) {
 			item = item.split1("=")
-			if (item[1] == null) {
-				queryVars[item[0]] = true
-			} else {
-				queryVars[item[0]] = item[1]
-			}
+			var name = decodeURIComponent(item[0].trim())
+			if (item[1] == null)
+				queryVars[name] = true
+			else
+				queryVars[name] = decodeURIComponent(item[1].trim())
 		})
 	}
 	return {
@@ -47,15 +47,12 @@ parsePath: function(path) {
 	}
 },
 
+// all paths are in the form
+// name[/id][?query][#fragment]
 decodePath: function(path) {
 	path = parsePath(path)
 	var type = path.path[0] || ""
-	if (path.path[1] == 'edit') { // ex: pages/edit/123
-		var id = path.path[2] != undefined && +path.path[2]
-		type = type+"/"+path.path[1]
-	} else {
-		var id = +path.path[1] || 0
-	}
+	var id = +path.path[1] || 0
 	path.id = id
 	path.type = type
 	return path

@@ -15,6 +15,9 @@ server: null,
 
 uid: null,
 
+categoryTree: null,
+gotCategoryTree: false,
+
 rawRequest: function(url, method, callback, data, auth){
 	var x = new $.XMLHttpRequest()
 	x.open(method, url)
@@ -47,7 +50,7 @@ rawRequest: function(url, method, callback, data, auth){
 			callback('auth', resp)
 		} else if (code==404) {
 			callback('404', resp)
-		} else if (ignore400 && code==400) {
+		} else if (code==400) {
 			try {
 				resp = $.JSON.parse(resp)
 			} catch(e) {
@@ -172,6 +175,65 @@ tryLoadCachedAuth: function() {
 		return gotAuth(auth)
 	return false
 },
+
+read: function(requests, filters, callback, needCategories) {
+	var query = {}
+	query.requests = requests.map(function(req) {
+		if (typeof req == 'string')
+			return req
+		else
+			for (var type in req)
+				return type+"-"+JSON.stringify(req[type])
+	})
+	Object.assign(query, filters)
+	needCategories = needCategories && !gotCategoryTree
+	if (needCategories)
+		query.requests.push('category~Ctree')
+	return request("Read/chain"+queryString(query), 'GET', function(e, resp) {
+		if (!e) {
+			handle(resp)
+			if (needCategories)
+				gotCategoryTree = true
+		}
+		callback(e, resp)
+	})
+},
+
+handle: function(resp) {
+	console.log("HANDKLE")
+	Entity.process(resp)
+},
+
+getCategories: function(callback) {
+	read([],{},callback,true)
+},
+
+getUserPage: function(id, callback) {
+	read([
+		{user: {ids: [id]}},
+		{"content~Puserpage": {createUserIds: [id], type: '@user.page', limit: 1}},
+		{activity: {userIds: [id], limit: 20, reverse: true}},
+		{commentaggregate: {userIds: [id], limit: 100, reverse: true}},
+		"content.2contentId.3id"
+	],{},function(e, resp) {
+		if (!e) {
+			var user = resp.userMap[id]
+			if (user) {
+				callback(user, resp.Puserpage[0], resp.activity, resp.commentaggregate, resp.content)
+			} else {
+				callback(null)
+			}
+		} else {
+			callback(null) // todo: better/more standard error handlign?
+		}
+	}, true)
+},
+
+fileURL: function(id, query) {
+	if (query)
+		return server+"/File/raw/"+id+"?"+query
+	return server+"/File/raw/"+id
+}
 
 <!--/* 
 }) //*/
