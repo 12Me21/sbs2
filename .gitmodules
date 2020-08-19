@@ -1,0 +1,3 @@
+[submodule "sbs2-markup"]
+	path = sbs2-markup
+	url = https://github.com/12Me21/sbs2-markup
