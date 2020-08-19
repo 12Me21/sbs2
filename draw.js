@@ -9,28 +9,68 @@ avatarURL: function(user, params) {
 	if (!user || !user.avatar)
 		return "resource/avatar.png"
 	return Req.fileURL(user.avatar, params)
-}
+},
 
 largeIcon: function(entity) {
 	var element = document.createElement('img')
 	if (entity.type == 'user')
-		element.src = avatarURL(entity) // todo: big
+		element.src = avatarURL(entity, "size=400&crop=true")
 	else
 		element.src = "resource/unknown.png"
 	return entity
 },
 
-icon: function(entity) {
-	var element = document.createElement('img')
-	if (entity.type == 'user')
-		element.src = avatarUrl(entity)
-	else if (entity.type == 'category')
-		element.src = "resource/category.png"
-	else if (entity.type == 'page') {
+// icon + name
+iconTitle: function(entity) {
+	var element = document.createDocumentFragment()
+	element.appendChild(icon(entity))
+	element.appendChild(title(entity))
+	return element
+},
+
+entityLink: function(entity) {
+	var path = Nav.entityPath(entity);
+	if (path)
+		var element = Nav.link(path)
+	else
+		element = document.createElement('span')
+	return element
+},
+
+entityTitleLink: function(entity) {
+	var element = entityLink(entity)
+	element.appendChild(iconTitle(entity))
+	return element
+},
+
+title: function(entity) {
+	return textItem(entity.name)
+},
+
+textItem: function(text) {
+	var element = document.createElement('span')
+	element.textContent = text
+	element.className = 'textItem pre'
+	return element
+},
+
+iconURL: function(entity) {
+	if (entity.type == 'user') {
+		return avatarURL(entity, "size=120&crop=true")
+	} else if (entity.type == 'category')
+		return "resource/category.png"
+	else if (entity.type == 'content') {
 		// todo: hidden icon
-		element.src = "resource/page.png"
-	} else
-		element.src = "resource/unknown.png"
+		return "resource/page.png"
+	}
+	return "resource/unknown.png"
+},
+
+icon: function(entity, element) {
+	element = element || document.createElement('img')
+	element.className = "item icon" // todo: force width to avoid jump when loading
+	element.src = iconURL(entity)
+	return element
 },
 
 markup: function(page) {

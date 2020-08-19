@@ -200,16 +200,15 @@ read: function(requests, filters, callback, needCategories) {
 },
 
 handle: function(resp) {
-	console.log("HANDKLE")
 	Entity.process(resp)
 },
 
 getCategories: function(callback) {
-	read([],{},callback,true)
+	return read([],{},callback,true)
 },
 
-getUserPage: function(id, callback) {
-	read([
+getUserView: function(id, callback) {
+	return read([
 		{user: {ids: [id]}},
 		{"content~Puserpage": {createUserIds: [id], type: '@user.page', limit: 1}},
 		{activity: {userIds: [id], limit: 20, reverse: true}},
@@ -225,6 +224,48 @@ getUserPage: function(id, callback) {
 			}
 		} else {
 			callback(null) // todo: better/more standard error handlign?
+		}
+	}, true)
+},
+
+getPageView: function(id, callback) {
+	return read([
+		{content: {ids: [+id]}},
+		"user.0createUserId.0editUserId",
+	], {}, function(e, resp) {
+		if (!e && resp.content[0])
+			callback(resp.content[0])
+		else
+			callback(null)
+	}, true)
+},
+
+getCategoryView: function(id, callback) {
+	var search = {
+		parentIds: [id],
+		limit: 10,
+		sort: 'editDate',
+		reverse: true
+	}
+	return read([
+		{'category~Cmain': {ids: [id]}},
+		{content: search},
+		{category: {parentIds: [id]}},
+		"content.0values_pinned~Ppinned",
+		"user.1createUserId.3createUserId"
+	], {
+		content: "id,name,parentId,createUserId,editDate,permissions",
+		/*category: "id,name,description,parentId,values",*/
+		user: "id,username,avatar"
+	}, function(e, resp) {
+		if (!e) {
+			if (id == 0)
+				var category = $.Entity.categoryMap[0]
+			else
+				category = resp.Cmain[0]
+			callback(category, resp.category, resp.content, resp.Ppinned)
+		} else {
+			callback(null)
 		}
 	}, true)
 },

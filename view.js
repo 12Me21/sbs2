@@ -31,19 +31,42 @@ views: {
 	},
 	user: {
 		start: function(id, query, render) {
-			return $.Req.getUserPage(id, render)
+			return $.Req.getUserView(id, render)
 		},
 		className: 'userMode',
 		render: function(user, userpage, activity, ca, content) {
 			$userPageAvatar.src = ""
-			console.log("E", user)
 			if (!user)
 				return //er
-			setTitle(user.name)
+			setEntityTitle(user)
 			$userPageAvatarLink.href = Req.fileURL(user.avatar)
 			$userPageAvatar.src = Req.fileURL(user.avatar, "size=400&crop=true")
-			setPath([["users","Users"], ["user/"+user.id, user.name]])
+			setPath([["users","Users"], [Nav.entityPath(user), user.name]])
 			$userPageContents.replaceChildren(Draw.markup(userpage))
+		}
+	},
+	page: {
+		start: function(id, query, render) {
+			return $.Req.getPageView(id, render)
+		},
+		className: 'pageMode',
+		render: function(page) {
+			if (!page)
+				return
+			setEntityTitle(page)
+			setEntityPath(page)
+		}
+	},
+	category: {
+		start: function(id, query, render) {
+			return $.Req.getCategoryView(id, render)
+		},
+		className: 'categoryMode',
+		render: function(category, cats, pages, pinned) {
+			if (!category)
+				return
+			setEntityTitle(category)
+			setEntityPath(category)
 		}
 	}
 },
@@ -58,12 +81,52 @@ errorView: {
 getView: function(name) {
 	return views[name] || errorView
 },
-setTitle: function(text, icon) {
+setEntityTitle: function(entity) {
+	$pageTitle.replaceChildren(Draw.iconTitle(entity))
+	$.document.title = entity.name
+},
+setTitle: function(text) {
 	$pageTitle.textContent = text
 	$.document.title = text
 },
 setPath: function(path) {
 	$navPane.replaceChildren(Draw.titlePath(path))
+},
+setEntityPath: function(page) {
+	if (page.type == 'category')
+		var node = page
+	else
+		node = page.parent
+	var path = []
+	while (node) {
+		path.unshift([Nav.entityPath(node), node.name])
+		node = node.parent
+	}
+	if (page.type == 'category')
+		path.push(null)
+	else
+		path.push([Nav.entityPath(page), page.name])
+	setPath(path)
+},
+loadStart: function() {
+	flag('loading', true)
+},
+loadEnd: function() {
+	flag('loading', false)
+},
+flags: {},
+flag: function(flag, state) {
+	if (!flags[flag] != !state) {
+		if (state)
+			flags[flag] = true
+		else
+			delete flags[flag]
+		var cls = ""
+		for (flag in flags) {
+			cls += " f-"+flag
+		}
+		$.document.documentElement.className = cls
+	}
 },
 
 <!--/* 
@@ -76,3 +139,6 @@ var x = views
 
 <!--/*
 }(window)) //*/ // pass external values
+
+
+//todo: rename resource to avoid collision with request.js

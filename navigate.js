@@ -6,6 +6,17 @@ Object.assign(Nav, { //*/
 currentPath: null,
 cancel: null,
 
+entityPath: function(entity) {
+	if (!entity)
+		return
+	if (entity.type == 'user')
+		return "user/"+entity.id
+	if (entity.type == 'content')
+		return "page/"+entity.id
+	if (entity.type == 'category')
+		return "category/"+entity.id
+},
+
 link: function(path, element) {
 	element = element || $.document.createElement('a')
 	element.href = "#"+path
@@ -70,10 +81,12 @@ render: function(path) {
 	if (view.cleanUp)
 		view.cleanUp()
 	if (view.start) {
+		$.View.loadStart()
 		var xhr = view.start(path.id, path.query, function() {
 			if (cancelled)
 				return
 			view.render.apply(null, arguments)
+			$.View.loadEnd()
 			after()
 		})
 	} else {
@@ -82,6 +95,7 @@ render: function(path) {
 		after()
 	}
 	cancel = function() {
+		$.View.loadEnd()
 		if (xhr && xhr.abort) {
 			xhr.abort()
 		}
