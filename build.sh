@@ -1,4 +1,4 @@
-cat resource/fonts.css style.css markup.css code.css > _build.css
+cat fonts.css style.css markup.css code.css > _build.css
 cat fill.js entity.js request.js draw.js view.js navigate.js main.js > _build.js
 
 date=`date +%s`
