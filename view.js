@@ -42,7 +42,10 @@ views: {
 			$userPageAvatarLink.href = Req.fileURL(user.avatar)
 			$userPageAvatar.src = Req.fileURL(user.avatar, "size=400&crop=true")
 			setPath([["users","Users"], [Nav.entityPath(user), user.name]])
-			$userPageContents.replaceChildren(Draw.markup(userpage))
+			if (userpage)
+				$userPageContents.replaceChildren(Draw.markup(userpage))
+			else
+				$userPageContents.replaceChildren()
 		}
 	},
 	page: {
