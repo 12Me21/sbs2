@@ -58,6 +58,7 @@ views: {
 				return
 			setEntityTitle(page)
 			setEntityPath(page)
+			$pageContents.replaceChildren(Parse.parseLang(page.content, page.values.markupLang))
 		}
 	},
 	category: {
