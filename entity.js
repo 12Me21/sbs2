@@ -123,7 +123,13 @@ parseDate: function(str) {
 <!--/* 
 }) //*/
 
-categoryMap = {0: {name:"root", id:0, type:'category'}}
+categoryMap = {0: {
+	name:"root",
+	id:0,
+	type:'category',
+	description:"",
+	values:{}
+}}
 
 <!--/*
 }(window)) //*/ // pass external values

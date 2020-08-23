@@ -6,6 +6,11 @@ Object.assign(Nav, { //*/
 currentPath: null,
 cancel: null,
 
+// this will always be the currently rendered view
+// (set before `render` is called, and unset before `cleanUp` is called)
+// currentView.cleanUp should always be correct!
+currentView: null,
+
 entityPath: function(entity) {
 	if (!entity)
 		return
@@ -78,20 +83,41 @@ render: function(path) {
 	
 	var view = $.View.getView(path.type)
 	var cancelled
-	if (view.cleanUp)
-		view.cleanUp()
+	function cleanUp() {
+		if (currentView && currentView.cleanUp) {
+			try {
+				currentView.cleanUp()
+			} catch(e) {
+				console.error("error in cleanup function", e)
+			} finally {
+				currentView = null
+			}
+		}
+	}
 	if (view.start) {
 		$.View.loadStart()
 		var xhr = view.start(path.id, path.query, function() {
 			if (cancelled)
 				return
-			view.render.apply(null, arguments)
-			$.View.loadEnd()
+			cleanUp()
+			currentView = view
+			try {
+				view.render.apply(null, arguments)
+			} catch(e) {
+				console.error("error in rendering function for "+path.type, e)
+			}
 			after()
+			$.View.loadEnd()
 		})
 	} else {
 		//(type is passed here so that the error page can display it)
-		view.render(path.id, path.query, path.type)
+		cleanUp()
+		currentView = view
+		try {
+			view.render(path.id, path.query, path.type)
+		} catch(e) {
+			console.error("error in rendering function for "+path.type, e)
+		}
 		after()
 	}
 	cancel = function() {

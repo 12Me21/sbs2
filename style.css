@@ -201,7 +201,7 @@ button {
 
 /* visibility control */
 body:not(.pageMode) .pageMode,
-body:not(.pageMode) .pageChatMode,
+body:not(.chatMode) .chatMode,
 body:not(.editorMode) .editorMode,
 body:not(.categoryMode) .categoryMode,
 body:not(.navMode) .navMode,

@@ -1,7 +1,10 @@
 wrote by 12Me21
 
-single page website at index.html
-(should work locally too)
+* Instructions
+Open index.html in a web browser
+
+If you are hosting this on a server, it's a good idea to run `build.sh`, then copy `_build.html`(can be renamed) and `resource/` into the place where you want to host from.
+(build.sh only works on linux, but you can follow the instructions in the file to do it manually if you need to)
 
 * Files
 ** index.html
@@ -9,14 +12,16 @@ main html file
 
 ** fill.js
 polyfill
-** entity.js
-recieved data processing
-** request.js
-http requests, sbs2 api
 ** navigate.js
 page navigation handling
+** request.js
+http requests, sbs2 api
+** entity.js
+recieved data processing
 ** view.js
-rendering
+page rendering
+** draw.js
+html generation
 
 ** style.css
 main css file
@@ -24,20 +29,19 @@ main css file
 styling for markup
 ** code.css
 highlighter colors for markup code blocks
+** fonts.css
+font definitions
 
 ** build.sh
 build script (optional)
-generates `_build.css`, `_build.js`, and `_build.html`
-should be used when site is hosted online (because of caching)
 
-** fonts/
-font data
-** fonts/fonts.css
-font css
-** images/
-images
+** resource/
+fonts, icons, images, etc.
 
 ** README.txt
 readme
 ** LICENSE.txt
 license
+
+** sbs2-markup
+markup parser subsystem

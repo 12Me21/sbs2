@@ -37,6 +37,17 @@ entityLink: function(entity) {
 	return element
 },
 
+// page (or category) wiht user
+pageBar: function(page) {
+	var bar = entityTitleLink(page)
+	if (page.createUser) {
+		var usr = entityTitleLink(page.createUser)
+		usr.className += " rightAlign"
+		bar.appendChild(usr)
+	}
+	return bar
+},
+
 entityTitleLink: function(entity) {
 	var element = entityLink(entity)
 	element.appendChild(iconTitle(entity))
@@ -60,6 +71,8 @@ iconURL: function(entity) {
 	} else if (entity.type == 'category')
 		return "resource/category.png"
 	else if (entity.type == 'content') {
+		if (!hasPerm(entity.permissions, 0, 'r'))
+			return "resource/hiddenpage.png"
 		// todo: hidden icon
 		return "resource/page.png"
 	}
@@ -104,6 +117,10 @@ titlePath: function(path) {
 <!--/* 
 }) //*/
 
+function hasPerm(perms, id, perm) {
+	return perms && perms[id] && perms[id].indexOf(perm) != -1
+}
+	
 <!--/*
 }(window)) //*/ // pass external values
 

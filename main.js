@@ -1,3 +1,7 @@
+window.onerror = function(message, source, line, col, error) {
+	console.log("e")
+}
+
 Req.onLogin = function() {
 	// display user info etc.
 	// start long poller

@@ -10,8 +10,8 @@ views: {
 		render: function() {
 			setPath()
 			var text = "Welcome to SmileBASIC Source 2!"
-			var index = $.Math.random()*(text.length-1)|0
-			text = text.substring(0,index)+text[index+1]+text[index]+text.substr(index+2)
+			//var index = $.Math.random()*(text.length-1)|0
+			//text = text.substring(0,index)+text[index+1]+text[index]+text.substr(index+2)
 			setTitle(text)
 		}
 	},
@@ -35,7 +35,6 @@ views: {
 		},
 		className: 'userMode',
 		render: function(user, userpage, activity, ca, content) {
-			$userPageAvatar.src = ""
 			if (!user)
 				return //er
 			setEntityTitle(user)
@@ -46,6 +45,10 @@ views: {
 				$userPageContents.replaceChildren(Draw.markup(userpage))
 			else
 				$userPageContents.replaceChildren()
+		},
+		cleanUp: function() { //todo: this probably needs more info to tell what next page is (so, whether to delete certain things)
+			$userPageAvatar.src = ""
+			$userPageContents.replaceChildren()
 		}
 	},
 	page: {
@@ -56,9 +59,13 @@ views: {
 		render: function(page) {
 			if (!page)
 				return
+			//todo: some kind of common error handler?
 			setEntityTitle(page)
 			setEntityPath(page)
 			$pageContents.replaceChildren(Parse.parseLang(page.content, page.values.markupLang))
+		},
+		cleanUp: function() {
+			$pageContents.replaceChildren()
 		}
 	},
 	category: {
@@ -71,6 +78,28 @@ views: {
 				return
 			setEntityTitle(category)
 			setEntityPath(category)
+			$categoryDescription.replaceChildren(Parse.parseLang(category.description, category.values.markupLang))
+			$categoryCategories.replaceChildren()
+			category.children.forEach(function(child) {
+				var bar = Draw.entityTitleLink(child)
+				bar.className += " categoryPage bar rem2-3"
+				$categoryCategories.appendChild(bar)
+			});
+			pinned.forEach(function(page) {
+				var bar = Draw.pageBar(page)
+				bar.className += " categoryPage bar rem2-3"
+				$categoryCategories.appendChild(bar)
+			})
+			pages.forEach(function(page) {
+				var bar = Draw.pageBar(page)
+				bar.className += " categoryPage bar rem2-3"
+				$categoryPages.appendChild(bar)
+			})
+		},
+		cleanUp: function() {
+			$categoryCategories.replaceChildren()
+			$categoryPages.replaceChildren()
+			$categoryDescription.replaceChildren()
 		}
 	}
 },
@@ -85,6 +114,7 @@ errorView: {
 getView: function(name) {
 	return views[name] || errorView
 },
+
 setEntityTitle: function(entity) {
 	$pageTitle.replaceChildren(Draw.iconTitle(entity))
 	$.document.title = entity.name
@@ -93,6 +123,7 @@ setTitle: function(text) {
 	$pageTitle.textContent = text
 	$.document.title = text
 },
+
 setPath: function(path) {
 	$navPane.replaceChildren(Draw.titlePath(path))
 },
@@ -112,12 +143,14 @@ setEntityPath: function(page) {
 		path.push([Nav.entityPath(page), page.name])
 	setPath(path)
 },
+
 loadStart: function() {
 	flag('loading', true)
 },
 loadEnd: function() {
 	flag('loading', false)
 },
+
 flags: {},
 flag: function(flag, state) {
 	if (!flags[flag] != !state) {
@@ -126,9 +159,8 @@ flag: function(flag, state) {
 		else
 			delete flags[flag]
 		var cls = ""
-		for (flag in flags) {
+		for (flag in flags)
 			cls += " f-"+flag
-		}
 		$.document.documentElement.className = cls
 	}
 },
