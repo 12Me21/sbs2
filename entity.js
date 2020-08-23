@@ -78,6 +78,11 @@ processItem: {
 	},
 	comment: function(data, users) {
 		data = processItem.editable(data, users)
+		if (data.content) {
+			var m = decodeComment(data.content)
+			data.content = m.t
+			data.meta = m
+		}
 		return data
 	},
 	file: function(data, users) {
@@ -119,12 +124,29 @@ parseDate: function(str) {
 	var ms = +data[6] - sec
 	return new $.Date(Date.UTC(+data[1], +data[2]-1, +data[3], +data[4], +data[5], sec, ms))
 },
+decodeComment: function(content) {
+	var newline = content.indexOf("\n")
+	try {
+		// try to parse the first line as JSON
+		var data = JSON.parse(newline>=0 ? content.substr(0, newline) : content)
+	} finally {
+		if (data && data.constructor == Object) { // new or legacy format
+			if (newline >= 0)
+				data.t = content.substr(newline+1) // new format
+		} else // raw
+			data = {t: content}
+		return data
+	}
+},
+encodeComment: function(text, metadata) {
+	return JSON.stringify(metadata || {})+"\n"+text
+},
 
 <!--/* 
 }) //*/
 
 categoryMap = {0: {
-	name:"root",
+	name:"[root]",
 	id:0,
 	type:'category',
 	description:"",

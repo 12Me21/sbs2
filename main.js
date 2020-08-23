@@ -28,5 +28,5 @@ function ready() {
 	
 	Nav.initial()
 
-	View.onload()
+	View.onLoad()
 }

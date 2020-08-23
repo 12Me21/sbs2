@@ -82,6 +82,7 @@ render: function(path) {
 	var path = decodePath(path)
 	
 	var view = $.View.getView(path.type)
+	// todo: update url when view is redirected
 	var cancelled
 	function cleanUp() {
 		if (currentView && currentView.cleanUp) {

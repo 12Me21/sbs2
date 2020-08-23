@@ -113,6 +113,47 @@ titlePath: function(path) {
 	})
 	return element
 },
+messageBlock: function(user, date) {
+	user = user || {}
+	var div = document.createElement('div')
+	div.className = 'message'
+	
+	var timeStamp = document.createElement('time')
+	timeStamp.className = 'messageTime'
+	timeStamp.setAttribute("datetime", date+"")
+	timeStamp.textContent = timeString(date)
+	div.appendChild(timeStamp)
+
+	div.appendChild(icon(user))
+
+	var name = document.createElement('span')
+	name.className = 'username'
+	name.textContent = user.name+":"
+	div.appendChild(name)
+	
+	var contentBox = document.createElement('div')
+	contentBox.className = 'messageContents'
+	div.appendChild(contentBox)
+	return [div, contentBox]
+},
+messagePart: function(comment){
+	var element = document.createElement('p')
+	element.className = 'markup-root messagePart'
+	element.setAttribute('data-id', comment.id)
+	element.setAttribute('tabindex', "0")
+	var contents = Parse.parseLang(comment.content, comment.meta.m, false)
+	element.appendChild(contents)
+	return element
+},
+timeString: function(date) {
+	if (new Date()-date > 1000*60*60*12) {
+		var options = {year:'numeric',month:'long',day:'numeric',hour:'2-digit', minute:'2-digit'}
+	} else {
+		options = {hour:'2-digit', minute:'2-digit'}
+	}
+	return date.toLocaleString([], options)
+},
+
 
 <!--/* 
 }) //*/

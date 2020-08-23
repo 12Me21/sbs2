@@ -539,13 +539,13 @@ main {
 /*.ownMessage {
 	background-color: rgba(255,153,153, 0.2);
 }*/
-.messageTime {
+.message > time {
 	float: right;
 	font-weight: normal;
 	padding-right: .5em;
 	color: #666;
 }
-.message .avatar {
+.message > img {
 	display: inline-block;
 	width: 3.5rem;
 	height: 3.5rem;

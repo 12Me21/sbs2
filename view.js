@@ -101,18 +101,75 @@ views: {
 			$categoryPages.replaceChildren()
 			$categoryDescription.replaceChildren()
 		}
-	}
+	},
+	pages: {
+		redirect: 'page'
+	},
+	chat: {
+		start: function(id, query, render) {
+			return $.Req.getChatView(id, render)
+		},
+		className: 'chatMode',
+		render: function(page, comments) {
+			console.log(page)
+			setEntityTitle(page)
+			setEntityPath(page)
+			var lastUid = NaN
+			var lastBlock;
+			comments.forEach(function(comment) {
+				var uid = comment.createUserId
+				if (!lastBlock || uid != lastUid) {
+					lastBlock = Draw.messageBlock(comment.createUser, comment.createDate)
+					$messageList.appendChild(lastBlock[0])
+				}
+				lastBlock[1].appendChild(Draw.messagePart(comment))
+				lastUid = uid
+			})
+		},
+		cleanUp: function() {
+			$messageList.replaceChildren()
+		},
+		init: function() {
+		}
+	},
+	template: {
+		start: function(id, query, render) {
+			// this should make a request for data from the api
+			// and call `render` when it's finished
+			// DO NOT MODIFY ANY HTML IN THIS FUNCTION
+			// If you don't need to load anything asynchronously,
+			// you can leave out this function and `render` will be
+			// called immediately instead (with arguments (id, query, type))
+			render(1,2,3,4)
+		},
+		className: 'templateMode', // the className of <body> is set to this
+		render: function(a,b,c,d) {
+			// this function is called after the data is recieved, and
+			// should render the page
+		},
+		cleanUp: function() {
+			// this is called before switching to another page,
+			// to remove any unneeded content that was created by `render`
+		},
+		init: function() {
+			// this is called when the page initially loads
+			// (in the future, it may be deferred until the view is visited
+			// for the first time)
+		}
+	},
 },
 errorView: {
 	className: 'errorMode',
 	render: function(id, query, type) {
 		setPath()
-		setTitle("[404] I DON'T KNOW WHAT A \""+type+"\" IS")
-		console.log(x)
+		setTitle("Unknown page type: \""+type+"\"")
 	}
 },
 getView: function(name) {
-	return views[name] || errorView
+	var view = views[name]
+	while (view && view.redirect) //danger!
+		view = views[view.redirect]
+	return view || errorView
 },
 
 setEntityTitle: function(entity) {
@@ -170,6 +227,8 @@ onLoad: function() {
 		views[n].name = n
 		if (views[n].init)
 			views[n].init()
+		// maybe we can just call these the first time the view is visited instead of right away,
+		// though none of them should really take a significant amount of time, so whatver
 	}
 }
 
