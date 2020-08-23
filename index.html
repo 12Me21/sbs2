@@ -2,57 +2,55 @@
 <meta charset="utf-8">
 <title>SmileBASIC Source 2</title>
 
-<meta name="viewport" content="width=device-width, initial-scale=1, height=device-height">
-
-<link rel="icon" sizes="16x16" href="resource/icon16.ico?a"> <!-- compatibility -->
-<link rel="shortcut icon" sizes="16x16" href="resource/icon16.png?a"> <!-- firefox -->
-<link rel="icon" sizes="32x32" href="resource/icon32.png?a"> <!-- chrome -->
-<link rel="icon" sizes="192x192" href="resource/iconbig.png?a"> <!-- large -->
-<link rel="apple-touch-icon" href="resource/iconbig.png?a"> <!-- large 2 -->
-<link rel="image_src" href="resource/iconbig.png?a"> <!-- large 3 -->
+<meta name=viewport content="width=device-width, initial-scale=1, height=device-height">
+<link rel=icon sizes=16x16 href='resource/icon16.ico'>
+<!-- compatibility -->
+<link rel="shortcut icon" sizes=16x16 href="resource/icon16.png"> <!-- firefox -->
+<link rel=icon sizes=32x32 href="resource/icon32.png"> <!-- chrome -->
+<link rel=icon sizes=192x192 href="resource/iconbig.png"> <!-- large -->
+<link rel=apple-touch-icon href="resource/iconbig.png"> <!-- large 2 -->
+<link rel=image_src href="resource/iconbig.png"> <!-- large 3 -->
 
 <!--START-->
-<!-- this is where files will be inlined -->
-<link rel="stylesheet" href="fonts.css">
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="markup.css">
-<link rel="stylesheet" href="code.css">
+<!-- this part will be replaced by the build script -->
+<link rel=stylesheet href=fonts.css>
+<link rel=stylesheet href=style.css>
+<link rel=stylesheet href=markup.css>
+<link rel=stylesheet href=code.css>
 
-<script src="fill.js"></script>
-<script src="entity.js"></script>
-<script src="request.js"></script>
+<script src=fill.js></script>
+<script src=entity.js></script>
+<script src=request.js></script>
 
 <script src="sbs2-markup/highlight.js"></script>
 <script src="sbs2-markup/parse.js"></script>
 <script src="sbs2-markup/render.js"></script>
-<script src="draw.js"></script>
 
-<script src="view.js"></script>
-<script src="navigate.js"></script>
+<script src=draw.js></script>
+<script src=view.js></script>
+<script src=navigate.js></script>
 
-<script src="main.js"></script>
+<script src=main.js></script>
 <!--END-->
-<body class="" id="$main">
+<body class="" id=$main>
 	<noscript>
 		This web-site requires JavaScript
 	</noscript>
-	<!--
-		 Nav bar
-	  -->
+	<!-- Nav bar -->
 	<nav class="navPane bar">
-		<a href="#" class="textItem"><img class="item" src="resource/iconbig.png?a" alt="SBS"></a> <span id="$navPane" class="path textItem"></span>
+		<a href="#" class="textItem"><img class="item" src="resource/iconbig.png" alt="SBS"></a> <span id=$navPane class="path textItem"></span>
 		<span class="rightAlign textItem">
-			<div class="buttonContainer item"><button id="$openSidebar">|||</button></div><!--<button id="$reload" class="item">Reload</button>--><!--<input id="$search" placeholder="Search" class="item">--><div class="loggedIn textItem" id="$loggedIn"><a class="item userLink" id="$myUserLink"><span class="myName username textItem" id="$myName" class="item"></span><img class="myAvatar item avatar" id="$myAvatar" alt=""></a></div>
+			<div class="buttonContainer item"><button id="$openSidebar">|||</button></div><!--<button id="$reload" class="item">Reload</button>--><!--<input id="$search" placeholder="Search" class="item">--><div class="loggedIn textItem" id=$loggedIn><a class="item userLink" id=$myUserLink><span class="myName username textItem" id=$myName class="item"></span><img class="myAvatar item avatar" id=$myAvatar alt=""></a></div>
 			<div class="loggedOut textItem"><a href="#login" class="textItem">Log In or Register</a></div>
 		</span>
 	</nav>
 	
 	<header class="titlePane bar rem2-3" id="$titlePane">
-		<span id="$pageTitle" class="textItem pageTitle"></span><span class="buttonContainer item categoryMode"><a id="$categoryCreatePage"><button tabindex="-1">Create Page</button></a></span><a class="textItem userMode loggedIn myUserPage" href="#usersettings">Settings</a><div class="buttonContainer item loggedIn myUserPage"><button id="$logout">Log Out</button></div><div id="$userPageStatus" class="textItem userMode"></div><input class="item editorMode" id="$titleInput" placeholder="Page Title" required><input class="item cateditMode" id="$cateditTitle" placeholder="Category Title" required><div class="buttonContainer item editorMode"><button id="$submitEdit" >Submit</button></div><span class="cateditMode textItem"><div class="buttonContainer item"><button id="$cateditSubmit">Submit</button></div></span><span class="textItem pageMode" id="$voteBox"><div class="buttonContainer item"><button id="$voteButton_b" class="voteButton" data-vote="b">Bad<br><span id="$voteCount_b">x</span></button></div><div class="buttonContainer item"><button id="$voteButton_o" class="voteButton" data-vote="o">Ok<br><span id="$voteCount_o">x</span></button></div><div class="buttonContainer item"><button id="$voteButton_g" class="voteButton" data-vote="g">Great<br><span id="$voteCount_g">x</span></button></div></span>
-		<label for="$watchCheck" class="textItem pageItem loggedIn">Watching:</label>
-		<input type="checkbox" id="$watchCheck" class="item pageItem loggedIn">
+		<span id=$pageTitle class="textItem pageTitle"></span><span class="buttonContainer item categoryMode"><a id="$categoryCreatePage"><button tabindex="-1">Create Page</button></a></span><a class="textItem userMode loggedIn myUserPage" href="#usersettings">Settings</a><div class="buttonContainer item loggedIn myUserPage"><button id="$logout">Log Out</button></div><div id=$userPageStatus class="textItem userMode"></div><input class="item editorMode" id="$titleInput" placeholder="Page Title" required><input class="item cateditMode" id=$cateditTitle placeholder="Category Title" required><div class="buttonContainer item editorMode"><button id="$submitEdit" >Submit</button></div><span class="cateditMode textItem"><div class="buttonContainer item"><button id="$cateditSubmit">Submit</button></div></span><span class="textItem pageMode" id=$voteBox><div class="buttonContainer item"><button id="$voteButton_b" class="voteButton" data-vote="b">Bad<br><span id=$voteCount_b>x</span></button></div><div class="buttonContainer item"><button id="$voteButton_o" class="voteButton" data-vote="o">Ok<br><span id=$voteCount_o>x</span></button></div><div class="buttonContainer item"><button id="$voteButton_g" class="voteButton" data-vote="g">Great<br><span id=$voteCount_g>x</span></button></div></span>
+		<label for=$watchCheck class="textItem pageItem loggedIn">Watching:</label>
+		<input type=checkbox id=$watchCheck class="item pageItem loggedIn">
 		<div class="pageCreate textItem rightAlign">
-			<span class="textItem" id="$authorBox"></span><div class="buttonContainer editorMode item"><button id="$deletePage">DELETE</button></div><div class="buttonContainer item canEdit"><a id="$editButton"><button tabindex="-1">Edit</button></a></div>
+			<span class="textItem" id=$authorBox></span><div class="buttonContainer editorMode item"><button id="$deletePage">DELETE</button></div><div class="buttonContainer item canEdit"><a id="$editButton"><button tabindex="-1">Edit</button></a></div>
 		</div>
 	</header>
 
@@ -152,9 +150,9 @@
 			</div>
 			
 			<!--
-				 These panes have the main content
-				 one of them will be visible at a time, depending on the view mode
-			  -->
+				  These panes have the main content
+				  one of them will be visible at a time, depending on the view mode
+			-->
 			
 			<main class="grow">
 				<div class="searchMode" id="$searchResults"></div>
@@ -190,7 +188,7 @@
 					</span>
 					<!-- here we can put
 						  tags, type, sb key info, etc.
-					  -->
+					-->
 				</div>
 				<div class="pageContents pre pageMode markup-root" id="$pageContents"></div>
 				<div class="editorPane editorMode">
@@ -245,9 +243,9 @@
 				<div class="settingsMode loggedIn">
 					<table class="form">
 						<tr><td><label for="$settingsOldPassword">Old Password: </label></td><td><input type="password" id="$settingsOldPassword" required=""><td></tr>
-						<tr><td><label for="$settingsUsername">New Username (Optional): </label></td><td><input autocomplete="off" id="$settingsUsername"></td></tr>
-						<tr><td><label for="$settingsNewPassword">New Password (Optional): </label></td><td><input autocomplete="new-password" type="password" id="$settingsNewPassword"></td></tr>
-						<tr><td><label for="$settingsEmail">New Email (Optional): </label></td><td><input autocomplete="off" type="email" id="$settingsEmail"></td></tr>
+							<tr><td><label for="$settingsUsername">New Username (Optional): </label></td><td><input autocomplete="off" id="$settingsUsername"></td></tr>
+							<tr><td><label for="$settingsNewPassword">New Password (Optional): </label></td><td><input autocomplete="new-password" type="password" id="$settingsNewPassword"></td></tr>
+							<tr><td><label for="$settingsEmail">New Email (Optional): </label></td><td><input autocomplete="off" type="email" id="$settingsEmail"></td></tr>
 					</table>
 					<button id="$submitUserSettings">Save</button>
 					<hr>
@@ -277,7 +275,7 @@
 				</div>
 				
 				<div class="bottomSpacer"></div>
-			
+				
 				<div id="$messageList" class="messageList chatMode grow"></div>
 			</main>
 			<div class="inputPane chatMode">
@@ -293,8 +291,8 @@
 				</table>
 			</div>
 			<!--
-				 Bottom of the page
-			  -->
+				  Bottom of the page
+			-->
 		</div>
 		<div id="$sidebar">
 			<div class="sidebarInside">
