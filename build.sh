@@ -2,7 +2,7 @@ cd -P -- "`dirname -- "$0"`"
 
 ./sbs2-markup/build.sh
 
-cat fonts.css style.css markup.css code.css > resource/_build.css
+cat resource/fonts.css style.css markup.css code.css > resource/_build.css
 cat sbs2-markup/_build.js fill.js entity.js request.js draw.js view.js navigate.js main.js > resource/_build.js
 
 date=`date +%s`
