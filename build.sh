@@ -1,5 +1,7 @@
 cd -P -- "`dirname -- "$0"`"
 
+./sbs2-markup/build.sh
+
 cat fonts.css style.css markup.css code.css > resource/_build.css
 cat sbs2-markup/sbhighlight.js sbs2-markup/parse.js sbs2-markup/render.js fill.js entity.js request.js draw.js view.js navigate.js main.js > resource/_build.js
 
@@ -9,15 +11,17 @@ sed '/<!--START-->/,/<!--END-->/c<link rel="stylesheet" href="resource/_build.cs
 
 # Instructions for humans:
 
-# 1: combine the contents of the files (in order):
+# 1: follow the instructions in sbs2-markup/build.sh
+
+# 2: combine the contents of the files (in order):
 #  fonts.css style.css markup.css code.css
 # into resource/_build.css
  
-# 2: combine the contents of the files (in order):
-#  sbs2-markup/sbhighlight.js sbs2-markup/parse.js sbs2-markup/render.js fill.js entity.js request.js draw.js view.js navigate.js main.js
+# 3: combine the contents of the files (in order):
+#  sbs2-markup/_build.js fill.js entity.js request.js draw.js view.js navigate.js main.js
 # into resource/_build.js
 
-# 3: open index.html
+# 4: open index.html
 # replace the lines between <!--START--> and <!--END--> with
 #  <link rel="stylesheet" href="_build.css?12345">
 #  <script src="_build.js?12345"></script>
