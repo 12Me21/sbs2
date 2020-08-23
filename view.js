@@ -165,6 +165,14 @@ flag: function(flag, state) {
 	}
 },
 
+onLoad: function() {
+	for (var n in views) {
+		views[n].name = n
+		if (views[n].init)
+			views[n].init()
+	}
+}
+
 <!--/* 
 }) //*/
 

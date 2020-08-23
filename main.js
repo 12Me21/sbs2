@@ -1,6 +1,6 @@
-window.onerror = function(message, source, line, col, error) {
+/*window.onerror = function(message, source, line, col, error) {
 	console.log("e")
-}
+}*/
 
 Req.onLogin = function() {
 	// display user info etc.
@@ -27,4 +27,6 @@ function ready() {
 	Req.tryLoadCachedAuth()
 	
 	Nav.initial()
+
+	View.onload()
 }
