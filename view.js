@@ -3,6 +3,12 @@ var View = Object.create(null)
 with (View) (function($) { "use strict"
 Object.assign(View, { //*/
 
+cancelRequest: null,
+// this will always be the currently rendered view
+// (set before `render` is called, and unset before `cleanUp` is called)
+// currentView.cleanUp should always be correct!
+currentView: null,
+
 // create public variables here
 views: {
 	"": {
@@ -49,6 +55,24 @@ views: {
 		cleanUp: function() { //todo: this probably needs more info to tell what next page is (so, whether to delete certain things)
 			$userPageAvatar.src = ""
 			$userPageContents.replaceChildren()
+		}
+	},
+	users: {
+		start: function(id, query, render) {
+			return $.Req.getUsersView(render)
+		},
+		className: 'membersMode',
+		render: function(users) {
+			setTitle("Users")
+			setPath([['users',"users"],null])
+			users.forEach(function(user) {
+				var bar = Draw.entityTitleLink(user)
+				bar.className += " categoryPage bar rem2-3"
+				$memberList.appendChild(bar)
+			})
+		},
+		cleanUp: function() {
+			$memberList.replaceChildren()
 		}
 	},
 	page: {
@@ -219,6 +243,67 @@ flag: function(flag, state) {
 		for (flag in flags)
 			cls += " f-"+flag
 		$.document.documentElement.className = cls
+	}
+},
+
+handleView: function(type, id, query) {
+	if (cancelRequest) {
+		cancelRequest()
+		cancelRequest = null
+	}
+	var view = getView(type)
+	
+	function cleanUp() {
+		if (currentView && currentView.cleanUp) {
+			try {
+				currentView.cleanUp()
+			} catch(e) {
+				console.error("error in cleanup function", e)
+			} finally {
+				currentView = null
+			}
+		}
+	}
+
+	var cancelled = false
+	if (view.start) {
+		loadStart()
+		var xhr = view.start(id, query, function() {
+			if (cancelled)
+				return
+			cleanUp()
+			currentView = view
+			try {
+				view.render.apply(null, arguments)
+			} catch(e) {
+				console.error("error in rendering function for "+type, e)
+			}
+			after()
+			loadEnd()
+		})
+	} else {
+		//(type is passed here so that the error page can display it)
+		cleanUp()
+		currentView = view
+		try {
+			view.render(id, query, type)
+		} catch(e) {
+			console.error("error in rendering function for "+type, e)
+		}
+		after()
+	}
+	
+	cancelRequest = function() {
+		loadEnd()
+		if (xhr && xhr.abort) {
+			xhr.abort()
+		}
+		cancelled = true
+	}
+
+	function after() {
+		$main.className = view.className
+		// todo: scroll to fragment element
 	}
 },
 

@@ -251,6 +251,16 @@ getChatView: function(id, callback) {
 	}, true)
 },
 
+getUsersView: function(callback) {
+	return read([
+		"user",
+	], {}, function(e, resp) {
+		if (!e) {
+			callback(resp.user)
+		}
+	}, true)
+},
+
 getPageView: function(id, callback) {
 	return read([
 		{content: {ids: [+id]}},

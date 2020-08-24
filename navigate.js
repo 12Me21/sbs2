@@ -4,12 +4,6 @@ with (Nav) void function($) { "use strict"
 Object.assign(Nav, { //*/
 
 currentPath: null,
-cancel: null,
-
-// this will always be the currently rendered view
-// (set before `render` is called, and unset before `cleanUp` is called)
-// currentView.cleanUp should always be correct!
-currentView: null,
 
 entityPath: function(entity) {
 	if (!entity)
@@ -75,65 +69,11 @@ decodePath: function(path) {
 },
 
 render: function(path) {
-	if (cancel) {
-		cancel()
-		cancel = null
-	}
 	var path = decodePath(path)
 	
-	var view = $.View.getView(path.type)
 	// todo: update url when view is redirected
-	var cancelled
-	function cleanUp() {
-		if (currentView && currentView.cleanUp) {
-			try {
-				currentView.cleanUp()
-			} catch(e) {
-				console.error("error in cleanup function", e)
-			} finally {
-				currentView = null
-			}
-		}
-	}
-	if (view.start) {
-		$.View.loadStart()
-		var xhr = view.start(path.id, path.query, function() {
-			if (cancelled)
-				return
-			cleanUp()
-			currentView = view
-			try {
-				view.render.apply(null, arguments)
-			} catch(e) {
-				console.error("error in rendering function for "+path.type, e)
-			}
-			after()
-			$.View.loadEnd()
-		})
-	} else {
-		//(type is passed here so that the error page can display it)
-		cleanUp()
-		currentView = view
-		try {
-			view.render(path.id, path.query, path.type)
-		} catch(e) {
-			console.error("error in rendering function for "+path.type, e)
-		}
-		after()
-	}
-	cancel = function() {
-		$.View.loadEnd()
-		if (xhr && xhr.abort) {
-			xhr.abort()
-		}
-		cancelled = true
-	}
-	function after() {
-		$main.className = view.className
-		// todo: scroll to fragment element
-	}
+	$.View.handleView(path.type, path.id, path.query)
 },
-
 <!--/* 
 }) //*/
 
