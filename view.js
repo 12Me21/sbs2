@@ -21,11 +21,21 @@ views: {
 			setTitle(text)
 		}
 	},
-	login: {
-		className: 'registerMode',
+	settings: {
+		className: 'settingsMode',
 		render: function() {
 			setPath()
-			setTitle("Log-in or Create an Account")
+			setTitle("Log-in or Create an Account OR settings ...")
+		},
+		init: function() {
+			$loginForm.login.onclick = function(e) {
+				e.preventDefault()
+				Req.authenticate($loginForm.username.value, $loginForm.password.value, function(e, resp) {
+				})
+			}
+			$logOut.onclick = function(e) {
+				Req.logOut()
+			}
 		}
 	},
 	test: {
@@ -73,6 +83,10 @@ views: {
 		},
 		cleanUp: function() {
 			$memberList.replaceChildren()
+		},
+		init: function() {
+			var nav = $memberNav
+			nav.appendChild(Draw.navButtons())
 		}
 	},
 	page: {
@@ -124,6 +138,10 @@ views: {
 			$categoryCategories.replaceChildren()
 			$categoryPages.replaceChildren()
 			$categoryDescription.replaceChildren()
+		},
+		init: function() {
+			var nav = $categoryNav
+			nav.appendChild(Draw.navButtons())
 		}
 	},
 	pages: {
@@ -308,6 +326,16 @@ handleView: function(type, id, query) {
 },
 
 onLoad: function() {
+	document.querySelectorAll("a[data-static-path]").forEach(function(elem) {
+		Nav.link(elem.getAttribute('data-static-path'), elem)
+	})
+	/*document.querySelectorAll("button").forEach(function(button) {
+		var container = document.createElement("div")
+		container.className = "buttonContainer"
+		button.parentNode.replaceChild(container, button)
+		container.appendChild(button)
+	})*/
+	
 	for (var n in views) {
 		views[n].name = n
 		if (views[n].init)

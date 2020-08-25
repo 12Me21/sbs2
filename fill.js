@@ -21,3 +21,7 @@ if (!HTMLElement.prototype.replaceChildren)
 		if (child)
 			this.appendChild(child)
 	}
+
+
+if (!NodeList.prototype.forEach)
+	NodeList.prototype.forEach = Array.prototype.forEach

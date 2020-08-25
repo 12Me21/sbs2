@@ -64,7 +64,7 @@ sub {vertical-align: sub;}
 }
 
 .avatar {
-	border: 1px inset white;
+	border: 1px solid white;
 }
 .spacer {
 	-webkit-flex-grow: 1;

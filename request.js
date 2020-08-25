@@ -203,6 +203,16 @@ handle: function(resp) {
 	Entity.process(resp)
 },
 
+getMe: function(callback) {
+	return request("User/me", 'GET', function(e, resp) {
+		if (!e) {
+			var l = [resp]
+			Entity.processList('user',l,{})
+			callback(l[0])
+		}
+	})
+},
+
 getCategories: function(callback) {
 	return read([],{},callback,true)
 },
