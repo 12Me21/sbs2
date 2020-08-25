@@ -21,10 +21,15 @@ largeIcon: function(entity) {
 },
 
 // icon + name
-iconTitle: function(entity) {
+iconTitle: function(entity, reverse) {
 	var element = document.createDocumentFragment()
-	element.appendChild(icon(entity))
-	element.appendChild(title(entity))
+	if (reverse) {
+		element.appendChild(title(entity))
+		element.appendChild(icon(entity))
+	} else {
+		element.appendChild(icon(entity))
+		element.appendChild(title(entity))
+	}
 	return element
 },
 
@@ -41,16 +46,17 @@ entityLink: function(entity) {
 pageBar: function(page) {
 	var bar = entityTitleLink(page)
 	if (page.createUser) {
-		var usr = entityTitleLink(page.createUser)
+		var usr = entityTitleLink(page.createUser, true)
 		usr.className += " rightAlign"
 		bar.appendChild(usr)
 	}
 	return bar
 },
 
-entityTitleLink: function(entity) {
+entityTitleLink: function(entity, reverse) {
 	var element = entityLink(entity)
-	element.appendChild(iconTitle(entity))
+	var icon = iconTitle(entity, reverse)
+	element.appendChild(icon)
 	return element
 },
 
@@ -82,6 +88,8 @@ iconURL: function(entity) {
 icon: function(entity, element) {
 	element = element || document.createElement('img')
 	element.className = "item icon" // todo: force width to avoid jump when loading
+	if (entity.type == 'user')
+		element.className += " avatar"
 	element.src = iconURL(entity)
 	return element
 },
@@ -154,6 +162,29 @@ timeString: function(date) {
 	return date.toLocaleString([], options)
 },
 
+button: function() {
+	var container = document.createElement("div")
+	container.className = "buttonContainer"
+	var button = document.createElement("button")
+	container.appendChild(button)
+	return [container, button]
+},
+
+navButtons: function(callback) {
+	var prev = button()
+	prev[0].className += " item"
+	var next = button()
+	next[0].className += " item"
+	var page = textItem()
+	prev[1].textContent = "<"
+	next[1].textContent = ">"
+	page.textContent = 1
+	var e = document.createDocumentFragment()
+	e.appendChild(prev[0])
+	e.appendChild(next[0])
+	e.appendChild(page)
+	return e
+}
 
 <!--/* 
 }) //*/
