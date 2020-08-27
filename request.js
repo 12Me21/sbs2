@@ -217,16 +217,23 @@ getCategories: function(callback) {
 	return read([],{},callback,true)
 },
 
+// takes a number or a string
 getUserView: function(id, callback) {
+	if (typeof id == 'number')
+		var userSearch = {ids: [id], limit: 1}
+	else
+		var userSearch = {usernames: [id], limit: 1}
+	
 	return read([
-		{user: {ids: [id]}},
-		{"content~Puserpage": {createUserIds: [id], type: '@user.page', limit: 1}},
-		{activity: {userIds: [id], limit: 20, reverse: true}},
-		{commentaggregate: {userIds: [id], limit: 100, reverse: true}},
+		{"user": userSearch},
+		{"content.0id$createUserIds~Puserpage": {type: '@user.page', limit: 1}},
+		{"activity.0id$userIds": {limit: 20, reverse: true}},
+		{"commentaggregate.0id$userIds": {limit: 100, reverse: true}},
 		"content.2contentId.3id"
 	],{},function(e, resp) {
+		console.log(resp)
 		if (!e) {
-			var user = resp.userMap[id]
+			var user = resp.user[0]
 			if (user) {
 				callback(user, resp.Puserpage[0], resp.activity, resp.commentaggregate, resp.content)
 			} else {

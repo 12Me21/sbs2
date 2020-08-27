@@ -47,6 +47,10 @@ views: {
 	},
 	user: {
 		start: function(id, query, render) {
+			if (typeof id == 'string' && id[0] == "@")
+				id = id.substr(1)
+			// todo: maybe username without @ should be invalid?
+			// can potentially collide with id numbers
 			return $.Req.getUserView(id, render)
 		},
 		className: 'userMode',
@@ -329,12 +333,14 @@ onLoad: function() {
 	document.querySelectorAll("a[data-static-path]").forEach(function(elem) {
 		Nav.link(elem.getAttribute('data-static-path'), elem)
 	})
-	/*document.querySelectorAll("button").forEach(function(button) {
+	document.querySelectorAll("button").forEach(function(button) {
 		var container = document.createElement("div")
 		container.className = "buttonContainer"
 		button.parentNode.replaceChild(container, button)
+		container.className += " "+button.className
+		button.className = ""
 		container.appendChild(button)
-	})*/
+	})
 	
 	for (var n in views) {
 		views[n].name = n
@@ -343,7 +349,23 @@ onLoad: function() {
 		// maybe we can just call these the first time the view is visited instead of right away,
 		// though none of them should really take a significant amount of time, so whatver
 	}
-}
+
+	$openSidebar.onclick = $closeSidebar.onclick = toggleSidebar
+},
+
+toggleSidebar: function() {
+	var fullscreen = isFullscreenSidebar()
+	if (fullscreen) {
+		flag('mobileSidebar', !flags.mobileSidebar)
+	} else {
+		flag('sidebar', !flags.sidebar)
+		localStorage.setItem('sbs-sidebar', !!flags.sidebar)
+	}
+},
+
+isFullscreenSidebar: function() {
+	return !$.matchMedia || $.matchMedia("(max-width: 700px)").matches
+},
 
 <!--/* 
 }) //*/
@@ -358,3 +380,12 @@ var x = views
 
 
 //todo: rename resource to avoid collision with request.js
+
+// todo: id can be a string now,
+// so, we need to test if it is valid + in range (positive) in many places
+// and handle invalid ids consistently
+// so now there are 4 error conditions
+// unknown page type
+// connection error
+// resource not found
+// invalid id

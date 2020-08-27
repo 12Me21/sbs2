@@ -62,7 +62,11 @@ parsePath: function(path) {
 decodePath: function(path) {
 	path = parsePath(path)
 	var type = path.path[0] || ""
-	var id = +path.path[1] || 0
+	var id = path.path[1]
+	if (id != undefined) {
+		if (/^-?\d+$/.test(id))
+			id = +id
+	}
 	path.id = id
 	path.type = type
 	return path

@@ -783,7 +783,7 @@ html:not(.f-myUserPage) .myUserPage {
  **********/
 .voteButton[data-selected] {
 	background-color: lime;
-}
+} /* TODO FIX */
 
 /* hecko yo */
 .pageContents {

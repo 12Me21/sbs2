@@ -12,18 +12,22 @@ gotNewCategory: false,
 process: function(resp) {
 	// build user map first
 	var users = {}
-	if (resp.user) {
-		processList('user', resp.user, users)
-		resp.user.forEach(function(user) {
-			users[user.id] = user
-		})
+	for (var key in resp) {
+		var type = keyType(key)
+		if (type == 'user') {
+			processList(type, resp[key], users)
+			resp[key].forEach(function(user) {
+				users[user.id] = user
+			})
+		}
 	}
 	if (resp.Ctree) {
 		processList('category', resp.Ctree, users)
 	}
 	for (var key in resp) {
-		if (key != 'user' && key != 'Ctree')
-			processList(keyType(key), resp[key], users)
+		var type = keyType(key)
+		if (type != 'user' && key != 'Ctree')
+			processList(type, resp[key], users)
 	}
 	if (gotNewCategory)
 		rebuildCategoryTree()
