@@ -5,6 +5,8 @@ Object.assign(Nav, { //*/
 
 currentPath: null,
 
+initialPop: false,
+
 entityPath: function(entity) {
 	if (!entity)
 		return
@@ -18,19 +20,37 @@ entityPath: function(entity) {
 
 link: function(path, element) {
 	element = element || $.document.createElement('a')
-	element.href = "#"+path
+	element.href = "?"+path
+	element.onclick = function(e) {
+		e.preventDefault()
+		go(path)
+	}
 	return element
 },
 
 go: function(path) {
-	$.location.hash = "#"+path
+	$.history.pushState(null, "", "?"+path)
+	render(path)
 },
 
 // called when site loads to load the initial page
 // should read window.location and
 // eventually call `render`
 initial: function() {
-	$.onhashchange()
+	// bad browsers will trigger popstate event
+	// whenever the page loads
+	// (not just from back/forward buttons)
+	// this SHOULD happen before DOMContentLoaded,
+	// and if it does, cancel the initial loader
+	// if it happens AFTER DOMContentLoaded then you're basically fucked though
+	if (initialPop)
+		return
+	initialPop = true
+	updateFromLocation()
+},
+
+updateFromLocation: function() {
+	render($.location.search.substr(1))
 },
 
 parsePath: function(path) {
@@ -81,8 +101,9 @@ render: function(path) {
 <!--/* 
 }) //*/
 
-$.onhashchange = function() {
-	render($.location.hash.substr(1))
+$.onpopstate = function() {
+	initialPop = true
+	updateFromLocation()
 }
 
 <!--/*
