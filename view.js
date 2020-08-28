@@ -55,8 +55,6 @@ views: {
 		},
 		className: 'userMode',
 		render: function(user, userpage, activity, ca, content) {
-			if (!user)
-				return //er
 			setEntityTitle(user)
 			$userPageAvatarLink.href = Req.fileURL(user.avatar)
 			$userPageAvatar.src = Req.fileURL(user.avatar, "size=400&crop=true")
@@ -99,9 +97,6 @@ views: {
 		},
 		className: 'pageMode',
 		render: function(page) {
-			if (!page)
-				return
-			//todo: some kind of common error handler?
 			setEntityTitle(page)
 			setEntityPath(page)
 			$pageContents.replaceChildren(Parse.parseLang(page.content, page.values.markupLang))
@@ -116,8 +111,6 @@ views: {
 		},
 		className: 'categoryMode',
 		render: function(category, cats, pages, pinned) {
-			if (!category)
-				return
 			setEntityTitle(category)
 			setEntityPath(category)
 			$categoryDescription.replaceChildren(Parse.parseLang(category.description, category.values.markupLang))
@@ -206,16 +199,16 @@ views: {
 },
 errorView: {
 	className: 'errorMode',
-	render: function(id, query, type) {
+	render: function(message) {
 		setPath()
-		setTitle("Unknown page type: \""+type+"\"")
+		setTitle(message)
 	}
 },
 getView: function(name) {
 	var view = views[name]
 	while (view && view.redirect) //danger!
 		view = views[view.redirect]
-	return view || errorView
+	return view
 },
 
 setEntityTitle: function(entity) {
@@ -288,30 +281,50 @@ handleView: function(type, id, query) {
 	}
 
 	var cancelled = false
-	if (view.start) {
+	if (!view) {
+		cleanUp()
+		errorRender("Unknown page type: \""+type+"\"")
+	} else if (view.start) {
 		loadStart()
-		var xhr = view.start(id, query, function() {
+		var xhr = view.start(id, query, function(ok) {
 			if (cancelled)
 				return
 			cleanUp()
-			currentView = view
-			try {
-				view.render.apply(null, arguments)
-			} catch(e) {
-				console.error("error in rendering function for "+type, e)
+			if (!ok) {
+				if (ok == false)
+					var msg = "error 1"
+				else
+					var msg = "content not found?"
+				errorRender(msg)
+			} else {
+				currentView = view
+				try {
+					view.render.apply(null, arguments)
+					after()
+				} catch(e) {
+					// cleanUp() maybe?
+					errorRender("render failed")
+				}
 			}
-			after()
 			loadEnd()
 		})
 	} else {
-		//(type is passed here so that the error page can display it)
+		loadStart()
 		cleanUp()
 		currentView = view
 		try {
-			view.render(id, query, type)
+			view.render(id, query)
+			after()
 		} catch(e) {
-			console.error("error in rendering function for "+type, e)
+			errorRender("render failed")
 		}
+		loadEnd()
+	}
+
+	function errorRender(message) {
+		cleanUp()
+		currentView = view = errorView
+		view.render(message)
 		after()
 	}
 	
