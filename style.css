@@ -129,7 +129,6 @@ html {
 	overflow: hidden;
 	box-sizing: content-box;
 	-webkit-box-sizing: content-box;
-	/*padding: 0 0.5rem !important;*/
 	/* set min-height */
 }
 /*.bar > img:first-child, .bar > .iconBg:first-child {
@@ -301,7 +300,6 @@ html.f-loggedIn .loggedOut {
 	-webkit-flex-shrink: 0;
 	flex-shrink: 0;
 	background-color: #DDD;
-	padding: 0 0.1rem;
 	border-bottom: 2px solid black;
 	background: linear-gradient(#D8D8D8,#E8E8E8);
 }
@@ -413,13 +411,9 @@ main {
 .categoryPage {
 	font-weight: bold;
 	background-color: #EEE;
-	padding-left: 0.4rem;
 }
 .categoryPage, .categoryDescription, .member {
 	border-bottom: 1px solid gray;
-}
-.categoryPage .username {
-	padding: 0 0.4rem;
 }
 
 .rem1-7 {

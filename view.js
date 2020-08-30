@@ -55,6 +55,8 @@ views: {
 		},
 		className: 'userMode',
 		render: function(user, userpage, activity, ca, content) {
+			if (user.id == Req.uid)
+				flag('myUserPage', true)
 			setEntityTitle(user)
 			$userPageAvatarLink.href = Req.fileURL(user.avatar)
 			$userPageAvatar.src = Req.fileURL(user.avatar, "size=400&crop=true")
@@ -97,6 +99,7 @@ views: {
 		},
 		className: 'pageMode',
 		render: function(page) {
+			Nav.link("chat/"+page.id, $pageChatLink)
 			setEntityTitle(page)
 			setEntityPath(page)
 			$pageContents.replaceChildren(Parse.parseLang(page.content, page.values.markupLang))
@@ -130,11 +133,15 @@ views: {
 				bar.className += " categoryPage bar rem2-3"
 				$categoryPages.appendChild(bar)
 			})
+			$.Nav.link("editpage?cid="+category.id,$createPage)
+			if (/u/.test(category.myPerms))
+				flag('canEdit', true)
 		},
 		cleanUp: function() {
 			$categoryCategories.replaceChildren()
 			$categoryPages.replaceChildren()
 			$categoryDescription.replaceChildren()
+			flag('canEdit', false)
 		},
 		init: function() {
 			var nav = $categoryNav
@@ -150,19 +157,24 @@ views: {
 		},
 		className: 'chatMode',
 		render: function(page, comments) {
-			console.log(page)
+			Nav.link("page/"+page.id, $pagePageLink)
 			setEntityTitle(page)
 			setEntityPath(page)
 			var lastUid = NaN
-			var lastBlock;
+			var lastBlock
+			var lastTime = 0
 			comments.forEach(function(comment) {
+				if (comment.deleted)
+					return
 				var uid = comment.createUserId
-				if (!lastBlock || uid != lastUid) {
+				if (!lastBlock || uid != lastUid || comment.createDate-lastTime > 1000*60*5) {
 					lastBlock = Draw.messageBlock(comment.createUser, comment.createDate)
 					$messageList.appendChild(lastBlock[0])
+					//lastTime = comment.createDate
 				}
 				lastBlock[1].appendChild(Draw.messagePart(comment))
 				lastUid = uid
+				lastTime = comment.createDate
 			})
 		},
 		cleanUp: function() {
@@ -261,7 +273,7 @@ flag: function(flag, state) {
 	}
 },
 
-handleView: function(type, id, query) {
+handleView: function(type, id, query, callback) {
 	if (cancelRequest) {
 		cancelRequest()
 		cancelRequest = null
@@ -304,6 +316,7 @@ handleView: function(type, id, query) {
 				} catch(e) {
 					// cleanUp() maybe?
 					errorRender("render failed")
+					console.error(e)
 				}
 			}
 			loadEnd()
@@ -338,6 +351,7 @@ handleView: function(type, id, query) {
 
 	function after() {
 		$main.className = view.className
+		callback && callback()
 		// todo: scroll to fragment element
 	}
 },

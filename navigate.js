@@ -29,7 +29,9 @@ link: function(path, element) {
 },
 
 go: function(path) {
+	currentPath = path
 	$.history.pushState(null, "", "?"+path)
+	// todo: maybe try to update page only after page loads
 	render(path)
 },
 
@@ -50,7 +52,9 @@ initial: function() {
 },
 
 updateFromLocation: function() {
-	render($.location.search.substr(1))
+	var path = $.location.search.substr(1)
+	currentPath = path
+	render(path)
 },
 
 parsePath: function(path) {
@@ -92,11 +96,11 @@ decodePath: function(path) {
 	return path
 },
 
-render: function(path) {
+render: function(path, after) {
 	var path = decodePath(path)
 	
 	// todo: update url when view is redirected
-	$.View.handleView(path.type, path.id, path.query)
+	$.View.handleView(path.type, path.id, path.query, after)
 },
 <!--/* 
 }) //*/

@@ -86,6 +86,8 @@ processItem: {
 			var m = decodeComment(data.content)
 			data.content = m.t
 			data.meta = m
+		} else { // deleted comment usually
+			data.meta = {}
 		}
 		return data
 	},
@@ -138,7 +140,7 @@ decodeComment: function(content) {
 			if (newline >= 0)
 				data.t = content.substr(newline+1) // new format
 		} else // raw
-			data = {t: content}
+			data = {t: String(content)}
 		return data
 	}
 },

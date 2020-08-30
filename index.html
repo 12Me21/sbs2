@@ -46,11 +46,35 @@
 	</nav>
 	
 	<header class="titlePane bar rem2-3" id="$titlePane">
-		<span id=$pageTitle class="textItem pageTitle"></span><button class="item categoryMode" tabindex="-1">Create Page</button><a class="textItem userMode loggedIn myUserPage" id=$userPageSettingsLink>Settings</a><div class="item loggedIn myUserPage"><div id=$userPageStatus class="textItem userMode"></div><input class="item editorMode" id="$titleInput" placeholder="Page Title" required><input class="item cateditMode" id=$cateditTitle placeholder="Category Title" required><button class="item editorMode" id=$submitEdit>Submit</button><span class="cateditMode textItem"><button class="item" id=$cateditSubmit>Submit</button></span><span class="textItem pageMode" id=$voteBox><button class="item" id=$voteButton_b data-vote="b">Bad<br><span id=$voteCount_b>x</span></button><button id="$voteButton_o" class="item" data-vote="o">Ok<br><span id=$voteCount_o>x</span></button><button id="$voteButton_g" class="item" data-vote="g">Great<br><span id=$voteCount_g>x</span></button></span>
+		<span id=$pageTitle class="textItem pageTitle"></span>
+		
+		<a class="item pageMode" id=$pageChatLink>Chat</a>
+		<a class="item chatMode" id=$pagePageLink>Page</a>
+		<a class="textItem userMode loggedIn myUserPage" data-static-path=settings>Settings</a>
+		
+		<a id=$createPage class="item categoryMode">Create Page</a>
+		
+		
+		<div class="item loggedIn myUserPage">
+			<div id=$userPageStatus class="textItem userMode"></div>
+		</div>
+		<input class="item editorMode" id="$titleInput" placeholder="Page Title" required>
+		<input class="item cateditMode" id=$cateditTitle placeholder="Category Title" required>
+		<button class="item editorMode" id=$submitEdit>Submit</button>
+		<span class="cateditMode textItem">
+			<button class="item" id=$cateditSubmit>Submit</button>
+		</span>
+		<span class="textItem pageMode" id=$voteBox>
+			<button class="item" id=$voteButton_b data-vote="b">Bad<br><span id=$voteCount_b>x</span></button>
+			<button id="$voteButton_o" class="item" data-vote="o">Ok<br><span id=$voteCount_o>x</span></button>
+			<button id="$voteButton_g" class="item" data-vote="g">Great<br><span id=$voteCount_g>x</span></button>
+		</span>
 		<label for=$watchCheck class="textItem pageItem loggedIn">Watching:</label>
 		<input type=checkbox id=$watchCheck class="item pageItem loggedIn">
 		<div class="pageCreate textItem rightAlign">
-			<span class="textItem" id=$authorBox></span><button class="editorMode item" id="$deletePage">DELETE</button><button tabindex="-1" class="item canEdit">Edit</button></div>
+			<span class="textItem" id=$authorBox></span>
+			<button class="editorMode item" id="$deletePage">DELETE</button>
+			<button tabindex="-1" class="item canEdit">Edit</button>
 		</div>
 	</header>
 
@@ -149,13 +173,13 @@
 
 				<div class="pageInfoPane pageMode px40" id="$pageInfoPane">
 					<span id="$gallery" class="gallery" style="display:none;">
-					<span class="metaInfo">
-						<span id="$metaKey" class="textItem"></span>
-						<span id="$sbapiInfo" class="textItem"></span>
-					</span>
-					<!-- here we can put
-						  tags, type, sb key info, etc.
-					-->
+						<span class="metaInfo">
+							<span id="$metaKey" class="textItem"></span>
+							<span id="$sbapiInfo" class="textItem"></span>
+						</span>
+						<!-- here we can put
+							  tags, type, sb key info, etc.
+						-->
 				</div>
 				<div class="pageContents pre pageMode markup-root" id="$pageContents"></div>
 				<div class="editorPane editorMode">
@@ -221,12 +245,9 @@
 					<label for="$settingsUserJS">User JS:</label><br>
 					<textarea id="$settingsUserJS"></textarea><br>
 					<button id="$saveUserJS">Save</button>
-
 				</div>
 
-				<div class="activityMode" id="$activity">
-				</div>
-
+				<div class="activityMode" id="$activity"></div>
 
 				<div class="fileMode fileViewPane grow">
 					<img id="$fileView" class="fileView">
@@ -237,8 +258,6 @@
 					<button id="$testButton">Run</button><br>
 					<div id="$testOut" class="pre"></div>
 				</div>
-				
-				<div class="bottomSpacer"></div>
 				
 				<div id="$messageList" class="messageList chatMode grow"></div>
 			</main>
@@ -261,7 +280,6 @@
 		<div id="$sidebar">
 			<div class="sidebarInside">
 				<button class="closeSidebar" id=$closeSidebar>Close Sidebar</button>
-				
 				<div id="$sidebarPinned"></div>
 				
 				<div id="$sidebarPinnedResize" class="resize">resize</div>
