@@ -1,4 +1,9 @@
-cd -P -- "`dirname -- "$0"`"
+if [ "$1" ]
+then
+	dest="$(readlink -f "$1")"
+fi
+
+cd "$(dirname "$0")"
 
 ./sbs2-markup/build.sh
 
@@ -8,6 +13,19 @@ cat sbs2-markup/_build.js fill.js entity.js request.js draw.js view.js navigate.
 date=`date +%s`
 sed '/<!--START-->/,/<!--END-->/c<link rel="stylesheet" href="resource/_build.css?'"$date"'">\
 <script src="resource/_build.js?'"$date"'"></script>' index.html > _build.html
+
+if [ "$1" ]
+then
+	if [ -f "$dest" ]
+	then
+		cp -v -r resource "$(dirname "$dest")"/resource
+		cp -v _build.html "$dest"
+	else
+		mkdir -vp "$dest"
+		cp -v -r resource "$dest"/
+		cp -v _build.html "$dest"/index.html
+	fi
+fi
 
 # Instructions for humans:
 
@@ -27,5 +45,9 @@ sed '/<!--START-->/,/<!--END-->/c<link rel="stylesheet" href="resource/_build.cs
 #  <script src="_build.js?12345"></script>
 # replace the "12345"s with any random number (use a different one each time you build this))
 # save as _build.html
+
+# 5: copy these files to wherever you're hosting the site from:
+#  _build.html resource/
+# _build.html can be renamed
 
 # maybe later I'll make a powershell script for this or something
