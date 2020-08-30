@@ -203,6 +203,7 @@ body:not(.pageMode) .pageMode,
 body:not(.chatMode) .chatMode,
 body:not(.editorMode) .editorMode,
 body:not(.categoryMode) .categoryMode,
+body:not(.pageMode):not(.categoryMode) .pathMode,
 body:not(.navMode) .navMode,
 body:not(.userMode) .userMode,
 body:not(.membersMode) .membersMode,
@@ -236,28 +237,20 @@ body {
 /*************
  ** Top Bar **
  *************/
-.navPane {
-	-webkit-flex-shrink: 0;
-	flex-shrink: 0;
-	min-height: 1.5rem;
-	background-color: #333;
-	-webkit-transition: background-color 0.1s ease;
-	transition: background-color 0.1s ease;
-}
 
-.navPane a {
+.titlePane a {
 	color: #BCF;
 }
 
-.navPane a:hover {
+.titlePane a:hover {
 	color: #9AF;
 }
 
-html.f-loading .navPane {
+html.f-loading .loadBG {
 	background-color: rgb(0,150,136);
 }
 
-html.f-error .navPane {
+html.f-error .loadBG {
 	background-color: #800;
 }
 
@@ -284,13 +277,17 @@ html.f-loggedIn .loggedOut {
 	margin: 0 0.5rem;
 }
 
-.path {
-	font-weight: bold;
-	color: white;
-}
-
 .pathSeparator {
 	padding: 0 0.2rem;
+}
+
+.pathBar {
+	border-bottom: 1px solid black;
+	font-weight: bold;
+}
+
+.pageWhatever {
+	border-bottom: 1px solid gray;
 }
 
 /****************
@@ -299,9 +296,11 @@ html.f-loggedIn .loggedOut {
 .titlePane {
 	-webkit-flex-shrink: 0;
 	flex-shrink: 0;
-	background-color: #DDD;
-	border-bottom: 2px solid black;
-	background: linear-gradient(#D8D8D8,#E8E8E8);
+	/*border-bottom: 2px ridge black;*/
+	background-color: #333;
+	-webkit-transition: background-color 0.1s ease;
+	transition: background-color 0.1s ease;
+	color: white;
 }
 
 .titlePane .iconBg {
@@ -323,8 +322,7 @@ html:not(.f-canEdit) .canEdit {
 }
 
 .errorMode .titlePane {
-	background-color: pink;
-	color: maroon;
+	color: pink;
 	font-family: monospace;
 }
 

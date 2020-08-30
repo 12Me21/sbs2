@@ -36,23 +36,17 @@
 	<noscript>
 		This web-site requires JavaScript
 	</noscript>
-	<!-- Nav bar -->
-	<nav class="navPane bar">
-		<a data-static-path="" class="textItem"><img class="item" src="resource/iconbig.png" alt="SBS"></a> <span id=$navPane class="path textItem"></span>
-		<span class="rightAlign textItem">
-			<button id=$openSidebar class="item">|||</button><!--<button id="$reload" class="item">Reload</button>--><!--<input id="$search" placeholder="Search" class="item">--><div class="loggedIn textItem" id=$loggedIn><a class="item userLink" id=$myUserLink><span class="myName username textItem" id=$myName class="item"></span><img class="myAvatar item avatar" id=$myAvatar alt=""></a></div>
-			<div class="loggedOut textItem"><a data-static-path=settings class="textItem">Log In or Register</a></div>
-		</span>
-	</nav>
 	
-	<header class="titlePane bar rem2-3" id="$titlePane">
+	<header class="titlePane bar rem2-3 loadBG" id="$titlePane">
+		<a data-static-path="" class="textItem"><img class="item" src="resource/iconbig.png" alt="SBS"></a>
+		
 		<span id=$pageTitle class="textItem pageTitle"></span>
 		
 		<a class="item pageMode" id=$pageChatLink>Chat</a>
 		<a class="item chatMode" id=$pagePageLink>Page</a>
 		<a class="textItem userMode loggedIn myUserPage" data-static-path=settings>Settings</a>
 		
-		<a id=$createPage class="item categoryMode">Create Page</a>
+		
 		
 		
 		<div class="item loggedIn myUserPage">
@@ -64,22 +58,20 @@
 		<span class="cateditMode textItem">
 			<button class="item" id=$cateditSubmit>Submit</button>
 		</span>
-		<span class="textItem pageMode" id=$voteBox>
-			<button class="item" id=$voteButton_b data-vote="b">Bad<br><span id=$voteCount_b>x</span></button>
-			<button id="$voteButton_o" class="item" data-vote="o">Ok<br><span id=$voteCount_o>x</span></button>
-			<button id="$voteButton_g" class="item" data-vote="g">Great<br><span id=$voteCount_g>x</span></button>
-		</span>
 		<label for=$watchCheck class="textItem pageItem loggedIn">Watching:</label>
 		<input type=checkbox id=$watchCheck class="item pageItem loggedIn">
 		<div class="pageCreate textItem rightAlign">
 			<span class="textItem" id=$authorBox></span>
 			<button class="editorMode item" id="$deletePage">DELETE</button>
 			<button tabindex="-1" class="item canEdit">Edit</button>
+			<button id=$openSidebar class="item">|||</button>
 		</div>
 	</header>
 
 	<div class="sideBarContainer grow" id="$sidebarContainer">
 		<div class="m grow" id="$m">
+			<div class="pathMode pathBar" id=$path></div>
+			
 			<div class="infoPane editorMode">
 				<label for="$keywords">Keywords:</label><input placeholder="(space separated, optional)" id="$keywords"><br>
 				<label for="$editPageType">Type:</label><input placeholder="@" id="$editPageType"><br>
@@ -146,7 +138,7 @@
 				<a id=$userPageAvatarLink><img id=$userPageAvatar class="userPageAvatar avatar" alt=""></a>
 				<div class="pageContents pre userPageContents markup-root" id=$userPageContents></div>
 			</div>
-			
+
 			<!--
 				  These panes have the main content
 				  one of them will be visible at a time, depending on the view mode
@@ -166,12 +158,24 @@
 				<div id="$categoryDescription" class="categoryDescription pre pageContents categoryMode markup-root"></div>
 				<div id="$categoryCategories" class="categoryMode"></div>
 				<div id="$categoryPinned" class="categoryMode"></div>
-				<div class="categoryMode categoryNav rem1-7 bar" id=$categoryNav></div>
+				<div class="categoryMode categoryNav rem1-7 bar">
+					<span id=$categoryNav></span>
+					<a id=$createPage class="item categoryMode">Create Page</a>
+				</div>
 				<div id="$categoryPages" class="categoryPages categoryMode"></div>
 
 				<div class="userActivity userMode" id="$userActivity"></div>
 
+				<div class="pageMode pageWhatever">
+					<span class="textItem pageMode" id=$voteBox>
+						<button class="item" id=$voteButton_b data-vote="b">Bad<br><span id=$voteCount_b>x</span></button>
+						<button id="$voteButton_o" class="item" data-vote="o">Ok<br><span id=$voteCount_o>x</span></button>
+						<button id="$voteButton_g" class="item" data-vote="g">Great<br><span id=$voteCount_g>x</span></button>
+					</span>
+				</div>
+				
 				<div class="pageInfoPane pageMode px40" id="$pageInfoPane">
+					
 					<span id="$gallery" class="gallery" style="display:none;">
 						<span class="metaInfo">
 							<span id="$metaKey" class="textItem"></span>
@@ -279,6 +283,15 @@
 		</div>
 		<div id="$sidebar">
 			<div class="sidebarInside">
+			<div class="loggedIn textItem" id=$loggedIn>
+				<a class="item userLink" id=$myUserLink>
+					<span class="myName username textItem" id=$myName class="item">
+					</span>
+					<img class="myAvatar item avatar" id=$myAvatar alt="">
+				</a>
+			</div>
+			<div class="loggedOut textItem"><a data-static-path=settings class="textItem">Log In or Register</a></div>
+				
 				<button class="closeSidebar" id=$closeSidebar>Close Sidebar</button>
 				<div id="$sidebarPinned"></div>
 				

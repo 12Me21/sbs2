@@ -14,7 +14,6 @@ views: {
 	"": {
 		className: 'homeMode',
 		render: function() {
-			setPath()
 			var text = "Welcome to SmileBASIC Source 2!"
 			//var index = $.Math.random()*(text.length-1)|0
 			//text = text.substring(0,index)+text[index+1]+text[index]+text.substr(index+2)
@@ -24,7 +23,6 @@ views: {
 	settings: {
 		className: 'settingsMode',
 		render: function() {
-			setPath()
 			setTitle("Log-in or Create an Account OR settings ...")
 		},
 		init: function() {
@@ -41,7 +39,6 @@ views: {
 	test: {
 		className: 'testMode',
 		render: function() {
-			setPath()
 			setTitle("Testing")
 		}
 	},
@@ -60,7 +57,7 @@ views: {
 			setEntityTitle(user)
 			$userPageAvatarLink.href = Req.fileURL(user.avatar)
 			$userPageAvatar.src = Req.fileURL(user.avatar, "size=400&crop=true")
-			setPath([["users","Users"], [Nav.entityPath(user), user.name]])
+			//setPath([["users","Users"], [Nav.entityPath(user), user.name]])
 			if (userpage)
 				$userPageContents.replaceChildren(Draw.markup(userpage))
 			else
@@ -78,7 +75,6 @@ views: {
 		className: 'membersMode',
 		render: function(users) {
 			setTitle("Users")
-			setPath([['users',"users"],null])
 			users.forEach(function(user) {
 				var bar = Draw.entityTitleLink(user)
 				bar.className += " categoryPage bar rem2-3"
@@ -212,7 +208,6 @@ views: {
 errorView: {
 	className: 'errorMode',
 	render: function(message) {
-		setPath()
 		setTitle(message)
 	}
 },
@@ -233,7 +228,7 @@ setTitle: function(text) {
 },
 
 setPath: function(path) {
-	$navPane.replaceChildren(Draw.titlePath(path))
+	$path.replaceChildren(Draw.titlePath(path))
 },
 setEntityPath: function(page) {
 	if (page.type == 'category')
