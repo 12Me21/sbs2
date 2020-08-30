@@ -46,8 +46,8 @@
 		<a class="item chatMode" id=$pagePageLink>Page</a>
 		<a class="textItem userMode loggedIn myUserPage" data-static-path=settings>Settings</a>
 		
-		
-		
+		<button class="editorMode item" id="$deletePage">DELETE</button>
+		<button tabindex="-1" class="item canEdit">Edit</button>
 		
 		<div class="item loggedIn myUserPage">
 			<div id=$userPageStatus class="textItem userMode"></div>
@@ -62,8 +62,6 @@
 		<input type=checkbox id=$watchCheck class="item pageItem loggedIn">
 		<div class="pageCreate textItem rightAlign">
 			<span class="textItem" id=$authorBox></span>
-			<button class="editorMode item" id="$deletePage">DELETE</button>
-			<button tabindex="-1" class="item canEdit">Edit</button>
 			<button id=$openSidebar class="item">|||</button>
 		</div>
 	</header>
