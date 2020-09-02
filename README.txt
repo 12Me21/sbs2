@@ -1,6 +1,10 @@
 wrote by 12Me21
 
 * Instructions
+Make sure sbs2-markup/ isn't empty
+If you're using git, you can run `git pull --recurse-submodules` to download it.
+Otherwise, download the files from https://github.com/12Me21/sbs2-markup and put them in sbs2-markup/
+
 Open index.html in a web browser
 
 If you are hosting this on a server, it's a good idea to run `build.sh`, then copy `_build.html`(can be renamed) and `resource/` into the place where you want to host from.
