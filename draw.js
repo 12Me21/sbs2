@@ -121,8 +121,10 @@ titlePath: function(path) {
 	})
 	return element
 },
-messageBlock: function(user, date) {
-	user = user || {}
+messageBlock: function(comment) {
+	var user = comment.createUser
+	var date = comment.createDate
+	
 	var div = document.createElement('div')
 	div.className = 'message'
 	
@@ -146,10 +148,12 @@ messageBlock: function(user, date) {
 },
 messagePart: function(comment){
 	var element = document.createElement('p')
-	element.className = 'markup-root messagePart'
+	element.className = "markup-root messagePart"
 	element.setAttribute('data-id', comment.id)
 	element.setAttribute('tabindex', "0")
 	var contents = Parse.parseLang(comment.content, comment.meta.m, false)
+	if (comment.createDate.getTime() != comment.editDate.getTime())
+		element.className += " edited"
 	element.appendChild(contents)
 	return element
 },

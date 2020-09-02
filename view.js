@@ -55,8 +55,8 @@ views: {
 			if (user.id == Req.uid)
 				flag('myUserPage', true)
 			setEntityTitle(user)
-			$userPageAvatarLink.href = Req.fileURL(user.avatar)
-			$userPageAvatar.src = Req.fileURL(user.avatar, "size=400&crop=true")
+			$userPageAvatarLink.href = Draw.avatarURL(user)
+			$userPageAvatar.src = Draw.avatarURL(user, "size=400&crop=true")
 			//setPath([["users","Users"], [Nav.entityPath(user), user.name]])
 			if (userpage)
 				$userPageContents.replaceChildren(Draw.markup(userpage))
@@ -164,7 +164,7 @@ views: {
 					return
 				var uid = comment.createUserId
 				if (!lastBlock || uid != lastUid || comment.createDate-lastTime > 1000*60*5) {
-					lastBlock = Draw.messageBlock(comment.createUser, comment.createDate)
+					lastBlock = Draw.messageBlock(comment)
 					$messageList.appendChild(lastBlock[0])
 					//lastTime = comment.createDate
 				}
@@ -345,7 +345,7 @@ handleView: function(type, id, query, callback) {
 	}
 
 	function after() {
-		$main.className = view.className
+		$.document.body.className = view.className
 		callback && callback()
 		// todo: scroll to fragment element
 	}
