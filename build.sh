@@ -1,21 +1,28 @@
 if [ "$1" ]
 then
 	dest="$(readlink -f "$1")"
+	echo 'Will output files to' "$dest" >&2
 fi
 
 cd "$(dirname "$0")"
 
+echo 'Building markup system' >&2
 ./sbs2-markup/build.sh
 
+echo 'creating _build.css' >&2
 cat resource/fonts.css style.css markup.css code.css > resource/_build.css
+
+echo 'creating _build.js' >&2
 cat sbs2-markup/_build.js fill.js entity.js request.js draw.js view.js navigate.js main.js > resource/_build.js
 
+echo 'creating _build.html' >&2
 date=`date +%s`
 sed '/<!--START-->/,/<!--END-->/c<link rel="stylesheet" href="resource/_build.css?'"$date"'">\
 <script src="resource/_build.js?'"$date"'"></script>' index.html > _build.html
 
 if [ "$1" ]
 then
+	echo 'Copying files' >&2
 	if [ -f "$dest" ]
 	then
 		cp -v -r resource "$(dirname "$dest")"/resource
