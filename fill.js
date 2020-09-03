@@ -25,3 +25,57 @@ if (!HTMLElement.prototype.replaceChildren)
 
 if (!NodeList.prototype.forEach)
 	NodeList.prototype.forEach = Array.prototype.forEach
+
+function Inherit(child, parent) {
+	Object.defineProperty(child.prototype = Object.create(parent.prototype), 'constructor', {
+		value: child,
+		enumerable: false,
+		writable: true
+	})
+}
+
+/*function NodeBlock(node, child) {
+	// create object containing override properties
+	// set this object's prototype to `node`
+	return Object.create(node, {
+		childNodes: {
+			get: function() {return child.childNodes}
+		},
+		firstChild: {
+			get: function() {return child.firstChild}
+		},
+		lastChild: {
+			get: function() {return child.lastChild}
+		},
+		nodeValue: {
+			get: function() {return child.nodeValue},
+			set: function(x) {child.nodeValue = x}
+		},
+		textContent: {
+			get: function() {return child.textContent}
+			set: function(x) {child.textContent = x}
+		},
+		// and then functions like appendChild etx.
+	})
+}
+
+
+Inherit(NodeBlock, DocumentFragment)
+function NodeBlock(node, child) {
+	var $ = node
+	Object.defineProperties($, {
+		childNodes: {
+			get: function() {return child.childNodes},
+		},
+		firstChild: {
+			get: function() {return child.firstChild},
+		},
+		lastChild: {
+			get: function() {return child.lastChild},
+		},
+		appendChild: {
+			get: function() {return child.appendChild},
+		},
+	})
+	return $
+}*/
