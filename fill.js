@@ -57,25 +57,4 @@ function Inherit(child, parent) {
 		},
 		// and then functions like appendChild etx.
 	})
-}
-
-
-Inherit(NodeBlock, DocumentFragment)
-function NodeBlock(node, child) {
-	var $ = node
-	Object.defineProperties($, {
-		childNodes: {
-			get: function() {return child.childNodes},
-		},
-		firstChild: {
-			get: function() {return child.firstChild},
-		},
-		lastChild: {
-			get: function() {return child.lastChild},
-		},
-		appendChild: {
-			get: function() {return child.appendChild},
-		},
-	})
-	return $
 }*/
