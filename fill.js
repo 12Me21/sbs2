@@ -22,6 +22,11 @@ if (!HTMLElement.prototype.replaceChildren)
 			this.appendChild(child)
 	}
 
+if (!HTMLElement.prototype.remove)
+	HTMLElement.prototype.remove = function() {
+		if (this.parentNode)
+			this.parentNode.removeChild(this)
+	}
 
 if (!NodeList.prototype.forEach)
 	NodeList.prototype.forEach = Array.prototype.forEach

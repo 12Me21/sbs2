@@ -22,7 +22,6 @@ link: function(path, element) {
 	element = element || $.document.createElement('a')
 	element.href = "?"+path
 	element.onclick = function(e) {
-		console.log("click",element,e.target)
 		e.preventDefault()
 		e.stopPropagation()
 		go(path)

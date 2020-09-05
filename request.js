@@ -266,7 +266,7 @@ getUserView: function(id, callback) {
 getChatView: function(id, callback) {
 	return read([
 		{content: {ids: [id]}},
-		{comment: {parentIds: [id], limit: 50, reverse: true}},
+		{comment: {parentIds: [id], limit: 500, reverse: true}},
 		"user.0createUserId.0editUserId.1createUserId.1editUserId",
 	], {
 		content: "name,parentId,type,createUserId,editUserId,createDate,editDate,permissions,id"

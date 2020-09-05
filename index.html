@@ -70,7 +70,7 @@
 <div class="sideBarContainer grow" id="$sidebarContainer">
 	<div class="m grow" id="$m">
 		<div class="pathMode pathBar" id=$path></div>
-		
+		<div id="$userList"></div>
 		<div class="infoPane editorMode">
 			<label for="$keywords">Keywords:</label><input placeholder="(space separated, optional)" id="$keywords"><br>
 			<label for="$editPageType">Type:</label><input placeholder="@" id="$editPageType"><br>
@@ -256,7 +256,7 @@
 				<div id="$testOut" class="pre"></div>
 			</div>
 			
-			<div id="$messageList" class="messageList chatMode grow"></div>
+			<div id="$chatPane" class="chatMode grow chatPane"></div>
 		</main>
 		<div class="inputPane chatMode">
 			<table> <!-- YES it's a TABLE! sorry ... I'm not allowed to use flex so this is the only option -->
