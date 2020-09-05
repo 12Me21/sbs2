@@ -2,9 +2,6 @@
 	console.log("e")
 }*/
 
-//if (navigator.vendor=="Google Inc.")
-console.log(window.document.styleSheets)
-
 Req.onLogin = function() {
 	View.flag('loggedIn', true)
 	Req.getMe(function(user) {
@@ -32,6 +29,13 @@ else {
 }
 
 function ready() {
+	if (navigator.vendor=="Google Inc.") {
+		console.info("chrome sucks")
+		var x = document.createElement('style')
+		x.textContent = "img, .iconBg { image-rendering: -webkit-optimize-contrast; }"
+		document.head.appendChild(x)
+	}
+
 	Req.tryLoadCachedAuth()
 	
 	Nav.initial()
