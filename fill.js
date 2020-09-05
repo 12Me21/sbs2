@@ -58,3 +58,5 @@ function Inherit(child, parent) {
 		// and then functions like appendChild etx.
 	})
 }*/
+
+//talking excitedly about javasscript getters and setters for an hour and then crying
