@@ -47,6 +47,9 @@ if (localStorage) {
 		},
 		get: function(name) {
 			return localStorage.getItem(name)
+		},
+		remove: function(name) {
+			localStorage.removeItem(name)
 		}
 	}
 } else {
@@ -57,6 +60,8 @@ if (localStorage) {
 		},
 		get: function(name) {
 			return null
+		},
+		remove: function(name) {
 		}
 	}
 }

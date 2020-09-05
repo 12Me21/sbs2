@@ -456,7 +456,7 @@ toggleSidebar: function() {
 		flag('mobileSidebar', !flags.mobileSidebar)
 	} else {
 		flag('sidebar', !flags.sidebar)
-		localStorage.setItem('sbs-sidebar', !!flags.sidebar)
+		Store.set('sbs-sidebar', !!flags.sidebar)
 	}
 },
 

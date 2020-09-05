@@ -136,7 +136,7 @@ request: function(url, method, callback, data) {
 
 // logs the user out and clears the cached token
 logOut: function() {
-	$.localStorage.removeItem(storageKey)
+	$.Store.remove(storageKey)
 	auth = null
 	onLogout()
 },
@@ -160,7 +160,7 @@ authenticate: function(username, password, callback) {
 	return request("User/authenticate", 'POST', function(e, resp) {
 		if (!e) {
 			gotAuth(resp)
-			$.localStorage.setItem(storageKey, resp, true)
+			$.Store.set(storageKey, resp, true)
 		}
 		callback(e, resp)
 	}, {username: username, password: password})
@@ -170,7 +170,7 @@ authenticate: function(username, password, callback) {
 // triggers onLogin and returns true if successful
 // (doesn't check if auth is expired though)
 tryLoadCachedAuth: function() {
-	var auth = $.localStorage.getItem(storageKey)
+	var auth = $.Store.get(storageKey)
 	if (auth)
 		return gotAuth(auth)
 	return false
