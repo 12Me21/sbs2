@@ -44,7 +44,7 @@
 	<a class="textItem userMode loggedIn myUserPage" data-static-path=settings>Settings</a>
 	
 	<button class="editorMode item" id="$deletePage">DELETE</button>
-	<button tabindex="-1" class="item canEdit">Edit</button>
+	<button tabindex="-1" id=$editButton class="item canEdit">Edit</button>
 	
 	<div class="item loggedIn myUserPage">
 		<div id=$userPageStatus class="textItem userMode"></div>
@@ -190,12 +190,12 @@
 			</div>
 			
 			<div class="homeMode homePane">
-				<a class="categoryPage bar rem2-3" data-static-path=search><span class="textItem">Search</span></a>
-				<a class="categoryPage bar rem2-3" data-static-path=category/0><span class="textItem">Pages</span></a>
-				<a class="categoryPage bar rem2-3" data-static-path=users><span class="textItem">Users</span></a>
-				<a class="categoryPage bar rem2-3" data-static-path=files><span class="textItem">Images</span></a>
-				<a class="categoryPage bar rem2-3" data-static-path=test><span class="textItem">Test</span></a>
-				<a class="categoryPage bar rem2-3" data-static-path=settings><span class="textItem">User Settings</span></a>
+				<a class="linkBar bar rem2-3" data-static-path=search><span class="textItem">Search</span></a>
+				<a class="linkBar bar rem2-3" data-static-path=category/0><span class="textItem">Pages</span></a>
+				<a class="linkBar bar rem2-3" data-static-path=users><span class="textItem">Users</span></a>
+				<a class="linkBar bar rem2-3" data-static-path=files><span class="textItem">Images</span></a>
+				<a class="linkBar bar rem2-3" data-static-path=test><span class="textItem">Test</span></a>
+				<a class="linkBar bar rem2-3" data-static-path=settings><span class="textItem">User Settings</span></a>
 			</div>
 			<div class="membersMode memberPane">
 				<div id=$memberList></div>
@@ -272,7 +272,7 @@
 	</div>
 	<div id="$sidebar">
 		<div class="sidebarInside">
-			<div class="loggedIn textItem" id=$loggedIn>
+			<div class="loggedIn bar rem1-5" id=$loggedIn>
 				<a class="item userLink" id=$myUserLink>
 					<span class="myName username textItem" id=$myName></span>
 					<img class="myAvatar item avatar" id=$myAvatar alt="" src="about:blank">

@@ -68,6 +68,11 @@ views: {
 			$userPageContents.replaceChildren()
 		}
 	},
+	// alright, so, the way this works
+	// first, .start is called. this will usually make an API request.
+	// if this fails or something bad happens, it should be handled I think
+	// .render will be called IF everything succeeds
+	// the first parameter will always exist.
 	users: {
 		start: function(id, query, render) {
 			return $.Req.getUsersView(render)
@@ -77,7 +82,7 @@ views: {
 			setTitle("Users")
 			users.forEach(function(user) {
 				var bar = Draw.entityTitleLink(user)
-				bar.className += " categoryPage bar rem2-3"
+				bar.className += " linkBar bar rem2-3"
 				$memberList.appendChild(bar)
 			})
 		},
@@ -99,9 +104,13 @@ views: {
 			setEntityTitle(page)
 			setEntityPath(page)
 			$pageContents.replaceChildren(Parse.parseLang(page.content, page.values.markupLang))
+			Nav.link("editpage/"+page.id, $editButton)
+			if (/u/.test(page.myPerms))
+				flag('canEdit', true)
 		},
 		cleanUp: function() {
 			$pageContents.replaceChildren()
+			flag('canEdit', false)
 		}
 	},
 	category: {
@@ -114,19 +123,20 @@ views: {
 			setEntityPath(category)
 			$categoryDescription.replaceChildren(Parse.parseLang(category.description, category.values.markupLang))
 			$categoryCategories.replaceChildren()
+			Nav.link("editcategory/"+category.id, $editButton)
 			category.children.forEach(function(child) {
 				var bar = Draw.entityTitleLink(child)
-				bar.className += " categoryPage bar rem2-3"
+				bar.className += " linkBar bar rem2-3"
 				$categoryCategories.appendChild(bar)
 			});
 			pinned.forEach(function(page) {
 				var bar = Draw.pageBar(page)
-				bar.className += " categoryPage bar rem2-3"
+				bar.className += " linkBar bar rem2-3"
 				$categoryCategories.appendChild(bar)
 			})
 			pages.forEach(function(page) {
 				var bar = Draw.pageBar(page)
-				bar.className += " categoryPage bar rem2-3"
+				bar.className += " linkBar bar rem2-3"
 				$categoryPages.appendChild(bar)
 			})
 			$.Nav.link("editpage?cid="+category.id,$createPage)
@@ -373,6 +383,9 @@ onLoad: function() {
 	}
 
 	$openSidebar.onclick = $closeSidebar.onclick = toggleSidebar
+	attachResize($sidebar, $sidebarPinnedResize, true, -1, "sidebarWidth")
+	attachResize($sidebarPinned, $sidebarPinnedResize, false, 1, "sidebarPinnedHeight")
+	flag('sidebar', true)
 },
 
 toggleSidebar: function() {
@@ -396,6 +409,62 @@ isFullscreenSidebar: function() {
 // these will override public vars
 
 var x = views
+
+function attachResize(element, tab, horiz,dir,save) {
+	var startX,startY,held,startW,startH
+	function getPos(e) {
+		if (e.touches)
+			return {x:e.touches[0].pageX,y:e.touches[0].pageY}
+		else
+			return {x:e.clientX,y:e.clientY}
+	}
+	function down(e) {
+		tab.setAttribute('dragging',"")
+		var pos = getPos(e)
+		startX = pos.x
+		startY = pos.y
+		startW = element.offsetWidth
+		startH = element.offsetHeight
+		held = true
+	}
+	function up() {
+		held = false
+		tab.removeAttribute('dragging')
+	}
+	function move(e) {
+		if (!held)
+			return
+		var pos = getPos(e)
+		var vx = (pos.x - startX) * dir
+		var vy = (pos.y - startY) * dir
+		if (horiz) {
+			element.style.width = Math.max(0, startW+vx)+"px"
+/*			if (save)
+				optionalStorage.set(save, startW+vx)*/
+		} else {
+			element.style.height = Math.max(0, startH+vy)+"px"
+/*			if (save)
+				optionalStorage.set(save, startH+vy)*/
+		}
+	}	
+	tab.addEventListener('mousedown', down)
+	document.addEventListener('mouseup', up)
+	document.addEventListener('mousemove', move)
+	
+	tab.addEventListener('touchstart', down)
+	document.addEventListener('touchend', up)
+	document.addEventListener('touchmove', move)
+	/*if (save) {
+		var size = optionalStorage.get(save)
+		if (size) {
+			size = Math.max(0, +size)
+			if (horiz)
+				element.style.width = size+"px"
+			else
+				element.style.height = size+"px"
+		}
+	}*/
+}
 
 <!--/*
 }(window)) //*/ // pass external values

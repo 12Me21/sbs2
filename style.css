@@ -65,7 +65,14 @@ sub {vertical-align: sub;}
 
 .avatar {
 	border: 1px solid white;
+	border-radius: 3px;
+	margin-right: 0.2rem;
 }
+.rightAlign .avatar {
+	margin-right: 0rem;
+	margin-left: 0.2rem;
+}
+
 .spacer {
 	-webkit-flex-grow: 1;
 	flex-grow: 1;
@@ -178,11 +185,11 @@ button {
 .buttonContainer button {
 	margin: 0;
 	padding: 0 0.5rem;
-	background-color: #EEE;
+	background-color: #DDD;
 	border: 2px solid gray;
 	height: 100%;
 	overflow-y: hidden;
-	border-style: outset;
+	border-color: white #333 #333 white;
 	border-radius: 0px;
 }
 .buttonContainer > a {
@@ -238,10 +245,6 @@ body {
  ** Top Bar **
  *************/
 
-html.f-loading .loadBG {
-	background-color: rgb(0,150,136);
-}
-
 html.f-error .loadBG {
 	background-color: #800;
 }
@@ -290,8 +293,12 @@ html.f-loggedIn .loggedOut {
 	flex-shrink: 0;
 	border-bottom: 2px solid black;
 	background-color: #DEF;
-	-webkit-transition: background-color 0.1s ease;
-	transition: background-color 0.1s ease;
+	/*-webkit-transition: background-color 0.1s ease;
+	transition: background-color 0.1s ease;*/
+}
+
+html.f-loading .loadBG {
+	background-color: rgb(0,150,136);
 }
 
 .titlePane .iconBg {
@@ -313,7 +320,7 @@ html:not(.f-canEdit) .canEdit {
 }
 
 .errorMode .titlePane {
-	color: pink;
+	color: maroon;
 	font-family: monospace;
 }
 
@@ -390,18 +397,19 @@ main {
 	height: 300px;*/
 }
 
-.categoryPage:focus {
+.linkBar:focus {
 	background-color: white;
 }
 
 /*******************
  ** Category Pane **
  *******************/
-.categoryPage {
+.linkBar {
 	font-weight: bold;
 	background-color: #EEE;
+	padding-left: 0.2rem;
 }
-.categoryPage, .categoryDescription, .member {
+.linkBar, .categoryDescription, .member {
 	border-bottom: 1px solid gray;
 }
 
@@ -897,20 +905,7 @@ html:not(.f-fileUploading) .fileUploading {
 	background-size: contain;
 	background-position: center;
 	margin-right: 0.3rem;
-	margin-left: 0.2rem;
-}
-
-.iconBg-page {
-	background-image: url("icons/page.png");
-}
-.iconBg-pin {
-	background-image: url("icons/pin.png");
-}
-.iconBg-category {
-	background-image: url("icons/folder.png");
-}
-.iconBg-hiddenpage {
-	background-image: url("icons/hiddenpage.png");
+	margin-left: 0.1rem;
 }
 
 /*************
@@ -1153,11 +1148,6 @@ body.pageMode main {
 
 .wideCell > a {
 	display: block;
-}
-
-.zindex {
-	position: relative;
-	z-index: 10;
 }
 
 .chatScroller {

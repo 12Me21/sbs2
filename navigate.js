@@ -22,9 +22,17 @@ link: function(path, element) {
 	element = element || $.document.createElement('a')
 	element.href = "?"+path
 	element.onclick = function(e) {
+		console.log("click",element,e.target)
 		e.preventDefault()
+		e.stopPropagation()
 		go(path)
 	}
+	// a few notes about this
+	// first, we need to use onclick because removing event listeners is a MASSIVE pain, especially here. we need to keep a list of old function references, and somehow attach that to the node? idk. WeakMap maybe but that's too new
+	// this way, adding a new event will override the old one automatically
+	// however, I also use some nested link elements (sorry...)
+	// so, this assumes the event will be called on the inner element first
+	// which is the default in most browsers, but some old browsers... idk
 	return element
 },
 
