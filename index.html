@@ -27,7 +27,10 @@
 <script src="sbs2-markup/render.js"></script>
 
 <script src=draw.js></script>
+
 <script src=view.js></script>
+<script src=Views/settings.js></script>
+
 <script src=navigate.js></script>
 
 <script src=main.js></script>
@@ -214,12 +217,12 @@
 				<div class="registerBox">
 					<h2>Register</h2>
 					<form id="$registerForm" autocomplete="off">
-						<input placeholder="Username" name="username" id=$registerUsername minlength="3" maxlength="20"> 3 to 20 characters, no spaces<br>
+						<input placeholder="Username" name="username" id=$registerUsername minlength="2" maxlength="20"> 2 to 20 characters, no spaces<br>
 						<input placeholder="Password" name="password" type="password" id=$registerPassword minlength="8"><input placeholder="Confirm Password" name="password2" type="password" id=$registerPassword2 minlength="8"> At least 8 characters<br>
 						<input placeholder="Email" name="email" type="email" id=$registerEmail><input placeholder="Confirm Email" name="email2" type="email" id=$registerEmail2> Confirmation code will be sent<br>
 						<button id="$registerButton" onclick="event.preventDefault()">Register</button></form>
 					<button id="$resendEmail" onclick="event.preventDefault()">Resend Email</button>
-					<div id="$registerError" class="pre"> </div>
+					<div id="$registerError" class="pre"></div>
 					<h3>Confirm Registration</h3>
 					<input placeholder="Confirmation Code" id="$emailCode">
 					<button id="$registerConfirm">Confirm</button>

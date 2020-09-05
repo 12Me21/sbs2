@@ -9,6 +9,8 @@ cancelRequest: null,
 // currentView.cleanUp should always be correct!
 currentView: null,
 
+initDone: false,
+
 // create public variables here
 views: {
 	"": {
@@ -18,84 +20,6 @@ views: {
 			//var index = $.Math.random()*(text.length-1)|0
 			//text = text.substring(0,index)+text[index+1]+text[index]+text.substr(index+2)
 			setTitle(text)
-		}
-	},
-	settings: {
-		className: 'settingsMode',
-		render: function() {
-			setTitle("Account Settings")
-		},
-		init: function() {
-			$loginForm.login.onclick = function(e) {
-				e.preventDefault()
-				Req.authenticate($loginForm.username.value, $loginForm.password.value, function(e, resp) {
-				})
-			}
-			$logOut.onclick = function(e) {
-				Req.logOut()
-			}
-
-			$registerForm.$registerButton.onclick = function(e) {
-				e.preventDefault()
-				$registerError.textContent = " "
-				if ($registerForm.email.value != $registerForm.email2.value) {
-					$registerError.textContent = "Emails don't match"
-					return
-				}
-				if ($registerForm.password.value != $registerForm.password2.value) {
-					$registerError.textContent = "Passwords don't match"
-					return
-				}
-				var email = $registerForm.email.value
-				Req.register($registerForm.username.value, $registerForm.password.value, email, function(e, resp) {
-					if (e == 'error' && resp) {
-						var errors = ["Registration failed:"]
-						if (resp.errors) {
-							for (var key in resp.errors) {
-								errors.push(resp.errors[key].join(" "))
-							}
-						} else
-							errors.push(resp)
-						$registerError.textContent = errors.join("\n")
-					} else if (!e) {
-						sendConfirmationEmail()
-					}
-				})
-			}
-			$resendEmail.onclick = function(e) {
-				e.preventDefault()
-				sendConfirmationEmail()
-			}
-			$registerConfirm.onclick = function(e) {
-				e.preventDefault()
-				$registerError.textContent = "Confirming..."
-				// todo: validate the key client-side maybe
-				me.confirmRegister($emailCode.value, function(e, resp) {
-					if (!e) {
-						$registerError.textContent = "Registration Complete"
-						window.location.hash = "#user/"+me.uid
-					} else {
-						$registerError.textContent = "Failed to confirm registration:\n"+resp
-					}
-				})
-			}
-			function sendConfirmationEmail() {
-				var email = $registerForm.email.value
-				if (!email) {
-					$registerError.textContent = "No email"
-				} else {
-					$registerError.textContent = "Sending email..."
-					Req.sendEmail(email, function(e, resp){
-						if (!e) {
-							$registerError.textContent = "Confirmation email sent"
-						} else {
-							$registerError.textContent = "Error sending confirmation email:\n"+resp
-						}
-					})
-				}
-			}
-			
-
 		}
 	},
 	test: {
@@ -443,11 +367,19 @@ onLoad: function() {
 		// maybe we can just call these the first time the view is visited instead of right away,
 		// though none of them should really take a significant amount of time, so whatver
 	}
+	initDone = true
 
 	$openSidebar.onclick = $closeSidebar.onclick = toggleSidebar
 	attachResize($sidebar, $sidebarPinnedResize, true, -1, "sidebarWidth")
 	attachResize($sidebarPinned, $sidebarPinnedResize, false, 1, "sidebarPinnedHeight")
 	flag('sidebar', true)
+},
+
+addView: function(name, data) {
+	data.name = name
+	views[name] = data
+	if (initDone && data.init)
+		data.init()
 },
 
 toggleSidebar: function() {

@@ -13,7 +13,7 @@ echo 'creating _build.css' >&2
 cat resource/fonts.css style.css markup.css code.css > resource/_build.css
 
 echo 'creating _build.js' >&2
-cat sbs2-markup/_build.js fill.js entity.js request.js draw.js view.js navigate.js main.js > resource/_build.js
+cat sbs2-markup/_build.js fill.js entity.js request.js draw.js view.js Views/settings.js navigate.js main.js > resource/_build.js
 
 echo 'creating _build.html' >&2
 date=`date +%s`

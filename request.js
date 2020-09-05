@@ -176,6 +176,24 @@ tryLoadCachedAuth: function() {
 	return false
 },
 
+register: function(username, password, email, callback) {
+	return request("User/register", 'POST', callback, {
+		username: username,
+		password: password,
+		email: email
+	})
+},
+
+confirmRegister: function(key, callback) {
+	return request("User/register/confirm", 'POST', callback, {
+		confirmationKey: key
+	})
+},
+
+sendEmail: function(email, callback) {
+	return request("User/register/sendemail", 'POST', callback, {email: email})
+},
+
 read: function(requests, filters, callback, needCategories) {
 	var query = {}
 	query.requests = requests.map(function(req) {
