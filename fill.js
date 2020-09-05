@@ -34,6 +34,33 @@ function Inherit(child, parent) {
 	})
 }
 
+// creating our own storage system, to deal with compatibility + exceptions
+if (localStorage) {
+	var Store = {
+		set: function(name, value, important) {
+			try {
+				localStorage.setItem(name, value)
+			} catch(e) {
+				return false
+			}
+			return true
+		},
+		get: function(name) {
+			return localStorage.getItem(name)
+		}
+	}
+} else {
+	// todo:
+	var Store = {
+		set: function(name, value, important) {
+			return false
+		},
+		get: function(name) {
+			return null
+		}
+	}
+}
+
 /*function NodeBlock(node, child) {
 	// create object containing override properties
 	// set this object's prototype to `node`

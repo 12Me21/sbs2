@@ -464,8 +464,8 @@ isFullscreenSidebar: function() {
 	return !$.matchMedia || $.matchMedia("(max-width: 700px)").matches
 },
 
-<!--/* 
-}) //*/
+	<!--/* 
+			 }) //*/
 
 // create private variables here
 // these will override public vars
@@ -473,7 +473,7 @@ isFullscreenSidebar: function() {
 var x = views
 
 function attachResize(element, tab, horiz,dir,save) {
-	var startX,startY,held,startW,startH
+	var startX,startY,held,startW,startH,size = null
 	function getPos(e) {
 		if (e.touches)
 			return {x:e.touches[0].pageX,y:e.touches[0].pageY}
@@ -492,21 +492,21 @@ function attachResize(element, tab, horiz,dir,save) {
 	function up() {
 		held = false
 		tab.removeAttribute('dragging')
+		if (save && size != null)
+			Store.set(save, size)
 	}
 	function move(e) {
 		if (!held)
 			return
 		var pos = getPos(e)
-		var vx = (pos.x - startX) * dir
-		var vy = (pos.y - startY) * dir
 		if (horiz) {
-			element.style.width = Math.max(0, startW+vx)+"px"
-			/*			if (save)
-						optionalStorage.set(save, startW+vx)*/
+			var vx = (pos.x - startX) * dir
+			size = Math.max(0, startW+vx)
+			element.style.width = size+"px"
 		} else {
-			element.style.height = Math.max(0, startH+vy)+"px"
-			/*			if (save)
-						optionalStorage.set(save, startH+vy)*/
+			var vy = (pos.y - startY) * dir
+			size = Math.max(0, startH+vy)
+			element.style.height = size+"px"
 		}
 	}	
 	tab.addEventListener('mousedown', down)
@@ -516,16 +516,16 @@ function attachResize(element, tab, horiz,dir,save) {
 	tab.addEventListener('touchstart', down)
 	document.addEventListener('touchend', up)
 	document.addEventListener('touchmove', move)
-	/*if (save) {
-	  var size = optionalStorage.get(save)
-	  if (size) {
-	  size = Math.max(0, +size)
-	  if (horiz)
-	  element.style.width = size+"px"
-	  else
-	  element.style.height = size+"px"
-	  }
-	  }*/
+	if (save) {
+		size = Store.get(save)
+		if (size) {
+			size = Math.max(0, +size)
+			if (horiz)
+				element.style.width = size+"px"
+			else
+				element.style.height = size+"px"
+		}
+	}
 }
 
 <!--/*
