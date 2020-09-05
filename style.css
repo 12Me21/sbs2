@@ -238,14 +238,6 @@ body {
  ** Top Bar **
  *************/
 
-.titlePane a {
-	color: #BCF;
-}
-
-.titlePane a:hover {
-	color: #9AF;
-}
-
 html.f-loading .loadBG {
 	background-color: rgb(0,150,136);
 }
@@ -296,11 +288,10 @@ html.f-loggedIn .loggedOut {
 .titlePane {
 	-webkit-flex-shrink: 0;
 	flex-shrink: 0;
-	/*border-bottom: 2px ridge black;*/
-	background-color: #333;
+	border-bottom: 2px solid black;
+	background-color: #DEF;
 	-webkit-transition: background-color 0.1s ease;
 	transition: background-color 0.1s ease;
-	color: white;
 }
 
 .titlePane .iconBg {
@@ -906,6 +897,7 @@ html:not(.f-fileUploading) .fileUploading {
 	background-size: contain;
 	background-position: center;
 	margin-right: 0.3rem;
+	margin-left: 0.2rem;
 }
 
 .iconBg-page {

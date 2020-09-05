@@ -73,7 +73,7 @@ textItem: function(text) {
 
 iconURL: function(entity) {
 	if (entity.type == 'user') {
-		return avatarURL(entity, "size=120&crop=true")
+		return 
 	} else if (entity.type == 'category')
 		return "resource/category.png"
 	else if (entity.type == 'content') {
@@ -85,12 +85,26 @@ iconURL: function(entity) {
 	return "resource/unknown.png"
 },
 
-icon: function(entity, element) {
-	element = element || document.createElement('img')
-	element.className = "item icon" // todo: force width to avoid jump when loading
-	if (entity.type == 'user')
-		element.className += " avatar"
-	element.src = iconURL(entity)
+icon: function(entity) {
+	var element
+	if (entity.type == 'user') {
+		element = document.createElement('img')
+		element.className += "item icon avatar"
+		element.src = avatarURL(entity, "size=120&crop=true")
+	} else {
+		element = document.createElement('span')
+		element.setAttribute('role', 'img')
+		element.className = "item icon iconBg"
+		if (entity.type == 'category')
+			element.style.backgroundImage = "url('resource/category.png')"
+		else if (entity.type == 'content') {
+			if (!hasPerm(entity.permissions, 0, 'r'))
+				element.style.backgroundImage = "url('resource/hiddenpage.png')"
+			else
+				element.style.backgroundImage = "url('resource/page.png')"
+		} else
+			element.style.backgroundImage = "url('resource/unknown.png')"
+	}
 	return element
 },
 
@@ -121,6 +135,9 @@ titlePath: function(path) {
 	})
 	return element
 },
+// I wonder if maybe there should be a message split when
+// avatar changes
+// but perhaps this can be abused, and it's probably annoying anyway...
 messageBlock: function(comment) {
 	var user = comment.createUser
 	var date = comment.createDate
@@ -133,9 +150,14 @@ messageBlock: function(comment) {
 	timeStamp.setAttribute("datetime", date+"")
 	timeStamp.textContent = timeString(date)
 	div.appendChild(timeStamp)
-
-	div.appendChild(icon(user))
-
+	
+	var av = +comment.meta.a
+	if (av)
+		user = Object.create(user, {
+			avatar: {value: av}
+		})
+	div.appendChild(icon(user, null))
+	
 	var name = document.createElement('span')
 	name.className = 'username'
 	name.textContent = user.name+":"
