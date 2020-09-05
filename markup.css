@@ -245,8 +245,8 @@ markup-root .youtube {
 }*/
 
 .markup-root blockquote {
-	padding: 0.5rem;
-	padding-left: 1.5rem;
+	padding: 0.3rem;
+	padding-left: 0.5rem;
 	border: 1px solid gray;
 	background-color: #eee;
 	margin: 1px 0;
