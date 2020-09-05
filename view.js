@@ -23,7 +23,7 @@ views: {
 	settings: {
 		className: 'settingsMode',
 		render: function() {
-			setTitle("Log-in or Create an Account OR settings ...")
+			setTitle("Account Settings")
 		},
 		init: function() {
 			$loginForm.login.onclick = function(e) {
@@ -34,6 +34,68 @@ views: {
 			$logOut.onclick = function(e) {
 				Req.logOut()
 			}
+
+			$registerForm.$registerButton.onclick = function(e) {
+				e.preventDefault()
+				$registerError.textContent = " "
+				if ($registerForm.email.value != $registerForm.email2.value) {
+					$registerError.textContent = "Emails don't match"
+					return
+				}
+				if ($registerForm.password.value != $registerForm.password2.value) {
+					$registerError.textContent = "Passwords don't match"
+					return
+				}
+				var email = $registerForm.email.value
+				Req.register($registerForm.username.value, $registerForm.password.value, email, function(e, resp) {
+					if (e == 'error' && resp) {
+						var errors = ["Registration failed:"]
+						if (resp.errors) {
+							for (var key in resp.errors) {
+								errors.push(resp.errors[key].join(" "))
+							}
+						} else
+							errors.push(resp)
+						$registerError.textContent = errors.join("\n")
+					} else if (!e) {
+						sendConfirmationEmail()
+					}
+				})
+			}
+			$resendEmail.onclick = function(e) {
+				e.preventDefault()
+				sendConfirmationEmail()
+			}
+			$registerConfirm.onclick = function(e) {
+				e.preventDefault()
+				$registerError.textContent = "Confirming..."
+				// todo: validate the key client-side maybe
+				me.confirmRegister($emailCode.value, function(e, resp) {
+					if (!e) {
+						$registerError.textContent = "Registration Complete"
+						window.location.hash = "#user/"+me.uid
+					} else {
+						$registerError.textContent = "Failed to confirm registration:\n"+resp
+					}
+				})
+			}
+			function sendConfirmationEmail() {
+				var email = $registerForm.email.value
+				if (!email) {
+					$registerError.textContent = "No email"
+				} else {
+					$registerError.textContent = "Sending email..."
+					Req.sendEmail(email, function(e, resp){
+						if (!e) {
+							$registerError.textContent = "Confirmation email sent"
+						} else {
+							$registerError.textContent = "Error sending confirmation email:\n"+resp
+						}
+					})
+				}
+			}
+			
+
 		}
 	},
 	test: {
@@ -55,7 +117,7 @@ views: {
 			if (user.id == Req.uid)
 				flag('myUserPage', true)
 			setEntityTitle(user)
-			$userPageAvatarLink.href = Draw.avatarURL(user)
+			/*$userPageAvatarLink.href = Draw.avatarURL(user)*/
 			$userPageAvatar.src = Draw.avatarURL(user, "size=400&crop=true")
 			//setPath([["users","Users"], [Nav.entityPath(user), user.name]])
 			if (userpage)
@@ -439,12 +501,12 @@ function attachResize(element, tab, horiz,dir,save) {
 		var vy = (pos.y - startY) * dir
 		if (horiz) {
 			element.style.width = Math.max(0, startW+vx)+"px"
-/*			if (save)
-				optionalStorage.set(save, startW+vx)*/
+			/*			if (save)
+						optionalStorage.set(save, startW+vx)*/
 		} else {
 			element.style.height = Math.max(0, startH+vy)+"px"
-/*			if (save)
-				optionalStorage.set(save, startH+vy)*/
+			/*			if (save)
+						optionalStorage.set(save, startH+vy)*/
 		}
 	}	
 	tab.addEventListener('mousedown', down)
@@ -455,15 +517,15 @@ function attachResize(element, tab, horiz,dir,save) {
 	document.addEventListener('touchend', up)
 	document.addEventListener('touchmove', move)
 	/*if (save) {
-		var size = optionalStorage.get(save)
-		if (size) {
-			size = Math.max(0, +size)
-			if (horiz)
-				element.style.width = size+"px"
-			else
-				element.style.height = size+"px"
-		}
-	}*/
+	  var size = optionalStorage.get(save)
+	  if (size) {
+	  size = Math.max(0, +size)
+	  if (horiz)
+	  element.style.width = size+"px"
+	  else
+	  element.style.height = size+"px"
+	  }
+	  }*/
 }
 
 <!--/*
