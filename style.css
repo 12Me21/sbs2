@@ -63,18 +63,6 @@ sub {vertical-align: sub;}
 	white-space: pre !important;
 }
 
-.avatar {
-	border: 1px solid white;
-	border-radius: 3px;
-}
-.icon.avatar {
-	margin-right: 0.2rem;
-}
-.rightAlign .icon.avatar {
-	margin-right: 0rem;
-	margin-left: 0.2rem;
-}
-
 .spacer {
 	-webkit-flex-grow: 1;
 	flex-grow: 1;
@@ -493,6 +481,18 @@ main {
 	color: white;
 }
 
+.avatar {
+	border: 1px solid white;
+	border-radius: 3px;
+}
+.icon.avatar {
+	margin-right: 0.2rem;
+}
+.rightAlign .icon.avatar {
+	margin-right: 0rem;
+	margin-left: 0.2rem;
+}
+
 /*******************
  ** Chat Userlist **
  *******************/
@@ -517,12 +517,13 @@ main {
 	font-size: 1em;
 	padding: 0.4rem 0.5rem;
 	white-space: pre-wrap;
-	border-left-width: 0.5em;
+	/*border-left-width: 0.5em;
 	border-left-style: solid;
-	border-left-color: rgb(255,153,153);
+	border-left-color: rgb(255,153,153);*/
 	clear: both;
 	overflow: auto;
 }
+
 
 .systemMessage {
 	background-color: rgba(187,187,187, 0.2);
@@ -539,7 +540,7 @@ main {
 	padding-right: .5em;
 	color: #666;
 }
-.message > img {
+.message > img.avatar {
 	display: inline-block;
 	width: 3.5rem;
 	height: 3.5rem;
@@ -554,6 +555,10 @@ main {
 	overflow: hidden;
 	text-overflow: ellipsis;*/
 }
+/*.messageContents > p:first-child {
+	margin-top: 0;
+}*/
+
 .messageUsername {
 	display: inline-block;
 }

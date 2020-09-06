@@ -114,9 +114,10 @@ rebuildCategoryTree: function() {
 	for (var id in categoryMap) {
 		var cat = categoryMap[id]
 		var parent = categoryMap[cat.parentId] || categoryMap[0]
-		parent.children.push(cat)
-		if (cat.id != 0)
+		if (cat.id != 0) {
+			parent.children.push(cat)
 			cat.parent = parent
+		}
 	}
 },
 // as far as I know, the o3DS doesn't support parsing ISO 8601 timestamps

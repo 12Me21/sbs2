@@ -5,10 +5,33 @@
 Req.onLogin = function() {
 	View.flag('loggedIn', true)
 	Req.getMe(function(user) {
+		Req.me = user
 		$loggedIn.replaceChildren(Draw.entityTitleLink(user, true))
 	})
 	// display user info etc.
 	// start long poller
+	Req.onMessages = function(comments) {
+		ChatRoom.displayMessages(comments)
+	}
+	Req.onListeners = function(a) {
+		ChatRoom.updateUserLists(a)
+	}
+
+	Req.doListenInitial(function(e, resp) {
+		if (!e) {
+			resp.systemaggregate.forEach(function(item) {
+				if (item.type == "actionMax")
+					Req.lpLastId = item.id
+			})
+			console.log("staring long poller")
+			Req.lpLoop()
+			//sbm(resp, true)
+			//todo:
+			// keep an updated list of recently active pages
+			//
+		}
+	})
+	
 	// update currently viewed page (in case page was hidden)
 }
 

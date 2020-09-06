@@ -18,6 +18,15 @@ uid: null,
 categoryTree: null,
 gotCategoryTree: false,
 
+onListeners: null,
+onMessages: null,
+lpLastId: -1,
+lpStatuses: {"-1":"online","0":"online"},
+lpLastListeners: {"-1":{"0":""}},
+lpCancel: function(){},
+
+me: null,
+
 rawRequest: function(url, method, callback, data, auth){
 	var x = new $.XMLHttpRequest()
 	x.open(method, url)
@@ -217,6 +226,25 @@ read: function(requests, filters, callback, needCategories) {
 	})
 },
 
+listen: function(requests, filters, callback) {
+	var $=this
+	var query = {}
+	
+	requests.forEach(function(req) {
+		for (var type in req) {
+			query[type] = JSON.stringify(req[type])
+			break
+		}
+	})
+	Object.assign(query, filters)
+	
+	return request("Read/listen"+queryString(query), 'GET', function(e, resp) {
+		if (!e)
+			handle(resp.chains)
+		callback(e, resp)
+	})
+},
+
 handle: function(resp) {
 	Entity.process(resp)
 },
@@ -266,7 +294,7 @@ getUserView: function(id, callback) {
 getChatView: function(id, callback) {
 	return read([
 		{content: {ids: [id]}},
-		{comment: {parentIds: [id], limit: 500, reverse: true}},
+		{comment: {parentIds: [id], limit: 20, reverse: true}},
 		"user.0createUserId.0editUserId.1createUserId.1editUserId",
 	], {
 		content: "name,parentId,type,createUserId,editUserId,createDate,editDate,permissions,id"
@@ -336,6 +364,110 @@ getCategoryView: function(id, callback) {
 			callback(null)
 		}
 	}, true)
+},
+
+sendMessage: function(room, message, meta, callback) {
+	return request("Comment", 'POST', callback, {parentId: room, content: JSON.stringify(meta)+"\n"+message})
+},
+
+doListenInitial: function(callback) {
+	return read([
+		"systemaggregate",
+		{comment:{reverse:true,limit:20}},
+		{activity:{reverse:true,limit:10}},
+		{activityaggregate:{reverse:true,limit:10}},
+		"content.1parentId.2contentId.1id", //pages
+		"category.2contentId",
+		"user.1createUserId.2userId.3userIds", //users for comment and activity
+	],{content:"id,createUserId,name,permissions"},callback)
+},
+
+doListen: function(lastId, statuses, lastListeners, callback) {
+	var actions = {
+		lastId: lastId,
+		statuses: statuses,
+		chains: [
+			"comment.0id",'activity.0id-{"includeAnonymous":true}',"watch.0id", //new stuff //changed
+			"content.1parentId.2contentId.3contentId", //pages
+			"user.1createUserId.2userId.1editUserId.2contentId", //users for comment and activity
+			"category.2contentId" //todo: handle values returned by this
+		]
+	}
+	var req = [{actions: actions}]
+	for (var key in lastListeners) {
+		req.push({listeners: {
+			lastListeners: lastListeners,
+			chains: ["user.0listeners"]
+		}})
+		break
+	}
+	return listen(req, {
+		content: "id,createUserId,name,permissions"
+	}, callback)
+},
+
+lpRefresh: function() {
+	lpCancel()
+	lpLoop()
+},
+
+lpLoop: function() {
+	var cancelled
+	var x = doListen(lpLastId, lpStatuses, lpLastListeners, function(e, resp) {
+		if (cancelled) // should never happen (but I think it does sometimes..)
+			return
+		try {
+			lpLastId = resp.lastId
+			if (resp.listeners) {
+				lpLastListeners = resp.listeners
+				var listeners = {}
+				for (var id in resp.listeners) {
+					var list = resp.listeners[id]
+					var list2 = []
+					for (var uid in list) {
+						list2.push({user: resp.chains.userMap[uid], status: list[uid]})
+					}
+					listeners[id] = list2
+				}
+				console.log(listeners)
+				onListeners(listeners)
+			}
+			if (resp.chains) {
+				if (resp.chains.comment)
+					onMessages(resp.chains.comment)
+				if (resp.chains.commentdelete)
+					onMessages(resp.chains.commentdelete)
+			}
+		} catch (e) {
+			console.error(e)
+		}
+		if (!e || e=='timeout' || e=='rate') {
+			var t = setTimeout(function() {
+				if (cancelled) // should never happen?
+					return
+				lpLoop()
+			}, 0)
+			lpCancel = function() {
+				cancelled = true
+				clearTimeout(t)
+			}
+		} else {
+			alert("LONG POLLER FAILED:"+resp)
+			console.log("LONG POLLER FAILED", e, resp)
+		}
+	})
+	lpCancel = function() {
+		cancelled = true
+		x.abort()
+	}
+},
+
+lpSetListening: function(ids) {
+	var newListeners = {"-1":lpLastListeners[-1]}
+	ids.forEach(function(id) {
+		newListeners[id] = lpLastListeners[id] || {"0":""}
+	})
+	lpLastListeners = newListeners
 },
 
 fileURL: function(id, query) {

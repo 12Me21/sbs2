@@ -85,6 +85,20 @@ iconURL: function(entity) {
 	return "resource/unknown.png"
 },
 
+linkAvatar: function(user) {
+	var a = entityLink(user)
+	a.appendChild(avatar(user))
+	a.title = user.username
+	return a
+},
+
+avatar: function(user) {
+	var element = document.createElement('img')
+	element.className += "item avatar"
+	element.src = avatarURL(user, "size=120&crop=true")
+	return element
+},
+
 icon: function(entity) {
 	var element
 	if (entity.type == 'user') {
@@ -156,7 +170,7 @@ messageBlock: function(comment) {
 		user = Object.create(user, {
 			avatar: {value: av}
 		})
-	div.appendChild(icon(user, null))
+	div.appendChild(avatar(user))
 	
 	var name = document.createElement('span')
 	name.className = 'username'

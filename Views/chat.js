@@ -10,17 +10,46 @@ function ChatRoom(id, page) {
 	this.userList = document.createElement('div')
 	this.userList.className = "bar rem2-3 userlist"
 	this.messagePane = document.createElement('div')
-	this.messagePane.className = "scrollInner"
+	this.messagePane.className = "chatScroller"
 	this.messagePane.style.display = "none"
 	this.userList.style.display = "none"
 	$chatPane.appendChild(this.userList)
 	$chatPane.appendChild(this.messagePane)
-	this.messageList = this.messagePane // for now
+	this.messageList = document.createElement('div')
+	this.messageList.className = "scrollInner"
+	this.messagePane.appendChild(this.messageList)
 	this.visible = false
-	ChatRoom.rooms[id] = this
+	ChatRoom.addRoom(this)
 }
 
 ChatRoom.rooms = {}
+
+ChatRoom.addRoom = function(room) {
+	ChatRoom.rooms[room.id] = room
+	ChatRoom.setViewing(Object.keys(ChatRoom.rooms))
+}
+
+ChatRoom.removeRoom = function(room) {
+	if (ChatRoom.currentRoom == room)
+		ChatRoom.currentRoom = null
+	if (ChatRoom.rooms[room.id] == room)
+		delete ChatRoom.rooms[room.id]
+	ChatRoom.setViewing(Object.keys(ChatRoom.rooms))
+}
+
+ChatRoom.setViewing = function(ids) {
+	console.log("VIEW",ids)
+	Req.lpSetListening(ids)
+	Req.lpRefresh()
+}
+
+ChatRoom.updateUserLists = function(a) {
+	for (var id in a) {
+		var room = ChatRoom.rooms[id]
+		if (room)
+			room.updateUserList(a[id])
+	}
+}
 
 ChatRoom.displayMessages = function(comments) {
 	var displayedIn = {}
@@ -33,14 +62,23 @@ ChatRoom.displayMessages = function(comments) {
 	})
 }
 
+ChatRoom.prototype.updateUserList = function(list) {
+	var d = document.createDocumentFragment()
+	list.forEach(function(item) {
+		d.appendChild(Draw.linkAvatar(item.user))
+	})
+	this.userList.replaceChildren(d)
+}
+
 ChatRoom.prototype.displayInitialMessages = function(comments) {
 	var $ = this
 	comments.forEach(function(comment) {
 		$.displayMessage(comment, false)
 	})
-//	window.setTimeout(function() {
+	// ugh why do we need this?
+	window.setTimeout(function() {
 		$.autoScroll(true)
-//	}, 0)
+	}, 0)
 }
 
 ChatRoom.prototype.autoScroll = function(instant) {
@@ -95,16 +133,18 @@ ChatRoom.prototype.show = function() {
 }
 
 ChatRoom.prototype.hide = function() {
-	this.messagePane.style.display = "none"
-	this.userList.style.display = "none"
-	if (ChatRoom.currentRoom == this)
-		ChatRoom.currentRoom = null
-	this.visible = false
+	if (this.pinned) {
+		this.messagePane.style.display = "none"
+		this.userList.style.display = "none"
+		if (ChatRoom.currentRoom == this)
+			ChatRoom.currentRoom = null
+		this.visible = false
+	} else
+		this.destroy()
 }
 
 ChatRoom.prototype.destroy = function() {
-	if (ChatRoom.currentRoom == this)
-		ChatRoom.currentRoom = null
+	ChatRoom.removeRoom(this)
 	this.userList.remove()
 	this.messagePane.remove()
 	this.userList = null //gc
@@ -112,7 +152,12 @@ ChatRoom.prototype.destroy = function() {
 	this.visible = false
 }
 
-ChatRoom.prototype.displayMessage = function(comment) {
+ChatRoom.prototype.shouldScroll = function() {
+	return this.scrollDistance() < (this.messagePane.clientHeight)*0.25
+}
+
+ChatRoom.prototype.displayMessage = function(comment, autoscroll) {
+	var s = autoscroll != false && this.shouldScroll()
 	if (comment.deleted)
 		return
 	var uid = comment.createUserId
@@ -124,6 +169,8 @@ ChatRoom.prototype.displayMessage = function(comment) {
 	this.lastBlock[1].appendChild(Draw.messagePart(comment))
 	this.lastUid = uid
 	this.lastTime = comment.createDate
+	if (s)
+		this.autoScroll()
 }
 
 <!--/* trick indenter
@@ -146,14 +193,20 @@ addView('chat', {
 				Nav.link("page/"+page.id, $pagePageLink)
 				setEntityTitle(page)
 				setEntityPath(page)
+				//ChatRoom.setViewing([page.id])
 				room.show()
 			})
 		} else {
+			//todo: maybe we can request the user list early too?
+			// the problem is, if we create the room early,
+			// we might get messages from long polling before
+			// loading the initial messages :(
 			return $.Req.getChatView(id, render)
 		}
 	},
 	className: 'chatMode',
 	render: function(page, comments) {
+		//ChatRoom.setViewing([page.id])
 		Nav.link("page/"+page.id, $pagePageLink)
 		setEntityTitle(page)
 		setEntityPath(page)
@@ -166,6 +219,28 @@ addView('chat', {
 		room.hide()
 	},
 	init: function() {
+		$chatSend.onclick = function() {
+			var msg = $chatTextarea.value
+			var room = ChatRoom.currentRoom
+			if (msg && room) {
+				var meta = {}
+				var markup = $chatMarkupSelect.value
+				if (markup && markup!="plaintext")
+					meta.m = markup
+				if (Req.me)
+					meta.a = Req.me.avatar
+				Req.sendMessage(room.id, msg, meta, function() {
+				})
+			}
+			$chatTextarea.value = ""
+		}
+		
+		$chatTextarea.onkeypress = function(e) {
+			if (!e.shiftKey && e.keyCode == 13) {
+				e.preventDefault()
+				$chatSend.onclick()
+			}
+		}
 	}
 })
 
