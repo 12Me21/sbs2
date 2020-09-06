@@ -1,4 +1,8 @@
-function ChatRoom(id) {
+function ChatRoom(id, page) {
+	var old = ChatRoom.rooms[id]
+	if (old)
+		return old
+	this.page = page
 	this.id = id
 	this.lastUid = NaN
 	this.lastBlock = null
@@ -7,11 +11,12 @@ function ChatRoom(id) {
 	this.userList.className = "bar rem2-3 userlist"
 	this.messagePane = document.createElement('div')
 	this.messagePane.className = "scrollInner"
+	this.messagePane.style.display = "none"
+	this.userList.style.display = "none"
+	$chatPane.appendChild(this.userList)
+	$chatPane.appendChild(this.messagePane)
 	this.messageList = this.messagePane // for now
 	this.visible = false
-	var old = ChatRoom.rooms[id]
-	if (old)
-		old.destroy() //idk
 	ChatRoom.rooms[id] = this
 }
 
@@ -33,15 +38,14 @@ ChatRoom.prototype.displayInitialMessages = function(comments) {
 	comments.forEach(function(comment) {
 		$.displayMessage(comment, false)
 	})
-	window.setTimeout(function() {
+//	window.setTimeout(function() {
 		$.autoScroll(true)
-	}, 0)
+//	}, 0)
 }
 
 ChatRoom.prototype.autoScroll = function(instant) {
 	var parent = this.messagePane
 	if (!window.requestAnimationFrame || instant) {
-		console.log(parent.scrollTop, parent.scrollHeight, parent.clientHeight)
 		parent.scrollTop = parent.scrollHeight - parent.clientHeight
 	} else {
 		// only start a new animation if previous isn't already running
@@ -69,7 +73,7 @@ ChatRoom.prototype.autoScrollAnimation = function() {
 		this.animationId = window.requestAnimationFrame(function(time) {
 			// only call again if scroll pos has not changed
 			// (if it has, that means the user probably scrolled manually)
-			if ($.expectedTop == $.element.scrollTop) {
+			if ($.expectedTop == $.messagePane.scrollTop) {
 				$.autoScrollAnimation()
 			} else {
 				$.animationId = null
@@ -80,23 +84,21 @@ ChatRoom.prototype.autoScrollAnimation = function() {
 	}
 }
 
-
-
 ChatRoom.prototype.show = function() {
 	var old = ChatRoom.currentRoom
-	ChatRoom.currentRoom = this
-	$userList.replaceChildren(this.userList)
-	$chatPane.replaceChildren(this.messagePane)
-	if (old) 
-		old.visible = false
+	if (old)
+		old.hide()
+	this.messagePane.style.display = ""
+	this.userList.style.display = ""
 	this.visible = true
+	ChatRoom.currentRoom = this
 }
 
 ChatRoom.prototype.hide = function() {
+	this.messagePane.style.display = "none"
+	this.userList.style.display = "none"
 	if (ChatRoom.currentRoom == this)
 		ChatRoom.currentRoom = null
-	this.userList.remove()
-	this.messagePane.remove()
 	this.visible = false
 }
 
@@ -130,20 +132,38 @@ with (View) (function($) { "use strict" //*/
 var room
 
 addView('chat', {
-	start: function(id, query, render) {
-		return $.Req.getChatView(id, render)
+	// in this case, we sometimes make a request, and sometimes
+	// load the page instantly because the chatroom is cached
+	// so, call either `render` or `quick`
+	// the function passed to quick will act like a simple view
+	// with no `start` method (is called immediately)
+	// DO NOT CALL BOTH FUNCTIONS!
+	start: function(id, query, render, quick) {
+		var room = ChatRoom.rooms[id]
+		if (room) {
+			quick(function() {
+				var page = room.page
+				Nav.link("page/"+page.id, $pagePageLink)
+				setEntityTitle(page)
+				setEntityPath(page)
+				room.show()
+			})
+		} else {
+			return $.Req.getChatView(id, render)
+		}
 	},
 	className: 'chatMode',
 	render: function(page, comments) {
 		Nav.link("page/"+page.id, $pagePageLink)
 		setEntityTitle(page)
 		setEntityPath(page)
-		room = new ChatRoom(page.id)
+		room = new ChatRoom(page.id, page)
 		room.displayInitialMessages(comments)
 		room.show()
 	},
 	cleanUp: function() {
 		//$messageList.replaceChildren()
+		room.hide()
 	},
 	init: function() {
 	}

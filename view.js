@@ -279,13 +279,17 @@ handleView: function(type, id, query, callback) {
 				}
 			}
 			loadEnd()
-		})
+		}, quick)
 	} else {
 		loadStart()
+		quick(view.render)
+	}
+
+	function quick(ren) {
 		cleanUp()
 		currentView = view
 		try {
-			view.render(id, query)
+			ren(id, query)
 			after()
 		} catch(e) {
 			errorRender("render failed")
