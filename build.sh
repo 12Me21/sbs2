@@ -1,7 +1,8 @@
 if [ "$1" ]
 then
 	dest="$(readlink -f "$1")"
-	echo 'Will output files to' "$dest" >&2
+	read -p "Will output files to: $dest
+(Press Enter)" >&2
 fi
 
 cd "$(dirname "$0")"
