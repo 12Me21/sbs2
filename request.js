@@ -324,9 +324,13 @@ getUsersView: function(callback) {
 	}, true)
 },
 
+setVote: function(id, state, callback) {
+	return request("Vote/"+id+"/"+(state||"delete"), 'POST', callback)
+},
+
 getPageView: function(id, callback) {
 	return read([
-		{content: {ids: [+id]}},
+		{content: {ids: [+id], includeAbout: true}},
 		"user.0createUserId.0editUserId",
 	], {}, function(e, resp) {
 		if (!e && resp.content[0])
@@ -411,37 +415,45 @@ lpRefresh: function() {
 	lpLoop()
 },
 
+lpProcess: function(resp) {
+	if (resp.listeners) {
+		// process listeners (convert uids to user objetcs)
+		var listeners = {}
+		for (var id in resp.listeners) {
+			var list = resp.listeners[id]
+			var list2 = []
+			for (var uid in list) {
+				list2.push({user: resp.chains.userMap[uid], status: list[uid]})
+			}
+			listeners[id] = list2
+		}
+		onListeners(listeners)
+	}
+	if (resp.chains) {
+		if (resp.chains.comment)
+			onMessages(resp.chains.comment)
+		if (resp.chains.commentdelete)
+			onMessages(resp.chains.commentdelete)
+	}
+},
+
 lpLoop: function() {
+	//make sure only one instance of this is running
 	var cancelled
 	var x = doListen(lpLastId, lpStatuses, lpLastListeners, function(e, resp) {
 		if (cancelled) // should never happen (but I think it does sometimes..)
 			return
+		// try/catch here so the long poller won't fail when there's an error in the callbacks
 		try {
 			lpLastId = resp.lastId
-			if (resp.listeners) {
+			if (resp.listeners)
 				lpLastListeners = resp.listeners
-				var listeners = {}
-				for (var id in resp.listeners) {
-					var list = resp.listeners[id]
-					var list2 = []
-					for (var uid in list) {
-						list2.push({user: resp.chains.userMap[uid], status: list[uid]})
-					}
-					listeners[id] = list2
-				}
-				console.log(listeners)
-				onListeners(listeners)
-			}
-			if (resp.chains) {
-				if (resp.chains.comment)
-					onMessages(resp.chains.comment)
-				if (resp.chains.commentdelete)
-					onMessages(resp.chains.commentdelete)
-			}
+			lpProcess(resp)
 		} catch (e) {
 			console.error(e)
 		}
 		if (!e || e=='timeout' || e=='rate') {
+			// I'm not sure this is needed. might be able to just call lpLoop diretcly?
 			var t = setTimeout(function() {
 				if (cancelled) // should never happen?
 					return
