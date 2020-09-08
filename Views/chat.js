@@ -38,12 +38,18 @@ ChatRoom.removeRoom = function(room) {
 }
 
 ChatRoom.setViewing = function(ids) {
-	console.log("VIEW",ids)
 	Req.lpSetListening(ids)
 	Req.lpRefresh()
 }
 
 ChatRoom.updateUserLists = function(a) {
+	if (a[-1]) {
+		var d = document.createDocumentFragment()
+		a[-1].forEach(function(item) {
+			d.appendChild(Draw.linkAvatar(item.user))
+		})
+		$sidebarUserlist.replaceChildren(d)
+	}
 	for (var id in a) {
 		var room = ChatRoom.rooms[id]
 		if (room)
