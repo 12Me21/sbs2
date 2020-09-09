@@ -23,20 +23,16 @@ Req.onLogin = function() {
 		})
 	}
 
-	Req.doListenInitial(function(e, resp) {
+	Req.lpStart()
+	console.log("staring long poller")
+	/*Req.doListenInitial(function(e, resp) {
 		if (!e) {
-			resp.systemaggregate.forEach(function(item) {
-				if (item.type == "actionMax")
-					Req.lpLastId = item.id
-			})
-			console.log("staring long poller")
-			Req.lpStart()
 			//sbm(resp, true)
 			//todo:
 			// keep an updated list of recently active pages
 			//
 		}
-	})
+	})*/
 	
 	// update currently viewed page (in case page was hidden)
 }
