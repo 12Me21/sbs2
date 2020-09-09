@@ -8,7 +8,7 @@
 	overflow-wrap: break-word;
 }
 /* may need more things here */
-.textItem, .item, .buttonContainer button, .avatar, tbody {
+.textItem, .item, .buttonContainer button, .avatar, tbody, img {
 	vertical-align: top;
 }
 
@@ -275,6 +275,10 @@ html.f-loggedIn .loggedOut {
 	border-bottom: 1px solid gray;
 }
 
+.bottomBorder {
+	border-bottom: 1px solid gray;
+}
+
 /****************
  ** Title Pane **
  ****************/
@@ -283,6 +287,8 @@ html.f-loggedIn .loggedOut {
 	flex-shrink: 0;
 	border-bottom: 2px solid black;
 	background-color: #DEF;
+	box-shadow: 0 2px 3px rgba(0,0,0,0.3);
+	z-index: 10;
 	/*-webkit-transition: background-color 0.1s ease;
 	transition: background-color 0.1s ease;*/
 }
@@ -354,6 +360,7 @@ header > :first-child {
 	background-color: white;
 	width: 30vw;
 	min-width: 10vw;
+	z-index: 20;
 }
 
 html:not(.f-sidebar) #\$sidebar {
@@ -730,12 +737,15 @@ html:not(.f-editingComment) .showWhenEdit {
 	/* todo: make this outside of scroller and have activity list scroll separately*/
 }
 
-.userPageBox .userPageAvatar {
+.userPageAvatar {
 	width: 10rem;
 	height: 10rem;
 	display: inline-block;
 	-webkit-flex-shrink: 1;
 	flex-shrink: 1;
+/*	border-right: 1px solid gray;
+	border-bottom: 1px solid gray;*/
+	box-shadow: 2px 2px 5px gray;
 }
 
 .userPageBox .pageContents {
