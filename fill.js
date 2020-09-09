@@ -108,9 +108,12 @@ if (window.ResizeObserver) {
 		events.forEach(function(event) {
 			var item = t.get(event.target)
 			if (item) {
-				if (event.contentRect.width) {
-					item.callback(item.height, event.contentRect.height)
-					item.height = event.contentRect.height
+				if (event.contentRect.width) { //ignore changes for hidden elements
+					var height = event.contentRect.height
+					if (height != item.height) { //need to check if height changed in case of an ignored hide/show cycle
+						item.callback(item.height, event.contentRect.height)
+						item.height = event.contentRect.height
+					}
 				}
 			}
 		})
