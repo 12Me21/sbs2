@@ -326,6 +326,38 @@ onLoad: function() {
 	attachResize($sidebar, $sidebarPinnedResize, true, -1, "sidebarWidth")
 	attachResize($sidebarPinned, $sidebarPinnedResize, false, 1, "sidebarPinnedHeight")
 	flag('sidebar', true)
+
+	// video player does not fire 'click' events so instead
+	// need to detect when the video is played
+	// using a custom event
+	document.addEventListener('videoclicked', function(e) {
+		imageFocusClickHandler(e.target)
+	})
+	document.onmousedown = function(e) {
+		if (!e.button) // 0 or none (prevent right click etc.)
+			imageFocusClickHandler(e.target)
+	}
+	var embiggenedImage
+	function imageFocusClickHandler(element) {
+		if (element.hasAttribute('shrink')) {
+			// if click on image that's already big:
+			if (embiggenedImage && embiggenedImage == element) {
+				embiggenedImage.removeAttribute('bigImage')
+				embiggenedImage = null
+			} else if (element != embiggenedImage) { // if click on new iamge
+				if (embiggenedImage)
+					embiggenedImage.removeAttribute('bigImage')
+				element.setAttribute('bigImage', "")
+				embiggenedImage = element
+			}
+		} else if (!(element instanceof HTMLTextAreaElement)) {
+			if (embiggenedImage && element != embiggenedImage) {
+				embiggenedImage.removeAttribute('bigImage')
+				embiggenedImage = null
+			}
+		}
+	}
+
 },
 
 addView: function(name, data) {
