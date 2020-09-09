@@ -49,8 +49,7 @@
 	<a class="textItem userMode loggedIn myUserPage" data-static-path=settings>Settings</a>
 	
 	<button class="editorMode item" id="$deletePage">DELETE</button>
-	<button tabindex="-1" id=$editButton class="item canEdit">Edit</button>
-	
+		
 	<div class="item loggedIn myUserPage">
 		<div id=$userPageStatus class="textItem userMode"></div>
 	</div>
@@ -70,7 +69,6 @@
 <div class="sideBarContainer grow" id="$sidebarContainer">
 	<div class="m grow" id="$m">
 		<div class="pathMode pathBar" id=$path></div>
-		<div id="$userList"></div>
 		<div class="infoPane editorMode">
 			<label for="$keywords">Keywords:</label><input placeholder="(space separated, optional)" id="$keywords"><br>
 			<label for="$editPageType">Type:</label><input placeholder="@" id="$editPageType"><br>
@@ -134,7 +132,7 @@
 		<div class="membersMode memberNav nav bar rem1-7" id=$memberNav></div>
 
 		<div class="userPageBox userMode">
-			<a id=$userPageAvatarLink><img id=$userPageAvatar class="userPageAvatar avatar" alt="" src="about:blank"></a>
+			<a id=$userPageAvatarLink><img id=$userPageAvatar class="userPageAvatar" alt="" src="about:blank"></a>
 			<div class="pageContents pre userPageContents markup-root" id=$userPageContents></div>
 		</div>
 
@@ -167,6 +165,7 @@
 
 			<div class="pageMode pageInfoPane rem2-3 bar">
 				<span class="textItem" id=$authorBox></span>
+				<button id=$editButton class="item canEdit">Edit</button>
 				<div class="rightAlign item">
 					<span class="textItem pageMode" id=$voteBox>
 						<button class="item" id=$voteButton_b data-vote="b">Bad<br><span id=$voteCount_b>x</span></button><button id="$voteButton_o" class="item" data-vote="o">Ok<br><span id=$voteCount_o>x</span></button><button id="$voteButton_g" class="item" data-vote="g">Great<br><span id=$voteCount_g>x</span></button>
@@ -274,7 +273,7 @@
 	</div>
 	<div id="$sidebar">
 		<div class="sidebarInside">
-			<div class="loggedIn bar rem1-5" id=$loggedIn>
+			<div class="loggedIn bar rem1-5 bottomBorder" id=$loggedIn>
 				<a class="item userLink" id=$myUserLink>
 					<span class="myName username textItem" id=$myName></span>
 					<img class="myAvatar item avatar" id=$myAvatar alt="" src="about:blank">
