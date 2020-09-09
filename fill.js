@@ -88,11 +88,11 @@ function TrackScrollResize(element, callback) {
 	} else {
 		if (TrackScrollResize.observer) {
 			TrackScrollResize.observer.unobserve(element)
-			t['delete'](n)
+			t['delete'](element)
 		} else {
 			for (var i=0; i<t.length; i++) {
 				if (t[i].element == element) {
-					n.splice(i, 1)
+					t.splice(i, 1)
 					break
 				}
 			}
@@ -101,7 +101,7 @@ function TrackScrollResize(element, callback) {
 }
 
 
-if (ResizeObserver) {
+if (window.ResizeObserver) {
 	TrackScrollResize.tracking = new WeakMap()
 	TrackScrollResize.observer = new ResizeObserver(function(events) {
 		var t = TrackScrollResize.tracking
