@@ -7,6 +7,8 @@ currentPath: null,
 
 initialPop: false,
 
+init: false,
+
 entityPath: function(entity) {
 	if (!entity)
 		return
@@ -52,9 +54,10 @@ initial: function() {
 	// this SHOULD happen before DOMContentLoaded,
 	// and if it does, cancel the initial loader
 	// if it happens AFTER DOMContentLoaded then you're basically fucked though
-	if (initialPop)
+	if (init || initialPop)
 		return
 	initialPop = true
+	init = true
 	updateFromLocation()
 },
 
@@ -113,6 +116,7 @@ render: function(path, after) {
 }) //*/
 
 $.onpopstate = function() {
+	init = true
 	initialPop = true
 	updateFromLocation()
 }
