@@ -35,8 +35,6 @@ Req.onLogin = function() {
 		}
 	})
 
-	Nav.initial()
-	
 	/*Req.doListenInitial(function(e, resp) {
 		if (!e) {
 			//sbm(resp, true)
@@ -50,7 +48,6 @@ Req.onLogin = function() {
 }
 
 Req.onGuestLoad = function() {
-	Nav.initial()
 }
 
 Req.onLogout = function() {
@@ -62,6 +59,8 @@ Req.onLogout = function() {
 	// reload current page in case it's not public
 	// etc.
 }
+
+Req.tryLoadCachedAuth()
 
 if (document.readyState == 'loading')
 	document.addEventListener('DOMContentLoaded', ready)
@@ -79,6 +78,6 @@ function ready() {
 	}
 	
 	View.onLoad()
-}
 
-Req.tryLoadCachedAuth()
+	Nav.initial()
+}
