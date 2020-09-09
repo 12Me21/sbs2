@@ -20,6 +20,7 @@ gotCategoryTree: false,
 
 onListeners: null,
 onMessages: null,
+onActivity: null,
 lpLastId: -1,
 lpStatuses: {"-1":"online","0":"online"},
 lpLastListeners: {"-1":{"0":""}},
@@ -442,6 +443,8 @@ lpProcess: function(resp) {
 			onMessages(resp.chains.comment)
 		if (resp.chains.commentdelete)
 			onMessages(resp.chains.commentdelete)
+		if (resp.chains.activity)
+			onActivity(resp.chains.activity)
 	}
 },
 

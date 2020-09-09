@@ -13,7 +13,7 @@ avatarURL: function(user, params) {
 
 largeIcon: function(entity) {
 	var element = document.createElement('img')
-	if (entity.type == 'user')
+	if (entity.Type == 'user')
 		element.src = avatarURL(entity, "size=400&crop=true")
 	else
 		element.src = "resource/unknown.png"
@@ -72,11 +72,11 @@ textItem: function(text) {
 },
 
 iconURL: function(entity) {
-	if (entity.type == 'user') {
+	if (entity.Type == 'user') {
 		return 
-	} else if (entity.type == 'category')
+	} else if (entity.Type == 'category')
 		return "resource/category.png"
-	else if (entity.type == 'content') {
+	else if (entity.Type == 'content') {
 		if (!hasPerm(entity.permissions, 0, 'r'))
 			return "resource/hiddenpage.png"
 		// todo: hidden icon
@@ -101,7 +101,7 @@ avatar: function(user) {
 
 icon: function(entity) {
 	var element
-	if (entity.type == 'user') {
+	if (entity.Type == 'user') {
 		element = document.createElement('img')
 		element.className += "item icon avatar"
 		element.src = avatarURL(entity, "size=120&crop=true")
@@ -109,9 +109,9 @@ icon: function(entity) {
 		element = document.createElement('span')
 		element.setAttribute('role', 'img')
 		element.className = "item icon iconBg"
-		if (entity.type == 'category')
+		if (entity.Type == 'category')
 			element.style.backgroundImage = "url('resource/category.png')"
-		else if (entity.type == 'content') {
+		else if (entity.Type == 'content') {
 			if (!hasPerm(entity.permissions, 0, 'r'))
 				element.style.backgroundImage = "url('resource/hiddenpage.png')"
 			else

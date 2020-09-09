@@ -53,10 +53,19 @@ processList: function(type, data, users) {
 	data.forEach(function(item, i, data) {
 		// this is done in-place
 		data[i] = proc(item, users)
-		data[i].type = type
+		data[i].Type = type
 	})
 },
 processItem: {
+	activity: function(data, users) {
+		if (data.date)
+			data.date = parseDate(data.date)
+		if (data.type == 'user')
+			data.content = users[data.contentId]
+		if (data.user)
+			data.user = users[data.userId]
+		return data
+	},
 	user: function(data, users) {
 		if (data.createDate)
 			data.createDate = parseDate(data.createDate)

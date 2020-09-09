@@ -2,18 +2,23 @@ function ChatRoom(id, page) {
 	var old = ChatRoom.rooms[id]
 	if (old)
 		return old
-	this.page = page
 	this.id = id
+	this.userList = []
+	if (id == -1) {
+		this.userListElem = $sidebarUserlist
+		return
+	}
+	this.page = page
 	this.lastUid = NaN
 	this.lastBlock = null
 	this.lastTime = 0
-	this.userList = document.createElement('div')
-	this.userList.className = "bar rem2-3 userlist"
+	this.userListElem = document.createElement('div')
+	this.userListElem.className = "bar rem2-3 userlist"
 	this.messagePane = document.createElement('div')
 	this.messagePane.className = "chatScroller"
 	this.messagePane.style.display = "none"
-	this.userList.style.display = "none"
-	$chatPane.appendChild(this.userList)
+	this.userListElem.style.display = "none"
+	$chatPane.appendChild(this.userListElem)
 	$chatPane.appendChild(this.messagePane)
 	this.messageList = document.createElement('div')
 	this.messageList.className = "scrollInner"
@@ -43,6 +48,24 @@ function ChatRoom(id, page) {
 
 ChatRoom.rooms = {}
 
+ChatRoom.updateUserAvatar = function(user) {
+	for (var id in ChatRoom.rooms) {
+		ChatRoom.rooms[id].updateUserAvatar(user)
+	}
+	if (ChatRoom.global)
+		ChatRoom.global.updateUserAvatar(user)
+}
+
+ChatRoom.prototype.updateUserAvatar = function(user) {
+	for (var i=0; i<this.userList.length; i++) {
+		if (this.userList[i].user.id == user.id) {
+			this.userList[i].user = user
+			this.updateUserList(this.userList)
+			break
+		}
+	}
+}
+
 ChatRoom.addRoom = function(room) {
 	ChatRoom.rooms[room.id] = room
 	ChatRoom.setViewing(Object.keys(ChatRoom.rooms))
@@ -61,13 +84,11 @@ ChatRoom.setViewing = function(ids) {
 	Req.lpRefresh()
 }
 
+ChatRoom.userList = []
+
 ChatRoom.updateUserLists = function(a) {
 	if (a[-1]) {
-		var d = document.createDocumentFragment()
-		a[-1].forEach(function(item) {
-			d.appendChild(Draw.linkAvatar(item.user))
-		})
-		$sidebarUserlist.replaceChildren(d)
+		ChatRoom.global.updateUserList(a[-1])
 	}
 	for (var id in a) {
 		var room = ChatRoom.rooms[id]
@@ -88,11 +109,12 @@ ChatRoom.displayMessages = function(comments) {
 }
 
 ChatRoom.prototype.updateUserList = function(list) {
+	this.userList = list
 	var d = document.createDocumentFragment()
 	list.forEach(function(item) {
 		d.appendChild(Draw.linkAvatar(item.user))
 	})
-	this.userList.replaceChildren(d)
+	this.userListElem.replaceChildren(d)
 }
 
 ChatRoom.prototype.displayInitialMessages = function(comments) {
@@ -156,7 +178,7 @@ ChatRoom.prototype.show = function() {
 	if (old)
 		old.hide()
 	this.messagePane.style.display = ""
-	this.userList.style.display = ""
+	this.userListElem.style.display = ""
 	this.visible = true
 	ChatRoom.currentRoom = this
 }
@@ -164,7 +186,7 @@ ChatRoom.prototype.show = function() {
 ChatRoom.prototype.hide = function() {
 	if (this.pinned) {
 		this.messagePane.style.display = "none"
-		this.userList.style.display = "none"
+		this.userListElem.style.display = "none"
 		if (ChatRoom.currentRoom == this)
 			ChatRoom.currentRoom = null
 		this.visible = false
@@ -176,9 +198,9 @@ ChatRoom.prototype.destroy = function() {
 	ChatRoom.removeRoom(this)
 	TrackScrollResize(this.messageList, null)
 	TrackScrollResize(this.messagePane, null)
-	this.userList.remove()
+	this.userListElem.remove()
 	this.messagePane.remove()
-	this.userList = null //gc
+	this.userListElem = null //gc
 	this.scoller = null
 	this.visible = false
 	
@@ -273,6 +295,10 @@ addView('chat', {
 				$chatSend.onclick()
 			}
 		}
+		// TODO: make sure this is ready when the long poller starts!
+		// right now it PROBABLY will be but that isn't certain
+		// the long poller could technically start before onload
+		ChatRoom.global = new ChatRoom(-1)
 	}
 })
 
