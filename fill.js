@@ -71,6 +71,63 @@ if (localStorage) {
 	}
 }
 
+function TrackScrollResize(element, callback) {
+	var t = TrackScrollResize.tracking
+	if (callback) {
+		var n = {
+			element: element,
+			callback: callback,
+			height: element.getBoundingClientRect().height,
+		}
+		if (TrackScrollResize.observer) {
+			TrackScrollResize.observer.observe(element)
+			t.set(element, n)
+		} else {
+			t.push(n)
+		}
+	} else {
+		if (TrackScrollResize.observer) {
+			TrackScrollResize.observer.unobserve(element)
+			t['delete'](n)
+		} else {
+			for (var i=0; i<t.length; i++) {
+				if (t[i].element == element) {
+					n.splice(i, 1)
+					break
+				}
+			}
+		}
+	}
+}
+
+
+if (ResizeObserver) {
+	TrackScrollResize.tracking = new WeakMap()
+	TrackScrollResize.observer = new ResizeObserver(function(events) {
+		var t = TrackScrollResize.tracking
+		events.forEach(function(event) {
+			var item = t.get(event.target)
+			if (item) {
+				if (event.contentRect.width) {
+					item.callback(item.height, event.contentRect.height)
+					item.height = event.contentRect.height
+				}
+			}
+		})
+	})
+} else {
+	TrackScrollResize.tracking = []
+	TrackScrollResize.interval = window.setInterval(function() {
+		TrackScrollResize.tracking.forEach(function(item) {
+			var height = item.element.getBoundingClientRect().height
+			if (height != item.height) {
+				item.callback(item.height, height)
+				item.height = height
+			}
+		})
+	}, 200)
+}
+
 /*function NodeBlock(node, child) {
 	// create object containing override properties
 	// set this object's prototype to `node`

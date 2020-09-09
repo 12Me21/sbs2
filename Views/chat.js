@@ -20,6 +20,25 @@ function ChatRoom(id, page) {
 	this.messagePane.appendChild(this.messageList)
 	this.visible = false
 	ChatRoom.addRoom(this)
+	var $ = this
+	$.atBottom = true
+	$.messagePane.addEventListener('scroll', function(e) {
+		if ($.ignoreScroll) {
+			$.ignoreScroll = false
+			return
+		}
+		if ($.scrollDistance() < $.messagePane.clientHeight/4) {
+			$.atBottom = true
+		} else {
+			$.atBottom = false
+		}
+	}, {passive: true})
+	function onResize() {
+		if ($.atBottom && !$.animationId) // when message is inserted, it triggers the resize detector, which would interrupt the scroll animation, so we don't force scroll if an animation is playing
+			$.autoScroll(true)
+	}
+	TrackScrollResize(this.messagePane, onResize)
+	TrackScrollResize(this.messageList, onResize)
 }
 
 ChatRoom.rooms = {}
@@ -89,6 +108,8 @@ ChatRoom.prototype.displayInitialMessages = function(comments) {
 
 ChatRoom.prototype.autoScroll = function(instant) {
 	var parent = this.messagePane
+	if (instant)
+		this.ignoreScroll = true
 	if (!window.requestAnimationFrame || instant) {
 		parent.scrollTop = parent.scrollHeight - parent.clientHeight
 	} else {
@@ -109,6 +130,8 @@ ChatRoom.prototype.autoScrollAnimation = function() {
 	var parent = this.messagePane
 
 	parent.scrollTop += Math.max(Math.ceil(this.scrollDistance()/4), 1)
+
+	this.atBottom = true; // maybe should only be when finished, probably doesn't matter though
 	
 	if (this.scrollDistance() > 0) {
 		// save scroll position
@@ -151,15 +174,18 @@ ChatRoom.prototype.hide = function() {
 
 ChatRoom.prototype.destroy = function() {
 	ChatRoom.removeRoom(this)
+	TrackScrollResize(this.messageList, null)
+	TrackScrollResize(this.messagePane, null)
 	this.userList.remove()
 	this.messagePane.remove()
 	this.userList = null //gc
 	this.scoller = null
 	this.visible = false
+	
 }
 
 ChatRoom.prototype.shouldScroll = function() {
-	return this.scrollDistance() < (this.messagePane.clientHeight)*0.25
+	return this.atBottom//this.scrollDistance() < (this.messagePane.clientHeight)*0.25
 }
 
 ChatRoom.prototype.displayMessage = function(comment, autoscroll) {
