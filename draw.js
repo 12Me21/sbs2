@@ -224,6 +224,61 @@ navButtons: function(callback) {
 	e.appendChild(next[0])
 	e.appendChild(page)
 	return e
+},
+
+authorBox: function(page) {
+	var element = document.createDocumentFragment()
+	if (!page)
+		return element
+	element.appendChild(pageEditedTime("Author", page.createDate))
+	element.appendChild(entityTitleLink(page.createUser))
+	if (page.editUserId != page.createUserId) {
+		element.appendChild(pageEditedTime("Edited by", page.editDate))
+		element.appendChild(entityTitleLink(page.editUser))
+	} else if (page.createDate != page.editDate) { //edited by same user
+		element.appendChild(pageEditedTime("Edited", page.editDate))
+	}
+	return element
+},
+
+pageEditedTime: function(label, time) {
+	var b = document.createElement('span')
+	b.className = "item"
+
+	var a = document.createElement('div')
+	a.className = "half"
+	a.textContent = label
+	b.appendChild(a)
+
+	a = timeAgo(time)
+	a.className += " half"
+	b.appendChild(a)
+	return b
+},
+
+timeAgo: function(time) {
+	var t = document.createElement('time')
+	t.setAttribute('dateTime', time.toISOString())
+	t.textContent = timeAgoString(time)
+	t.title = ""+time
+	return t
+},
+
+timeAgoString: function(date) {
+	var seconds = Math.floor((Date.now() - date.getTime()) / 1000)
+	var interval = Math.floor(seconds / 31536000)
+	if (interval >= 1) return interval + " years ago"
+	interval = Math.round(seconds / 2592000)
+	if (interval >= 1) return interval + " months ago"
+	interval = Math.round(seconds / 86400)
+	if (interval >= 1) return interval + " days ago"
+	interval = Math.round(seconds / 3600)
+	if (interval >= 1) return interval + " hours ago"
+	interval = Math.round(seconds / 60)
+	if (interval >= 1) return interval + " minutes ago"
+	if (seconds < 0)
+		return " IN THE FUTURE?"
+	return Math.round(seconds) + " seconds ago"
 }
 
 <!--/* 

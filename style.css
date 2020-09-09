@@ -484,6 +484,7 @@ main {
 .avatar {
 	border: 1px solid white;
 	border-radius: 3px;
+	background-color: white;
 }
 .icon.avatar {
 	margin-right: 0.2rem;
@@ -800,9 +801,10 @@ button[data-selected] {
 
 .pageInfoPane {
 	background-color: #EEE;
-	overflow: auto;
+	/*overflow: auto;*/
 	-webkit-flex-shrink: 0;
 	flex-shrink: 0;
+	border-bottom: 1px solid black;
 }
 
 .pageMetaIcon {
@@ -1123,8 +1125,8 @@ table {
 }
 
 .half {
-	text-align: right;
-	display:block;
+	text-align: center;
+	display: block;
 	line-height: 1.15rem;
 	min-height: 1.15rem;
 }
