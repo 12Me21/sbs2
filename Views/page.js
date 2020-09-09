@@ -26,6 +26,7 @@ addView('page', {
 			else
 				button.removeAttribute('data-selected')
 		})
+		$authorBox.replaceChildren(Draw.authorBox(page))
 	},
 	init: function() {
 		var voteBtns = [$voteButton_b, $voteButton_o, $voteButton_g]

@@ -63,7 +63,6 @@
 	<label for=$watchCheck class="textItem pageItem loggedIn">Watching:</label>
 	<input type=checkbox id=$watchCheck class="item pageItem loggedIn">
 	<div class="pageCreate textItem rightAlign">
-		<span class="textItem" id=$authorBox></span>
 		<button id=$openSidebar class="item">|||</button>
 	</div>
 </header>
@@ -166,24 +165,24 @@
 
 			<div class="userActivity userMode" id="$userActivity"></div>
 
-			<div class="pageMode pageWhatever">
-				<span class="textItem pageMode" id=$voteBox>
-					<button class="item" id=$voteButton_b data-vote="b">Bad<br><span id=$voteCount_b>x</span></button><button id="$voteButton_o" class="item" data-vote="o">Ok<br><span id=$voteCount_o>x</span></button><button id="$voteButton_g" class="item" data-vote="g">Great<br><span id=$voteCount_g>x</span></button>
-				</span>
+			<div class="pageMode pageInfoPane rem2-3 bar">
+				<span class="textItem" id=$authorBox></span>
+				<div class="rightAlign item">
+					<span class="textItem pageMode" id=$voteBox>
+						<button class="item" id=$voteButton_b data-vote="b">Bad<br><span id=$voteCount_b>x</span></button><button id="$voteButton_o" class="item" data-vote="o">Ok<br><span id=$voteCount_o>x</span></button><button id="$voteButton_g" class="item" data-vote="g">Great<br><span id=$voteCount_g>x</span></button>
+					</span>
+				</div>
 			</div>
 			
-			<div class="pageInfoPane pageMode px40" id="$pageInfoPane">
-				
+			<!--<div class="pageInfoPane pageMode px40" id="$pageInfoPane">
 				<span id="$gallery" class="gallery" style="display:none;">
 					<span class="metaInfo">
 						<span id="$metaKey" class="textItem"></span>
 						<span id="$sbapiInfo" class="textItem"></span>
 					</span>
-					<!-- here we can put
-						  tags, type, sb key info, etc.
-					-->
 				</span>
-			</div>
+	</div>
+	-->
 			<div class="pageContents pre pageMode markup-root" id="$pageContents"></div>
 			<div class="editorPane editorMode">
 				<div class="editorTextarea">
@@ -193,12 +192,12 @@
 			</div>
 			
 			<div class="homeMode homePane">
-				<a class="linkBar bar rem2-3" data-static-path=search><span class="textItem">Search</span></a>
 				<a class="linkBar bar rem2-3" data-static-path=category/0><span class="textItem">Pages</span></a>
+				<a class="linkBar bar rem2-3" data-static-path=search><span class="textItem">Search</span></a>
 				<a class="linkBar bar rem2-3" data-static-path=users><span class="textItem">Users</span></a>
 				<a class="linkBar bar rem2-3" data-static-path=files><span class="textItem">Images</span></a>
-				<a class="linkBar bar rem2-3" data-static-path=test><span class="textItem">Test</span></a>
 				<a class="linkBar bar rem2-3" data-static-path=settings><span class="textItem">User Settings</span></a>
+				<a class="linkBar bar rem2-3" data-static-path=test><span class="textItem">Test</span></a>
 			</div>
 			<div class="membersMode memberPane">
 				<div id=$memberList></div>
@@ -208,24 +207,24 @@
 				<div class="registerBox">
 					<h2>Log In</h2>
 					<form id=$loginForm>
-						<input placeholder="Username" name="username" type="username"><br>
-						<input placeholder="Password" name="password" type="password"><br>
-						<button name="login" onclick="event.preventDefault()">Log In</button>
+						<input placeholder=Username name=username type=username><br>
+						<input placeholder=Password name=password type=password><br>
+						<button name=login onclick=event.preventDefault()>Log In</button>
 					</form>
-					<div id="$loginError"></div>
+					<div id=$loginError></div>
 				</div>
 				<div class="registerBox">
 					<h2>Register</h2>
-					<form id="$registerForm" autocomplete="off">
-						<input placeholder="Username" name="username" id=$registerUsername minlength="2" maxlength="20"> 2 to 20 characters, no spaces<br>
-						<input placeholder="Password" name="password" type="password" id=$registerPassword minlength="8"><input placeholder="Confirm Password" name="password2" type="password" id=$registerPassword2 minlength="8"> At least 8 characters<br>
-						<input placeholder="Email" name="email" type="email" id=$registerEmail><input placeholder="Confirm Email" name="email2" type="email" id=$registerEmail2> Confirmation code will be sent<br>
-						<button id="$registerButton" onclick="event.preventDefault()">Register</button></form>
-					<button id="$resendEmail" onclick="event.preventDefault()">Resend Email</button>
-					<div id="$registerError" class="pre"></div>
+					<form id=$registerForm autocomplete=off>
+						<input placeholder=Username name=username id=$registerUsername minlength=2 maxlength=20> 2 to 20 characters, no spaces<br>
+						<input placeholder=Password name=password type=password id=$registerPassword minlength=8><input placeholder="Confirm Password" name=password2 type=password id=$registerPassword2 minlength=8> At least 8 characters<br>
+						<input placeholder=Email name=email type=email id=$registerEmail><input placeholder="Confirm Email" name=email2 type=email id=$registerEmail2> Confirmation code will be sent<br>
+						<button id=$registerButton onclick=event.preventDefault()>Register</button></form>
+					<button id=$resendEmail onclick=event.preventDefault()>Resend Email</button>
+					<div id=$registerError class="pre"></div>
 					<h3>Confirm Registration</h3>
-					<input placeholder="Confirmation Code" id="$emailCode">
-					<button id="$registerConfirm">Confirm</button>
+					<input placeholder="Confirmation Code" id=$emailCode>
+					<button id=$registerConfirm>Confirm</button>
 				</div>
 			</div>
 
