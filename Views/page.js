@@ -20,7 +20,6 @@ addView('page', {
 		;["b","o","g"].forEach(function(vote) {
 			$["$voteCount_"+vote].textContent = page.about.votes[vote].count
 			var button = $["$voteButton_"+vote]
-			console.log(page.about.myVote)
 			if (page.about.myVote == vote)
 				button.setAttribute('data-selected', "true")
 			else

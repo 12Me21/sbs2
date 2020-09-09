@@ -10,11 +10,11 @@ initialPop: false,
 entityPath: function(entity) {
 	if (!entity)
 		return
-	if (entity.type == 'user')
+	if (entity.Type == 'user')
 		return "user/"+entity.id
-	if (entity.type == 'content')
+	if (entity.Type == 'content')
 		return "page/"+entity.id
-	if (entity.type == 'category')
+	if (entity.Type == 'category')
 		return "category/"+entity.id
 },
 

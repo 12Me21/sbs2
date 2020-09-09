@@ -176,7 +176,7 @@ setPath: function(path) {
 	$path.replaceChildren(Draw.titlePath(path))
 },
 setEntityPath: function(page) {
-	if (page.type == 'category')
+	if (page.Type == 'category')
 		var node = page
 	else
 		node = page.parent
@@ -185,7 +185,7 @@ setEntityPath: function(page) {
 		path.unshift([Nav.entityPath(node), node.name])
 		node = node.parent
 	}
-	if (page.type == 'category')
+	if (page.Type == 'category')
 		path.push(null)
 	else
 		path.push([Nav.entityPath(page), page.name])
@@ -211,6 +211,19 @@ flag: function(flag, state) {
 			cls += " f-"+flag
 		$.document.documentElement.className = cls
 	}
+},
+
+updateUserAvatar: function(user) {
+	ChatRoom.updateUserAvatar(user) //todo: don't hardcode this
+	if (user.id == Req.uid)
+		updateMyUser(user)
+},
+
+updateMyUser: function(user) {
+	if (user.id != Req.uid)
+		return //uh oh
+	Req.me = user //This probably shouldn't be handled by View...
+	$loggedIn.replaceChildren(Draw.entityTitleLink(user, true))
 },
 
 handleView: function(type, id, query, callback) {

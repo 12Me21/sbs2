@@ -5,8 +5,7 @@
 Req.onLogin = function() {
 	View.flag('loggedIn', true)
 	Req.getMe(function(user) {
-		Req.me = user
-		$loggedIn.replaceChildren(Draw.entityTitleLink(user, true))
+		View.updateMyUser(user) //also sets Req.me...
 	})
 	// display user info etc.
 	// start long poller
@@ -15,6 +14,13 @@ Req.onLogin = function() {
 	}
 	Req.onListeners = function(a) {
 		ChatRoom.updateUserLists(a)
+	}
+	Req.onActivity = function(a) {
+		a.forEach(function(a) {
+			if (a.type == 'user') {
+				View.updateUserAvatar(a.content)
+			}
+		})
 	}
 
 	Req.doListenInitial(function(e, resp) {
@@ -60,9 +66,9 @@ function ready() {
 		document.head.appendChild(x)
 	}
 
-	Req.tryLoadCachedAuth()
-	
 	Nav.initial()
 
 	View.onLoad()
 }
+
+Req.tryLoadCachedAuth()
