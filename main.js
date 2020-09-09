@@ -4,9 +4,9 @@
 
 Req.onLogin = function() {
 	View.flag('loggedIn', true)
-	Req.getMe(function(user) {
+	/*Req.getMe(function(user) {
 		View.updateMyUser(user) //also sets Req.me...
-	})
+	})*/
 	// display user info etc.
 	// start long poller
 	Req.onMessages = function(comments) {
@@ -22,9 +22,21 @@ Req.onLogin = function() {
 			}
 		})
 	}
-
-	Req.lpStart()
+	
 	console.log("staring long poller")
+	Req.lpStart(function(e, resp) {
+		console.log(e, resp, "INIT")
+		if (!e) {
+			var me = resp.chains.Ume
+			if (me && me[0])
+				View.updateMyUser(me[0]) //also sets Req.me...
+		} else {
+			alert("INITIAL LONG POLL FAILED!")
+		}
+	})
+
+	Nav.initial()
+	
 	/*Req.doListenInitial(function(e, resp) {
 		if (!e) {
 			//sbm(resp, true)
@@ -35,6 +47,10 @@ Req.onLogin = function() {
 	})*/
 	
 	// update currently viewed page (in case page was hidden)
+}
+
+Req.onGuestLoad = function() {
+	Nav.initial()
 }
 
 Req.onLogout = function() {
@@ -61,9 +77,7 @@ function ready() {
 		x.textContent = "img, .iconBg { image-rendering: -webkit-optimize-contrast; }"
 		document.head.appendChild(x)
 	}
-
-	Nav.initial()
-
+	
 	View.onLoad()
 }
 

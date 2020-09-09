@@ -183,8 +183,10 @@ authenticate: function(username, password, callback) {
 tryLoadCachedAuth: function() {
 	var auth = $.Store.get(storageKey)
 	if (auth)
-		return gotAuth(auth)
-	return false
+		var ok = gotAuth(auth)
+	if (!ok)
+		onGuestLoad()
+	return ok
 },
 
 register: function(username, password, email, callback) {
@@ -378,17 +380,17 @@ sendMessage: function(room, message, meta, callback) {
 
 doListenInitial: function(callback) {
 	return read([
-		"systemaggregate",
-		//{comment:{reverse:true,limit:20}},
-		//{activity:{reverse:true,limit:10}},
-		//{activityaggregate:{reverse:true,limit:10}},
-		//"content.1parentId.2contentId.1id", //pages
-		//"category.2contentId",
-		//"user.1createUserId.2userId.3userIds", //users for comment and activity
-	],{/*content:"id,createUserId,name,permissions"*/},callback)
+		//"systemaggregate",
+		{comment:{reverse:true,limit:20}},
+		{activity:{reverse:true,limit:10}},
+		{activityaggregate:{reverse:true,limit:10}},
+		"content.0parentId.1contentId.0id", //pages
+		"category.1contentId",
+		"user.0createUserId.1userId.2userIds", //users for comment and activity
+	],{content:"id,createUserId,name,permissions"},callback)
 },
 
-doListen: function(lastId, statuses, lastListeners, callback) {
+doListen: function(lastId, statuses, lastListeners, getMe, callback) {
 	var actions = {
 		lastId: lastId,
 		statuses: statuses,
@@ -398,6 +400,9 @@ doListen: function(lastId, statuses, lastListeners, callback) {
 			"user.1createUserId.2userId.1editUserId.2contentId", //users for comment and activity
 			"category.2contentId" //todo: handle values returned by this
 		]
+	}
+	if (getMe) {
+		actions.chains.push('user~Ume-{"ids":['+ +uid +'],"limit":1}')
 	}
 	var req = [{actions: actions}]
 	for (var key in lastListeners) {
@@ -419,9 +424,9 @@ lpRefresh: function() {
 	}
 },
 
-lpStart: function() {
+lpStart: function(callback) {
 	if (!lpRunning)
-		lpLoop(true)
+		lpLoop(callback)
 },
 
 lpProcess: function(resp) {
@@ -452,7 +457,9 @@ lpLoop: function(noCancel) {
 	lpRunning = true
 	//make sure only one instance of this is running
 	var cancelled
-	var x = doListen(lpLastId, lpStatuses, lpLastListeners, function(e, resp) {
+	var x = doListen(lpLastId, lpStatuses, lpLastListeners, noCancel, function(e, resp) {
+		if (noCancel)
+			noCancel(e, resp)
 		if (cancelled) { // should never happen (but I think it does sometimes..)
 			console.log("OH HECK")
 			return
