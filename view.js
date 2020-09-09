@@ -10,6 +10,7 @@ cancelRequest: null,
 currentView: null,
 
 initDone: false,
+runOnLoad: [],
 
 // create public variables here
 views: {
@@ -247,38 +248,60 @@ handleView: function(type, id, query, callback) {
 
 	var cancelled = false
 	if (!view) {
-		cleanUp()
-		errorRender("Unknown page type: \""+type+"\"")
-	} else if (view.start) {
-		loadStart()
-		var xhr = view.start(id, query, function(ok) {
-			if (cancelled)
-				return
+		whenPageLoaded(function() {
 			cleanUp()
-			if (!ok) {
-				if (ok == false)
-					var msg = "error 1"
-				else
-					var msg = "content not found?"
-				errorRender(msg)
-			} else {
-				currentView = view
-				try {
-					view.render.apply(null, arguments)
-					after()
-				} catch(e) {
-					// cleanUp() maybe?
-					errorRender("render failed")
-					console.error(e)
+			errorRender("Unknown page type: \""+type+"\"")
+		})
+	} else if (view.start) {
+		whenPageLoaded(function() {
+			loadStart()
+		})
+		var xhr = view.start(id, query, function(ok) {
+			var args = arguments
+			whenPageLoaded(function() {
+				if (cancelled)
+					return
+				cleanUp()
+				if (!ok) {
+					if (ok == false)
+						var msg = "error 1"
+					else
+						var msg = "content not found?"
+					errorRender(msg)
+				} else {
+					currentView = view
+					try {
+						view.render.apply(null, args)
+						after()
+					} catch(e) {
+						// cleanUp() maybe?
+						errorRender("render failed")
+						console.error(e)
+					}
 				}
-			}
-			loadEnd()
-		}, quick)
+				loadEnd()
+			})
+		}, function() {
+			whenPageLoaded(quick)
+		})
 	} else {
-		loadStart()
-		quick(view.render)
+		whenPageLoaded(function() {
+			loadStart()
+			quick(view.render)
+		})
 	}
-
+	
+	function whenPageLoaded(callback) {
+		if (cancelled)
+			return
+		if (initDone)
+			callback()
+		else {
+			console.log("deferring render")
+			runOnLoad.push(callback)
+		}
+	}
+	
 	function quick(ren) {
 		cleanUp()
 		currentView = view
@@ -334,6 +357,10 @@ onLoad: function() {
 		// though none of them should really take a significant amount of time, so whatver
 	}
 	initDone = true
+	runOnLoad.forEach(function(f) {
+		f()
+	})
+	runOnLoad = null
 
 	$openSidebar.onclick = $closeSidebar.onclick = toggleSidebar
 	attachResize($sidebar, $sidebarPinnedResize, true, -1, "sidebarWidth")
