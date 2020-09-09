@@ -379,13 +379,13 @@ sendMessage: function(room, message, meta, callback) {
 doListenInitial: function(callback) {
 	return read([
 		"systemaggregate",
-		{comment:{reverse:true,limit:20}},
-		{activity:{reverse:true,limit:10}},
-		{activityaggregate:{reverse:true,limit:10}},
-		"content.1parentId.2contentId.1id", //pages
-		"category.2contentId",
-		"user.1createUserId.2userId.3userIds", //users for comment and activity
-	],{content:"id,createUserId,name,permissions"},callback)
+		//{comment:{reverse:true,limit:20}},
+		//{activity:{reverse:true,limit:10}},
+		//{activityaggregate:{reverse:true,limit:10}},
+		//"content.1parentId.2contentId.1id", //pages
+		//"category.2contentId",
+		//"user.1createUserId.2userId.3userIds", //users for comment and activity
+	],{/*content:"id,createUserId,name,permissions"*/},callback)
 },
 
 doListen: function(lastId, statuses, lastListeners, callback) {
@@ -415,13 +415,13 @@ doListen: function(lastId, statuses, lastListeners, callback) {
 lpRefresh: function() {
 	if (lpRunning) {
 		lpCancel()
-		lpLoop('refresh')
+		lpLoop()
 	}
 },
 
 lpStart: function() {
 	if (!lpRunning)
-		lpLoop('first')
+		lpLoop(true)
 },
 
 lpProcess: function(resp) {
@@ -448,7 +448,7 @@ lpProcess: function(resp) {
 	}
 },
 
-lpLoop: function(type) {
+lpLoop: function(noCancel) {
 	lpRunning = true
 	//make sure only one instance of this is running
 	var cancelled
@@ -471,7 +471,7 @@ lpLoop: function(type) {
 			var t = setTimeout(function() {
 				if (cancelled) // should never happen?
 					return
-				lpLoop('loop')
+				lpLoop()
 			}, 0)
 			lpCancel = function() {
 				cancelled = true
@@ -484,6 +484,8 @@ lpLoop: function(type) {
 		}
 	})
 	lpCancel = function() {
+		if (noCancel)
+			return
 		cancelled = true
 		lpRunning = false
 		x.abort()
