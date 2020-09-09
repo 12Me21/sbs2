@@ -24,7 +24,7 @@ Req.onLogin = function() {
 					Req.lpLastId = item.id
 			})
 			console.log("staring long poller")
-			Req.lpLoop()
+			Req.lpStart()
 			//sbm(resp, true)
 			//todo:
 			// keep an updated list of recently active pages

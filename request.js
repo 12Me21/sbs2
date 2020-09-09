@@ -24,6 +24,7 @@ lpLastId: -1,
 lpStatuses: {"-1":"online","0":"online"},
 lpLastListeners: {"-1":{"0":""}},
 lpCancel: function(){},
+lpRunning: false,
 
 me: null,
 
@@ -411,8 +412,15 @@ doListen: function(lastId, statuses, lastListeners, callback) {
 },
 
 lpRefresh: function() {
-	lpCancel()
-	lpLoop()
+	if (lpRunning) {
+		lpCancel()
+		lpLoop('refresh')
+	}
+},
+
+lpStart: function() {
+	if (!lpRunning)
+		lpLoop('first')
 },
 
 lpProcess: function(resp) {
@@ -437,12 +445,15 @@ lpProcess: function(resp) {
 	}
 },
 
-lpLoop: function() {
+lpLoop: function(type) {
+	lpRunning = true
 	//make sure only one instance of this is running
 	var cancelled
 	var x = doListen(lpLastId, lpStatuses, lpLastListeners, function(e, resp) {
-		if (cancelled) // should never happen (but I think it does sometimes..)
+		if (cancelled) { // should never happen (but I think it does sometimes..)
+			console.log("OH HECK")
 			return
+		}
 		// try/catch here so the long poller won't fail when there's an error in the callbacks
 		try {
 			lpLastId = resp.lastId
@@ -457,10 +468,11 @@ lpLoop: function() {
 			var t = setTimeout(function() {
 				if (cancelled) // should never happen?
 					return
-				lpLoop()
+				lpLoop('loop')
 			}, 0)
 			lpCancel = function() {
 				cancelled = true
+				lpRunning = false
 				clearTimeout(t)
 			}
 		} else {
@@ -470,6 +482,7 @@ lpLoop: function() {
 	})
 	lpCancel = function() {
 		cancelled = true
+		lpRunning = false
 		x.abort()
 	}
 },
