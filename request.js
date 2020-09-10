@@ -81,9 +81,9 @@ rawRequest: function(url, method, callback, data, auth){
 	}
 	x.onerror = function() {
 		var time = $.Date.now()-start
-		$.console.log("xhr onerror after ms:"+time)
+		//$.console.log("xhr onerror after ms:"+time)
 		if (time > 18*1000) {
-			$.console.log("detected 3DS timeout")
+			//$.console.log("detected 3DS timeout")
 			callback('timeout')
 		} else {
 			$.alert("Request failed! "+url)
@@ -264,7 +264,7 @@ getMe: function(callback) {
 },
 
 getCategories: function(callback) {
-	return read([],{},callback,true)
+	return read([], {}, callback, true)
 },
 
 // takes a number or a string
@@ -293,6 +293,22 @@ getUserView: function(id, callback) {
 			callback(null) // todo: better/more standard error handlign?
 		}
 	}, true)
+},
+
+getFileView: function(query, page, callback) {
+	var $=this
+	query.limit = 20
+	query.skip = page*query.limit
+	query.reverse = true
+	return $.read([
+		{file: query},
+		"user.0createUserId"
+	], {}, function(e, resp) {
+		if (!e)
+			callback(resp.file)
+		else
+			callback(null)
+	}, false) //mm
 },
 
 getChatView: function(id, callback) {
