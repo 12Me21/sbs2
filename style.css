@@ -746,6 +746,7 @@ html:not(.f-editingComment) .showWhenEdit {
 /*	border-right: 1px solid gray;
 	border-bottom: 1px solid gray;*/
 	box-shadow: 2px 2px 5px gray;
+	margin-bottom: 5px;
 }
 
 .userPageBox .pageContents {
