@@ -368,11 +368,6 @@ onLoad: function() {
 	})
 	runOnLoad = null
 
-	$openSidebar.onclick = $closeSidebar.onclick = toggleSidebar
-	attachResize($sidebar, $sidebarPinnedResize, true, -1, "sidebarWidth")
-	attachResize($sidebarPinned, $sidebarPinnedResize, false, 1, "sidebarPinnedHeight")
-	flag('sidebar', true)
-
 	// video player does not fire 'click' events so instead
 	// need to detect when the video is played
 	// using a custom event
@@ -406,6 +401,7 @@ onLoad: function() {
 	attachPaste(function(file) {
 		console.log("FILE PASTED", file)
 	})
+	Sidebar.onLoad()
 },
 
 addView: function(name, data) {
@@ -415,29 +411,7 @@ addView: function(name, data) {
 		data.init()
 },
 
-toggleSidebar: function() {
-	var fullscreen = isFullscreenSidebar()
-	if (fullscreen) {
-		flag('mobileSidebar', !flags.mobileSidebar)
-	} else {
-		flag('sidebar', !flags.sidebar)
-		Store.set('sbs-sidebar', !!flags.sidebar)
-	}
-},
-
-isFullscreenSidebar: function() {
-	return !$.matchMedia || $.matchMedia("(max-width: 700px)").matches
-},
-
-	<!--/* 
-			 }) //*/
-
-// create private variables here
-// these will override public vars
-
-var x = views
-
-function attachResize(element, tab, horiz, dir, save) {
+attachResize: function(element, tab, horiz, dir, save) {
 	var startX,startY,held,startW,startH,size = null
 	function getPos(e) {
 		if (e.touches)
@@ -491,7 +465,14 @@ function attachResize(element, tab, horiz, dir, save) {
 				element.style.height = size+"px"
 		}
 	}
-}
+},
+
+<!--/* 
+}) //*/
+
+// create private variables here
+// these will override public vars
+
 
 <!--/*
 }(window)) //*/ // pass external values
