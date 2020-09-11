@@ -168,7 +168,7 @@ encodeComment: function(text, metadata) {
 categoryMap = {0: {
 	name:"[root]",
 	id:0,
-	type:'category',
+	Type:'category',
 	description:"",
 	values:{}
 }}
