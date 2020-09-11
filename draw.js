@@ -99,6 +99,26 @@ avatar: function(user) {
 	return element
 },
 
+fileThumbnail: function(file, onclick) {
+	var div = document.createElement('div')
+	div.className = "fileThumbnail item"
+	/*div.onclick = function() {
+		selectFile(file)
+		}*/
+	div.setAttribute('data-id', file.id)
+	var img = document.createElement('img')
+	img.src = Req.fileURL(file.id, "size=50")
+	img.alt = file.name
+	img.title = file.name
+	div.appendChild(img)
+	if (onclick) {
+		div.onclick = function(e) {
+			onclick(file, e)
+		}
+	}
+	return div
+},
+
 icon: function(entity) {
 	var element
 	if (entity.Type == 'user') {

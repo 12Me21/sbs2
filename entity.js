@@ -101,6 +101,7 @@ processItem: {
 		return data
 	},
 	file: function(data, users) {
+		data = processItem.editable(data, users)
 		return data
 	},
 	editable: function(data, users) {
@@ -114,6 +115,9 @@ processItem: {
 			data.createDate = parseDate(data.createDate)
 		return data
 	},
+	watch: function(data) {
+		return data //TODO
+	}
 },
 rebuildCategoryTree: function() {
 	gotNewCategory = false

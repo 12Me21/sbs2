@@ -131,6 +131,18 @@ if (window.ResizeObserver) {
 	}, 200)
 }
 
+//Should be run once, when the page loads or when the element is created.
+function attachPaste(callback) {
+	document.addEventListener('paste', function(event) {
+		var data = event.clipboardData
+		if (data && data.files) {
+			var file = data.files[0]
+			if (file && (/^image\//).test(file.type))
+				callback(file)
+		}
+	})
+}
+
 /*function NodeBlock(node, child) {
 	// create object containing override properties
 	// set this object's prototype to `node`

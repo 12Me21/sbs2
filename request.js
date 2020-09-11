@@ -527,7 +527,13 @@ fileURL: function(id, query) {
 	if (query)
 		return server+"/File/raw/"+id+"?"+query
 	return server+"/File/raw/"+id
-}
+},
+
+uploadFile: function(file, callback) {
+	var form = new FormData()
+	form.append('file', file)
+	request("File", 'POST', callback, form)
+},
 
 <!--/* 
 }) //*/
