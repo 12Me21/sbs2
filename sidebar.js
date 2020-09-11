@@ -6,17 +6,17 @@ Object.assign(Sidebar, { //*/
 onLoad: function() {
 	$openSidebar.onclick = $closeSidebar.onclick = toggle
 	View.attachResize($sidebar, $sidebarPinnedResize, true, -1, "sidebarWidth")
-	View.attachResize($sidebarPinned, $sidebarPinnedResize, false, 1, "sidebarPinnedHeight")
+	View.attachResize($sidebarPinned, $sidebarPinnedResize, false, -1, "sidebarPinnedHeight")
 	View.flag('sidebar', true)
 },
 
 toggle: function() {
 	var fullscreen = isFullscreen()
 	if (fullscreen) {
-		flag('mobileSidebar', !flags.mobileSidebar)
+		View.flag('mobileSidebar', !View.flags.mobileSidebar)
 	} else {
-		flag('sidebar', !flags.sidebar)
-		Store.set('sbs-sidebar', !!flags.sidebar)
+		View.flag('sidebar', !View.flags.sidebar)
+		Store.set('sbs-sidebar', !!View.flags.sidebar)
 	}
 },
 
