@@ -256,34 +256,40 @@ handleView: function(type, id, query, callback) {
 		whenPageLoaded(function() {
 			loadStart()
 		})
-		var xhr = view.start(id, query, function(ok) {
-			var args = arguments
-			whenPageLoaded(function() {
-				if (cancelled)
-					return
-				cleanUp()
-				if (!ok) {
-					if (ok == false)
-						var msg = "error 1"
-					else
-						var msg = "content not found?"
-					errorRender(msg)
-				} else {
-					currentView = view
-					try {
-						view.render.apply(null, args)
-						after()
-					} catch(e) {
-						// cleanUp() maybe?
-						errorRender("render failed")
-						console.error(e)
+		try { // this catches errors in view.start, NOT the callbacks inside here
+			var xhr = view.start(id, query, function(ok) {
+				var args = arguments
+				whenPageLoaded(function() {
+					if (cancelled)
+						return
+					cleanUp()
+					if (!ok) {
+						if (ok == false)
+							var msg = "error 1"
+						else
+							var msg = "content not found?"
+						errorRender(msg)
+					} else {
+						currentView = view
+						try {
+							view.render.apply(null, args)
+							after()
+						} catch(e) {
+							// cleanUp() maybe?
+							errorRender("render failed")
+							console.error(e)
+						}
 					}
-				}
-				loadEnd()
+					loadEnd()
+				})
+			}, function() {
+				whenPageLoaded(quick)
 			})
-		}, function() {
-			whenPageLoaded(quick)
-		})
+		} catch(e) {
+			errorRender("render failed 1")
+			console.error(e)
+			loadEnd()
+		}
 	} else {
 		whenPageLoaded(function() {
 			loadStart()
@@ -397,7 +403,9 @@ onLoad: function() {
 			}
 		}
 	}
-
+	attachPaste(function(file) {
+		console.log("FILE PASTED", file)
+	})
 },
 
 addView: function(name, data) {
@@ -429,13 +437,13 @@ isFullscreenSidebar: function() {
 
 var x = views
 
-function attachResize(element, tab, horiz,dir,save) {
+function attachResize(element, tab, horiz, dir, save) {
 	var startX,startY,held,startW,startH,size = null
 	function getPos(e) {
 		if (e.touches)
-			return {x:e.touches[0].pageX,y:e.touches[0].pageY}
+			return {x:e.touches[0].pageX, y:e.touches[0].pageY}
 		else
-			return {x:e.clientX,y:e.clientY}
+			return {x:e.clientX, y:e.clientY}
 	}
 	function down(e) {
 		tab.setAttribute('dragging',"")

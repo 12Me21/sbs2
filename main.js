@@ -25,7 +25,6 @@ Req.onLogin = function() {
 	
 	console.log("staring long poller")
 	Req.lpStart(function(e, resp) {
-		console.log(e, resp, "INIT")
 		if (!e) {
 			var me = resp.chains.Ume
 			if (me && me[0])
@@ -64,9 +63,8 @@ Req.tryLoadCachedAuth()
 
 if (document.readyState == 'loading')
 	document.addEventListener('DOMContentLoaded', ready)
-else {
+else
 	ready()
-}
 
 function ready() {
 	console.log("ONLOAD!")
