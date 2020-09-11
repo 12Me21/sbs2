@@ -18,9 +18,11 @@ entityPath: function(entity) {
 		return "page/"+entity.id
 	if (entity.Type == 'category')
 		return "category/"+entity.id
+	return "unknown/"+entity.id
 },
 
 link: function(path, element) {
+	path = String(path)
 	element = element || $.document.createElement('a')
 	element.href = "?"+path
 	element.onclick = function(e) {
@@ -107,6 +109,7 @@ decodePath: function(path) {
 },
 
 render: function(path, after) {
+	path = String(path)
 	var path = decodePath(path)
 	
 	// todo: update url when view is redirected
