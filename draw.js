@@ -85,6 +85,13 @@ iconURL: function(entity) {
 	return "resource/unknown.png"
 },
 
+userListAvatar: function(status) {
+	var a = linkAvatar(status.user)
+	if (status.status == "idle")
+		a.className += " status-idle"
+	return a
+},
+
 linkAvatar: function(user) {
 	var a = entityLink(user)
 	a.appendChild(avatar(user))

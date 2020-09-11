@@ -79,15 +79,6 @@ time {
 	display: inline-block;
 }
 
-.categoryNav {
-	border-bottom: 1px solid gray;
-}
-
-.memberNav {
-	border-bottom: 1px solid gray;
-}
-
-
 .pageName {
 	font-weight: bold;
 }
@@ -175,13 +166,22 @@ button {
 .buttonContainer button {
 	margin: 0;
 	padding: 0 0.5rem;
+	background-color: #EEE;
+	border: 2px solid gray;
+	height: 100%;
+	overflow-y: hidden;
+	border-style: outset;
+	border-radius: 0px;
+/*	margin: 0;
+	padding: 0 0.5rem;
 	background-color: #DDD;
 	border: 2px solid gray;
 	height: 100%;
 	overflow-y: hidden;
 	border-color: white #333 #333 white;
-	border-radius: 0px;
+	border-radius: 0px;*/
 }
+
 .buttonContainer > a {
 	width: 100%;
 	height: 100%;
@@ -267,16 +267,16 @@ html.f-loggedIn .loggedOut {
 }
 
 .pathBar {
-	border-bottom: 1px solid black;
 	font-weight: bold;
-}
-
-.pageWhatever {
-	border-bottom: 1px solid gray;
+	padding: 0 0.2rem;
 }
 
 .bottomBorder {
 	border-bottom: 1px solid gray;
+}
+
+.myUserBar {
+	background-color: #EEE;
 }
 
 /****************
@@ -286,7 +286,7 @@ html.f-loggedIn .loggedOut {
 	-webkit-flex-shrink: 0;
 	flex-shrink: 0;
 	border-bottom: 2px solid black;
-	background-color: #DEF;
+	background-color: #FFF;
 	box-shadow: 0 2px 3px rgba(0,0,0,0.3);
 	z-index: 10;
 	/*-webkit-transition: background-color 0.1s ease;
@@ -294,7 +294,7 @@ html.f-loggedIn .loggedOut {
 }
 
 html.f-loading .loadBG {
-	background-color: rgb(0,150,136);
+	background-color: #ABDDD6;
 }
 
 .titlePane .iconBg {
@@ -396,6 +396,10 @@ main {
 
 .linkBar:focus {
 	background-color: white;
+}
+
+.page-select {
+	
 }
 
 /*******************
@@ -815,7 +819,7 @@ button[data-selected] {
 	/*overflow: auto;*/
 	-webkit-flex-shrink: 0;
 	flex-shrink: 0;
-	border-bottom: 1px solid black;
+	padding: 0 0.3rem;
 }
 
 .pageMetaIcon {
@@ -950,8 +954,6 @@ html:not(.f-fileUploading) .fileUploading {
 
 #\$sidebarPinnedResize {
 	display: inline-block;
-	border-top: 1px solid black;
-	border-bottom: 1px solid black;					 
 }
 
 .closeSidebar {
@@ -971,8 +973,6 @@ html:not(.f-fileUploading) .fileUploading {
 	-webkit-flex-shrink: 1;
 	flex-shrink: 1;
 	overflow-y: scroll;
-	border-top: 1px solid gray;
-	border-bottom: 1px solid gray;
 }
 
 #\$sidebarActivity > :last-child{
@@ -1102,7 +1102,6 @@ html:not(.f-fileUploading) .fileUploading {
 
 .registerBox {
 	padding: 0 0.5rem;
-	border-bottom: 1px solid gray;
 }
 
 .registerBox input {
@@ -1181,10 +1180,6 @@ body.pageMode main {
 
 .chatScroller > .scrollInner {
 	padding-bottom: 0.5rem;
-}
-
-#\$longPollStatus {
-	border-bottom: 1px solid gray;
 }
 
 #\$searchResults > .bar {

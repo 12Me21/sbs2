@@ -5,7 +5,7 @@ function ChatRoom(id, page) {
 	this.id = id
 	this.userList = []
 	if (id == -1) {
-		this.userListElem = $sidebarUserlist
+		this.userListElem = $sidebarUserList
 		return
 	}
 	this.page = page
@@ -112,7 +112,7 @@ ChatRoom.prototype.updateUserList = function(list) {
 	this.userList = list
 	var d = document.createDocumentFragment()
 	list.forEach(function(item) {
-		d.appendChild(Draw.linkAvatar(item.user))
+		d.appendChild(Draw.userListAvatar(item))
 	})
 	this.userListElem.replaceChildren(d)
 }
