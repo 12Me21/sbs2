@@ -56,6 +56,10 @@ ChatRoom.updateUserAvatar = function(user) {
 		ChatRoom.global.updateUserAvatar(user)
 }
 
+ChatRoom.prototype.toggleHiding = function(callback) {
+	Req.toggleHiding(this.id, callback || function(){})
+}
+
 ChatRoom.prototype.updateUserAvatar = function(user) {
 	for (var i=0; i<this.userList.length; i++) {
 		if (this.userList[i].user.id == user.id) {
@@ -206,6 +210,9 @@ ChatRoom.prototype.destroy = function() {
 	
 }
 
+// todo: make renderuserlist etc.
+// reuse for sidebar + page userlist?
+
 ChatRoom.prototype.shouldScroll = function() {
 	return this.atBottom//this.scrollDistance() < (this.messagePane.clientHeight)*0.25
 }
@@ -299,6 +306,16 @@ addView('chat', {
 		// right now it PROBABLY will be but that isn't certain
 		// the long poller could technically start before onload
 		ChatRoom.global = new ChatRoom(-1)
+
+		$hideGlobalStatusButton.onclick = function() {
+			if ($hideGlobalStatusButton.disabled)
+				return
+			$hideGlobalStatusButton.disabled = true
+			console.log($hideGlobalStatusButton.disabled)
+			ChatRoom.global.toggleHiding(function() {
+				$hideGlobalStatusButton.disabled = false
+			})
+		}
 	}
 })
 
