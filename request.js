@@ -21,7 +21,7 @@ gotCategoryTree: false,
 onListeners: null,
 onMessages: null,
 onActivity: null,
-lpLastId: -1,
+lpLastId: 0,
 lpStatuses: {"-1":"online","0":"online"},
 lpLastListeners: {"-1":{"0":""}},
 lpCancel: function(){},
@@ -259,7 +259,40 @@ getMe: function(callback) {
 			var l = [resp]
 			Entity.processList('user',l,{})
 			callback(l[0])
+		} else {
+			callback(null)
 		}
+	})
+},
+
+setBasic: function(data, callback) {
+	return request("User/basic", 'PUT', callback, data)
+},
+
+uploadFile: function(file, callback) {
+	var form = new FormData()
+	form.append('file', file)
+	request("File", 'POST', function(e, resp) {
+		if (e)
+			callback(null)
+		else {
+			var l = [resp]
+			Entity.processList('file',l,{})
+			callback(l[0])
+		}
+	}, form)
+},
+
+toggleHiding: function(id, callback) {
+	return getMe(function(me) {
+		if (me) {
+			var hiding = me.hidelist
+			arrayToggle(hiding, id)
+			setBasic({hidelist:hiding}, function(){
+				callback(hiding)
+			})
+		} else
+			callback(null)
 	})
 },
 
@@ -417,18 +450,24 @@ doListen: function(lastId, statuses, lastListeners, getMe, callback) {
 			"category.2contentId" //todo: handle values returned by this
 		]
 	}
-	if (getMe) {
-		actions.chains.push('user~Ume-{"ids":['+ +uid +'],"limit":1}')
-	}
-	var req = [{actions: actions}]
-	for (var key in lastListeners) {
-		req.push({listeners: {
+	if (getMe)
+		var listeners = {
+			// TODO: make sure lastListeners is something that will never occur so you'll always get the update
+			lastListeners: lastListeners,
+			chains: [
+				"user.0listeners",
+				'user~Ume-{"ids":['+ +uid +'],"limit":1}'
+			]
+		}
+	else
+		listeners = {
 			lastListeners: lastListeners,
 			chains: ["user.0listeners"]
-		}})
-		break
-	}
-	return listen(req, {
+		}
+	return listen([
+		{actions: actions},
+		{listeners: listeners}
+	], {
 		content: "id,createUserId,name,permissions"
 	}, callback)
 },
@@ -529,14 +568,16 @@ fileURL: function(id, query) {
 	return server+"/File/raw/"+id
 },
 
-uploadFile: function(file, callback) {
-	var form = new FormData()
-	form.append('file', file)
-	request("File", 'POST', callback, form)
-},
-
 <!--/* 
 }) //*/
+
+function arrayToggle(array, value) {
+	var i = array.indexOf(value)
+	if (i<0)
+		array.push(value)
+	else
+		array.splice(i, 1)
+}
 
 if ($.location.protocol=="http:")
 	protocol = "http:"
