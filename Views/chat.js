@@ -3,7 +3,7 @@ function ChatRoom(id, page) {
 	if (old)
 		return old
 	this.id = id
-	this.userList = []
+	this.userList = {}
 	if (id == -1) {
 		this.userListElem = $sidebarUserList
 		return
@@ -61,9 +61,9 @@ ChatRoom.prototype.toggleHiding = function(callback) {
 }
 
 ChatRoom.prototype.updateUserAvatar = function(user) {
-	for (var i=0; i<this.userList.length; i++) {
-		if (this.userList[i].user.id == user.id) {
-			this.userList[i].user = user
+	for (var uid in this.userList) {
+		if (this.userList[uid].user.id == user.id) {
+			this.userList[uid].user = user
 			this.updateUserList(this.userList)
 			break
 		}
@@ -87,8 +87,6 @@ ChatRoom.setViewing = function(ids) {
 	Req.lpSetListening(ids)
 	Req.lpRefresh()
 }
-
-ChatRoom.userList = []
 
 ChatRoom.updateUserLists = function(a) {
 	if (a[-1]) {
@@ -115,9 +113,8 @@ ChatRoom.displayMessages = function(comments) {
 ChatRoom.prototype.updateUserList = function(list) {
 	this.userList = list
 	var d = document.createDocumentFragment()
-	list.forEach(function(item) {
-		d.appendChild(Draw.userListAvatar(item))
-	})
+	for (var uid in list)
+		d.appendChild(Draw.userListAvatar(list[uid]))
 	this.userListElem.replaceChildren(d)
 }
 
