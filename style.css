@@ -306,6 +306,10 @@ html:not(.f-sidebarUploaded) .sidebarUploadedFile {
 	transition: background-color 0.1s ease;*/
 }
 
+.status-idle > .avatar {
+	filter: grayscale(1);
+}
+
 html.f-loading .loadBG {
 	background-color: #ABDDD6;
 }

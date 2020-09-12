@@ -22,8 +22,9 @@ onListeners: null,
 onMessages: null,
 onActivity: null,
 lpLastId: 0,
-lpStatuses: {"-1":"online","0":"online"},
+lpStatuses: {"-1":"online"},
 lpLastListeners: {"-1":{"0":""}},
+lpProcessedListeners: {},
 lpCancel: function(){},
 lpRunning: false,
 
@@ -484,19 +485,23 @@ lpStart: function(callback) {
 		lpLoop(callback)
 },
 
+handleOnListeners: function(listeners, users) {
+	var out = {}
+	// process listeners (convert uids to user objetcs)
+	for (var id in listeners) {
+		var list = listeners[id]
+		var list2 = {}
+		for (var uid in list)
+			list2[uid] = {user: users[uid], status: list[uid]}
+		out[id] = list2
+	}
+	lpProcessedListeners = out
+	onListeners(out)
+},
+
 lpProcess: function(resp) {
 	if (resp.listeners) {
-		// process listeners (convert uids to user objetcs)
-		var listeners = {}
-		for (var id in resp.listeners) {
-			var list = resp.listeners[id]
-			var list2 = []
-			for (var uid in list) {
-				list2.push({user: resp.chains.userMap[uid], status: list[uid]})
-			}
-			listeners[id] = list2
-		}
-		onListeners(listeners)
+		handleOnListeners(resp.listeners, resp.chains.userMap)
 	}
 	if (resp.chains) {
 		if (resp.chains.comment)
@@ -566,6 +571,25 @@ fileURL: function(id, query) {
 	if (query)
 		return server+"/File/raw/"+id+"?"+query
 	return server+"/File/raw/"+id
+},
+
+lpSetStatus: function(id, status) {
+	status = String(status)
+	if (lpStatuses[id] == status)
+		return
+	lpStatuses[id] = status
+	// set status in lastListeners, so we won't cause the long poller to complete instantly
+	if (!lpLastListeners[id])
+		lpLastListeners[id] = {}
+	lpLastListeners[id][uid] = status
+	// but now, since the long poller won't complete (sometimes)
+	// we have to update the userlist visually with our changes
+	if (!lpProcessedListeners[id])
+		lpProcessedListeners[id] = {}
+	lpProcessedListeners[id][uid] = {user: me, status: status}
+	onListeners(lpProcessedListeners)
+	
+	lpRefresh()
 },
 
 <!--/* 

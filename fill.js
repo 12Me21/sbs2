@@ -131,6 +131,15 @@ if (window.ResizeObserver) {
 	}, 200)
 }
 
+/*Object.defineProperty(Object.prototype, 'forEach', {
+	enumerable: false, // EXTREMELY IMPORTANT
+	configurable: true,
+	value: function(callback) {
+		for (var key in this)
+			callback(this[key], key, this)
+	}
+})*/
+
 /*function NodeBlock(node, child) {
 	// create object containing override properties
 	// set this object's prototype to `node`
