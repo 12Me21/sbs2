@@ -11,6 +11,8 @@ currentView: null,
 
 initDone: false,
 runOnLoad: [],
+realTitle: null,
+faviconElement: null,
 
 // create public variables here
 views: {
@@ -153,8 +155,15 @@ views: {
 },
 errorView: {
 	className: 'errorMode',
-	render: function(message) {
+	render: function(message, error) {
 		setTitle(message)
+		if (error)
+			$errorMessage.textContent = error+"\n"+error.stack
+		else
+			$errorMessage.textContent = ""
+	},
+	cleanUp: function() {
+		$errorMessage.replaceChildren()
 	}
 },
 getView: function(name) {
@@ -167,10 +176,14 @@ getView: function(name) {
 setEntityTitle: function(entity) {
 	$pageTitle.replaceChildren(Draw.iconTitle(entity))
 	$.document.title = entity.name
+	realTitle = entity.name
+	changeFavicon(false)
 },
 setTitle: function(text) {
 	$pageTitle.textContent = text
 	$.document.title = text
+	realTitle = text
+	changeFavicon(false)
 },
 
 setPath: function(path) {
@@ -221,6 +234,7 @@ updateUserAvatar: function(user) {
 },
 
 updateMyUser: function(user) {
+	
 	if (user.id != Req.uid)
 		return //uh oh
 	Req.me = user //This probably shouldn't be handled by View...
@@ -276,8 +290,7 @@ handleView: function(type, id, query, callback) {
 							after()
 						} catch(e) {
 							// cleanUp() maybe?
-							errorRender("render failed")
-							console.error(e)
+							errorRender("render failed", e)
 						}
 					}
 					loadEnd()
@@ -286,8 +299,7 @@ handleView: function(type, id, query, callback) {
 				whenPageLoaded(quick)
 			})
 		} catch(e) {
-			errorRender("render failed 1")
-			console.error(e)
+			errorRender("render failed 1", e)
 			loadEnd()
 		}
 	} else {
@@ -315,15 +327,15 @@ handleView: function(type, id, query, callback) {
 			ren(id, query)
 			after()
 		} catch(e) {
-			errorRender("render failed")
+			errorRender("render failed", e)
 		}
 		loadEnd()
 	}
 
-	function errorRender(message) {
+	function errorRender(message, error) {
 		cleanUp()
 		currentView = view = errorView
-		view.render(message)
+		view.render(message, error)
 		after()
 	}
 	
@@ -398,9 +410,6 @@ onLoad: function() {
 			}
 		}
 	}
-	attachPaste(function(file) {
-		console.log("FILE PASTED", file)
-	})
 	Sidebar.onLoad()
 },
 
@@ -409,6 +418,17 @@ addView: function(name, data) {
 	views[name] = data
 	if (initDone && data.init)
 		data.init()
+},
+
+attachPaste: function(callback) {
+	document.addEventListener('paste', function(event) {
+		var data = event.clipboardData
+		if (data && data.files) {
+			var file = data.files[0]
+			if (file && (/^image\//).test(file.type))
+				callback(file)
+		}
+	})
 },
 
 attachResize: function(element, tab, horiz, dir, save) {
@@ -466,6 +486,30 @@ attachResize: function(element, tab, horiz, dir, save) {
 		}
 	}
 },
+
+titleNotification: function(text, icon) {
+	if (text == false) {
+		$.document.title = realTitle
+		changeFavicon(false)
+		return
+	}
+	$.document.title = text
+	changeFavicon(icon || false)
+},
+
+changeFavicon: function(src) {
+	if (!faviconElement) {
+		if (src == false)
+			return
+		faviconElement = document.createElement('link')
+		faviconElement.rel = "icon"
+		document.head.appendChild(faviconElement)
+	} else if (faviconElement.href == src)
+		return
+	if (src == false)
+		src = "resource/icon16.png"
+	faviconElement.href = src
+}
 
 <!--/* 
 }) //*/

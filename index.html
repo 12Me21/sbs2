@@ -96,8 +96,6 @@
 		
 		<div class="fileMode fileNav rem1-7 nav">
 			<span id="$fileNav"></span>
-			<input type="file" id="$fileUpload" accept="image/*" class="item loggedIn">
-			<span class="item" contenteditable="" id="$filePaste">paste image here</span>
 		</div>
 
 		<div class="fileMode fileBox bar" id="$fileBox">
@@ -186,6 +184,7 @@
 	</div>
 	-->
 			<div class="pageContents pre pageMode markup-root" id="$pageContents"></div>
+			<div class="errorMode pre errorPage" id=$errorMessage></div>
 			<div class="editorPane editorMode">
 				<div class="editorTextarea">
 					<textarea id="$editorTextarea" minlength="2" required=""></textarea>
@@ -245,11 +244,7 @@
 			</div>
 
 			<div class="activityMode" id="$activity"></div>
-
-			<div class="fileMode fileViewPane grow">
-				<img id="$fileView" class="fileView" src="about:blank" alt="">
-			</div>
-
+			
 			<div class="testMode">
 				<textarea id="$testTextarea"></textarea><br>
 				<button id="$testButton">Run</button><br>
@@ -289,15 +284,29 @@
 			<!--<span id=$longPollStatus></span>-->
 			
 			<button class="closeSidebar" id=$closeSidebar>Close Sidebar</button>
+
+			<div id=$sidebarTop>
+				<div id=$sidebarActivity class="fill"></div>
+			</div>
 			
-			<div id=$sidebarActivity class="grow"></div>
-			
-			<div id=$sidebarPinnedResize class="resize">resize</div>
-			
-			<div id=$sidebarPinned></div>
-			
-			<div></div>
-			
+			<div id=$sidebarResize class="resize">resize</div>
+
+			<div id=$sidebarBottom class="grow">
+				<div id=$sidebarPinned class="bottomBorder fill sidebarNotFile"></div>
+				<div class="sidebarFile" class="fill">
+					<div class="sidebarUploadingFile">
+						Uploading Image <button id=$fileCancel>Cancel</button>
+						<button id=$fileUpload>Upload Image</button>
+					</div>
+					<div class="sidebarUploadedFile">
+						<input readonly id=$fileURL><button id=$fileDone>Done</button>
+					</div>
+					<div>
+						<img id=$fileView>
+					</div>
+				</div>
+			</div>
+			<div><input type=file accept="image/*" id=$imageUpload></div>
 			<!--<div id="buttonContainer"><button id="$hideAllStatusButton">Hide (everywhere)</button></div>-->
 		</div>
 	</div>
