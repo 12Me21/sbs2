@@ -212,6 +212,7 @@ body:not(.userMode):not(.pageMode) .pageUserMode,
 body:not(.homeMode) .homeMode,
 body:not(.testMode) .testMode,
 body:not(.searchMode) .searchMode,
+body:not(.errorMode) .errorMode,
 body:not(.fileMode) .fileMode {
 	display: none;
 }
@@ -253,6 +254,11 @@ html.f-loggedIn .loggedOut {
 	line-height: 1.5rem;
 }
 
+#\$fileView {
+	max-width: 100%;
+	max-height: 100%;
+}
+
 .myAvatar {
 	width: 1.5rem;
 }
@@ -277,6 +283,13 @@ html.f-loggedIn .loggedOut {
 
 .myUserBar {
 	background-color: #EEE;
+}
+
+html.f-sidebarFile .sidebarNotFile,
+html:not(.f-sidebarFile) .sidebarFile,
+html.f-sidebarUploaded .sidebarUploadingFile,
+html:not(.f-sidebarUploaded) .sidebarUploadedFile {
+	display: none;
 }
 
 /****************
@@ -338,6 +351,11 @@ header > :first-child {
 	-webkit-flex-direction: row;
 	flex-direction: row;
 	overflow-x: hidden;
+}
+
+.errorPage {
+	padding: 0.2rem;
+	font-family: monospace;
 }
 
 .m {
@@ -975,14 +993,6 @@ html:not(.f-fileUploading) .fileUploading {
 	overflow-y: scroll;
 }
 
-#\$sidebarActivity > :last-child{
-	border-bottom: none;
-}
-
-#\$sidebarActivity > *{
-	border-bottom: 1px solid black;
-}
-
 #\$sidebarActivity .bar {
 	display: block;
 	/*padding: 0.2rem; mmm*/
@@ -1180,8 +1190,4 @@ body.pageMode main {
 
 .chatScroller > .scrollInner {
 	padding-bottom: 0.5rem;
-}
-
-#\$searchResults > .bar {
-	border-bottom: 1px solid gray;
 }
