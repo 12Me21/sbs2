@@ -17,7 +17,7 @@ if (!Object.assign)
 // note: only supports 1 child element, which must be a node (not a string)
 if (!HTMLElement.prototype.replaceChildren)
 	HTMLElement.prototype.replaceChildren = function(child) {
-		this.innerHTML = ""
+		this.textContent = ""
 		if (child)
 			this.appendChild(child)
 	}
@@ -129,18 +129,6 @@ if (window.ResizeObserver) {
 			}
 		})
 	}, 200)
-}
-
-//Should be run once, when the page loads or when the element is created.
-function attachPaste(callback) {
-	document.addEventListener('paste', function(event) {
-		var data = event.clipboardData
-		if (data && data.files) {
-			var file = data.files[0]
-			if (file && (/^image\//).test(file.type))
-				callback(file)
-		}
-	})
 }
 
 /*function NodeBlock(node, child) {
