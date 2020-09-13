@@ -75,66 +75,6 @@ if (localStorage) {
 	}
 }
 
-function TrackScrollResize(element, callback) {
-	var t = TrackScrollResize.tracking
-	if (callback) {
-		var n = {
-			element: element,
-			callback: callback,
-			height: element.getBoundingClientRect().height,
-		}
-		if (TrackScrollResize.observer) {
-			TrackScrollResize.observer.observe(element)
-			t.set(element, n)
-		} else {
-			t.push(n)
-		}
-	} else {
-		if (TrackScrollResize.observer) {
-			TrackScrollResize.observer.unobserve(element)
-			t['delete'](element)
-		} else {
-			for (var i=0; i<t.length; i++) {
-				if (t[i].element == element) {
-					t.splice(i, 1)
-					break
-				}
-			}
-		}
-	}
-}
-
-
-if (window.ResizeObserver) {
-	TrackScrollResize.tracking = new WeakMap()
-	TrackScrollResize.observer = new ResizeObserver(function(events) {
-		var t = TrackScrollResize.tracking
-		events.forEach(function(event) {
-			var item = t.get(event.target)
-			if (item) {
-				if (event.contentRect.width) { //ignore changes for hidden elements
-					var height = event.contentRect.height
-					if (height != item.height) { //need to check if height changed in case of an ignored hide/show cycle
-						item.callback(item.height, event.contentRect.height)
-						item.height = event.contentRect.height
-					}
-				}
-			}
-		})
-	})
-} else {
-	TrackScrollResize.tracking = []
-	TrackScrollResize.interval = window.setInterval(function() {
-		TrackScrollResize.tracking.forEach(function(item) {
-			var newSize = item.element.getBoundingClientRect()
-			if (newSize.width && newSize.height!=item.height) {
-				item.callback(item.height, newSize.height)
-				item.height = newSize.height
-			}
-		})
-	}, 200)
-}
-
 /*Object.defineProperty(Object.prototype, 'forEach', {
 	enumerable: false, // EXTREMELY IMPORTANT
 	configurable: true,

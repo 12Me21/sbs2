@@ -1,90 +1,3 @@
-function Scroller(outer, inner) {
-	this.outer = outer
-	this.inner = inner
-	this.animationId = null
-	this.atBottom = true
-	var $=this
-	outer.addEventListener('scroll', function(e) {
-		if ($.ignoreScroll) {
-			$.ignoreScroll = false
-			return
-		}
-		if ($.animationId)
-			$.cancelAutoScroll()
-		$.atBottom = $.scrollBottom < $.outer.clientHeight/4
-	}, {passive: true})
-	function onResize() {
-		if ($.atBottom && !$.animationId) // when message is inserted, it triggers the resize detector, which would interrupt the scroll animation, so we don't force scroll if an animation is playing
-			$.autoScroll(true)
-	}
-	TrackScrollResize(this.outer, onResize)
-	TrackScrollResize(this.inner, onResize)
-}
-Object.defineProperty(Scroller.prototype, 'scrollBottom', {
-	get: function() {
-		var parent = this.outer
-		return parent.scrollHeight-parent.clientHeight-parent.scrollTop
-	},
-	set: function(value) {
-		var parent = this.outer
-		// need to round here because it would be reversed otherwise
-		value = Math.floor(value*window.devicePixelRatio)/window.devicePixelRatio
-		parent.scrollTop = parent.scrollHeight-parent.clientHeight-value
-	}
-})
-Scroller.prototype.autoScroll = function(instant) {
-	if (!window.requestAnimationFrame || instant) {
-		this.ignoreScroll = true
-		this.scrollBottom = 0
-		this.atBottom = true
-	} else {
-		if (!this.animationId) {
-			this.animationId = null
-			var now = performance.now()
-			this.animationStart = now - 1000/60 //assume 60fps on first frame..
-			this.autoScrollAnimation(now)
-		}
-	}
-}
-Scroller.prototype.cancelAutoScroll = function() {
-	if (this.animationId) {
-		window.cancelAnimationFrame(this.animationId)
-		this.animationId = false
-	}
-}
-Scroller.prototype.autoScrollAnimation = function(time) {
-	var dt = (time - this.animationStart) / (1000/60)
-	this.animationStart = time
-
-	this.ignoreScroll = true
-	var expect = Math.floor(this.scrollBottom * Math.pow(.75, dt))
-	this.scrollBottom = expect
-	
-	this.atBottom = true //I guess
-	if (this.scrollBottom <= 0) {
-		this.animationId = null
-		this.atBottom = true
-		return
-	}
-	var $=this
-	this.animationId = window.requestAnimationFrame(function(time) {
-		if ($.scrollBottom == expect) //just in case
-			$.autoScrollAnimation(time)
-	})
-}
-Scroller.prototype.handlePrint = function(callback, autoscroll) {
-	var should = autoscroll && this.atBottom
-	var elem = callback()
-	if (elem)
-		this.inner.appendChild(elem)
-	if (should)
-		this.autoScroll()
-}
-Scroller.prototype.destroy = function() {
-	TrackScrollResize(this.inner, null)
-	TrackScrollResize(this.outer, null)
-}
-
 function ChatRoom(id, page) {
 	var old = ChatRoom.rooms[id]
 	if (old)
@@ -96,6 +9,7 @@ function ChatRoom(id, page) {
 		this.userListElem = $sidebarUserList
 		return
 	}
+	this.messageElements = {}
 	this.status = "active"
 	this.page = page
 	this.lastUid = NaN
@@ -267,19 +181,29 @@ ChatRoom.prototype.shouldScroll = function() {
 }
 
 ChatRoom.prototype.displayMessage = function(comment, autoscroll) {
-	if (comment.deleted)
-		return
 	var $=this
 	this.scroller.handlePrint(function() {
-		var uid = comment.createUserId
-		if (!$.lastBlock || uid != $.lastUid || comment.createDate-$.lastTime > 1000*60*5) {
-			$.lastBlock = Draw.messageBlock(comment)
-			var ret = $.lastBlock[0]
+		var old = $.messageElements[comment.id]
+		if (comment.deleted) {
+			if (old)
+				old.remove()
+		} else {
+			var part = Draw.messagePart(comment)
+			if (old) {
+				old.parentNode.replaceChild(part, old)
+			} else {
+				var uid = comment.createUserId
+				if (!$.lastBlock || uid != $.lastUid || comment.createDate-$.lastTime > 1000*60*5) {
+					$.lastBlock = Draw.messageBlock(comment)
+					var ret = $.lastBlock[0]
+				}
+				$.lastBlock[1].appendChild(part)
+				$.lastUid = uid
+				$.lastTime = comment.createDate
+				return ret
+			}
+			$.messageElements[comment.id] = part
 		}
-		$.lastBlock[1].appendChild(Draw.messagePart(comment))
-		$.lastUid = uid
-		$.lastTime = comment.createDate
-		return ret
 	}, autoscroll != false)
 }
 
