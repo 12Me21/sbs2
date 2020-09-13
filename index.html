@@ -11,6 +11,14 @@
 <link rel=apple-touch-icon href="resource/iconbig.png"> <!-- large 2 -->
 <link rel=image_src href="resource/iconbig.png"> <!-- large 3 -->
 
+<script>
+window.onerror = function(message, source, line, col, error) {
+	 if (error instanceof SyntaxError) {
+		 alert("Syntax error!\nin "+source+"\nat "+line+":"+col)
+	 }
+}
+</script>
+
 <!--START-->
 <!-- this part will be replaced by the build script -->
 <link rel=stylesheet href=resource/fonts.css>
@@ -29,12 +37,13 @@
 <script src=draw.js></script>
 
 <script src=view.js></script>
+<script src=sidebar.js></script>
 <script src=Views/settings.js></script>
 <script src=Views/chat.js></script>
 <script src=Views/page.js></script>
 <script src=Views/search.js></script>
 <script src=Views/images.js></script>
-<script src=sidebar.js></script>
+
 
 <script src=navigate.js></script>
 
@@ -286,7 +295,7 @@
 			<button class="closeSidebar" id=$closeSidebar>Close Sidebar</button>
 
 			<div id=$sidebarTop>
-				<div id=$sidebarActivityOuter class="fill"><div id=$sidebarActivity></div></div>
+				<div id=$sidebarActivityOuter class="scrollOuter"><div id=$sidebarActivity class="scrollInner"></div></div>
 			</div>
 			
 			<div id=$sidebarResize class="resize">resize</div>

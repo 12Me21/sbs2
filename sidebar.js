@@ -5,6 +5,9 @@ Object.assign(Sidebar, { //*/
 
 selectedFile: null,
 
+scroller: null,
+prePrint: [],
+
 onLoad: function() {
 	$openSidebar.onclick = $closeSidebar.onclick = toggle
 	View.attachResize($sidebar, $sidebarResize, true, -1, "sidebarWidth")
@@ -35,10 +38,24 @@ onLoad: function() {
 	$fileURL.onclick = function() {
 		$fileURL.select()
 	}
+	scroller = new Scroller($sidebarActivityOuter, $sidebarActivity)
+	prePrint.forEach(function(x) {
+		print(x)
+	})
+	prePrint = null
 	// todo: maybe a global ESC handler?
 	/*document.addEventListener('keydown', function(e) {
 		
 	})*/
+},
+
+print: function(text) {
+	if (scroller)
+		scroller.handlePrint(function() {
+			return Draw.sidebarDebug(text)
+		}, true)
+	else
+		prePrint.push(text)	
 },
 
 fileCancel: function() {
@@ -78,7 +95,6 @@ isFullscreen: function() {
 
 <!--/* 
 }) //*/
-
 
 <!--/*
 }(window)) //*/ // pass external values
