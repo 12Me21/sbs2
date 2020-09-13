@@ -1042,17 +1042,16 @@ html:not(.f-fileUploading) .fileUploading {
 		height: 2.3rem;
 	}
 	html.f-mobileSidebar body > * {
-		display: none;
 	}
 	html.f-mobileSidebar #\$sidebar {
 		display: block; /* for devices without flex */
 		display: -webkit-flex;
 		display: flex;
 		border-left: none;
-		/*position: fixed;*/
+		position: fixed;
 		left: 0;
 		top: 0;
-		/*bottom: 0;*/
+		bottom: 0;
 		right: 0;
 		min-height: 100vh;
 	}

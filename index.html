@@ -51,7 +51,10 @@ window.onerror = function(message, source, line, col, error) {
 <!--END-->
 
 <header class="titlePane bar rem2-3 loadBG" id="$titlePane">
-
+	<div class="pageCreate textItem rightAlign">
+		<button id=$openSidebar class="item">|||</button>
+	</div>
+	
 	<a data-static-path="" class="textItem"><img class="item" src="resource/iconbig.png" alt="SBS"></a>
 	<noscript>This web-site requires JavaScript</noscript>
 	<span id=$pageTitle class="textItem pageTitle"></span>
@@ -73,9 +76,6 @@ window.onerror = function(message, source, line, col, error) {
 	</span>
 	<label for=$watchCheck class="textItem pageItem loggedIn">Watching:</label>
 	<input type=checkbox id=$watchCheck class="item pageItem loggedIn">
-	<div class="pageCreate textItem rightAlign">
-		<button id=$openSidebar class="item">|||</button>
-	</div>
 </header>
 
 <div class="sideBarContainer grow" id="$sidebarContainer">
@@ -280,6 +280,8 @@ window.onerror = function(message, source, line, col, error) {
 	</div>
 	<div id="$sidebar">
 		<div class="sidebarInside">
+			<button class="closeSidebar" id=$closeSidebar>Close Sidebar</button>
+			
 			<div class="bottomBorder bar rem1-5 myUserBar">
 				<span class="loggedIn" id=$loggedIn>
 					<a class="item userLink" id=$myUserLink>
@@ -291,9 +293,6 @@ window.onerror = function(message, source, line, col, error) {
 			</div>
 			<div class="userlist bar rem1-5"><span id=$sidebarUserList></span><button id=$hideGlobalStatusButton class="item rightAlign">Hide</button></div>
 			<!--<span id=$longPollStatus></span>-->
-			
-			<button class="closeSidebar" id=$closeSidebar>Close Sidebar</button>
-
 			<div id=$sidebarTop>
 				<div id=$sidebarActivityOuter class="scrollOuter"><div id=$sidebarActivity class="scrollInner"></div></div>
 			</div>
