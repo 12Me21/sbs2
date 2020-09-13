@@ -1,13 +1,102 @@
+function Scroller(outer, inner) {
+	this.outer = outer
+	this.inner = inner
+	this.animationId = null
+	this.atBottom = true
+	var $=this
+	outer.addEventListener('scroll', function(e) {
+		if ($.ignoreScroll) {
+			$.ignoreScroll = false
+			return
+		}
+		if ($.animationId)
+			$.cancelAutoScroll()
+		$.atBottom = $.scrollBottom < $.outer.clientHeight/4
+	}, {passive: true})
+	function onResize() {
+		if ($.atBottom && !$.animationId) // when message is inserted, it triggers the resize detector, which would interrupt the scroll animation, so we don't force scroll if an animation is playing
+			$.autoScroll(true)
+	}
+	TrackScrollResize(this.outer, onResize)
+	TrackScrollResize(this.inner, onResize)
+}
+Object.defineProperty(Scroller.prototype, 'scrollBottom', {
+	get: function() {
+		var parent = this.outer
+		return parent.scrollHeight-parent.clientHeight-parent.scrollTop
+	},
+	set: function(value) {
+		var parent = this.outer
+		// need to round here because it would be reversed otherwise
+		value = Math.floor(value*window.devicePixelRatio)/window.devicePixelRatio
+		parent.scrollTop = parent.scrollHeight-parent.clientHeight-value
+	}
+})
+Scroller.prototype.autoScroll = function(instant) {
+	if (!window.requestAnimationFrame || instant) {
+		this.ignoreScroll = true
+		this.scrollBottom = 0
+		this.atBottom = true
+	} else {
+		if (!this.animationId) {
+			this.animationId = null
+			var now = performance.now()
+			this.animationStart = now - 1000/60 //assume 60fps on first frame..
+			this.autoScrollAnimation(now)
+		}
+	}
+}
+Scroller.prototype.cancelAutoScroll = function() {
+	if (this.animationId) {
+		window.cancelAnimationFrame(this.animationId)
+		this.animationId = false
+	}
+}
+Scroller.prototype.autoScrollAnimation = function(time) {
+	var dt = (time - this.animationStart) / (1000/60)
+	this.animationStart = time
+
+	this.ignoreScroll = true
+	var expect = Math.floor(this.scrollBottom * Math.pow(.75, dt))
+	this.scrollBottom = expect
+	
+	this.atBottom = true //I guess
+	if (this.scrollBottom <= 0) {
+		this.animationId = null
+		this.atBottom = true
+		return
+	}
+	var $=this
+	this.animationId = window.requestAnimationFrame(function(time) {
+		if ($.scrollBottom == expect) //just in case
+			$.autoScrollAnimation(time)
+	})
+}
+Scroller.prototype.handlePrint = function(callback, autoscroll) {
+	var should = autoscroll && this.atBottom
+	var elem = callback()
+	if (elem)
+		this.inner.appendChild(elem)
+	if (should)
+		this.autoScroll()
+}
+Scroller.prototype.destroy = function() {
+	TrackScrollResize(this.inner, null)
+	TrackScrollResize(this.outer, null)
+}
+
 function ChatRoom(id, page) {
 	var old = ChatRoom.rooms[id]
 	if (old)
 		return old
+	var $ = this
 	this.id = id
 	this.userList = {}
 	if (id == -1) {
 		this.userListElem = $sidebarUserList
 		return
 	}
+	this.status = "active"
 	this.page = page
 	this.lastUid = NaN
 	this.lastBlock = null
@@ -24,26 +113,21 @@ function ChatRoom(id, page) {
 	this.messageList.className = "scrollInner"
 	this.messagePane.appendChild(this.messageList)
 	this.visible = false
+	this.scroller = new Scroller(this.messagePane, this.messageList)
 	ChatRoom.addRoom(this)
-	var $ = this
-	$.atBottom = true
-	$.messagePane.addEventListener('scroll', function(e) {
-		if ($.ignoreScroll) {
-			$.ignoreScroll = false
-			return
-		}
-		if ($.scrollDistance() < $.messagePane.clientHeight/4) {
-			$.atBottom = true
-		} else {
-			$.atBottom = false
-		}
-	}, {passive: true})
-	function onResize() {
-		if ($.atBottom && !$.animationId) // when message is inserted, it triggers the resize detector, which would interrupt the scroll animation, so we don't force scroll if an animation is playing
-			$.autoScroll(true)
+}
+
+ChatRoom.generateStatus = function() {
+	var status = {}
+	for (var id in ChatRoom.rooms) {
+		status[id] = ChatRoom.rooms[id].status
 	}
-	TrackScrollResize(this.messagePane, onResize)
-	TrackScrollResize(this.messageList, onResize)
+	status[-1] = ChatRoom.global.status
+	return status
+}
+
+ChatRoom.updateStatus = function() {
+	Req.lpSetStatus(ChatRoom.generateStatus())
 }
 
 ChatRoom.rooms = {}
@@ -69,6 +153,19 @@ ChatRoom.prototype.updateUserAvatar = function(user) {
 		}
 	}
 }
+// silly
+Object.defineProperty(ChatRoom.prototype, 'scrollBottom', {
+	get: function() {
+		var parent = this.messagePane
+		return parent.scrollHeight-parent.clientHeight-parent.scrollTop
+	},
+	set: function(value) {
+		var parent = this.messagePane
+		// need to round here because it would be reversed otherwise
+		value = Math.floor(value*window.devicePixelRatio)/window.devicePixelRatio
+		parent.scrollTop = parent.scrollHeight-parent.clientHeight-value
+	}
+})
 
 ChatRoom.addRoom = function(room) {
 	ChatRoom.rooms[room.id] = room
@@ -125,54 +222,11 @@ ChatRoom.prototype.displayInitialMessages = function(comments) {
 	})
 	// ugh why do we need this?
 	window.setTimeout(function() {
-		$.autoScroll(true)
+		$.scroller.autoScroll(true)
 	}, 0)
 }
 
-ChatRoom.prototype.autoScroll = function(instant) {
-	var parent = this.messagePane
-	if (instant)
-		this.ignoreScroll = true
-	if (!window.requestAnimationFrame || instant) {
-		parent.scrollTop = parent.scrollHeight - parent.clientHeight
-	} else {
-		// only start a new animation if previous isn't already running
-		if (!this.animationId) {
-			this.autoScrollAnimation()
-		}
-	}
-}
-
-ChatRoom.prototype.scrollDistance = function() {
-	var parent = this.messagePane
-	return parent.scrollHeight-(parent.clientHeight)-parent.scrollTop
-}
-
-ChatRoom.prototype.autoScrollAnimation = function() {
-	var $=this
-	var parent = this.messagePane
-
-	parent.scrollTop += Math.max(Math.ceil(this.scrollDistance()/4), 1)
-
-	this.atBottom = true; // maybe should only be when finished, probably doesn't matter though
-	
-	if (this.scrollDistance() > 0) {
-		// save scroll position
-		this.expectedTop = parent.scrollTop
-		
-		this.animationId = window.requestAnimationFrame(function(time) {
-			// only call again if scroll pos has not changed
-			// (if it has, that means the user probably scrolled manually)
-			if ($.expectedTop == $.messagePane.scrollTop) {
-				$.autoScrollAnimation()
-			} else {
-				$.animationId = null
-			}
-		})
-	} else {
-		this.animationId = null
-	}
-}
+// 8:10;35
 
 ChatRoom.prototype.show = function() {
 	var old = ChatRoom.currentRoom
@@ -197,38 +251,36 @@ ChatRoom.prototype.hide = function() {
 
 ChatRoom.prototype.destroy = function() {
 	ChatRoom.removeRoom(this)
-	TrackScrollResize(this.messageList, null)
-	TrackScrollResize(this.messagePane, null)
 	this.userListElem.remove()
 	this.messagePane.remove()
 	this.userListElem = null //gc
+	this.scoller.destroy()
 	this.scoller = null
 	this.visible = false
-	
 }
 
 // todo: make renderuserlist etc.
 // reuse for sidebar + page userlist?
 
 ChatRoom.prototype.shouldScroll = function() {
-	return this.atBottom//this.scrollDistance() < (this.messagePane.clientHeight)*0.25
+	return this.scroller.atBottom
 }
 
 ChatRoom.prototype.displayMessage = function(comment, autoscroll) {
-	var s = autoscroll != false && this.shouldScroll()
 	if (comment.deleted)
 		return
-	var uid = comment.createUserId
-	if (!this.lastBlock || uid != this.lastUid || comment.createDate-this.lastTime > 1000*60*5) {
-		this.lastBlock = Draw.messageBlock(comment)
-		this.messageList.appendChild(this.lastBlock[0])
-		//lastTime = comment.createDate
-	}
-	this.lastBlock[1].appendChild(Draw.messagePart(comment))
-	this.lastUid = uid
-	this.lastTime = comment.createDate
-	if (s)
-		this.autoScroll()
+	var $=this
+	this.scroller.handlePrint(function() {
+		var uid = comment.createUserId
+		if (!$.lastBlock || uid != $.lastUid || comment.createDate-$.lastTime > 1000*60*5) {
+			$.lastBlock = Draw.messageBlock(comment)
+			var ret = $.lastBlock[0]
+		}
+		$.lastBlock[1].appendChild(Draw.messagePart(comment))
+		$.lastUid = uid
+		$.lastTime = comment.createDate
+		return ret
+	}, autoscroll != false)
 }
 
 <!--/* trick indenter
@@ -272,7 +324,7 @@ addView('chat', {
 		room.displayInitialMessages(comments)
 		room.show()
 	},
-	cleanUp: function() {
+	cleanUp: function(type) {
 		//$messageList.replaceChildren()
 		room.hide()
 	},
@@ -313,8 +365,27 @@ addView('chat', {
 				$hideGlobalStatusButton.disabled = false
 			})
 		}
+		
 	}
 })
 
 <!--/*
 }(window)) //*/ // pass external values
+
+
+
+
+
+// when joining a room:
+// - create the ChatRoom object
+// - add this room to lastListeners
+// - add status in this room
+// - remove status from prev room(s) (if exists)
+// - refresh long poller
+// - start listening for posted messages
+// - request initial messages
+
+// when leaving a room:
+// - remove status from room
+// - refresh long poller IF we aren't switching to another chat room
+// 

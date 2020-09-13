@@ -1,3 +1,7 @@
+
+if (!window.devicePixelRatio)
+	window.devicePixelRatio = 1
+
 String.prototype.split1 = function(sep) {
 	var n = this.indexOf(sep)
 	if (n == -1)
@@ -122,10 +126,10 @@ if (window.ResizeObserver) {
 	TrackScrollResize.tracking = []
 	TrackScrollResize.interval = window.setInterval(function() {
 		TrackScrollResize.tracking.forEach(function(item) {
-			var height = item.element.getBoundingClientRect().height
-			if (height != item.height) {
-				item.callback(item.height, height)
-				item.height = height
+			var newSize = item.element.getBoundingClientRect()
+			if (newSize.width && newSize.height!=item.height) {
+				item.callback(item.height, newSize.height)
+				item.height = newSize.height
 			}
 		})
 	}, 200)

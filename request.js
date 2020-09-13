@@ -573,22 +573,26 @@ fileURL: function(id, query) {
 	return server+"/File/raw/"+id
 },
 
-lpSetStatus: function(id, status) {
-	status = String(status)
-	if (lpStatuses[id] == status)
-		return
-	lpStatuses[id] = status
-	// set status in lastListeners, so we won't cause the long poller to complete instantly
-	if (!lpLastListeners[id])
-		lpLastListeners[id] = {}
-	lpLastListeners[id][uid] = status
-	// but now, since the long poller won't complete (sometimes)
-	// we have to update the userlist visually with our changes
-	if (!lpProcessedListeners[id])
-		lpProcessedListeners[id] = {}
-	lpProcessedListeners[id][uid] = {user: me, status: status}
+lpSetStatus: function(statuses) {
+	for (var id in statuses) {
+		var status = statuses[id]
+		lpStatuses[id] = status
+		// set status in lastListeners, so we won't cause the long poller to complete instantly
+		if (!lpLastListeners[id])
+			lpLastListeners[id] = {}
+		lpLastListeners[id][uid] = status
+		// but now, since the long poller won't complete (sometimes)
+		// we have to update the userlist visually with our changes
+		// if another client is setting your status and overrides this one
+		// your (local) status will flicker, unfortunately
+		// of the 2 options, this one is better in general, I think
+		// it reduces lp completions
+		// wait, but... does it really?
+		if (!lpProcessedListeners[id])
+			lpProcessedListeners[id] = {}
+		lpProcessedListeners[id][uid] = {user: me, status: status}
+	}
 	onListeners(lpProcessedListeners)
-	
 	lpRefresh()
 },
 

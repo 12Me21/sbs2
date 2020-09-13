@@ -1124,6 +1124,7 @@ html:not(.f-fileUploading) .fileUploading {
 
 input {
 	min-width: 0;
+	max-width: 100%;
 }
 
 table.form input {
