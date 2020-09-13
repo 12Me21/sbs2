@@ -399,7 +399,7 @@ onLoad: function() {
 		imageFocusClickHandler(e.target)
 	})
 	document.onmousedown = function(e) {
-		if (!e.button) // 0 or none (prevent right click etc.)
+		if (!e.button && e.target) // 0 or none (prevent right click etc.)
 			imageFocusClickHandler(e.target)
 	}
 	var embiggenedImage
