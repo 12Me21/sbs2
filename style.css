@@ -1069,15 +1069,15 @@ html:not(.f-fileUploading) .fileUploading {
 
 /* for devices with small screens */
 @media (max-width: 700px), (max-height: 500px) {
+	textarea {
+		font-size: 100%;
+	}
 	/* make the entire page scroll */
 	/* todo: make chat mode work better here */
 	/*body:not(.pageMode) {
 		position: static;
 		min-height: 100vh;
 		font-size: 0.9em;
-	}
-	textarea {
-		font-size: 1em;
 	}
 	body:not(.pageMode) main {
 		height: auto !important;
