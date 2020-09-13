@@ -1,3 +1,15 @@
+Sidebar.print("hi!")
+delete window.sidebar // obsolete firefox global variable
+
+window.onerror = function(message, source, line, col, error) {
+	try {
+		Sidebar.print("Error: "+message+"\nin "+source+"\nat "+line+":"+col)
+		// to prevent this from throwing more errors
+		// though the scroll event might cause issues...
+	} catch(e) {
+		// yeah no
+	}
+}
 /*window.onerror = function(message, source, line, col, error) {
 	console.log("e")
 }*/

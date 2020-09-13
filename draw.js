@@ -92,6 +92,13 @@ userListAvatar: function(status) {
 	return a
 },
 
+sidebarDebug: function(text) {
+	var x = document.createElement('div')
+	x.className = 'debugMessage pre'
+	x.textContent = text
+	return x
+},
+
 linkAvatar: function(user) {
 	var a = entityLink(user)
 	a.appendChild(avatar(user))

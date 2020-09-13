@@ -26,10 +26,22 @@ views: {
 		}
 	},
 	test: {
+		init: function() {
+			$testButton.onclick = function() {
+				var c = $testTextarea.value
+				$testOut.textContent="Starting..."
+				try {
+					var res = eval(c)
+					$testOut.textContent="Finished:\n"+res
+				} catch(e) {
+					$testOut.textContent="Error:\n"+e
+				}
+			}
+		},
 		className: 'testMode',
 		render: function() {
 			setTitle("Testing")
-		}
+		},
 	},
 	user: {
 		start: function(id, query, render) {

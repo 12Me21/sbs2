@@ -104,7 +104,7 @@ function ChatRoom(id, page) {
 	this.userListElem = document.createElement('div')
 	this.userListElem.className = "bar rem2-3 userlist"
 	this.messagePane = document.createElement('div')
-	this.messagePane.className = "chatScroller"
+	this.messagePane.className = "chatScroller scrollOuter"
 	this.messagePane.style.display = "none"
 	this.userListElem.style.display = "none"
 	$chatPane.appendChild(this.userListElem)
@@ -388,4 +388,4 @@ addView('chat', {
 // when leaving a room:
 // - remove status from room
 // - refresh long poller IF we aren't switching to another chat room
-// 
+//

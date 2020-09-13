@@ -408,7 +408,6 @@ main {
 	flex-direction: column;
 	overflow-y: auto;
 	
-	
 	/*padding: 0.5rem;*/
 	/*overflow-y: scroll;*/
 	
@@ -986,6 +985,17 @@ html:not(.f-fileUploading) .fileUploading {
 	width: 100%;
 }
 
+.debugMessage {
+	padding: 0rem 0.2rem;
+}
+
+.scrollInner {
+}
+.scrollOuter {
+	height: 100%;
+	overflow-y: scroll;
+}
+
 #\$sidebarPinned {
 	-webkit-flex-shrink: 1;
 	flex-shrink: 1;
@@ -994,7 +1004,6 @@ html:not(.f-fileUploading) .fileUploading {
 #\$sidebarActivity {
 	-webkit-flex-shrink: 1;
 	flex-shrink: 1;
-	overflow-y: scroll;
 }
 
 #\$sidebarActivity .bar {
@@ -1163,7 +1172,6 @@ body.pageMode main {
 }
 
 .chatScroller {
-	overflow-y: scroll;
 	height: 300px;
 }
 
@@ -1171,10 +1179,6 @@ body.pageMode main {
 	display: -webkit-flex;
 	display: flex;
 	flex-direction: column;
-	overflow-y: auto;
-}
-
-.scrollInner {
 	overflow-y: auto;
 }
 
