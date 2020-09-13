@@ -251,7 +251,7 @@ handleView: function(type, id, query, callback) {
 	function cleanUp() {
 		if (currentView && currentView.cleanUp) {
 			try {
-				currentView.cleanUp()
+				currentView.cleanUp(type, id, query)
 			} catch(e) {
 				console.error("error in cleanup function", e)
 			} finally {
