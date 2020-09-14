@@ -33,6 +33,7 @@ me: null,
 rawRequest: function(url, method, callback, data, auth){
 	var x = new $.XMLHttpRequest()
 	x.open(method, url)
+	var args = arguments
 
 	var start = $.Date.now()
 	x.onload = function() {
@@ -53,11 +54,11 @@ rawRequest: function(url, method, callback, data, auth){
 			// record says server uses 408, testing showed only 204
 			// basically this is treated as an error condition,
 			// except during long polling, where it's a normal occurance
-			retry(arguments)
+			retry()
 			//callback('timeout', resp)
 		} else if (code == 429) { // rate limit
 			$.setTimeout(function() {
-				retry(arguments)
+				retry()
 				//callback('rate', resp)
 			}, 1000)
 		} else if (code==401 || code==403) {
@@ -87,7 +88,7 @@ rawRequest: function(url, method, callback, data, auth){
 		//$.console.log("xhr onerror after ms:"+time)
 		if (time > 18*1000) {
 			//$.console.log("detected 3DS timeout")
-			retry(arguments)
+			retry()
 			//callback('timeout')
 		} else {
 			$.alert("Request failed! "+url)
@@ -112,7 +113,7 @@ rawRequest: function(url, method, callback, data, auth){
 	}
 	return x
 
-	function retry(args) {
+	function retry() {
 		// this is not recursion because retry is called in async callback functions only!
 
 		// external things rely on .abort to cancel the request, so...
