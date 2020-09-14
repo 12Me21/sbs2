@@ -53,10 +53,12 @@ rawRequest: function(url, method, callback, data, auth){
 			// record says server uses 408, testing showed only 204
 			// basically this is treated as an error condition,
 			// except during long polling, where it's a normal occurance
-			callback('timeout', resp)
+			retry(arguments)
+			//callback('timeout', resp)
 		} else if (code == 429) { // rate limit
 			$.setTimeout(function() {
-				callback('rate', resp)
+				retry(arguments)
+				//callback('rate', resp)
 			}, 1000)
 		} else if (code==401 || code==403) {
 			callback('auth', resp)
@@ -85,7 +87,8 @@ rawRequest: function(url, method, callback, data, auth){
 		//$.console.log("xhr onerror after ms:"+time)
 		if (time > 18*1000) {
 			//$.console.log("detected 3DS timeout")
-			callback('timeout')
+			retry(arguments)
+			//callback('timeout')
 		} else {
 			$.alert("Request failed! "+url)
 			$.console.log("xhr onerror")
@@ -108,6 +111,14 @@ rawRequest: function(url, method, callback, data, auth){
 		x.send()
 	}
 	return x
+
+	function retry(args) {
+		// this is not recursion because retry is called in async callback functions only!
+
+		// external things rely on .abort to cancel the request, so...
+		// a hack, perhaps...
+		x.abort = rawRequest.apply(null, args).abort
+	}
 },
 
 queryString: function(obj) {
@@ -149,6 +160,7 @@ request: function(url, method, callback, data) {
 // logs the user out and clears the cached token
 logOut: function() {
 	$.Store.remove(storageKey)
+	lpStop()
 	auth = null
 	onLogout()
 },
@@ -483,6 +495,11 @@ lpRefresh: function() {
 lpStart: function(callback) {
 	if (!lpRunning)
 		lpLoop(callback)
+},
+
+lpStop: function() {
+	lpCancel()
+	lpRunning = false
 },
 
 handleOnListeners: function(listeners, users) {
