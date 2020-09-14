@@ -60,7 +60,7 @@ rawRequest: function(url, method, callback, data, auth){
 			$.setTimeout(function() {
 				retry()
 				//callback('rate', resp)
-			}, 1000)
+			}, 1500)
 		} else if (code==401 || code==403) {
 			callback('auth', resp)
 		} else if (code==404) {
