@@ -118,6 +118,7 @@ rawRequest: function(url, method, callback, data, auth){
 
 		// external things rely on .abort to cancel the request, so...
 		// a hack, perhaps...
+		console.log("retrying request")
 		x.abort = rawRequest.apply(null, args).abort
 	}
 },
