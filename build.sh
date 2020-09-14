@@ -26,12 +26,12 @@ then
 	echo 'Copying files' >&2
 	if [ -f "$dest" ]
 	then
-		cp -v -r resource "$(dirname "$dest")"/resource
-		cp -v _build.html "$dest"
+		cp -v -u -r resource "$(dirname "$dest")"/resource
+		cp -v -u _build.html "$dest"
 	else
 		mkdir -vp "$dest"
-		cp -v -r resource "$dest"/
-		cp -v _build.html "$dest"/index.html
+		cp -v -u -r resource "$dest"/
+		cp -v -u _build.html "$dest"/index.html
 	fi
 fi
 
