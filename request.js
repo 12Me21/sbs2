@@ -543,7 +543,7 @@ lpLoop: function(noCancel) {
 		if (noCancel)
 			noCancel(e, resp)
 		if (cancelled) { // should never happen (but I think it does sometimes..)
-			console.log("OH HECK")
+			console.log("OH HECK, request called callback after being cancelled?")
 			return
 		}
 		// try/catch here so the long poller won't fail when there's an error in the callbacks
