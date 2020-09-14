@@ -57,10 +57,13 @@ rawRequest: function(url, method, callback, data, auth){
 			retry()
 			//callback('timeout', resp)
 		} else if (code == 429) { // rate limit
-			$.setTimeout(function() {
+			var id = $.setTimeout(function() {
 				retry()
 				//callback('rate', resp)
 			}, 1500)
+			x.abort = function() {
+				$.clearTimeout(id)
+			}
 		} else if (code==401 || code==403) {
 			callback('auth', resp)
 		} else if (code==404) {
