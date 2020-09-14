@@ -57,6 +57,14 @@ if (window.ResizeObserver) {
 	}, 200)
 }
 
+// goal:
+// any unnatural resize -> scroll to bottom if atbottom set
+// human scrolling -> update atbottom flag
+// message insert -> smooth scroll
+
+// what is human scrolling?
+//  scroll position changes without the element size changing or a message being inserted
+
 function Scroller(outer, inner) {
 	this.outer = outer
 	this.inner = inner
@@ -64,10 +72,14 @@ function Scroller(outer, inner) {
 	this.atBottom = true
 	this.rate = 0.25 //autoscroll rate: amount of remaining distance to scroll per 1/60 second
 	this.bottomHeight = 0.25 //if within this distance of bottom, autoscroll is enabled
+	this.registerSizeChange()
 	var $=this
 	outer.addEventListener('scroll', function(e) {
 		if ($.ignoreScroll) {
 			$.ignoreScroll = false
+			return
+		}
+		if ($.hasSizeChanged()) {
 			return
 		}
 		if ($.animationId)
@@ -75,11 +87,19 @@ function Scroller(outer, inner) {
 		$.atBottom = $.scrollBottom < $.outer.clientHeight*$.bottomHeight
 	}, {passive: true})
 	function onResize() {
+		$.registerSizeChange()
 		if ($.atBottom && !$.animationId) // when message is inserted, it triggers the resize detector, which would interrupt the scroll animation, so we don't force scroll if an animation is playing
-			$.autoScroll(true)
+			$.scrollInstant()
 	}
 	TrackScrollResize(this.outer, onResize)
 	TrackScrollResize(this.inner, onResize)
+}
+Scroller.prototype.hasSizeChanged = function() {
+	return this.innerHeight!=this.inner.getBoundingClientRect().height || this.outerHeight!=this.outer.getBoundingClientRect().height
+}
+Scroller.prototype.registerSizeChange = function() {
+	this.innerHeight = this.inner.getBoundingClientRect().height
+	this.outerHeight = this.outer.getBoundingClientRect().height
 }
 Object.defineProperty(Scroller.prototype, 'scrollBottom', {
 	get: function() {
@@ -93,9 +113,14 @@ Object.defineProperty(Scroller.prototype, 'scrollBottom', {
 		parent.scrollTop = parent.scrollHeight-parent.clientHeight-value
 	}
 })
-Scroller.prototype.autoScroll = function(instant) {
-	if (instant || !window.requestAnimationFrame) {
-		this.cancelAutoScroll()
+Scroller.prototype.scrollInstant = function() {
+	this.cancelAutoScroll()
+	this.ignoreScroll = true
+	this.scrollBottom = 0
+	this.atBottom = true
+}
+Scroller.prototype.autoScroll = function() {
+	if (!window.requestAnimationFrame) {
 		this.ignoreScroll = true
 		this.scrollBottom = 0
 		this.atBottom = true
@@ -122,16 +147,14 @@ Scroller.prototype.autoScrollAnimation = function(time) {
 	var expect = Math.floor(this.scrollBottom * Math.pow(1-this.rate, dt))
 	this.scrollBottom = expect
 	
-	this.atBottom = true //I guess
-	if (this.scrollBottom <= 0) {
+	this.atBottom = true
+	if (this.scrollBottom <= 0) { // done
 		this.animationId = null
-		this.atBottom = true
 		return
 	}
 	var $=this
 	this.animationId = window.requestAnimationFrame(function(time) {
-		if ($.scrollBottom == expect) //just in case
-			$.autoScrollAnimation(time)
+		$.autoScrollAnimation(time)
 	})
 }
 //if you want to insert an element into the scroller, do something like:

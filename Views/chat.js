@@ -136,7 +136,7 @@ ChatRoom.prototype.displayInitialMessages = function(comments) {
 	})
 	// ugh why do we need this?
 	window.setTimeout(function() {
-		$.scroller.autoScroll(true)
+		$.scroller.scrollInstant()
 	}, 0)
 }
 
@@ -168,8 +168,8 @@ ChatRoom.prototype.destroy = function() {
 	this.userListElem.remove()
 	this.messagePane.remove()
 	this.userListElem = null //gc
-	this.scoller.destroy()
-	this.scoller = null
+	this.scroller.destroy()
+	this.scroller = null
 	this.visible = false
 }
 
