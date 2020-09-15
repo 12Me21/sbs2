@@ -87,12 +87,12 @@ time {
 	color: black;
 }
 
-body.pageMode .bottomSpacer {
+body.chatMode .bottomSpacer {
 	display: none;
 }
-body.fileMode .bottomSpacer {
-	display: none;
-}
+
+
+
 .username {
 	font-weight: bold;
 	unicode-bidi: embed;

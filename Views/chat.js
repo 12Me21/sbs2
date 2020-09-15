@@ -6,7 +6,7 @@ function ChatRoom(id, page) {
 	this.id = id
 	this.userList = {}
 	if (id == -1) {
-		this.userListElem = $sidebarUserList
+		this.userListInner = $sidebarUserList
 		return
 	}
 	this.messageElements = {}
@@ -15,13 +15,20 @@ function ChatRoom(id, page) {
 	this.lastUid = NaN
 	this.lastBlock = null
 	this.lastTime = 0
-	this.userListElem = document.createElement('div')
-	this.userListElem.className = "bar rem2-3 userlist"
+	var ul = Draw.userList()
+	this.userListOuter = ul[0]
+	this.userListInner = ul[1]
+	ul[2].onclick = function() {
+		$.toggleHiding(function() {
+			ul[2].disabled = false
+		})
+		ul[2].disabled = true
+	}
 	this.messagePane = document.createElement('div')
 	this.messagePane.className = "chatScroller scrollOuter"
 	this.messagePane.style.display = "none"
-	this.userListElem.style.display = "none"
-	$chatPane.appendChild(this.userListElem)
+	this.userListOuter.style.display = "none"
+	$chatPane.appendChild(this.userListOuter)
 	$chatPane.appendChild(this.messagePane)
 	this.messageList = document.createElement('div')
 	this.messageList.className = "scrollInner"
@@ -126,7 +133,7 @@ ChatRoom.prototype.updateUserList = function(list) {
 	var d = document.createDocumentFragment()
 	for (var uid in list)
 		d.appendChild(Draw.userListAvatar(list[uid]))
-	this.userListElem.replaceChildren(d)
+	this.userListInner.replaceChildren(d)
 }
 
 ChatRoom.prototype.displayInitialMessages = function(comments) {
@@ -147,7 +154,7 @@ ChatRoom.prototype.show = function() {
 	if (old)
 		old.hide()
 	this.messagePane.style.display = ""
-	this.userListElem.style.display = ""
+	this.userListOuter.style.display = ""
 	this.visible = true
 	ChatRoom.currentRoom = this
 }
@@ -155,7 +162,7 @@ ChatRoom.prototype.show = function() {
 ChatRoom.prototype.hide = function() {
 	if (this.pinned) {
 		this.messagePane.style.display = "none"
-		this.userListElem.style.display = "none"
+		this.userListOuter.style.display = "none"
 		if (ChatRoom.currentRoom == this)
 			ChatRoom.currentRoom = null
 		this.visible = false
@@ -165,9 +172,10 @@ ChatRoom.prototype.hide = function() {
 
 ChatRoom.prototype.destroy = function() {
 	ChatRoom.removeRoom(this)
-	this.userListElem.remove()
+	this.userListOuter.remove()
 	this.messagePane.remove()
-	this.userListElem = null //gc
+	this.userListOuter = null //gc
+	this.userListInner = null
 	this.scroller.destroy()
 	this.scroller = null
 	this.visible = false
@@ -284,7 +292,6 @@ addView('chat', {
 			if ($hideGlobalStatusButton.disabled)
 				return
 			$hideGlobalStatusButton.disabled = true
-			console.log($hideGlobalStatusButton.disabled)
 			ChatRoom.global.toggleHiding(function() {
 				$hideGlobalStatusButton.disabled = false
 			})

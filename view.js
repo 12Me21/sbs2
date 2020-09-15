@@ -121,7 +121,10 @@ views: {
 				bar.className += " linkBar bar rem2-3"
 				$categoryPages.appendChild(bar)
 			})
-			$.Nav.link("editpage?cid="+category.id,$createPage)
+			$createPage.onclick = function() {
+				Nav.go("editpage?cid="+category.id)
+			}
+			//$.Nav.link("editpage?cid="+category.id, $createPage)
 			if (/u/.test(category.myPerms))
 				flag('canEdit', true)
 		},
@@ -270,6 +273,7 @@ handleView: function(type, id, query, callback) {
 				currentView = null
 			}
 		}
+		$main.scrollTop = 0
 	}
 
 	var cancelled = false

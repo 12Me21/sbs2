@@ -46,7 +46,7 @@ onLoad: function() {
 	// todo: maybe a global ESC handler?
 	/*document.addEventListener('keydown', function(e) {
 		
-	})*/
+	  })*/
 },
 
 print: function(text) {

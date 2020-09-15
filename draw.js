@@ -85,6 +85,18 @@ iconURL: function(entity) {
 	return "resource/unknown.png"
 },
 
+userList: function() {
+	var outer = document.createElement('div')
+	outer.className = "bar rem2-3 userlist"
+	var inner = document.createElement('span')
+	outer.appendChild(inner)
+	var b = button()
+	b[1].textContent = "Hide"
+	b[0].className += " rightAlign item"
+	outer.appendChild(b[0])
+	return [outer, inner, b[1]]
+},
+
 userListAvatar: function(status) {
 	var a = linkAvatar(status.user)
 	if (status.status == "idle")

@@ -414,7 +414,7 @@ getPageView: function(id, callback) {
 getCategoryView: function(id, callback) {
 	var search = {
 		parentIds: [id],
-		limit: 10,
+		limit: 30,
 		sort: 'editDate',
 		reverse: true
 	}
@@ -555,7 +555,7 @@ lpLoop: function(noCancel) {
 		} catch (e) {
 			console.error(e)
 		}
-		if (!e || e=='timeout' || e=='rate') {
+		if (!e) {
 			// I'm not sure this is needed. might be able to just call lpLoop diretcly?
 			var t = setTimeout(function() {
 				if (cancelled) // should never happen?
