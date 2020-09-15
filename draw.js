@@ -325,6 +325,44 @@ timeAgoString: function(date) {
 	if (seconds < 0)
 		return " IN THE FUTURE?"
 	return Math.round(seconds) + " seconds ago"
+},
+
+categoryInput: function() {
+	var elem = document.createElement('select')
+	var x = {
+		element: elem,
+		set: function(id) {
+			elem.value = id
+		},
+		get: function() {
+			return +elem.value
+		},
+		update: function() {
+			elem.replaceChildren()
+			for (var id in Entity.categoryMap) {
+				var cat = Entity.categoryMap[id]
+				var x = document.createElement('option')
+				x.textContent = cat.name
+				x.value = cat.id
+				elem.appendChild(x)
+			}
+		}
+	}
+	return x
+},
+
+permissionInput: function() {
+	var elem = document.createElement('input')
+	var x = {
+		element: elem,
+		set: function(perms) {
+			elem.value = JSON.stringify(perms)
+		},
+		get: function() {
+			return JSON.parse(elem.value)
+		}
+	}
+	return x
 }
 
 <!--/* 

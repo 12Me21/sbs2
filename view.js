@@ -105,7 +105,9 @@ views: {
 			setEntityPath(category)
 			$categoryDescription.replaceChildren(Parse.parseLang(category.description, category.values.markupLang))
 			$categoryCategories.replaceChildren()
-			Nav.link("editcategory/"+category.id, $editButton)
+			$editCategory.onclick = function() {
+				Nav.go("editcategory/"+category.id)
+			}
 			category.children.forEach(function(child) {
 				var bar = Draw.entityTitleLink(child)
 				bar.className += " linkBar bar rem2-3"
@@ -205,6 +207,7 @@ setPath: function(path) {
 	$path.replaceChildren(Draw.titlePath(path))
 },
 setEntityPath: function(page) {
+	console.log("setting entity path",page, page.parent)
 	if (page.Type == 'category')
 		var node = page
 	else

@@ -54,11 +54,11 @@ rawRequest: function(url, method, callback, data, auth){
 			// record says server uses 408, testing showed only 204
 			// basically this is treated as an error condition,
 			// except during long polling, where it's a normal occurance
-			retry()
+			retry('timeout')
 			//callback('timeout', resp)
 		} else if (code == 429) { // rate limit
 			var id = $.setTimeout(function() {
-				retry()
+				retry('rate limited')
 				//callback('rate', resp)
 			}, 1500)
 			x.abort = function() {
@@ -91,7 +91,7 @@ rawRequest: function(url, method, callback, data, auth){
 		//$.console.log("xhr onerror after ms:"+time)
 		if (time > 18*1000) {
 			//$.console.log("detected 3DS timeout")
-			retry()
+			retry('3ds timeout')
 			//callback('timeout')
 		} else {
 			$.alert("Request failed! "+url)
@@ -116,12 +116,12 @@ rawRequest: function(url, method, callback, data, auth){
 	}
 	return x
 
-	function retry() {
+	function retry(reason) {
 		// this is not recursion because retry is called in async callback functions only!
 
 		// external things rely on .abort to cancel the request, so...
 		// a hack, perhaps...
-		console.log("retrying request")
+		console.log("retrying request", reason)
 		x.abort = rawRequest.apply(null, args).abort
 	}
 },
@@ -305,9 +305,9 @@ toggleHiding: function(id, callback) {
 	return getMe(function(me) {
 		if (me) {
 			var hiding = me.hidelist
-			arrayToggle(hiding, id)
+			var hidden = arrayToggle(hiding, id)
 			setBasic({hidelist:hiding}, function(){
-				callback(hiding)
+				callback(hidden)
 			})
 		} else
 			callback(null)
@@ -409,6 +409,50 @@ getPageView: function(id, callback) {
 		else
 			callback(null)
 	}, true)
+},
+
+getPageEditView: function(id, parent, callback) {
+	if (id) {
+		id = +id
+		return read([
+			{content: {ids: [id]}},
+			"user.0createUserId.0editUserId.0permissions",
+		], {
+			user: "id,username,avatar"
+		}, function(e, resp) {
+			if (!e) {
+				var page = resp.content[0]
+				if (page)
+					callback(page, resp.userMap)
+				else
+					callback(null)
+			} else
+				callback(false)
+		}, true)
+	} else {
+		if (gotCategoryTree) {
+			done()
+			return {abort:function(){}}
+		} else {
+			return read([], {}, function(e, resp) {
+				if (!e)
+					done()
+				else
+					callback(false)
+			}, true)
+		}
+		function done() {
+			callback({parent: Entity.categoryMap[parent]})
+		}
+	}
+},
+
+editPage: function(page, callback) {
+	if (page.id) {
+		request("Content/"+page.id, 'PUT', callback, page)
+	} else {
+		request("Content", 'POST', callback, page)
+	}
 },
 
 getCategoryView: function(id, callback) {
@@ -623,10 +667,12 @@ lpSetStatus: function(statuses) {
 
 function arrayToggle(array, value) {
 	var i = array.indexOf(value)
-	if (i<0)
+	if (i<0) {
 		array.push(value)
-	else
-		array.splice(i, 1)
+		return true
+	}
+	array.splice(i, 1)
+	return false
 }
 
 if ($.location.protocol=="http:")

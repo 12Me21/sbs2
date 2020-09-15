@@ -271,3 +271,8 @@ markup-root .youtube {
 .markup-root > :last-child {
 	margin-bottom: 0;
 }
+
+.markup-root pre, .markup-root code {
+	-moz-tab-size: 4;
+	tab-size: 4;
+}

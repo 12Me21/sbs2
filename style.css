@@ -200,7 +200,7 @@ body:not(.pageMode) .pageMode,
 body:not(.chatMode) .chatMode,
 body:not(.editorMode) .editorMode,
 body:not(.categoryMode) .categoryMode,
-body:not(.pageMode):not(.categoryMode) .pathMode,
+body:not(.pageMode):not(.categoryMode):not(.editorMode) .pathMode, /*ok this is just silly */
 body:not(.navMode) .navMode,
 body:not(.userMode) .userMode,
 body:not(.membersMode) .membersMode,
@@ -275,6 +275,7 @@ html.f-loggedIn .loggedOut {
 .pathBar {
 	font-weight: bold;
 	padding: 0 0.2rem;
+	/*box-shadow: inset 0 -2px 3px rgba(0,0,0,0.3);*/
 }
 
 .bottomBorder {
@@ -302,6 +303,7 @@ html:not(.f-sidebarUploaded) .sidebarUploadedFile {
 	background-color: #FFF;
 	box-shadow: 0 2px 3px rgba(0,0,0,0.3);
 	z-index: 10;
+	padding: 1px;
 	/*-webkit-transition: background-color 0.1s ease;
 	transition: background-color 0.1s ease;*/
 }
@@ -383,6 +385,7 @@ header > :first-child {
 	width: 30vw;
 	min-width: 10vw;
 	z-index: 20;
+	box-shadow: -2px 0px 3px rgba(0,0,0,0.3);
 }
 
 html:not(.f-sidebar) #\$sidebar {
@@ -534,6 +537,8 @@ main {
 	border-bottom: 1px solid gray;
 	-webkit-flex-shrink: 0;
 	flex-shrink: 0;
+	box-shadow: 0 2px 3px rgba(0,0,0,0.3);
+	z-index: 4;
 }
 
 /***********************
@@ -841,6 +846,7 @@ button[data-selected] {
 	-webkit-flex-shrink: 0;
 	flex-shrink: 0;
 	padding: 0 0.3rem;
+	box-shadow: 0 2px 3px rgba(0,0,0,0.3);
 }
 
 .pageMetaIcon {
