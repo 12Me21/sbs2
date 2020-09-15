@@ -62,7 +62,16 @@ ChatRoom.updateUserAvatar = function(user) {
 }
 
 ChatRoom.prototype.toggleHiding = function(callback) {
-	Req.toggleHiding(this.id, callback || function(){})
+	var $=this
+	Req.toggleHiding(this.id, function(hidden) {
+		if (hidden)
+			delete $.userList[Req.uid]
+		else
+			$.userList[Req.uid] = {user: Req.me, status: "unknown"}
+		console.log("UPDATE?", hidden)
+		$.updateUserList($.userList)
+		callback && callback()
+	})
 }
 
 ChatRoom.prototype.updateUserAvatar = function(user) {
