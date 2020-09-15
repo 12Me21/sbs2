@@ -151,7 +151,7 @@ window.onerror = function(message, source, line, col, error) {
 			  one of them will be visible at a time, depending on the view mode
 		-->
 		
-		<main class="grow">
+		<main class="grow" id=$main>
 			<div class="searchMode" id="$searchResults"></div>
 			
 			<div class="cateditMode">
@@ -167,7 +167,7 @@ window.onerror = function(message, source, line, col, error) {
 			<div id="$categoryPinned" class="categoryMode"></div>
 			<div class="categoryMode page-select rem1-7 bar bottomBorder">
 				<span id=$categoryNav></span>
-				<a id=$createPage class="item categoryMode">Create Page</a>
+				<button id=$createPage class="item">Create Page</button>
 			</div>
 			<div id="$categoryPages" class="categoryPages categoryMode"></div>
 
@@ -261,7 +261,9 @@ window.onerror = function(message, source, line, col, error) {
 			</div>
 			
 			<div id="$chatPane" class="chatMode grow chatPane"></div>
+			<div class="bottomSpacer"></div>
 		</main>
+		
 		<div class="inputPane chatMode">
 			<table> <!-- YES it's a TABLE! sorry ... I'm not allowed to use flex so this is the only option -->
 				<tr>
