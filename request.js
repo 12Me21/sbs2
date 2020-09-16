@@ -48,8 +48,15 @@ rawRequest: function(url, method, callback, data, auth){
 		} else {
 			resp = x.responseText
 		}
-		if (code==200) {
+		if (code==200) { //this should maybe check other 2xx responses, but I think 204 is (was?) used for timeouts...
 			callback(null, resp)
+		} else if (code==502) {
+			var id = $.setTimeout(function() {
+				retry('bad gateway') //maybe have `retry` take timeout as arg
+			}, 5000)
+			x.abort = function() {
+				$.clearTimeout(id)
+			}
 		} else if (code==408 || code==204 || code==524) {
 			// record says server uses 408, testing showed only 204
 			// basically this is treated as an error condition,
