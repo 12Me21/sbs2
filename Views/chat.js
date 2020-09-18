@@ -275,7 +275,7 @@ addView('chat', {
 			var room = ChatRoom.currentRoom
 			if (msg && room) {
 				var meta = {}
-				var markup = $chatMarkupSelect.value
+				var markup = $chatMarkupSelect.checked ? "12y" : "plaintext"
 				if (markup && markup!="plaintext")
 					meta.m = markup
 				if (Req.me)
@@ -284,7 +284,8 @@ addView('chat', {
 				})
 			}
 			$chatTextarea.value = ""
-		}
+		}//todo: make a readInput and writeInput, for getting/setting the state of the textbox and markup select
+		// (to use with editing etc. too)
 		
 		$chatTextarea.onkeypress = function(e) {
 			if (!e.shiftKey && e.keyCode == 13) {

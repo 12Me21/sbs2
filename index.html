@@ -265,7 +265,7 @@ window.onerror = function(message, source, line, col, error) {
 					<td style="white-space: nowrap"><button class="hideWhenEdit chatSend" id=$chatEdit>Edit</button><button class="chatSend hideWhenEdit" id=$chatDelete>Delete</button><button class="chatSend showWhenEdit" id="$cancelEdit">Cancel Edit</button></td>
 				</tr>
 				<tr>
-					<td><select class="fill" id="$chatMarkupSelect" name="markup"><option value="plaintext">Plaintext</option><option value="12y">12y</option><option value="bbcode">BBCode</option></select></td>
+					<td><label for=$chatMarkupSelect>Markup</label><input type=checkbox id=$chatMarkupSelect></td>
 				</tr>
 			</table>
 		</div>
@@ -298,14 +298,16 @@ window.onerror = function(message, source, line, col, error) {
 				<div id=$sidebarPinned class="bottomBorder fill sidebarNotFile"></div>
 				<div class="sidebarFile" class="fill">
 					<div class="sidebarUploadingFile">
-						Uploading Image <button id=$fileCancel>Cancel</button>
-						<button id=$fileUpload>Upload Image</button>
+						<button id=$fileCancel>Cancel</button><br>
 					</div>
 					<div class="sidebarUploadedFile">
 						<input readonly id=$fileURL><button id=$fileDone>Done</button>
 					</div>
 					<div>
 						<img id=$fileView>
+					</div>
+					<div class="sidebarUploadingFile">
+						<button id=$fileUpload>Upload Image</button>
 					</div>
 				</div>
 			</div>

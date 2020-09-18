@@ -462,7 +462,7 @@ editPage: function(page, callback) {
 	}
 },
 
-getCategoryView: function(id, callback) {
+getCategoryView: function(id, page, callback) {
 	var search = {
 		parentIds: [id],
 		limit: 30,
