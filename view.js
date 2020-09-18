@@ -207,7 +207,6 @@ setPath: function(path) {
 	$path.replaceChildren(Draw.titlePath(path))
 },
 setEntityPath: function(page) {
-	console.log("setting entity path",page, page.parent)
 	if (page.Type == 'category')
 		var node = page
 	else
