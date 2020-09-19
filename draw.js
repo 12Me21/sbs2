@@ -269,7 +269,28 @@ navButtons: function(callback) {
 	e.appendChild(prev[0])
 	e.appendChild(next[0])
 	e.appendChild(page)
-	return e
+	var x = {
+		value: 1,
+		element: e,
+		onchange: function(){},
+		set: function(p) {
+			x.value = p
+			page.textContent = p
+		}
+	}
+	prev[1].onclick = function(){
+		change(-1)
+	}
+	next[1].onclick = function(){
+		change(1)
+	}
+	function change(d) {
+		if (x.value+d < 1)
+			return
+		x.value += d
+		x.onchange(x.value)
+	}
+	return x
 },
 
 authorBox: function(page) {

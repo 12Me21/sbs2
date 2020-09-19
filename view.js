@@ -92,7 +92,7 @@ views: {
 		},
 		init: function() {
 			var nav = $memberNav
-			nav.appendChild(Draw.navButtons())
+			nav.appendChild(Draw.navButtons().element)
 		}
 	},
 	pages: {
@@ -336,6 +336,12 @@ onLoad: function() {
 		button.parentNode.replaceChild(container, button)
 		container.className += " "+button.className
 		button.className = ""
+		if (button.hasAttribute('data-static-link')) {
+			button.setAttribute('tabindex', "-1")
+			var a = document.createElement('a')
+			container.appendChild(a)
+			container = a
+		}
 		container.appendChild(button)
 	})
 	
@@ -473,6 +479,9 @@ changeFavicon: function(src) {
 	if (!faviconElement) {
 		if (src == false)
 			return
+		document.head.querySelectorAll("link[data-favicon]").forEach(function(e) {
+			e.remove()
+		})
 		faviconElement = document.createElement('link')
 		faviconElement.rel = "icon"
 		document.head.appendChild(faviconElement)

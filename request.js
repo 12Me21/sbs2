@@ -466,6 +466,7 @@ getCategoryView: function(id, page, callback) {
 	var search = {
 		parentIds: [id],
 		limit: 30,
+		skip: 30*(page-1),
 		sort: 'editDate',
 		reverse: true
 	}
@@ -485,7 +486,7 @@ getCategoryView: function(id, page, callback) {
 				var category = $.Entity.categoryMap[0]
 			else
 				category = resp.Cmain[0]
-			callback(category, resp.category, resp.content, resp.Ppinned)
+			callback(category, resp.category, resp.content, resp.Ppinned, page)
 		} else {
 			callback(null)
 		}

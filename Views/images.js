@@ -7,7 +7,7 @@ with (View) (function($) { "use strict" //*/
 addView('images', {
 	init: function() {
 		var nav = $fileNav
-		nav.replaceChildren(Draw.navButtons())
+		//nav.replaceChildren(Draw.navButtons())
 	},
 	start: function(id, query, render) {
 		var page = +query.page || 0

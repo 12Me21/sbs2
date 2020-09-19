@@ -580,14 +580,14 @@ main {
 }
 .message > img.avatar {
 	display: inline-block;
-	width: 3.5rem;
-	height: 3.5rem;
+	width: 3rem;
+	height: 3rem;
 	border: 1px solid #777;
 	margin-right: 0.5rem;
 	float: left;
 }
 .message .username {
-	margin-left: 4rem;
+	margin-left: 3.5rem;
 	display: block;
 	/*white-space: pre;
 	overflow: hidden;
