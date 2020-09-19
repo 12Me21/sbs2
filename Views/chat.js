@@ -241,7 +241,7 @@ addView('chat', {
 		if (room) {
 			quick(function() {
 				var page = room.page
-				Nav.link("page/"+page.id, $pagePageLink)
+				Nav.link("page/"+page.id, $pagePageLink.parentNode)
 				setEntityTitle(page)
 				setEntityPath(page)
 				//ChatRoom.setViewing([page.id])
@@ -258,7 +258,7 @@ addView('chat', {
 	className: 'chatMode',
 	render: function(page, comments) {
 		//ChatRoom.setViewing([page.id])
-		Nav.link("page/"+page.id, $pagePageLink)
+		Nav.link("page/"+page.id, $pagePageLink.parentNode)
 		setEntityTitle(page)
 		setEntityPath(page)
 		room = new ChatRoom(page.id, page)

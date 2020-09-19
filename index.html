@@ -17,6 +17,12 @@ window.onerror = function(message, source, line, col, error) {
 }
 </script>
 
+<style>
+	html:not(.f-viewReady) view-block {
+		display: none;
+	}
+</style>
+
 <!--START-->
 <!-- this part will be replaced by the build script -->
 <link rel=stylesheet href=resource/fonts.css>
@@ -59,85 +65,84 @@ window.onerror = function(message, source, line, col, error) {
 	<noscript>This web-site requires JavaScript</noscript>
 	<span id=$pageTitle class="textItem pageTitle"></span>
 	
-	<a class="item pageMode" id=$pageChatLink>Chat</a>
-	<a class="item chatMode" id=$pagePageLink>Page</a>
-	<a class="textItem userMode loggedIn myUserPage" data-static-path=settings>Settings</a>
+	<view-block data-view-pageMode><button data-static-path class="item" id=$pageChatLink>Chat</button></view-block>
+	<view-block data-view-chatMode><button data-static-path class="item" id=$pagePageLink>Page</button></view-block>
+	<view-block data-view-userMode><a class="textItem loggedIn myUserPage" data-static-path=settings>Settings</a><view-block>
 	<div class="item loggedIn myUserPage">
 		<div id=$userPageStatus class="textItem userMode"></div>
 	</div>
-	<input class="item editorMode" id="$titleInput" placeholder="Page Title" required>
-	<input class="item cateditMode" id=$cateditTitle placeholder="Category Title" required>
-	<button class="item editorMode" id=$submitEdit>Submit</button>
-	<button class="item editorMode" id=$deletePage>DELETE</button>
-	<span class="cateditMode textItem">
-		<button class="item" id=$cateditSubmit>Submit</button>
-	</span>
-	<label for=$watchCheck class="textItem pageItem loggedIn">Watching:</label>
-	<input type=checkbox id=$watchCheck class="item pageItem loggedIn">
+	<view-block data-view-editMode data-view-catEditMode>
+		<input class="item" id=$titleInput placeholder="Title" required>
+		<button class="item" id=$submitEdit>Submit</button>
+		<button class="item" id=$deletePage>DELETE</button>
+	</view-block>
+	<view-block data-view-pageMode>
+		<label for=$watchCheck class="textItem loggedIn">Watching:</label>
+		<input type=checkbox id=$watchCheck class="item loggedIn">
+	</view-block>
 </header>
 
 <horizontal-split class="grow">
-	<main class="m grow" id="$m">
-		<div class="pathMode pathBar rem1-5 bottomBorder" id=$path></div>
-		<div class="infoPane editorMode">
-			<label for="$keywords">Keywords:</label><input placeholder="(space separated, optional)" id="$keywords"><br>
-			<label for="$editPageType">Type:</label><input placeholder="@" id="$editPageType"><br>
-			<label for="$editPageCategory">Category:</label><span id=$editPageCategory></span><br>
+	<main class="grow">
+		<view-block data-view-pageMode data-view-editMode data-view-categoryMode class="pathBar rem1-5 bottomBorder" id=$path></view-block>
+		<view-block data-view-editMode class="infoPane">
+			<label for=$keywords>Keywords:</label><input placeholder="(space separated, optional)" id=$keywords><br>
+			<label for=$editPageType>Type:</label><input placeholder="@" id="$editPageType"><br>
+			<label for=$editPageCategory>Category:</label><span id=$editPageCategory></span><br>
 			Permissions:<span id=$editPagePermissions></span><br>
-			<label for="$markupSelect">Markup language:</label>
-			<select id="$markupSelect">
+			<label for=$markupSelect>Markup language:</label>
+			<select id=$markupSelect>
 				<option value="plaintext">plain text</option>
 				<option value="12y">12-y documentation markup format</option>
 				<option value="bbcode">bbcode</option>
-			</select><button id="$markupUpdate">Update Preview</button>
-		</div>
+			</select><button id=$markupUpdate>Update Preview</button>
+		</view-block>
 
-		<div class="searchMode">
-			<input id="$searchInput"><button id="$searchButton">Search</button>
-		</div>
+		<view-block data-view-searchMode>
+			<input id=$searchInput><button id=$searchButton>Search</button>
+		</view-block>
 		
-		<div class="fileMode fileNav rem1-7 nav">
-			<span id="$fileNav"></span>
-		</div>
+		<view-block data-view-fileMode class="rem1-7 bar nav">
+			<span id=$fileNav></span>
+		</view-block>
 
-		<div class="fileMode fileBox bar" id="$fileBox">
-		</div>
+		<view-block data-view-fileMode class="fileBox bar" id=$fileBox></view-block>
 
-		<div class="fileMode">
-			<button id="$fileUploadButton" class="fileUploading">Upload Image!</button>
+		<view-block data-view-fileMode>
+			<button id=$fileUploadButton class="fileUploading">Upload Image!</button>
 			Click an image to select
 			<div class="fileSelected">
-				<button id="$setAvatarButton" class="loggedIn">Use As Avatar</button>
+				<button id=$setAvatarButton class="loggedIn">Use As Avatar</button>
 				<table class="form">
 					<tr>
 						<th>User:</th>
-						<td id="$fileUser"></td>
+						<td id=$fileUser></td>
 					</tr>
 					<tr>
-						<th><label for="$fileName">Name:</label></th>
-						<td><input id="$fileName"></td>
+						<th><label for=$fileName>Name:</label></th>
+						<td><input id=$fileName></td>
 					</tr>
 					<tr>
-						<th><label for="$fileName">Permissions:</label></th>
-						<td><input id="$filePermissions"><br></td>
+						<th><label for=$fileName>Permissions:</label></th>
+						<td><input id=$filePermissions><br></td>
 					</tr>
 					<tr>
-						<th><label for="$fileName">Values:</label></th>
-						<td><input id="$fileValues"></td>
+						<th><label for=$fileName>Values:</label></th>
+						<td><input id=$fileValues></td>
 					</tr>
 				</table>
 				<button id=$fileUpdateButton class="fileUpdateButton canEdit loggedIn">Save Settings</button>
 			</div>
-		</div>
+		</view-block>
 		
-		<div class="activityMode page-select rem1-7 nav bar"></div>
+		<view-block data-view-activityMode class="page-select rem1-7 nav bar"></view-block>
 		
-		<div class="membersMode memberNav nav bar rem1-7" id=$memberNav></div>
+		<view-block data-view-membersMode class="nav bar rem1-7" id=$memberNav></view-block>
 
-		<div class="userPageBox userMode">
+		<view-block data-view-userMode class="userPageBox">
 			<a id=$userPageAvatarLink><img id=$userPageAvatar class="userPageAvatar" alt="" src="about:blank"></a>
 			<div class="pageContents pre userPageContents markup-root" id=$userPageContents></div>
-		</div>
+		</view-block>
 
 		<!--
 			  These panes have the main content
@@ -145,37 +150,37 @@ window.onerror = function(message, source, line, col, error) {
 		-->
 		
 		<main-scrollable class="grow" id=$main>
-			<div class="searchMode" id="$searchResults"></div>
+			<view-block data-view-searchMode id=$searchResults></view-block>
 			
-			<div class="cateditMode">
+			<view-block data-view-catEditMode>
 				<label for="$cateditPinned">Pinned pages:</label><input id="$cateditPinned"><br>
 				<label for="$cateditCategory">Parent category:</label><input id="$cateditCategory" type="number"><br>
 				<label for="$cateditPermissions">Permissions:</label><input id="$cateditPermissions"><br>
 				<label for="$cateditLocalSupers">Local Superusers:</label><input id="$cateditLocalSupers"><br>
 				<textarea id="$cateditDescription"></textarea><br>
-			</div>
+			</view-block>
 			
-			<div id="$categoryDescription" class="categoryDescription pre pageContents categoryMode markup-root"></div>
-			<div id="$categoryCategories" class="categoryMode"></div>
-			<div id="$categoryPinned" class="categoryMode"></div>
-			<div class="categoryMode page-select rem1-7 bar bottomBorder">
+			<view-block data-view-categoryMode id=$categoryDescription class="categoryDescription pre pageContents markup-root"></view-block>
+			<view-block data-view-categoryMode id=$categoryCategories></view-block>
+			<view-block data-view-categoryMode id=$categoryPinned></view-block>
+			<view-block data-view-categoryMode class="page-select rem1-7 bar bottomBorder">
 				<span id=$categoryNav></span>
 				<button id=$createPage class="item" data-static-link>Create Page</button>
 				<button id=$editCategory class="item canEdit" data-static-link>Edit Category</button>
-			</div>
-			<div id="$categoryPages" class="categoryPages categoryMode"></div>
+			</view-block>
+			<view-block data-view-categoryMode id=$categoryPages class="categoryPages"></view-block>
 
-			<div class="userActivity userMode" id="$userActivity"></div>
+			<view-block data-view-userMode class="userActivity" id=$userActivity></view-block>
 
-			<div class="pageMode pageInfoPane rem2-3 bar bottomBorder">
+			<view-block data-view-pageMode class="pageInfoPane rem2-3 bar bottomBorder">
 				<span class="textItem" id=$authorBox></span>
 				<button id=$editButton class="item canEdit">Edit</button>
 				<div class="rightAlign item">
-					<span class="textItem pageMode" id=$voteBox>
+					<span class="textItem" id=$voteBox>
 						<button class="item" id=$voteButton_b data-vote="b">Bad<br><span id=$voteCount_b>x</span></button><button id="$voteButton_o" class="item" data-vote="o">Ok<br><span id=$voteCount_o>x</span></button><button id="$voteButton_g" class="item" data-vote="g">Great<br><span id=$voteCount_g>x</span></button>
 					</span>
 				</div>
-			</div>
+			</view-block>
 			
 			<!--<div class="pageInfoPane pageMode px40" id="$pageInfoPane">
 				<span id="$gallery" class="gallery" style="display:none;">
@@ -186,28 +191,29 @@ window.onerror = function(message, source, line, col, error) {
 				</span>
 	</div>
 	-->
-			<div class="pageContents pre pageMode markup-root" id="$pageContents"></div>
-			<div class="errorMode pre errorPage" id=$errorMessage></div>
-			<div class="editorPane editorMode">
+			<view-block data-view-pageMode class="pageContents pre markup-root" id=$pageContents></view-block>
+			<view-block data-view-errorMode class="pre errorPage" id=$errorMessage></view-block>
+			<view-block data-view-editorMode class="editorPane">
 				<div class="editorTextarea">
-					<textarea id="$editorTextarea" minlength="2" required=""></textarea>
+					<textarea id=$editorTextarea minlength="2" required></textarea>
 				</div>
-				<div class="editorPreview grow markup-root" id="$editorPreview"><div class="markup-root" ></div></div>
-			</div>
+				<div class="editorPreview grow markup-root" id=$editorPreview><div class="markup-root"></div></div>
+			</view-block>
 			
-			<div class="homeMode homePane">
+			<view-block data-view-homeMode class="homePane">
 				<a class="linkBar bar rem2-3" data-static-path=category/0><span class="textItem">Pages</span></a>
 				<a class="linkBar bar rem2-3" data-static-path=search><span class="textItem">Search</span></a>
 				<a class="linkBar bar rem2-3" data-static-path=users><span class="textItem">Users</span></a>
 				<a class="linkBar bar rem2-3" data-static-path=files><span class="textItem">Images</span></a>
 				<a class="linkBar bar rem2-3" data-static-path=settings><span class="textItem">User Settings</span></a>
 				<a class="linkBar bar rem2-3" data-static-path=test><span class="textItem">Test</span></a>
-			</div>
-			<div class="membersMode memberPane">
+			</view-block>
+			
+			<view-block data-view-membersMode class="memberPane">
 				<div id=$memberList></div>
-			</div>
+			</view-block>
 
-			<div class="settingsMode loggedOut">
+			<view-block data-view-settingsMode class="loggedOut">
 				<div class="registerBox">
 					<h2>Log In</h2>
 					<form id=$loginForm>
@@ -230,9 +236,9 @@ window.onerror = function(message, source, line, col, error) {
 					<input placeholder="Confirmation Code" id=$emailCode>
 					<button id=$registerConfirm>Confirm</button>
 				</div>
-			</div>
+			</view-block>
 
-			<div class="settingsMode loggedIn">
+			<view-block data-view-settingsMode class="loggedIn">
 				<button id=$logOut>Log out</button><br>
 				Change account settings: <br>
 				<table class="form">
@@ -244,21 +250,21 @@ window.onerror = function(message, source, line, col, error) {
 				<button id="$submitUserSettings">Save</button>
 				<hr>
 				<a data-static-path=files>Change your avatar here</a>
-			</div>
+			</view-block>
 
-			<div class="activityMode" id="$activity"></div>
+			<view-block data-view-activityMode id=$activity></view-block>
 			
-			<div class="testMode">
+			<view-block data-view-testMode>
 				<textarea id="$testTextarea"></textarea><br>
 				<button id="$testButton">Run</button><br>
 				<div id="$testOut" class="pre"></div>
-			</div>
+			</view-block>
 			
-			<div id="$chatPane" class="chatMode grow chatPane"></div>
+			<view-block data-view-chatMode id=$chatPane class="grow chatPane"></view-block>
 			<div class="bottomSpacer"></div>
 		</main-scrollable>
 		
-		<div class="inputPane chatMode">
+		<view-block data-view-chatMode class="inputPane">
 			<table> <!-- YES it's a TABLE! sorry ... I'm not allowed to use flex so this is the only option -->
 				<tr>
 					<td rowspan="2" class="tableGrow"><textarea class="chatTextarea" id="$chatTextarea" accesskey="z"></textarea></td>
@@ -269,7 +275,7 @@ window.onerror = function(message, source, line, col, error) {
 					<td><label for=$chatMarkupSelect>Markup</label><input type=checkbox id=$chatMarkupSelect></td>
 				</tr>
 			</table>
-		</div>
+		</view-block>
 		<!--
 			  Bottom of the page
 		-->
