@@ -195,32 +195,6 @@ button {
 	border-style: inset;
 }
 
-view-block {
-	display: none;
-}
-
-/* visibility control */
-body:not(.pageMode) .pageMode,
-body:not(.chatMode) .chatMode,
-body:not(.editorMode) .editorMode,
-body:not(.categoryMode) .categoryMode,
-body:not(.pageMode):not(.categoryMode):not(.editorMode) .pathMode, /*ok this is just silly */
-body:not(.navMode) .navMode,
-body:not(.userMode) .userMode,
-body:not(.membersMode) .membersMode,
-body:not(.registerMode) .registerMode,
-body:not(.settingsMode) .settingsMode,
-body:not(.activityMode) .activityMode,
-body:not(.cateditMode) .cateditMode,
-body:not(.userMode):not(.pageMode) .pageUserMode,
-body:not(.homeMode) .homeMode,
-body:not(.testMode) .testMode,
-body:not(.searchMode) .searchMode,
-body:not(.errorMode) .errorMode,
-body:not(.fileMode) .fileMode {
-	display: none;
-}
-
 body {
 	display: -webkit-flex;
 	display: flex;
@@ -892,9 +866,6 @@ button[data-selected] {
 
 .metaInfo {
 	display: inline;
-}
-html:not(.f-page) .pageItem {
-	display: none;
 }
 
 /***********

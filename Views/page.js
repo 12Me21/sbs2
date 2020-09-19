@@ -10,7 +10,7 @@ addView('page', {
 	className: 'pageMode',
 	render: function(page) {
 		currentPage = page
-		Nav.link("chat/"+page.id, $pageChatLink)
+		Nav.link("chat/"+page.id, $pageChatLink.parentNode)
 		setEntityTitle(page)
 		setEntityPath(page)
 		$pageContents.replaceChildren(Parse.parseLang(page.content, page.values.markupLang))

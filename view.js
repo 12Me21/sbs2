@@ -321,6 +321,13 @@ handleView: function(type, id, query, callback) {
 
 	function after() {
 		$.document.body.className = view.className
+		document.querySelectorAll("view-block").forEach(function(e) {
+			if (e.hasAttribute("data-view-"+view.className))
+				e.style.removeProperty('display')
+			else
+				e.style.display = "none"
+		})
+		View.flag('viewReady', true)
 		callback && callback()
 		// todo: scroll to fragment element
 	}
