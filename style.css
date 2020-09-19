@@ -195,6 +195,10 @@ button {
 	border-style: inset;
 }
 
+view-block {
+	display: none;
+}
+
 /* visibility control */
 body:not(.pageMode) .pageMode,
 body:not(.chatMode) .chatMode,
@@ -351,7 +355,7 @@ header > :first-child {
 /*******************************
  ** content+sidebar container **
  *******************************/
-.sideBarContainer {
+horizontal-split {
 	display: flex;
 	display: -webkit-flex;
 	-webkit-flex-direction: row;
@@ -364,7 +368,7 @@ header > :first-child {
 	font-family: monospace;
 }
 
-.m {
+main {
 	width:100%;
 	display: -webkit-flex;
 	display: flex;
@@ -373,7 +377,7 @@ header > :first-child {
 	/*overflow-y: hidden; /* mmm */
 }
 
-#\$sidebar {
+sidebar-container {
 	display: -webkit-flex;
 	display: flex;
 	flex-direction: column;
@@ -388,15 +392,15 @@ header > :first-child {
 	box-shadow: -2px 0px 3px rgba(0,0,0,0.3);
 }
 
-html:not(.f-sidebar) #\$sidebar {
+html:not(.f-sidebar) sidebar-container {
 	display: none;
 }
 
-html.f-sidebar .m {
+html.f-sidebar main {
 	overflow:auto;
 }
 
-html:not(.f-sidebar) .m {
+html:not(.f-sidebar) main {
 	width: 100% !important;
 	overflow:auto;
 }
@@ -404,7 +408,7 @@ html:not(.f-sidebar) .m {
 /**********
  ** main **
  **********/
-main {
+main-scrollable {
 	display: -webkit-flex;
 	display: flex;
 	-webkit-flex-direction: column;
@@ -1043,7 +1047,7 @@ html:not(.f-fileUploading) .fileUploading {
 	.sidebarInside {
 		
 	}
-	#\$sidebar {
+	sidebar-container {
 		overflow-y: auto;
 		width: 100% !important;
 	}
@@ -1053,7 +1057,7 @@ html:not(.f-fileUploading) .fileUploading {
 	}
 	html.f-mobileSidebar body > * {
 	}
-	html.f-mobileSidebar #\$sidebar {
+	html.f-mobileSidebar sidebar-container {
 		display: block; /* for devices without flex */
 		display: -webkit-flex;
 		display: flex;
@@ -1065,10 +1069,10 @@ html:not(.f-fileUploading) .fileUploading {
 		right: 0;
 		min-height: 100vh;
 	}
-	html:not(.f-mobileSidebar) #\$sidebar {
+	html:not(.f-mobileSidebar) sidebar-container {
 		display: none;
 	}
-	.m {
+	main {
 		max-width: 100% !important;
 	}
 	#\$sidebarActivity {
@@ -1089,7 +1093,7 @@ html:not(.f-fileUploading) .fileUploading {
 		min-height: 100vh;
 		font-size: 0.9em;
 	}
-	body:not(.pageMode) main {
+	body:not(.pageMode) main-scrollable {
 		height: auto !important;
 		-webkit-flex-basis: auto;
 		flex-basis: auto;
@@ -1174,7 +1178,7 @@ table {
 	min-height: 1.15rem;
 }
 
-body.pageMode main {
+body.pageMode main-scrollable {
 	display: -webkit-flex;
 	display: flex;
 	height: 100%;
@@ -1209,3 +1213,4 @@ body.pageMode main {
 .chatScroller > .scrollInner {
 	padding-bottom: 0.5rem;
 }
+
