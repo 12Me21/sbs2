@@ -76,8 +76,8 @@ window.onerror = function(message, source, line, col, error) {
 	<input type=checkbox id=$watchCheck class="item pageItem loggedIn">
 </header>
 
-<div class="sideBarContainer grow" id="$sidebarContainer">
-	<div class="m grow" id="$m">
+<horizontal-split class="grow">
+	<main class="m grow" id="$m">
 		<div class="pathMode pathBar rem1-5 bottomBorder" id=$path></div>
 		<div class="infoPane editorMode">
 			<label for="$keywords">Keywords:</label><input placeholder="(space separated, optional)" id="$keywords"><br>
@@ -144,7 +144,7 @@ window.onerror = function(message, source, line, col, error) {
 			  one of them will be visible at a time, depending on the view mode
 		-->
 		
-		<main class="grow" id=$main>
+		<main-scrollable class="grow" id=$main>
 			<div class="searchMode" id="$searchResults"></div>
 			
 			<div class="cateditMode">
@@ -256,7 +256,7 @@ window.onerror = function(message, source, line, col, error) {
 			
 			<div id="$chatPane" class="chatMode grow chatPane"></div>
 			<div class="bottomSpacer"></div>
-		</main>
+		</main-scrollable>
 		
 		<div class="inputPane chatMode">
 			<table> <!-- YES it's a TABLE! sorry ... I'm not allowed to use flex so this is the only option -->
@@ -273,47 +273,43 @@ window.onerror = function(message, source, line, col, error) {
 		<!--
 			  Bottom of the page
 		-->
-	</div>
-	<div id="$sidebar">
-		<div class="sidebarInside">
-			<button class="closeSidebar" id=$closeSidebar>Close Sidebar</button>
-			
-			<div class="bottomBorder bar rem1-5 myUserBar">
-				<span class="loggedIn" id=$loggedIn>
-					<a class="item userLink" id=$myUserLink>
-						<span class="myName username textItem" id=$myName></span>
-						<img class="myAvatar item avatar" id=$myAvatar alt="" src="about:blank">
-					</a>
-				</span>
-				<span class="loggedOut"><a data-static-path=settings class="textItem">Log In or Register</a></span>
-			</div>
-			<div class="userlist bar rem1-5"><span id=$sidebarUserList></span><button id=$hideGlobalStatusButton class="item rightAlign">Hide</button></div>
-			<!--<span id=$longPollStatus></span>-->
-			<div id=$sidebarTop>
-				<div id=$sidebarActivityOuter class="scrollOuter"><div id=$sidebarActivity class="scrollInner"></div></div>
-			</div>
-			
-			<div id=$sidebarResize class="resize">resize</div>
-
-			<div id=$sidebarBottom class="grow">
-				<div id=$sidebarPinned class="bottomBorder fill sidebarNotFile"></div>
-				<div class="sidebarFile" class="fill">
-					<div class="sidebarUploadingFile">
-						<button id=$fileCancel>Cancel</button><br>
-					</div>
-					<div class="sidebarUploadedFile">
-						<input readonly id=$fileURL><button id=$fileDone>Done</button>
-					</div>
-					<div>
-						<img id=$fileView>
-					</div>
-					<div class="sidebarUploadingFile">
-						<button id=$fileUpload>Upload Image</button>
-					</div>
+	</main>
+	<sidebar-container id=$sidebar><div class="sidebarInside">
+		<button class="closeSidebar" id=$closeSidebar>Close Sidebar</button>
+		
+		<div class="bottomBorder bar rem1-5 myUserBar">
+			<span class="loggedIn" id=$loggedIn>
+				<a class="item userLink" id=$myUserLink>
+					<span class="myName username textItem" id=$myName></span>
+					<img class="myAvatar item avatar" id=$myAvatar alt="" src="about:blank">
+				</a>
+			</span>
+			<span class="loggedOut"><a data-static-path=settings class="textItem">Log In or Register</a></span>
+		</div>
+		<div class="userlist bar rem1-5"><span id=$sidebarUserList></span><button id=$hideGlobalStatusButton class="item rightAlign">Hide</button></div>
+		<!--<span id=$longPollStatus></span>-->
+		<div id=$sidebarTop>
+			<div id=$sidebarActivityOuter class="scrollOuter"><div id=$sidebarActivity class="scrollInner"></div></div>
+		</div>
+		
+		<div id=$sidebarResize class="resize">resize</div>
+		
+		<div id=$sidebarBottom class="grow">
+			<div id=$sidebarPinned class="bottomBorder fill sidebarNotFile"></div>
+			<div class="sidebarFile" class="fill">
+				<div class="sidebarUploadingFile">
+					<button id=$fileCancel>Cancel</button><br>
+					<button id=$fileUpload>Upload Image</button>
+				</div>
+				<div class="sidebarUploadedFile">
+					<input readonly id=$fileURL><button id=$fileDone>Done</button>
+				</div>
+				<div>
+					<img id=$fileView>
 				</div>
 			</div>
-			<div><input type=file accept="image/*" id=$imageUpload></div>
-			<!--<div id="buttonContainer"><button id="$hideAllStatusButton">Hide (everywhere)</button></div>-->
 		</div>
-	</div>
-</div>
+		<div><input type=file accept="image/*" id=$imageUpload></div>
+		<!--<div id="buttonContainer"><button id="$hideAllStatusButton">Hide (everywhere)</button></div>-->
+	</div></sidebar-container>
+</horizontal-split>
