@@ -4,20 +4,31 @@ with (View) (function($) { "use strict" //*/
 addView('category', {
 	init: function() {
 		var nav = $categoryNav
-		nav.appendChild(Draw.navButtons())
+		navButtons = Draw.navButtons()
+		nav.appendChild(navButtons.element)
+		navButtons.onchange = function(pageNum) {
+			if (currentCategory == null)
+				return
+			currentQuery.page = pageNum
+			Nav.go("category/"+currentCategory+Req.queryString(currentQuery))
+		}
 	},
 	start: function(id, query, render) {
-		return $.Req.getCategoryView(id, render)
+		currentQuery = query
+		var page = +query.page || 1
+		navButtons.set(page)
+		return $.Req.getCategoryView(id, page, render)
 	},
 	className: 'categoryMode',
-	render: function(category, cats, pages, pinned) {
+	render: function(category, cats, pages, pinned, pageNum) {
+		currentCategory = category.id
+		navButtons.set(pageNum)
 		setEntityTitle(category)
 		setEntityPath(category)
 		$categoryDescription.replaceChildren(Parse.parseLang(category.description, category.values.markupLang))
 		$categoryCategories.replaceChildren()
-		$editCategory.onclick = function() {
-			Nav.go("editcategory/"+category.id)
-		}
+		Nav.link("editpage?cid="+category.id, $createPage.parentNode)
+		Nav.link("editcategory/"+category.id, $editCategory.parentNode)
 		category.children.forEach(function(child) {
 			var bar = Draw.entityTitleLink(child)
 			bar.className += " linkBar bar rem2-3"
@@ -33,9 +44,7 @@ addView('category', {
 			bar.className += " linkBar bar rem2-3"
 			$categoryPages.appendChild(bar)
 		})
-		$createPage.onclick = function() {
-			Nav.go("editpage?cid="+category.id)
-		}
+		
 		//$.Nav.link("editpage?cid="+category.id, $createPage)
 		if (/u/.test(category.myPerms))
 			flag('canEdit', true)
@@ -45,8 +54,13 @@ addView('category', {
 		$categoryPages.replaceChildren()
 		$categoryDescription.replaceChildren()
 		flag('canEdit', false)
+		currentCategory = null
 	},
 })
+
+var navButtons
+var currentCategory
+var currentQuery
 
 <!--/*
 }(window)) //*/ // pass external values
