@@ -37,6 +37,8 @@ if (window.ResizeObserver) {
 				if (event.contentRect.width) { //ignore changes for hidden elements
 					var height = event.contentRect.height
 					if (height != item.height) { //need to check if height changed in case of an ignored hide/show cycle
+						
+
 						item.callback(item.height, event.contentRect.height)
 						item.height = event.contentRect.height
 					}
