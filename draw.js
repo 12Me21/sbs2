@@ -202,11 +202,9 @@ messageBlock: function(comment) {
 	var user = comment.createUser
 	var date = comment.createDate
 	
-	var div = document.createElement('div')
-	div.className = 'message'
+	var div = document.createElement('message-block')
 	
 	var timeStamp = document.createElement('time')
-	timeStamp.className = 'messageTime'
 	timeStamp.setAttribute("datetime", date+"")
 	timeStamp.textContent = timeString(date)
 	div.appendChild(timeStamp)
@@ -223,14 +221,13 @@ messageBlock: function(comment) {
 	name.textContent = user.name+":"
 	div.appendChild(name)
 	
-	var contentBox = document.createElement('div')
-	contentBox.className = 'messageContents'
+	var contentBox = document.createElement('message-contents')
 	div.appendChild(contentBox)
 	return [div, contentBox]
 },
 messagePart: function(comment){
 	var element = document.createElement('p')
-	element.className = "markup-root messagePart"
+	element.className = "markup-root"
 	element.setAttribute('data-id', comment.id)
 	element.setAttribute('tabindex', "0")
 	var contents = Parse.parseLang(comment.content, comment.meta.m, false)
