@@ -974,11 +974,14 @@ html:not(.f-fileUploading) .fileUploading {
 	padding: 0rem 0.2rem;
 }
 
-.scrollInner {
-}
-.scrollOuter {
+scroll-outer {
+	display: block;
 	height: 100%;
 	overflow-y: scroll;
+}
+
+scroll-inner {
+	display: block;
 }
 
 #\$sidebarPinned {
@@ -1006,18 +1009,15 @@ html:not(.f-fileUploading) .fileUploading {
 	margin-right: -0.2rem;
 }
 
-.sidebarInside{
+/*sidebar-inner {
 	display: -webkit-flex;
 	display: flex;
 	flex-direction: column;
 	height: 100%;
-}
+}*/
 
 /* narrow screen: fullscreen sidebar */
 @media (max-width: 700px) {
-	.sidebarInside {
-		
-	}
 	sidebar-container {
 		overflow-y: auto;
 		width: 100% !important;
@@ -1181,7 +1181,7 @@ body.pageMode main-scrollable {
 	height: 100vh;
 }
 
-.chatScroller > .scrollInner {
+.chatScroller > scroll-inner {
 	padding-bottom: 0.5rem;
 }
 

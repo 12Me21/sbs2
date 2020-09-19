@@ -24,14 +24,13 @@ function ChatRoom(id, page) {
 		})
 		ul[2].disabled = true
 	}
-	this.messagePane = document.createElement('div')
-	this.messagePane.className = "chatScroller scrollOuter"
+	this.messagePane = document.createElement('scroll-outer')
+	this.messagePane.className = "chatScroller"
 	this.messagePane.style.display = "none"
 	this.userListOuter.style.display = "none"
 	$chatPane.appendChild(this.userListOuter)
 	$chatPane.appendChild(this.messagePane)
-	this.messageList = document.createElement('div')
-	this.messageList.className = "scrollInner"
+	this.messageList = document.createElement('scroll-inner')
 	this.messagePane.appendChild(this.messageList)
 	this.visible = false
 	this.scroller = new Scroller(this.messagePane, this.messageList)

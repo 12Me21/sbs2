@@ -321,7 +321,7 @@ handleView: function(type, id, query, callback) {
 
 	function after() {
 		$.document.body.className = view.className
-		document.querySelectorAll("view-block").forEach(function(e) {
+		document.querySelectorAll("v-b").forEach(function(e) {
 			if (e.hasAttribute("data-view-"+view.className))
 				e.style.removeProperty('display')
 			else
