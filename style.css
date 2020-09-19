@@ -551,7 +551,7 @@ main {
 }
 
 /** Chat Messages **/
-.message {
+message-block {
 	font-size: 1em;
 	padding: 0.4rem 0.5rem;
 	white-space: pre-wrap;
@@ -560,6 +560,7 @@ main {
 	border-left-color: rgb(255,153,153);*/
 	clear: both;
 	overflow: auto;
+	display: block;
 }
 
 
@@ -572,13 +573,13 @@ main {
 /*.ownMessage {
 	background-color: rgba(255,153,153, 0.2);
 }*/
-.message > time {
+message-block > time {
 	float: right;
 	font-weight: normal;
 	padding-right: .5em;
 	color: #666;
 }
-.message > img.avatar {
+message-block > img.avatar {
 	display: inline-block;
 	width: 3rem;
 	height: 3rem;
@@ -586,7 +587,7 @@ main {
 	margin-right: 0.5rem;
 	float: left;
 }
-.message .username {
+message-block > .username {
 	margin-left: 3.5rem;
 	display: block;
 	/*white-space: pre;
@@ -597,41 +598,35 @@ main {
 	margin-top: 0;
 }*/
 
-.messageUsername {
-	display: inline-block;
-}
-.messageContents {
+message-contents {
 	display: block;
 	vertical-align: top;
 	overflow: auto;
 }
-.messagePart.markup-root {
+message-contents > p.markup-root {
 	margin: 0.2rem 0;
 	padding: 0 0.2rem;
 }
-.messagePart.edited {
+message-contents > p.edited {
 	padding-left: 0.1rem;
 	border-left: 3px solid gray;
 }
 
-.messagePart img {
+message-contents img {
 	max-width: 100%;
 	max-height: 10vh;
 	border: 1px solid silver;
-}
-.messagePart[data-linked] {
-	background-color: rgba(255,255,0,0.3);
 }
 .messageGap {
 	border: 1px dashed gray;
 	margin: 0.3rem 0;
 }
 
-html.f-deleteComment .messagePart:hover {
+html.f-deleteComment message-contents > p:hover {
 	background-color: red;
 }
 
-html.f-editComment .messagePart:hover {
+html.f-editComment message-contents > p:hover {
 	background-color: yellow;
 }
 
@@ -643,7 +638,7 @@ html.f-editComment #\$chatEdit {
 	background-color: red;
 }
 
-.messagePart[editing] {
+message-contents > p[editing] {
 	background-color: yellow;
 }
 
@@ -989,6 +984,15 @@ html:not(.f-fileUploading) .fileUploading {
 
 .closeSidebar button {
 	width: 100%;
+}
+
+#\$sidebarBottom {
+	overflow: auto;
+}
+
+.flex {
+	display: flex;
+	flex-direction: column;
 }
 
 .debugMessage {
