@@ -369,13 +369,33 @@ getFileView: function(query, page, callback) {
 	}, false) //mm
 },
 
+getRecentActivity: function(callback) {
+	var day = 1000*60*60*24
+	var start = new Date(Date.now() - day).toISOString()
+	// "except no that won't work if site dies lol"
+	var end = new Date(Date.now()).toISOString()
+	return read([
+		{activity: {createStart: start, createEnd: end}},
+		{commentaggregate: {createStart: start, createEnd: end}},
+		"content.0contentId.1id",
+		"user.0userId.1userIds"
+	], {
+		content: "name,id,permissions"
+	}, function(e, resp) {
+		if (!e) {
+			callback(Entity.processAggregate(resp))
+		} else
+			callback(null)
+	})
+},
+
 getChatView: function(id, callback) {
 	return read([
 		{content: {ids: [id]}},
 		{comment: {parentIds: [id], limit: 20, reverse: true}},
 		"user.0createUserId.0editUserId.1createUserId.1editUserId",
 	], {
-		content: "name,parentId,type,createUserId,editUserId,createDate,editDate,permissions,id"
+		//content: "name,parentId,type,createUserId,editUserId,createDate,editDate,permissions,id"
 	}, function(e, resp) {
 		// todo: ok so we have 2 levels of error here
 		// either the request fails somehow (e is set)

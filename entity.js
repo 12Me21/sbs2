@@ -117,7 +117,112 @@ processItem: {
 	},
 	watch: function(data) {
 		return data //TODO
-	}
+	},
+	activityaggregate: function(data, users) {
+		data.users = data.userIds.map(function(id) {
+			return users[id]
+		})
+		return data
+	},
+	commentaggregate: function(data, users) {
+		data.users = data.userIds.map(function(id) {
+			return users[id]
+		})
+		if (data.firstDate)
+			data.firstDate = parseDate(data.firstDate)
+		if (data.lastDate)
+			data.lastDate = parseDate(data.lastDate)
+		return data
+	},
+},
+processAggregate: function(resp) {
+	var pageMap = {}
+	resp.content.forEach(function(p) {
+		pageMap[p.id] = p
+	})
+	var items = {}
+	resp.activity.forEach(function(a) {
+		var id = a.contentId
+		var item = items[id]
+		if (!item) {
+			item = items[id] = {
+				content: pageMap[id] || resp.userMap[id],
+				users: {},
+				firstDate: a.date,
+				lastDate: a.date,
+				count: 0,
+			}
+		}
+		item.users[a.userId] = a.user
+		item.count++
+		if (a.date < item.firstDate)
+			item.firstDate = a.date
+		if (a.date > item.lastDate)
+			item.lastDate = a.date
+	})
+	resp.commentaggregate.forEach(function(a) {
+		var item = items[a.id]
+		if (!item) {
+			item = items[a.id] = {
+				content: pageMap[a.id],
+				users: {},
+				firstDate: a.firstDate,
+				lastDate: a.firstDate,
+				count: 0,
+			}
+		}
+		a.users.forEach(function(user) {
+			item.users[user.id] = user
+		})
+		item.count += a.count
+		if (a.firstDate < item.firstDate)
+			item.firstDate = a.firstDate
+		if (a.lastDate > item.lastDate)
+			item.lastDate = a.lastDate
+	})
+	return items
+},
+updateAggregateComments: function(items, comments) {
+	comments.forEach(function(c) {
+		var id = c.parentId
+		var item = items[id]
+		if (!item) {
+			item = items[id] = {
+				content: c.parent,
+				users: {},
+				firstDate: c.editDate,
+				lastDate: c.editDate,
+				count: 0,
+			}
+		}
+		item.users[c.createUser.id] = c.createUser // maybe edituser too?
+		item.count++
+		if (c.editDate < item.firstDate)
+			item.firstDate = c.editDate
+		if (c.editDate > item.lastDate)
+			item.lastDate = c.editDate
+	})
+},
+updateAggregateActivity: function(items, activity) {
+	activity.forEach(function(a) {
+		var id = a.contentId
+		var item = items[id]
+		if (!item) {
+			item = items[id] = {
+				//content: pageMap[id] || resp.userMap[id],
+				users: {},
+				firstDate: a.date,
+				lastDate: a.date,
+				count: 0,
+			}
+		}
+		item.users[a.userId] = a.user
+		item.count++
+		if (a.date < item.firstDate)
+			item.firstDate = a.date
+		if (a.date > item.lastDate)
+			item.lastDate = a.date
+	})
 },
 rebuildCategoryTree: function() {
 	gotNewCategory = false

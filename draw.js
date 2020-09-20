@@ -252,7 +252,12 @@ button: function() {
 	container.appendChild(button)
 	return [container, button]
 },
-
+pageInfo: function(page) {
+	var e = document.createElement('span')
+	//with(e){
+	e.appendChild(authorBox(page))
+	return e
+},
 navButtons: function(callback) {
 	var prev = button()
 	prev[0].className += " item"
