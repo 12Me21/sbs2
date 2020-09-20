@@ -62,7 +62,7 @@ processItem: {
 			data.date = parseDate(data.date)
 		if (data.type == 'user')
 			data.content = users[data.contentId]
-		if (data.user)
+		if (data.userId)
 			data.user = users[data.userId]
 		return data
 	},
@@ -195,6 +195,8 @@ updateAggregateComments: function(items, comments) {
 				count: 0,
 			}
 		}
+		// todo: commentaggregate only tracks createDate
+		// so maybe use that here for consistency between reloads
 		item.users[c.createUser.id] = c.createUser // maybe edituser too?
 		item.count++
 		if (c.editDate < item.firstDate)
@@ -216,6 +218,7 @@ updateAggregateActivity: function(items, activity) {
 				count: 0,
 			}
 		}
+		console.log("A USER", a.user)
 		item.users[a.userId] = a.user
 		item.count++
 		if (a.date < item.firstDate)

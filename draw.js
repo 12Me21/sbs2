@@ -258,6 +258,21 @@ pageInfo: function(page) {
 	e.appendChild(authorBox(page))
 	return e
 },
+activityItem: function(item) {
+	var bar = entityTitleLink(item.content)
+	bar.className += " linkBar bar rem2-3"
+	bar.appendChild(document.createTextNode(" "))
+	var time = timeAgo(item.lastDate)
+	time.className += " textItem"
+	bar.appendChild(time)
+	bar.appendChild(document.createTextNode(" "))
+	//bar.appendChild(textItem("("+item.count+")"))
+	item.users.forEach(function(u) {
+		if (u)
+			bar.appendChild(icon(u))
+	})
+	return bar
+},
 navButtons: function(callback) {
 	var prev = button()
 	prev[0].className += " item"
