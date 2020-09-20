@@ -2,6 +2,7 @@
 with (View) (function($) { "use strict" //*/
 
 function ren(aggregate) {
+	setTitle("Recent Activity")
 	$activity.replaceChildren()
 	var items = []
 	for (var id in aggregate)
@@ -14,10 +15,19 @@ function ren(aggregate) {
 	})
 }
 
+//todo: show "created", "edited", commented on, etc.
+
+// this should go in sidebar instead of page type later (or in addition to, for logged out users! or on homepage)
+// anyway sidebar layout
+// top section: fixed, tabbed view. show recent activity, notifications, umm.. image uploader, etc.
+// bottom section: live feed of all site activity, console messages, etc. ?
+
 addView('activity', {
 	init: function() {
 	},
 	start: function(id, query, render, quick) {
+		// this is a big hack
+		// should just wait for log in
 		if (Object.keys($.aggregate).length) {
 			quick(function() {
 				ren($.aggregate)

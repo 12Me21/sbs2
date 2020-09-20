@@ -260,7 +260,7 @@ pageInfo: function(page) {
 },
 activityItem: function(item) {
 	var bar = entityTitleLink(item.content)
-	bar.className += " linkBar bar rem2-3"
+	bar.className += " linkBar bar rem1-5"
 	bar.appendChild(document.createTextNode(" "))
 	var time = timeAgo(item.lastDate)
 	time.className += " textItem"

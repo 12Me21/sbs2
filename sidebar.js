@@ -60,6 +60,20 @@ onLoad: function() {
 	  })*/
 },
 
+onAggregateChange: function(aggregate) {
+	var items = []
+	for (var id in aggregate)
+		items.push(aggregate[id])
+	items.sort(function(a,b){
+		return -(a.lastDate - b.lastDate)
+	})
+	$sidebarActivity.replaceChildren()
+	items.forEach(function(item) {
+		$sidebarActivity.appendChild(Draw.activityItem(item))
+	})
+
+},
+
 print: function(text) {
 	if (scroller)
 		scroller.handlePrint(function() {

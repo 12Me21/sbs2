@@ -292,15 +292,11 @@ window.onerror = function(message, source, line, col, error) {
 		</div>
 		<div class="userlist bar rem1-5"><span id=$sidebarUserList></span><button id=$hideGlobalStatusButton class="item rightAlign">Hide</button></div>
 		<!--<span id=$longPollStatus></span>-->
+		<table class="tabs bottomBorder"><tr><td>a</td><td>b</td><td>c</td><td>d</td></tr></table>
 		<div id=$sidebarTop>
-			<scroll-outer id=$sidebarActivityOuter><scroll-inner id=$sidebarActivity></scroll-inner></scroll-outer>
-		</div>
-		
-		<div id=$sidebarResize class="resize">resize</div>
-		
-		<div id=$sidebarBottom class="grow">
-			<div id=$sidebarPinned class="bottomBorder fill sidebarNotFile"></div>
-			<div class="sidebarFile" class="fill">
+			<div id=$sidebarActivity></div>
+			<!--<div id=$sidebarPinned class="bottomBorder fill sidebarNotFile"></div>-->
+			<div class="sidebarFile fill">
 				<div class="sidebarUploadingFile">
 					<button id=$fileCancel>Cancel</button><br>
 					<button id=$fileUpload>Upload Image</button>
@@ -312,7 +308,12 @@ window.onerror = function(message, source, line, col, error) {
 					<img id=$fileView>
 				</div>
 			</div>
+			
 		</div>
 		<div><input type=file accept="image/*" id=$imageUpload></div>
+		<div id=$sidebarResize class="resize">resize</div>
+		<div id=$sidebarBottom class="grow">
+			<scroll-outer id=$sidebarActivityOuter><scroll-inner id=$sidebarActivity></scroll-inner></scroll-outer>
+		</div>
 	</sidebar-container>
 </horizontal-split>
