@@ -265,6 +265,21 @@ html:not(.f-chatMode) .chatMode {
 	border-bottom: 1px solid gray;
 }
 
+table.tabs {
+	width: 100%;
+}
+
+table.tabs td {
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	border-right: 1px solid gray;
+}
+
+table.tabs td:last-child {
+	border-right: none;
+}
+
 .myUserBar {
 	background-color: #EEE;
 }
@@ -369,6 +384,7 @@ sidebar-container {
 	min-width: 10vw;
 	z-index: 20;
 	box-shadow: -2px 0px 3px rgba(0,0,0,0.3);
+	/*border-bottom: 2px solid black;*/
 }
 
 html:not(.f-sidebar) sidebar-container {

@@ -12,10 +12,11 @@ Req.onLogin = function() {
 	})*/
 	// display user info etc.
 	// start long poller
-	window.aggregate = {}
+	var aggregate = {}
 	Req.onMessages = function(comments) {
 		ChatRoom.displayMessages(comments)
-		Entity.updateAggregateComments(aggregate,comments)
+		Entity.updateAggregateComments(aggregate, comments)
+		Sidebar.onAggregateChange(aggregate)
 	}
 	Req.onListeners = function(a) {
 		ChatRoom.updateUserLists(a)
@@ -26,6 +27,7 @@ Req.onLogin = function() {
 				View.updateUserAvatar(a.content)
 		})
 		Entity.updateAggregateActivity(aggregate,a)
+		Sidebar.onAggregateChange(aggregate) //todo: this currently fires twice sometimes, technically
 	}
 	
 	console.log("staring long poller")
@@ -41,6 +43,7 @@ Req.onLogin = function() {
 
 	Req.getRecentActivity(function(a) {
 		aggregate = a //needs to be update instead
+		Sidebar.onAggregateChange(aggregate)
 		// get rid of combined update functon and just call UAA and UAC
 	})
 
