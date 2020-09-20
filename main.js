@@ -12,18 +12,20 @@ Req.onLogin = function() {
 	})*/
 	// display user info etc.
 	// start long poller
+	window.aggregate = {}
 	Req.onMessages = function(comments) {
 		ChatRoom.displayMessages(comments)
+		Entity.updateAggregateComments(aggregate,comments)
 	}
 	Req.onListeners = function(a) {
 		ChatRoom.updateUserLists(a)
 	}
 	Req.onActivity = function(a) {
 		a.forEach(function(a) {
-			if (a.type == 'user') {
+			if (a.type == 'user')
 				View.updateUserAvatar(a.content)
-			}
 		})
+		Entity.updateAggregateComments(aggregate,a)
 	}
 	
 	console.log("staring long poller")
@@ -35,6 +37,11 @@ Req.onLogin = function() {
 		} else {
 			alert("INITIAL LONG POLL FAILED!")
 		}
+	})
+
+	Req.getRecentActivity(function(a) {
+		aggregate = a //needs to be update instead
+		// get rid of combined update functon and just call UAA and UAC
 	})
 
 	/*Req.doListenInitial(function(e, resp) {

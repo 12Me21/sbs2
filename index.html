@@ -44,7 +44,6 @@ window.onerror = function(message, source, line, col, error) {
 <script src=scroller.js></script>
 <script src=sidebar.js></script>
 <script src=Views/settings.js></script>
-<script src=Views/chat.js></script>
 <script src=Views/page.js></script>
 <script src=Views/search.js></script>
 <script src=Views/images.js></script>
@@ -65,9 +64,7 @@ window.onerror = function(message, source, line, col, error) {
 	<noscript>This web-site requires JavaScript</noscript>
 	<span id=$pageTitle class="textItem pageTitle"></span>
 	
-	<v-b data-view-pageMode><button data-static-path class="item" id=$pageChatLink>Chat</button></v-b>
-	<v-b data-view-chatMode><button data-static-path class="item" id=$pagePageLink>Page</button></v-b>
-	<v-b data-view-userMode><a class="textItem loggedIn myUserPage" data-static-path=settings>Settings</a><v-b>
+	<v-b data-view-userMode><a class="textItem loggedIn myUserPage" data-static-path=settings>Settings</a></v-b>
 	<div class="item loggedIn myUserPage">
 		<div id=$userPageStatus class="textItem userMode"></div>
 	</div>
@@ -76,15 +73,16 @@ window.onerror = function(message, source, line, col, error) {
 		<button class="item" id=$submitEdit>Submit</button>
 		<button class="item" id=$deletePage>DELETE</button>
 	</v-b>
-	<v-b data-view-pageMode>
+	<v-b data-view-page>
 		<label for=$watchCheck class="textItem loggedIn">Watching:</label>
 		<input type=checkbox id=$watchCheck class="item loggedIn">
 	</v-b>
+	<v-b data-view-page><button class="item" id=$switchPageMode>&lt;&gt;</button></v-b>
 </header>
 
 <horizontal-split class="grow">
 	<main class="grow">
-		<v-b data-view-pageMode data-view-editMode data-view-categoryMode class="pathBar rem1-5 bottomBorder" id=$path></v-b>
+		<v-b data-view-page data-view-editMode data-view-categoryMode class="pathBar rem1-5 bottomBorder" id=$path></v-b>
 		<v-b data-view-editMode class="infoPane">
 			<label for=$keywords>Keywords:</label><input placeholder="(space separated, optional)" id=$keywords><br>
 			<label for=$editPageType>Type:</label><input placeholder="@" id="$editPageType"><br>
@@ -172,17 +170,17 @@ window.onerror = function(message, source, line, col, error) {
 
 			<v-b data-view-userMode class="userActivity" id=$userActivity></v-b>
 
-			<v-b data-view-pageMode class="pageInfoPane rem2-3 bar bottomBorder">
-				<span class="textItem" id=$authorBox></span>
+			<v-b data-view-page id=$pageInfoPane class="pageMode pageInfoPane rem2-3 bar bottomBorder">
+				<!--<span class="textItem" id=$authorBox></span>
 				<button id=$editButton class="item canEdit">Edit</button>
 				<div class="rightAlign item">
 					<span class="textItem" id=$voteBox>
 						<button class="item" id=$voteButton_b data-vote="b">Bad<br><span id=$voteCount_b>x</span></button><button id="$voteButton_o" class="item" data-vote="o">Ok<br><span id=$voteCount_o>x</span></button><button id="$voteButton_g" class="item" data-vote="g">Great<br><span id=$voteCount_g>x</span></button>
 					</span>
-				</div>
+				</div>-->
 			</v-b>
 			
-			<!--<div class="pageInfoPane pageMode px40" id="$pageInfoPane">
+			<!--<div class="pageInfoPane page px40" id="$pageInfoPane">
 				<span id="$gallery" class="gallery" style="display:none;">
 					<span class="metaInfo">
 						<span id="$metaKey" class="textItem"></span>
@@ -191,7 +189,7 @@ window.onerror = function(message, source, line, col, error) {
 				</span>
 	</div>
 	-->
-			<v-b data-view-pageMode class="pageContents pre markup-root" id=$pageContents></v-b>
+			<v-b data-view-page id=$pageContents class="pageMode"></v-b>
 			<v-b data-view-errorMode class="pre errorPage" id=$errorMessage></v-b>
 			<v-b data-view-editorMode class="editorPane">
 				<div class="editorTextarea">
@@ -260,13 +258,13 @@ window.onerror = function(message, source, line, col, error) {
 				<div id="$testOut" class="pre"></div>
 			</v-b>
 			
-			<v-b data-view-chatMode id=$chatPane class="grow chatPane"></v-b>
-			<div class="bottomSpacer"></div>
+			<v-b data-view-page id=$chatPane class="grow chatPane chatMode"></v-b>
+			<!--<div class="bottomSpacer"></div>-->
 		</main-scrollable>
 		<!--
 			  Bottom of the page
 		-->
-		<v-b data-view-chatMode class="inputPane">
+		<v-b data-view-page class="inputPane chatMode">
 			<table> <!-- YES it's a TABLE! sorry ... I'm not allowed to use flex so this is the only option -->
 				<tr>
 					<td rowspan="2" class="tableGrow"><textarea class="chatTextarea" id="$chatTextarea" accesskey="z"></textarea></td>
