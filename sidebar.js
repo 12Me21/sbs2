@@ -35,6 +35,17 @@ onLoad: function() {
 			})
 		}
 	}
+	/*$.document.addEventListener("drop", function(e) {
+		e.preventDefault()
+		console.log(e,"drop")
+	})
+	$.document.addEventListener("dragover", function(e) {
+		var items = e.dataTransfer.items
+		if (items && items[0].kind == 'file') {
+			console.log("FILE", items)
+			e.preventDefault()
+		}
+	})*/
 	$fileURL.onclick = function() {
 		$fileURL.select()
 	}
