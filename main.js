@@ -25,7 +25,7 @@ Req.onLogin = function() {
 			if (a.type == 'user')
 				View.updateUserAvatar(a.content)
 		})
-		Entity.updateAggregateComments(aggregate,a)
+		Entity.updateAggregateActivity(aggregate,a)
 	}
 	
 	console.log("staring long poller")
