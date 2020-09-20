@@ -49,7 +49,7 @@ onLoad: function() {
 	$fileURL.onclick = function() {
 		$fileURL.select()
 	}
-	scroller = new Scroller($sidebarActivityOuter, $sidebarActivity)
+	scroller = new Scroller($sidebarScroller.parentNode, $sidebarScroller)
 	prePrint.forEach(function(x) {
 		print(x)
 	})
@@ -59,7 +59,7 @@ onLoad: function() {
 		
 	  })*/
 },
-
+// todo: currently this uses "time ago" so those times need to be updated occasionally
 onAggregateChange: function(aggregate) {
 	var items = []
 	for (var id in aggregate)
