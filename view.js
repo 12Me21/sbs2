@@ -267,8 +267,10 @@ handleView: function(type, id, query, callback) {
 					}
 					loadEnd()
 				})
-			}, function() {
-				whenPageLoaded(quick)
+			}, function(e) {
+				whenPageLoaded(function() {
+					quick(e)
+				})
 			})
 		} catch(e) {
 			errorRender("render failed 1", e)
@@ -295,6 +297,7 @@ handleView: function(type, id, query, callback) {
 	function quick(ren) {
 		cleanUp()
 		currentView = view
+		console.log("QUICK?",ren)
 		try {
 			ren(id, query)
 			after()

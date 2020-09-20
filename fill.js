@@ -75,14 +75,14 @@ if (localStorage) {
 	}
 }
 
-/*Object.defineProperty(Object.prototype, 'forEach', {
+Object.defineProperty(Object.prototype, 'forEach', {
 	enumerable: false, // EXTREMELY IMPORTANT
 	configurable: true,
 	value: function(callback) {
 		for (var key in this)
 			callback(this[key], key, this)
 	}
-})*/
+})
 
 /*function NodeBlock(node, child) {
 	// create object containing override properties

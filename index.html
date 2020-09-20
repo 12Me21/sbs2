@@ -49,6 +49,7 @@ window.onerror = function(message, source, line, col, error) {
 <script src=Views/images.js></script>
 <script src=Views/editpage.js></script>
 <script src=Views/category.js></script>
+<script src=Views/activity.js></script>
 
 <script src=navigate.js></script>
 
@@ -133,7 +134,7 @@ window.onerror = function(message, source, line, col, error) {
 			</div>
 		</v-b>
 		
-		<v-b data-view-activityMode class="page-select rem1-7 nav bar"></v-b>
+		<!--<v-b data-view-activity class="page-select rem1-7 nav bar"></v-b>-->
 		
 		<v-b data-view-membersMode class="nav bar rem1-7" id=$memberNav></v-b>
 
@@ -250,7 +251,7 @@ window.onerror = function(message, source, line, col, error) {
 				<a data-static-path=files>Change your avatar here</a>
 			</v-b>
 
-			<v-b data-view-activityMode id=$activity></v-b>
+			<v-b data-view-activity id=$activity></v-b>
 			
 			<v-b data-view-testMode>
 				<textarea id="$testTextarea"></textarea><br>
