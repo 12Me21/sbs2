@@ -550,6 +550,12 @@ main-scrollable {
 	z-index: 4;
 }
 
+.userlist {
+	-webkit-flex-shrink: 0;
+	flex-shrink: 0;
+	background-color: #EEE;
+}
+
 /***********************
  ** Chat Message Pane **
  ***********************/
