@@ -58,6 +58,27 @@ onLoad: function() {
 	/*document.addEventListener('keydown', function(e) {
 		
 	  })*/
+	var sidebarPanels = [
+		$sidebarActivityPanel,
+		$sidebarPinnedPanel,
+		$sidebarFilePanel,
+	]
+	sidebarPanels.forEach(function(e, i) {
+		e.setAttribute('role', "tabpanel")
+		e.setAttribute('aria-labelledby', "sidebar-tab-"+i)
+		e.hidden = true
+	})
+	$sidebarTabs.replaceChildren(Draw.sidebarTabs([
+		{label: "activity"}, {label: "watching"}, {label: "image"}, {label: "search"}
+	], function(id) {
+		selectTab(id)
+	}))
+	function selectTab(id) {
+		sidebarPanels.forEach(function(panel, pid) {
+			panel.hidden = pid!=id
+		})
+	}
+	selectTab(0)
 },
 // todo: currently this uses "time ago" so those times need to be updated occasionally
 onAggregateChange: function(aggregate) {
@@ -67,9 +88,9 @@ onAggregateChange: function(aggregate) {
 	items.sort(function(a,b){
 		return -(a.lastDate - b.lastDate)
 	})
-	$sidebarActivity.replaceChildren()
+	$sidebarActivityPanel.replaceChildren()
 	items.forEach(function(item) {
-		$sidebarActivity.appendChild(Draw.activityItem(item))
+		$sidebarActivityPanel.appendChild(Draw.activityItem(item))
 	})
 
 },

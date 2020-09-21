@@ -27,8 +27,8 @@ function ChatRoom(id, page) {
 	}
 	this.messagePane = document.createElement('scroll-outer')
 	this.messagePane.className = "chatScroller"
-	this.messagePane.style.display = "none"
-	this.userListOuter.style.display = "none"
+	this.messagePane.hiddden = true
+	this.userListOuter.hidden = true
 	$chatPane.appendChild(this.userListOuter)
 	$chatPane.appendChild(this.messagePane)
 	this.messageList = document.createElement('scroll-inner')
@@ -42,6 +42,19 @@ function ChatRoom(id, page) {
 	this.scroller = new Scroller(this.messagePane, this.messageList)
 	this.updatePage(page)
 	ChatRoom.addRoom(this)
+}
+
+// todo: when starting to render any page
+//- run generatestatus and generatelisteners
+//- if changed, refresh long poller with new data
+//- when rendering chat, we need to retrieve the listeners list from Req
+ChatRoom.generateListeners = function(old) {
+	var listeners = {}
+	old = old || {}
+	for (var id in ChatRoom.rooms) {
+		listeners[id] = old[id] || {"0":""}
+	}
+	return listeners
 }
 
 ChatRoom.generateStatus = function() {
@@ -173,20 +186,20 @@ ChatRoom.prototype.show = function() {
 	var old = ChatRoom.currentRoom
 	if (old)
 		old.hide()
-	this.messagePane.style.display = ""
-	this.userListOuter.style.display = ""
-	this.pageElement.style.display = ""
-	this.pageInfoElement.style.display = ""
+	this.messagePane.hidden = false
+	this.userListOuter.hidden = false
+	this.pageElement.hidden = false
+	this.pageInfoElement.hidden = false
 	this.visible = true
 	ChatRoom.currentRoom = this
 }
 
 ChatRoom.prototype.hide = function() {
 	if (this.pinned) {
-		this.messagePane.style.display = "none"
-		this.userListOuter.style.display = "none"
-		this.pageElement.style.display = "none"
-		this.pageInfoElement.style.display = "none"
+		this.messagePane.hidden = true
+		this.userListOuter.hidden = true
+		this.pageElement.hidden = true
+		this.pageInfoElement.hidden = true
 		if (ChatRoom.currentRoom == this)
 			ChatRoom.currentRoom = null
 		this.visible = false

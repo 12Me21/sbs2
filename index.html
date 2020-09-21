@@ -290,13 +290,13 @@ window.onerror = function(message, source, line, col, error) {
 			</span>
 			<span class="loggedOut"><a data-static-path=settings class="textItem">Log In or Register</a></span>
 		</div>
-		<div class="userlist bar rem1-5"><span id=$sidebarUserList></span><button id=$hideGlobalStatusButton class="item rightAlign">Hide</button></div>
+		<div class="userlist bar rem1-5 bottomBorder"><span id=$sidebarUserList></span><button id=$hideGlobalStatusButton class="item rightAlign">Hide</button></div>
 		<!--<span id=$longPollStatus></span>-->
-		<table class="tabs bottomBorder"><tr><td>a</td><td>b</td><td>c</td><td>d</td></tr></table>
+		<div id=$sidebarTabs role="tablist" aria-label="sidebar tab" class="bottomBorder"></div>
 		<div id=$sidebarTop>
-			<div id=$sidebarActivity></div>
-			<!--<div id=$sidebarPinned class="bottomBorder fill sidebarNotFile"></div>-->
-			<div class="sidebarFile fill">
+			<div id=$sidebarActivityPanel></div>
+			<div id=$sidebarPinnedPanel class="fill"></div>
+			<div class="fill" id=$sidebarFilePanel>
 				<div class="sidebarUploadingFile">
 					<button id=$fileCancel>Cancel</button><br>
 					<button id=$fileUpload>Upload Image</button>
@@ -307,10 +307,10 @@ window.onerror = function(message, source, line, col, error) {
 				<div>
 					<img id=$fileView>
 				</div>
+				<div><input type=file accept="image/*" id=$imageUpload></div>
 			</div>
-			
 		</div>
-		<div><input type=file accept="image/*" id=$imageUpload></div>
+		
 		<div id=$sidebarResize class="resize">resize</div>
 		<div id=$sidebarBottom class="grow">
 			<scroll-outer><scroll-inner id=$sidebarScroller></scroll-inner></scroll-outer>
