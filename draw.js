@@ -85,6 +85,15 @@ iconURL: function(entity) {
 	return "resource/unknown.png"
 },
 
+chatMessagePane: function() {
+	var outer = document.createElement('scroll-outer')
+	outer.className = "chatScroller"
+	outer.hiddden = true
+	var inner = document.createElement('scroll-inner')
+	outer.appendChild(inner)
+	return [outer, inner]
+},
+
 userList: function() {
 	var outer = document.createElement('div')
 	outer.className = "bar rem2-3 userlist"
