@@ -62,6 +62,7 @@ onLoad: function() {
 		$sidebarActivityPanel,
 		$sidebarPinnedPanel,
 		$sidebarFilePanel,
+		$sidebarSearchPanel,
 	]
 	sidebarPanels.forEach(function(e, i) {
 		e.setAttribute('role', "tabpanel")
@@ -79,6 +80,31 @@ onLoad: function() {
 		})
 	}
 	selectTab(0)
+
+	$searchButton.onclick = function() {
+		$searchButton.disabled = true
+		Req.search1($searchInput.value, function(users, pages) {
+			$searchButton.disabled = false
+			$searchResults.replaceChildren()
+			pages.forEach(function(item) {
+				var bar = Draw.pageBar(item)
+				bar.className += " linkBar bar rem1-5"
+				$searchResults.appendChild(bar)
+			})
+			console.log(pages)
+			users.forEach(function(item) {
+				var bar = Draw.entityTitleLink(item)
+				bar.className += " linkBar bar rem1-5"
+				$searchResults.appendChild(bar)
+			})
+		})
+	}
+	$searchInput.onkeypress = function(e) {
+		if (!e.shiftKey && e.keyCode == 13) {
+			e.preventDefault()
+			$searchButton.onclick()
+		}
+	}
 },
 // todo: currently this uses "time ago" so those times need to be updated occasionally
 onAggregateChange: function(aggregate) {

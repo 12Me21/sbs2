@@ -45,7 +45,6 @@ window.onerror = function(message, source, line, col, error) {
 <script src=sidebar.js></script>
 <script src=Views/settings.js></script>
 <script src=Views/page.js></script>
-<script src=Views/search.js></script>
 <script src=Views/images.js></script>
 <script src=Views/editpage.js></script>
 <script src=Views/category.js></script>
@@ -69,22 +68,18 @@ window.onerror = function(message, source, line, col, error) {
 	<div class="item loggedIn myUserPage">
 		<div id=$userPageStatus class="textItem userMode"></div>
 	</div>
-	<v-b data-view-editMode data-view-catEditMode>
+	<v-b data-view-editorMode data-view-catEditMode>
 		<input class="item" id=$titleInput placeholder="Title" required>
 		<button class="item" id=$submitEdit>Submit</button>
 		<button class="item" id=$deletePage>DELETE</button>
-	</v-b>
-	<v-b data-view-page>
-		<label for=$watchCheck class="textItem loggedIn">Watching:</label>
-		<input type=checkbox id=$watchCheck class="item loggedIn">
 	</v-b>
 	<v-b data-view-page><button class="item" id=$switchPageMode>&lt;&gt;</button></v-b>
 </header>
 
 <horizontal-split class="grow">
 	<main class="grow">
-		<v-b data-view-page data-view-editMode data-view-categoryMode class="pathBar rem1-5 bottomBorder" id=$path></v-b>
-		<v-b data-view-editMode class="infoPane">
+		<v-b data-view-page data-view-editorMode data-view-categoryMode class="pathBar rem1-5 bottomBorder" id=$path></v-b>
+		<v-b data-view-editorMode class="infoPane">
 			<label for=$keywords>Keywords:</label><input placeholder="(space separated, optional)" id=$keywords><br>
 			<label for=$editPageType>Type:</label><input placeholder="@" id="$editPageType"><br>
 			<label for=$editPageCategory>Category:</label><span id=$editPageCategory></span><br>
@@ -93,14 +88,10 @@ window.onerror = function(message, source, line, col, error) {
 			<select id=$markupSelect>
 				<option value="plaintext">plain text</option>
 				<option value="12y">12-y documentation markup format</option>
-				<option value="bbcode">bbcode</option>
+				<option disabled value="bbcode">bbcode</option>
 			</select><button id=$markupUpdate>Update Preview</button>
 		</v-b>
 
-		<v-b data-view-searchMode>
-			<input id=$searchInput><button id=$searchButton>Search</button>
-		</v-b>
-		
 		<v-b data-view-fileMode class="rem1-7 bar nav">
 			<span id=$fileNav></span>
 		</v-b>
@@ -149,9 +140,7 @@ window.onerror = function(message, source, line, col, error) {
 		-->
 		
 		<main-scrollable class="grow" id=$main>
-			<v-b data-view-searchMode id=$searchResults></v-b>
-			
-			<v-b data-view-catEditMode>
+			<v-b data-view-catEditorMode>
 				<label for="$cateditPinned">Pinned pages:</label><input id="$cateditPinned"><br>
 				<label for="$cateditCategory">Parent category:</label><input id="$cateditCategory" type="number"><br>
 				<label for="$cateditPermissions">Permissions:</label><input id="$cateditPermissions"><br>
@@ -172,6 +161,7 @@ window.onerror = function(message, source, line, col, error) {
 			<v-b data-view-userMode class="userActivity" id=$userActivity></v-b>
 
 			<v-b data-view-page id=$pageInfoPane class="pageMode pageInfoPane rem2-3 bar bottomBorder">
+				
 				<!--<span class="textItem" id=$authorBox></span>
 				<button id=$editButton class="item canEdit">Edit</button>
 				<div class="rightAlign item">
@@ -308,6 +298,10 @@ window.onerror = function(message, source, line, col, error) {
 					<img id=$fileView>
 				</div>
 				<div><input type=file accept="image/*" id=$imageUpload></div>
+			</div>
+			<div id=$sidebarSearchPanel>
+				<input id=$searchInput><button id=$searchButton>Search</button>
+				<div id=$searchResults></div>
 			</div>
 		</div>
 		

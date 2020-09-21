@@ -297,7 +297,6 @@ handleView: function(type, id, query, callback) {
 	function quick(ren) {
 		cleanUp()
 		currentView = view
-		console.log("QUICK?",ren)
 		try {
 			ren(id, query)
 			after()
@@ -328,6 +327,12 @@ handleView: function(type, id, query, callback) {
 			e.hidden = !e.hasAttribute("data-view-"+view.className)
 		})
 		View.flag('viewReady', true)
+		View.flag('mobileSidebar', false) //bad (should be function on Sidebar)
+
+		Req.lpLastListeners = ChatRoom.generateListeners(Req.lpLastListeners)
+		Req.lpStatuses = ChatRoom.generateStatus()
+		Req.lpRefresh()
+		
 		callback && callback()
 		// todo: scroll to fragment element
 	}

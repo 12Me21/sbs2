@@ -251,11 +251,25 @@ button: function() {
 	var button = document.createElement("button")
 	container.appendChild(button)
 	return [container, button]
+}, // BAD ↕
+linkButton: function() {
+	var container = document.createElement("div")
+	container.className = "buttonContainer"
+	var a = document.createElement('a')
+	container.appendChild(a)
+	var button = document.createElement("button")
+	a.appendChild(button)
+	return [container, button]
 },
 pageInfo: function(page) {
 	var e = document.createElement('span')
 	//with(e){
 	e.appendChild(authorBox(page))
+	var b = linkButton()
+	b[1].textContent = "Edit"
+	Nav.link("editpage/"+page.id, b[1].parentNode)
+	b[0].className += " item"
+	e.appendChild(b[0])
 	return e
 },
 sidebarTabs: function(list, callback) {
