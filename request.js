@@ -28,6 +28,7 @@ lpProcessedListeners: {},
 lpCancel: function(){},
 lpRunning: false,
 currentActivity: {},
+lpInit: true,
 
 me: null,
 
@@ -607,7 +608,7 @@ doListen: function(lastId, statuses, lastListeners, getMe, callback) {
 },
 
 lpRefresh: function() {
-	if (lpRunning) {
+	if (lpRunning && !lpInit) {
 		lpCancel()
 		lpLoop()
 	}
@@ -660,8 +661,10 @@ lpLoop: function(noCancel) {
 		if (bad) {
 			alert("FUCK")
 		}
-		if (noCancel)
+		if (noCancel) {
+			lpInit = false
 			noCancel(e, resp)
+		}
 		if (cancelled) { // should never happen (but I think it does sometimes..)
 			console.log("OH HECK, request called callback after being cancelled?")
 			return
