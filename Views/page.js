@@ -1,4 +1,5 @@
 function ChatRoom(id, page) {
+	var $=this
 	var old = ChatRoom.rooms[id]
 	if (old)
 		return old
@@ -24,14 +25,20 @@ function ChatRoom(id, page) {
 		})
 		ul[2].disabled = true
 	}
-	this.messagePane = document.createElement('scroll-outer')
-	this.messagePane.className = "chatScroller"
-	this.messagePane.hiddden = true
 	this.userListOuter.hidden = true
 	$chatPane.appendChild(this.userListOuter)
+	
+	var b = Draw.chatMessagePane()
+	this.messagePane = b[0]
+	this.messageList = b[1]
 	$chatPane.appendChild(this.messagePane)
-	this.messageList = document.createElement('scroll-inner')
-	this.messagePane.appendChild(this.messageList)
+	/*var b = Draw.button()
+	b[1].textContent = "load older messages"
+	b[1].onclick = function() {
+		$.loadOlder(100)
+	}
+	this.messagePane.appendChild(b[0])*/
+
 	this.pageElement = document.createElement('div')
 	this.pageElement.className = "markup-root pageContents"
 	this.pageInfoElement = Draw.pageInfo(page)
