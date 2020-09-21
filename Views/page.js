@@ -32,12 +32,12 @@ function ChatRoom(id, page) {
 	this.messagePane = b[0]
 	this.messageList = b[1]
 	$chatPane.appendChild(this.messagePane)
-	/*var b = Draw.button()
+	var b = Draw.button()
 	b[1].textContent = "load older messages"
 	b[1].onclick = function() {
-		$.loadOlder(100)
+		$.loadOlder(100) //todo: lock
 	}
-	this.messagePane.appendChild(b[0])*/
+	this.messagePane.appendChild(b[0])
 
 	this.pageElement = document.createElement('div')
 	this.pageElement.className = "markup-root pageContents"
@@ -47,7 +47,7 @@ function ChatRoom(id, page) {
 	this.visible = false
 	this.scroller = new Scroller(this.messagePane, this.messageList)
 	this.updatePage(page)
-	var ul = Req.lpProcessedListeners[id] //should this be done with id -1?
+	var ul = Req.lpProcessedListeners[id] //should this be done with id -1? // what?
 	ul && this.updateUserList(ul)
 	ChatRoom.addRoom(this)
 }
@@ -63,6 +63,16 @@ ChatRoom.generateListeners = function(old) {
 		listeners[id] = old[id] || {"0":""}
 	}
 	return listeners
+}
+
+ChatRoom.prototype.loadOlder = function(num, callback) {
+	var $=this
+	for (var firstId in this.messageElements)
+		break
+	Req.getCommentsBefore(this.id, firstId, num, function(comments) {
+		comments && $.displayOldMessages(comments)
+		callback()
+	})
 }
 
 ChatRoom.generateStatus = function() {
@@ -171,6 +181,14 @@ ChatRoom.prototype.updateUserList = function(list) {
 	this.userListInner.replaceChildren(d)
 }
 
+ChatRoom.prototype.displayOldMessages = function(comments) {
+	var $ = this
+	return //todo
+	comments.forEach(function(comment) {
+		$.displayMessage(comment, false)
+	})
+}
+
 ChatRoom.prototype.displayInitialMessages = function(comments) {
 	var $ = this
 	comments.forEach(function(comment) {
@@ -256,9 +274,9 @@ ChatRoom.prototype.displayMessage = function(comment, autoscroll) {
 				$.lastBlock[1].appendChild(part)
 				$.lastUid = uid
 				$.lastTime = comment.createDate
-				return ret
 			}
 			$.messageElements[comment.id] = part
+			return ret
 		}
 	}, autoscroll != false)
 }

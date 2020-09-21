@@ -542,6 +542,21 @@ getCategoryView: function(id, page, callback) {
 	}, true)
 },
 
+getCommentsBefore: function(id, firstId, count, callback) {
+	var fi = {reverse: true, limit: count, parentIds: [id]}
+	if (firstId != null)
+		fi.maxId = firstId-1
+	return read([
+		{comment: fi},
+		"user.0createUserId.0editUserId",
+	], {}, function(e, resp) {
+		if (!e)
+			callback(resp.comment)
+		else
+			callback(null)
+	})
+},
+
 sendMessage: function(room, message, meta, callback) {
 	return request("Comment", 'POST', callback, {parentId: room, content: JSON.stringify(meta)+"\n"+message})
 },
@@ -640,7 +655,11 @@ lpLoop: function(noCancel) {
 	lpRunning = true
 	//make sure only one instance of this is running
 	var cancelled
+	var bad
 	var x = doListen(lpLastId, lpStatuses, lpLastListeners, noCancel, function(e, resp) {
+		if (bad) {
+			alert("FUCK")
+		}
 		if (noCancel)
 			noCancel(e, resp)
 		if (cancelled) { // should never happen (but I think it does sometimes..)
@@ -674,8 +693,10 @@ lpLoop: function(noCancel) {
 		}
 	})
 	lpCancel = function() {
-		if (noCancel)
+		if (noCancel) {
+			bad = true
 			return
+		}
 		cancelled = true
 		lpRunning = false
 		x.abort()
