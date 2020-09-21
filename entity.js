@@ -135,32 +135,12 @@ processItem: {
 		return data
 	},
 },
-processAggregate: function(resp) {
+updateAggregateCommentAggregate: function(items, ca, page) {
 	var pageMap = {}
-	resp.content.forEach(function(p) {
+	page && page.forEach(function(p) {
 		pageMap[p.id] = p
 	})
-	var items = {}
-	resp.activity.forEach(function(a) {
-		var id = a.contentId
-		var item = items[id]
-		if (!item) {
-			item = items[id] = {
-				content: pageMap[id] || resp.userMap[id],
-				users: {},
-				firstDate: a.date,
-				lastDate: a.date,
-				count: 0,
-			}
-		}
-		item.users[a.userId] = a.user
-		item.count++
-		if (a.date < item.firstDate)
-			item.firstDate = a.date
-		if (a.date > item.lastDate)
-			item.lastDate = a.date
-	})
-	resp.commentaggregate.forEach(function(a) {
+	ca.forEach(function(a) {
 		var item = items[a.id]
 		if (!item) {
 			item = items[a.id] = {
@@ -172,7 +152,8 @@ processAggregate: function(resp) {
 			}
 		}
 		a.users.forEach(function(user) {
-			item.users[user.id] = user
+			if (user)
+				item.users[user.id] = user
 		})
 		item.count += a.count
 		if (a.firstDate < item.firstDate)
@@ -182,13 +163,17 @@ processAggregate: function(resp) {
 	})
 	return items
 },
-updateAggregateComments: function(items, comments) {
+updateAggregateComments: function(items, comments, page) {
+	var pageMap = {}
+	page && page.forEach(function(p) {
+		pageMap[p.id] = p
+	})
 	comments.forEach(function(c) {
 		var id = c.parentId
 		var item = items[id]
 		if (!item) {
 			item = items[id] = {
-				content: c.parent,
+				content: pageMap[id],
 				users: {},
 				firstDate: c.editDate,
 				lastDate: c.editDate,
@@ -197,7 +182,8 @@ updateAggregateComments: function(items, comments) {
 		}
 		// todo: commentaggregate only tracks createDate
 		// so maybe use that here for consistency between reloads
-		item.users[c.createUser.id] = c.createUser // maybe edituser too?
+		if (c.createUser)
+			item.users[c.createUser.id] = c.createUser // maybe edituser too?
 		item.count++
 		if (c.editDate < item.firstDate)
 			item.firstDate = c.editDate
@@ -205,20 +191,25 @@ updateAggregateComments: function(items, comments) {
 			item.lastDate = c.editDate
 	})
 },
-updateAggregateActivity: function(items, activity) {
+updateAggregateActivity: function(items, activity, page) {
+	var pageMap = {}
+	page && page.forEach(function(p) {
+		pageMap[p.id] = p
+	})
 	activity.forEach(function(a) {
 		var id = a.contentId
 		var item = items[id]
 		if (!item) {
+			if (!pageMap[id])
+				return
 			item = items[id] = {
-				//content: pageMap[id] || resp.userMap[id],
+				content: pageMap[id],
 				users: {},
 				firstDate: a.date,
 				lastDate: a.date,
 				count: 0,
 			}
 		}
-		console.log("A USER", a.user)
 		item.users[a.userId] = a.user
 		item.count++
 		if (a.date < item.firstDate)

@@ -27,6 +27,7 @@ lpLastListeners: {"-1":{"0":""}},
 lpProcessedListeners: {},
 lpCancel: function(){},
 lpRunning: false,
+currentActivity: {},
 
 me: null,
 
@@ -101,9 +102,16 @@ rawRequest: function(url, method, callback, data, auth){
 			retry('3ds timeout')
 			//callback('timeout')
 		} else {
-			$.alert("Request failed! "+url)
 			$.console.log("xhr onerror")
-			callback('fail')
+			var id = $.setTimeout(function() {
+				retry('connection error')
+			}, 5000)
+			x.abort = function() {
+				$.clearTimeout(id)
+			}
+			
+			//$.alert("Request failed! "+url)
+			//callback('fail')
 		}
 	}
 	x.setRequestHeader('Cache-Control', "no-cache, no-store, must-revalidate")
@@ -325,6 +333,27 @@ getCategories: function(callback) {
 	return read([], {}, callback, true)
 },
 
+search1: function(text, callback) {
+	var like = text.replace(/%/g,"_") //the best we can do...
+	var count = 20
+	var page = 0
+	page = page*count
+	var $=this
+	return $.read([
+		{"user~Usearch": {limit: count, skip: page, usernameLike: like+"%"}}, 
+		{content: {limit: count, skip: page, nameLike: "%"+like+"%"}},
+		{content: {limit: count, skip: page, keyword: like}},
+		"user.1createUserId.2createUserId"
+	],{
+		content: "name,id,type,permissions,createUserId" //eh
+	}, function(e, resp) {
+		if (!e)
+			callback(resp.Usearch, resp.content)
+		else
+			callback(null)
+	})
+},
+
 // takes a number or a string
 getUserView: function(id, callback) {
 	if (typeof id == 'number')
@@ -383,7 +412,7 @@ getRecentActivity: function(callback) {
 		content: "name,id,permissions"
 	}, function(e, resp) {
 		if (!e) {
-			callback(Entity.processAggregate(resp))
+			callback(resp.activity, resp.commentaggregate, resp.content)
 		} else
 			callback(null)
 	})

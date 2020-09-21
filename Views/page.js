@@ -4,7 +4,6 @@ function ChatRoom(id, page) {
 		return old
 	var $ = this
 	this.id = id
-	this.userList = {}
 	if (id == -1) {
 		this.userListInner = $sidebarUserList
 		return
@@ -41,6 +40,8 @@ function ChatRoom(id, page) {
 	this.visible = false
 	this.scroller = new Scroller(this.messagePane, this.messageList)
 	this.updatePage(page)
+	var ul = Req.lpProcessedListeners[id] //should this be done with id -1?
+	ul && this.updateUserList(ul)
 	ChatRoom.addRoom(this)
 }
 
@@ -87,7 +88,6 @@ ChatRoom.prototype.toggleHiding = function(callback) {
 			delete $.userList[Req.uid]
 		else
 			$.userList[Req.uid] = {user: Req.me, status: "unknown"}
-		console.log("UPDATE?", hidden)
 		$.updateUserList($.userList)
 		callback && callback()
 	})
@@ -118,7 +118,7 @@ Object.defineProperty(ChatRoom.prototype, 'scrollBottom', {
 
 ChatRoom.addRoom = function(room) {
 	ChatRoom.rooms[room.id] = room
-	ChatRoom.setViewing(Object.keys(ChatRoom.rooms))
+	//ChatRoom.setViewing(Object.keys(ChatRoom.rooms))
 }
 
 ChatRoom.removeRoom = function(room) {
@@ -126,7 +126,7 @@ ChatRoom.removeRoom = function(room) {
 		ChatRoom.currentRoom = null
 	if (ChatRoom.rooms[room.id] == room)
 		delete ChatRoom.rooms[room.id]
-	ChatRoom.setViewing(Object.keys(ChatRoom.rooms))
+	//ChatRoom.setViewing(Object.keys(ChatRoom.rooms))
 }
 
 ChatRoom.setViewing = function(ids) {
@@ -184,7 +184,7 @@ ChatRoom.prototype.updatePage = function(page) {
 
 ChatRoom.prototype.show = function() {
 	var old = ChatRoom.currentRoom
-	if (old)
+	if (old && old!=this)
 		old.hide()
 	this.messagePane.hidden = false
 	this.userListOuter.hidden = false
@@ -208,6 +208,8 @@ ChatRoom.prototype.hide = function() {
 }
 
 ChatRoom.prototype.destroy = function() {
+	if (ChatRoom.currentRoom == this)
+		ChatRoom.currentRoom = null
 	ChatRoom.removeRoom(this)
 	this.userListOuter.remove()
 	this.messagePane.remove()
@@ -269,12 +271,15 @@ addView('page', {
 	start: function(id, query, render, quick) {
 		var room = ChatRoom.rooms[id]
 		if (room) {
+			room.pinned = true
 			quick(function() {
 				var page = room.page
 				setEntityTitle(page)
 				setEntityPath(page)
 				//ChatRoom.setViewing([page.id])
 				room.show()
+				room.pinned = false
+				
 			})
 		} else {
 			//todo: maybe we can request the user list early too?
@@ -295,7 +300,9 @@ addView('page', {
 	},
 	cleanUp: function(type) {
 		//$messageList.replaceChildren()
-		room.hide()
+		if (room)
+			room.hide() //so it's fucking possible for cleanup to get called TWICE if there's an error, sometimes. FUCK
+		room=null
 	},
 	init: function() {
 		$chatSend.onclick = function() {
