@@ -258,6 +258,32 @@ pageInfo: function(page) {
 	e.appendChild(authorBox(page))
 	return e
 },
+sidebarTabs: function(list, callback) {
+	var d = document.createElement('table')
+	d.className = "tabs"
+	var r = document.createElement('tr')
+	d.appendChild(r)
+	var btns = []
+	list.forEach(function(item, i) {
+		var td = document.createElement('td')
+		var btn = document.createElement('button')
+		btn.setAttribute('role', "tab")
+		btn.setAttribute('aria-selected', "false")
+		btn.id = "sidebar-tab-"+i
+		btn.setAttribute('aria-controls', "sidebar-panel-"+i)
+		td.appendChild(btn)
+		r.appendChild(td)
+		btn.textContent = item.label
+		btns[i] = btn
+		btn.onclick = function(e) {
+			btns.forEach(function(e, i2) {
+				e.setAttribute('aria-selected', i==i2)
+			})
+			callback(i)
+		}
+	})
+	return d
+},
 activityItem: function(item) {
 	var bar = entityTitleLink(item.content)
 	bar.className += " linkBar bar rem1-5"

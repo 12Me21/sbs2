@@ -12,6 +12,10 @@
 	vertical-align: top;
 }
 
+[hidden] {
+	display: none !important;
+}
+
 .grow {
 	-webkit-flex-grow: 1;
 	flex-grow: 1;
@@ -276,6 +280,12 @@ table.tabs td {
 	border-right: 1px solid gray;
 }
 
+table.tabs td button {
+	width: 100%;
+	height: 100%;
+	border: none;
+}
+
 table.tabs td:last-child {
 	border-right: none;
 }
@@ -531,7 +541,7 @@ main-scrollable {
 /*******************
  ** Chat Userlist **
  *******************/
-.userlist {
+.chatPane .userlist {
 	background-color: #EEE;
 	border-bottom: 1px solid gray;
 	-webkit-flex-shrink: 0;
@@ -982,8 +992,15 @@ html:not(.f-fileUploading) .fileUploading {
 	width: 100%;
 }
 
+#\$sidebarTop {
+	overflow: auto;
+}
 #\$sidebarBottom {
 	overflow: auto;
+}
+
+button[aria-selected="true"] {
+	background-color: gray;
 }
 
 .flex {

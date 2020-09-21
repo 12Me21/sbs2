@@ -325,10 +325,7 @@ handleView: function(type, id, query, callback) {
 	function after() {
 		$.document.body.className = view.className
 		document.querySelectorAll("v-b").forEach(function(e) {
-			if (e.hasAttribute("data-view-"+view.className))
-				e.style.removeProperty('display')
-			else
-				e.style.display = "none"
+			e.hidden = !e.hasAttribute("data-view-"+view.className)
 		})
 		View.flag('viewReady', true)
 		callback && callback()
@@ -340,7 +337,7 @@ onLoad: function() {
 	document.querySelectorAll("a[data-static-path]").forEach(function(elem) {
 		Nav.link(elem.getAttribute('data-static-path'), elem)
 	})
-	document.querySelectorAll("button").forEach(function(button) {
+	document.querySelectorAll("button:not([data-noreplace])").forEach(function(button) {
 		var container = document.createElement("div")
 		container.className = "buttonContainer"
 		button.parentNode.replaceChild(container, button)
