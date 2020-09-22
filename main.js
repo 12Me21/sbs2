@@ -81,10 +81,8 @@ else
 function ready() {
 	console.log("ONLOAD!")
 	if (navigator.vendor=="Google Inc.") {
-		console.info("chrome sucks")
-		var x = document.createElement('style')
-		x.textContent = "img, .iconBg { image-rendering: -webkit-optimize-contrast; }"
-		document.head.appendChild(x)
+		//console.info("chrome sucks")
+		document.documentElement.style.imageRendering="-webkit-optimize-contrast"
 	}
 	
 	View.onLoad()
