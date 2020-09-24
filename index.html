@@ -223,6 +223,19 @@ window.onerror = function(message, source, line, col, error) {
 					<input placeholder="Confirmation Code" id=$emailCode>
 					<button id=$registerConfirm>Confirm</button>
 				</div>
+				<div class="registerBox">
+					<h2>Password Reset</h2>
+					<form id=$passwordForm>
+						<input placeholder="Email" type=email name=email><br>
+						<button>Send Email</button>
+					</form>
+					<form id=$passwordForm2>
+						<input placeholder="reset code" name=key><br>
+						<input placeholder="new password" name=password>
+						<input placeholder="confirm new password" name=password2><br>
+						<button>Reset Password</button>
+					</form>
+				</div>
 			</v-b>
 
 			<v-b data-view-settingsMode class="loggedIn">
@@ -304,7 +317,7 @@ window.onerror = function(message, source, line, col, error) {
 				<div><input type=file accept="image/*" id=$imageUpload></div>
 			</div>
 			<div id=$sidebarSearchPanel>
-				<input id=$searchInput><button id=$searchButton>Search</button>
+				<div class="bottomBorder bar rem1-5"><input id=$searchInput class="item"><button id=$searchButton class="item">Search</button></div>
 				<div id=$searchResults></div>
 			</div>
 		</div>

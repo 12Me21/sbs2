@@ -107,6 +107,14 @@ rawRequest: function(url, method, callback, data, auth){
 	}
 },
 
+sendResetEmail: function(email, callback) {
+	return request("User/passwordreset/sendemail", "POST", callback, {email: email})
+},
+
+resetPassword: function(key, password, callback) {
+	return request("User/passwordreset", "POST", callback, {resetKey: key, password: password})
+},
+
 queryString: function(obj) {
 	if (!obj)
 		return ""

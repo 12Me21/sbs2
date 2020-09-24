@@ -251,6 +251,7 @@ ChatRoom.prototype.destroy = function() {
 	this.scroller = null
 	this.visible = false
 	this.messageElements = {}
+	Object.setPrototypeOf(this, null) // DIEEEEE
 }
 
 // todo: make renderuserlist etc.
