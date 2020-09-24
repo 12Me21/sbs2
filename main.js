@@ -6,7 +6,10 @@ delete window.sidebar // obsolete firefox global variable
 }*/
 
 Req.onLogin = function() {
+	console.log("login")
 	View.flag('loggedIn', true)
+
+	//TODO: um why isn't it getting me when you log in after page load?
 	/*Req.getMe(function(user) {
 		View.updateMyUser(user) //also sets Req.me...
 	})*/

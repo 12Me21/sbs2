@@ -56,6 +56,34 @@ addView('settings', {
 				}
 			})
 		}
+		$passwordForm.onsubmit = function(e) {
+			e.preventDefault()
+			var form = e.target
+			registerError("Sending email...")
+			if (form.email.value) {
+				Req.sendResetEmail(form.email.value, function(e, resp) {
+					if (!e)
+						registerError("Sent password reset email")
+					else
+						registerError(resp, "Sending email failed:")
+				})
+			}
+		}
+		$passwordForm2.onsubmit = function(e) {
+			e.preventDefault()
+			registerError("Resetting password...")
+			var form = e.target
+			var key = form.key.value
+			var password = form.password.value
+			if (key && password && password==form.password2.value) {
+				Req.resetPassword(key, password, function(e, resp) {
+					if (!e)
+						registerError("Password reset")
+					else
+						registerError(resp, "Failed to reset password:")
+				})
+			}
+		}
 	}
 })
 
