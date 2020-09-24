@@ -260,9 +260,15 @@ html.f-loggedIn .loggedOut {
 	/*box-shadow: inset 0 -2px 3px rgba(0,0,0,0.3);*/
 }
 
-html.f-chatMode .pageMode,
+/*html.f-chatMode .pageMode,
 html:not(.f-chatMode) .chatMode {
 	display: none;
+}*/
+
+#\$chatContainer {
+	flex-basis: auto;
+	overflow-y: hidden;
+	height: 50%;
 }
 
 .bottomBorder {
@@ -419,6 +425,7 @@ main-scrollable {
 	-webkit-flex-direction: column;
 	flex-direction: column;
 	overflow-y: auto;
+	flex-basis: auto;
 	
 	/*padding: 0.5rem;*/
 	/*overflow-y: scroll;*/
@@ -672,6 +679,7 @@ html:not(.f-editingComment) .showWhenEdit {
 	height: 3.25rem;
 	overflow-y: hidden;
 	border-top: 1px solid gray;
+	flex-shrink: 0;
 }
 
 #\$chatTextarea {
@@ -1208,6 +1216,7 @@ body.pageMode main-scrollable {
 	display: flex;
 	flex-direction: column;
 	overflow-y: auto;
+	/*flex-basis: 100%;*/
 }
 
 #\$sidebarPinned {

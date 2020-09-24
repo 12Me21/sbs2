@@ -49,7 +49,7 @@ views: {
 				id = id.substr(1)
 			// todo: maybe username without @ should be invalid?
 			// can potentially collide with id numbers
-			return $.Req.getUserView(id, render)
+			return Req.getUserView(id, render)
 		},
 		className: 'userMode',
 		render: function(user, userpage, activity, ca, content) {
@@ -76,7 +76,7 @@ views: {
 	// the first parameter will always exist.
 	users: {
 		start: function(id, query, render) {
-			return $.Req.getUsersView(render)
+			return Req.getUsersView(render)
 		},
 		className: 'membersMode',
 		render: function(users) {
@@ -97,31 +97,6 @@ views: {
 	},
 	pages: {
 		redirect: 'page'
-	},
-	template: {
-		start: function(id, query, render) {
-			// this should make a request for data from the api
-			// and call `render` when it's finished
-			// DO NOT MODIFY ANY HTML IN THIS FUNCTION
-			// If you don't need to load anything asynchronously,
-			// you can leave out this function and `render` will be
-			// called immediately instead (with arguments (id, query, type))
-			render(1,2,3,4)
-		},
-		className: 'templateMode', // the className of <body> is set to this
-		render: function(a,b,c,d) {
-			// this function is called after the data is recieved, and
-			// should render the page
-		},
-		cleanUp: function() {
-			// this is called before switching to another page,
-			// to remove any unneeded content that was created by `render`
-		},
-		init: function() {
-			// this is called when the page initially loads
-			// (in the future, it may be deferred until the view is visited
-			// for the first time)
-		}
 	},
 },
 errorView: {
@@ -406,8 +381,7 @@ onLoad: function() {
 addView: function(name, data) {
 	data.name = name
 	views[name] = data
-	if (initDone && data.init)
-		data.init()
+	initDone && data.init && data.init()
 },
 
 attachPaste: function(callback) {

@@ -3,8 +3,7 @@
 <title>SmileBASIC Source 2</title>
 
 <meta name=viewport content="width=device-width, initial-scale=1, height=device-height">
-<link rel=icon sizes=16x16 data-favicon href='resource/icon16.ico'>
-<!-- compatibility -->
+<link rel=icon sizes=16x16 data-favicon href='resource/icon16.ico'> <!-- compatibility -->
 <link rel="shortcut icon" sizes=16x16 data-favicon href="resource/icon16.png"> <!-- firefox -->
 <link rel=icon sizes=32x32 data-favicon href="resource/icon32.png"> <!-- chrome -->
 <link rel=icon sizes=192x192 data-favicon href="resource/iconbig.png"> <!-- large -->
@@ -74,7 +73,6 @@ window.onerror = function(message, source, line, col, error) {
 		<button class="item" id=$submitEdit>Submit</button>
 		<button class="item" id=$deletePage>DELETE</button>
 	</v-b>
-	<v-b data-view-page><button class="item" id=$switchPageMode>&lt;&gt;</button></v-b>
 </header>
 
 <horizontal-split class="grow">
@@ -180,8 +178,8 @@ window.onerror = function(message, source, line, col, error) {
 					</span>
 				</span>
 	</div>
-	-->
-			<v-b data-view-page id=$pageContents class="pageMode"></v-b>
+			-->
+			<v-b data-view-page id=$pageContents class="grow pageMode"></v-b>
 			<v-b data-view-errorMode class="pre errorPage" id=$errorMessage></v-b>
 			<v-b data-view-editorMode class="editorPane">
 				<div class="editorTextarea">
@@ -249,23 +247,28 @@ window.onerror = function(message, source, line, col, error) {
 				<div id="$testOut" class="pre"></div>
 			</v-b>
 			
-			<v-b data-view-page id=$chatPane class="grow chatPane chatMode"></v-b>
+			
 			<!--<div class="bottomSpacer"></div>-->
 		</main-scrollable>
 		<!--
 			  Bottom of the page
 		-->
-		<v-b data-view-page class="inputPane chatMode">
-			<table> <!-- YES it's a TABLE! sorry ... I'm not allowed to use flex so this is the only option -->
-				<tr>
-					<td rowspan="2" class="tableGrow"><textarea class="chatTextarea" id="$chatTextarea" accesskey="z"></textarea></td>
-					<td rowspan="2"><button class="chatSend fill" id="$chatSend">Send</button></td>
-					<td style="white-space: nowrap"><button class="hideWhenEdit chatSend" id=$chatEdit>Edit</button><button class="chatSend hideWhenEdit" id=$chatDelete>Delete</button><button class="chatSend showWhenEdit" id="$cancelEdit">Cancel Edit</button></td>
-				</tr>
-				<tr>
-					<td><label for=$chatMarkupSelect>Markup</label><input type=checkbox id=$chatMarkupSelect></td>
-				</tr>
-			</table>
+		<v-b data-view-page id=$chatResize class="resize">RESIZE</v-b>
+		<v-b data-view-page id=$chatContainer class="flex">
+			<v-b data-view-page id=$chatPane class="chatMode grow chatPane"></v-b>
+			
+			<v-b data-view-page class="inputPane chatMode">
+				<table> <!-- YES it's a TABLE! sorry ... I'm not allowed to use flex so this is the only option -->
+					<tr>
+						<td rowspan="2" class="tableGrow"><textarea class="chatTextarea" id="$chatTextarea" accesskey="z"></textarea></td>
+						<td rowspan="2"><button class="chatSend fill" id="$chatSend">Send</button></td>
+						<td style="white-space: nowrap"><button class="hideWhenEdit chatSend" id=$chatEdit>Edit</button><button class="chatSend hideWhenEdit" id=$chatDelete>Delete</button><button class="chatSend showWhenEdit" id="$cancelEdit">Cancel Edit</button></td>
+					</tr>
+					<tr>
+						<td><label for=$chatMarkupSelect>Markup</label><input type=checkbox id=$chatMarkupSelect></td>
+					</tr>
+				</table>
+			</v-b>
 		</v-b>
 	</main>
 	<sidebar-container id=$sidebar>

@@ -13,6 +13,7 @@ addView('page', {
 	start: function(id, query, render, quick) {
 		var room = ChatRoom.rooms[id]
 		if (room) {
+			var z = room.pinned
 			room.pinned = true
 			quick(function() {
 				var page = room.page
@@ -20,15 +21,14 @@ addView('page', {
 				setEntityPath(page)
 				//ChatRoom.setViewing([page.id])
 				room.show()
-				room.pinned = false
-				
+				room.pinned = z
 			})
 		} else {
 			//todo: maybe we can request the user list early too?
 			// the problem is, if we create the room early,
 			// we might get messages from long polling before
 			// loading the initial messages :(
-			return $.Req.getChatView(id, render)
+			return Req.getChatView(id, render)
 		}
 	},
 	className: 'page',
@@ -43,8 +43,8 @@ addView('page', {
 	cleanUp: function(type) {
 		//$messageList.replaceChildren()
 		if (room)
-			room.hide() //so it's fucking possible for cleanup to get called TWICE if there's an error, sometimes. FUCK
-		room=null
+			room.hide() //so it's fucking possible for cleanup to get called TWICE if there's an error, sometimes.
+		room = null
 	},
 	init: function() {
 		$chatSend.onclick = function() {
@@ -82,9 +82,6 @@ addView('page', {
 			ChatRoom.global.toggleHiding(function() {
 				$hideGlobalStatusButton.disabled = false
 			})
-		}
-		$switchPageMode.onclick = function() {
-			View.flag('chatMode', !View.flags.chatMode)
 		}
 	}
 })
