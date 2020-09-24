@@ -70,6 +70,7 @@ ChatRoom.generateListeners = function(old) {
 	old = old || {}
 	for (var id in ChatRoom.rooms)
 		listeners[id] = old[id] || {"0":""}
+	listeners[-1] = old[-1] || {"0":""}
 	return listeners
 }
 

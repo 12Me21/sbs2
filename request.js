@@ -661,6 +661,7 @@ lpLoop: function(noCancel) {
 },
 
 lpSetListening: function(ids) {
+	console.log("setting listeners")
 	var newListeners = {"-1": lpLastListeners[-1]}
 	ids.forEach(function(id) {
 		newListeners[id] = lpLastListeners[id] || {"0":""}

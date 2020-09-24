@@ -9,10 +9,6 @@ Req.onLogin = function() {
 	console.log("login")
 	View.flag('loggedIn', true)
 
-	//TODO: um why isn't it getting me when you log in after page load?
-	/*Req.getMe(function(user) {
-		View.updateMyUser(user) //also sets Req.me...
-	})*/
 	// display user info etc.
 	// start long poller
 	Req.onMessages = function(comments) {
@@ -33,6 +29,9 @@ Req.onLogin = function() {
 	}
 	
 	console.log("staring long poller")
+	// it's very important that the first long poll request finishes instantly
+	// we normally ensure this by having lpLastListeners always have at least one room set but this can be accidentally broken very easily and it's a mess
+	// need a more consistent way to update lastlisteners PLEASE
 	Req.lpStart(function(e, resp) {
 		if (!e) {
 			var me = resp.chains.Ume
@@ -49,15 +48,7 @@ Req.onLogin = function() {
 		Sidebar.onAggregateChange(Req.currentActivity)
 	})
 
-	/*Req.doListenInitial(function(e, resp) {
-		if (!e) {
-			//sbm(resp, true)
-			//todo:
-			// keep an updated list of recently active pages
-			//
-		}
-	})*/
-	
+	//TODO
 	// update currently viewed page (in case page was hidden)
 }
 
