@@ -204,7 +204,7 @@ body {
 	display: flex;
 	-webkit-flex-direction: column;
 	flex-direction: column;
-	position: absolute;
+	position: fixed;
 	top: 0;
 	left: 0;
 	right: 0;
