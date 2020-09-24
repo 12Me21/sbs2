@@ -18,8 +18,7 @@ onLoad: function() {
 	})
 	$imageUpload.onchange = function(e) {
 		var file = this.files[0]
-		if (file)
-			fileUploaded(file)
+		file && fileUploaded(file)
 	}
 	$fileCancel.onclick = $fileDone.onclick = fileCancel
 	$fileUpload.onclick = function() {
@@ -91,7 +90,6 @@ onLoad: function() {
 				bar.className += " linkBar bar rem1-5"
 				$searchResults.appendChild(bar)
 			})
-			console.log(pages)
 			users.forEach(function(item) {
 				var bar = Draw.entityTitleLink(item)
 				bar.className += " linkBar bar rem1-5"
@@ -109,11 +107,10 @@ onLoad: function() {
 // todo: currently this uses "time ago" so those times need to be updated occasionally
 onAggregateChange: function(aggregate) {
 	var items = []
-	for (var id in aggregate) {
-		if (aggregate[id].content)
-			items.push(aggregate[id]) //HACK
-	}
-	items.sort(function(a,b){
+	for (var id in aggregate)
+		if (aggregate[id].content) //HACK
+			items.push(aggregate[id])
+	items.sort(function(a, b) {
 		return -(a.lastDate - b.lastDate)
 	})
 	$sidebarActivityPanel.replaceChildren()

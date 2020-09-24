@@ -33,112 +33,77 @@ lpInit: true,
 me: null,
 
 rawRequest: function(url, method, callback, data, auth){
-	var x = new $.XMLHttpRequest()
+	var x = new XMLHttpRequest()
 	x.open(method, url)
 	var args = arguments
 
-	var start = $.Date.now()
+	var start = Date.now()
 	x.onload = function() {
-		var code = x.status
 		var type = x.getResponseHeader('Content-Type')
-		if (/^application\/json(?!=\w)/.test(type)) {
-			try {
-				var resp = JSON.parse(x.responseText)
-			} catch(e) {
-				resp = null
-			}
-		} else {
+		if (/^application\/json(?!=\w)/.test(type))
+			var resp = JSON.safeParse(x.responseText)
+		else
 			resp = x.responseText
-		}
-		if (code==200) { //this should maybe check other 2xx responses, but I think 204 is (was?) used for timeouts...
+		var code = x.status
+		
+		if (code==200) //this should maybe check other 2xx responses, but I think 204 is (was?) used for timeouts...
 			callback(null, resp)
-		} else if (code==502) {
-			var id = $.setTimeout(function() {
-				retry('bad gateway') //maybe have `retry` take timeout as arg
-			}, 5000)
-			x.abort = function() {
-				$.clearTimeout(id)
-			}
-		} else if (code==408 || code==204 || code==524) {
-			// record says server uses 408, testing showed only 204
-			// basically this is treated as an error condition,
-			// except during long polling, where it's a normal occurance
-			retry('timeout')
-			//callback('timeout', resp)
-		} else if (code == 429) { // rate limit
-			var id = $.setTimeout(function() {
-				retry('rate limited')
-				//callback('rate', resp)
-			}, 1500)
-			x.abort = function() {
-				$.clearTimeout(id)
-			}
-		} else if (code==401 || code==403) {
+		else if (code==502)
+			retry(5000, 'bad gateway')
+		else if (code==408 || code==204 || code==524)
+			// record says server uses 408, testing showed only 204. idk
+			retry(null, 'timeout')
+		else if (code == 429) // rate limit
+			retry(1500, "rate limited")
+		else if (code==401 || code==403) //invalid auth code (should this be both?)
 			callback('auth', resp)
-		} else if (code==404) {
+		else if (code==404)
 			callback('404', resp)
-		} else if (code==400) {
-			try {
-				resp = $.JSON.parse(resp)
-			} catch(e) {
-			}
-			callback('error', resp)
-		} else {
+		else if (code==400)
+			callback('error', JSON.safeParse(resp))
+		else { // other
 			alert("Request failed! "+code+" "+url)
-			//console.log("sbs2Request: request failed! "+code)
-			//console.log(x.responseText)
 			console.log("REQUEST FAILED", x)
-			try {
-				resp = $.JSON.parse(resp)
-			} catch(e) {
-			}
+			resp = JSON.safeParse(resp)
 			callback('error', resp, code)
 		}
 	}
 	x.onerror = function() {
-		var time = $.Date.now()-start
-		//$.console.log("xhr onerror after ms:"+time)
-		if (time > 18*1000) {
-			//$.console.log("detected 3DS timeout")
-			retry('3ds timeout')
-			//callback('timeout')
-		} else {
-			$.console.log("xhr onerror")
-			var id = $.setTimeout(function() {
-				retry('connection error')
+		var time = Date.now()-start
+		//console.log("xhr onerror after ms:"+time)
+		if (time > 18*1000)
+			retry(null, "3ds timeout")
+		else
+			retry(5000, "request error")
+	}
+
+	x.setRequestHeader('Cache-Control', "no-cache, no-store, must-revalidate")
+	x.setRequestHeader('Pragma', "no-cache") // for internet explorer
+	auth && x.setRequestHeader('Authorization', "Bearer "+auth)
+
+	if (data == undefined)
+		x.send()
+	else if (data.constructor == Object) { //plain object. we do need to support sending strings etc. as json later though...
+		x.setRequestHeader('Content-Type', "application/json;charset=UTF-8")
+		x.send(JSON.stringify(data))
+	} else
+		x.send(data)
+	
+	return x
+
+	function retry(time, reason) {
+		// this is not recursion because retry is called in async callback functions only!
+		if (time) {
+			$.setTimeout(function() {
+				retry(null, reason)
 			}, 5000)
 			x.abort = function() {
 				$.clearTimeout(id)
 			}
-			
-			//$.alert("Request failed! "+url)
-			//callback('fail')
+		} else {
+			console.log("retrying request", reason)
+			x.abort = rawRequest.apply(null, args).abort
 		}
-	}
-	x.setRequestHeader('Cache-Control', "no-cache, no-store, must-revalidate")
-	x.setRequestHeader('Pragma', "no-cache") // for internet explorer
-	if (auth)
-		x.setRequestHeader('Authorization', "Bearer "+auth)
-	
-	if (data) {
-		if (data && data.constructor == Object) { //plain object
-			x.setRequestHeader('Content-Type',"application/json;charset=UTF-8")
-			x.send(JSON.stringify(data))
-		} else { //string, formdata, arraybuffer, etc.
-			x.send(data)
-		}
-	} else {
-		x.send()
-	}
-	return x
-
-	function retry(reason) {
-		// this is not recursion because retry is called in async callback functions only!
-
-		// external things rely on .abort to cancel the request, so...
-		// a hack, perhaps...
-		console.log("retrying request", reason)
-		x.abort = rawRequest.apply(null, args).abort
 	}
 },
 
@@ -148,25 +113,23 @@ queryString: function(obj) {
 	var items = []
 	for (var key in obj) {
 		var val = obj[key]
-		if (typeof val != 'undefined'){
-			var item = $.encodeURIComponent(key)+"="
-			// array items are encoded as
-			// ids:[1,2,3] -> ids=1&ids=2&ids=3
-			if (val instanceof $.Array) {
-				for(var i=0;i<val.length;i++){
-					items.push(item+$.encodeURIComponent(val[i]))
-				}
-			// otherwise, key=value
-			} else {
-				items.push(item+$.encodeURIComponent(val))
-			}
-		}
+		if (typeof val == 'undefined')
+			continue
+		var item = $.encodeURIComponent(key)+"="
+		// array items are encoded as
+		// ids:[1,2,3] -> ids=1&ids=2&ids=3
+		if (val instanceof Array)
+			val.forEach(function(x) {
+				items.push(item+$.encodeURIComponent(x))
+			})
+		// otherwise, key=value
+		else
+			items.push(item+$.encodeURIComponent(val))
 	}
 	
-	if (items.length)
-		return "?"+items.join("&")
-	else
+	if (!items.length)
 		return ""
+	return "?"+items.join("&")
 },
 
 request: function(url, method, callback, data) {
@@ -180,7 +143,7 @@ request: function(url, method, callback, data) {
 
 // logs the user out and clears the cached token
 logOut: function() {
-	$.Store.remove(storageKey)
+	Store.remove(storageKey)
 	lpStop()
 	auth = null
 	onLogout()
@@ -190,7 +153,7 @@ logOut: function() {
 // should only be called once (triggers login event)
 gotAuth: function(newAuth) {
 	try {
-		var newUid = Number($.JSON.parse($.atob(newAuth.split(".")[1])).uid)
+		var newUid = Number(JSON.parse($.atob(newAuth.split(".")[1])).uid) //yeah
 	} catch(e) {
 		logOut()
 		return false
@@ -205,7 +168,7 @@ authenticate: function(username, password, callback) {
 	return request("User/authenticate", 'POST', function(e, resp) {
 		if (!e) {
 			gotAuth(resp)
-			$.Store.set(storageKey, resp, true)
+			Store.set(storageKey, resp, true)
 		}
 		callback(e, resp)
 	}, {username: username, password: password})
@@ -215,7 +178,7 @@ authenticate: function(username, password, callback) {
 // triggers onLogin and returns true if successful
 // (doesn't check if auth is expired though)
 tryLoadCachedAuth: function() {
-	var auth = $.Store.get(storageKey)
+	var auth = Store.get(storageKey)
 	if (auth)
 		var ok = gotAuth(auth)
 	if (!ok)
@@ -267,9 +230,8 @@ read: function(requests, filters, callback, needCategories) {
 listen: function(requests, filters, callback) {
 	var $=this
 	var query = {}
-	
 	requests.forEach(function(req) {
-		for (var type in req) {
+		for (var type in req) { // var type = first key in req
 			query[type] = JSON.stringify(req[type])
 			break
 		}
@@ -293,9 +255,8 @@ getMe: function(callback) {
 			var l = [resp]
 			Entity.processList('user',l,{})
 			callback(l[0])
-		} else {
+		} else
 			callback(null)
-		}
 	})
 },
 
@@ -340,7 +301,7 @@ search1: function(text, callback) {
 	var page = 0
 	page = page*count
 	var $=this
-	return $.read([
+	return read([
 		{"user~Usearch": {limit: count, skip: page, usernameLike: like+"%"}}, 
 		{content: {limit: count, skip: page, nameLike: "%"+like+"%"}},
 		{content: {limit: count, skip: page, keyword: like}},
@@ -369,26 +330,22 @@ getUserView: function(id, callback) {
 		{"commentaggregate.0id$userIds": {limit: 100, reverse: true}},
 		"content.2contentId.3id"
 	],{},function(e, resp) {
-		console.log(resp)
 		if (!e) {
 			var user = resp.user[0]
-			if (user) {
+			if (user)
 				callback(user, resp.Puserpage[0], resp.activity, resp.commentaggregate, resp.content)
-			} else {
+			else
 				callback(null)
-			}
-		} else {
-			callback(null) // todo: better/more standard error handlign?
-		}
+		} else
+			callback(null)
 	}, true)
 },
 
 getFileView: function(query, page, callback) {
-	var $=this
 	query.limit = 20
 	query.skip = page*query.limit
 	query.reverse = true
-	return $.read([
+	return read([
 		{file: query},
 		"user.0createUserId"
 	], {}, function(e, resp) {
@@ -412,9 +369,9 @@ getRecentActivity: function(callback) {
 	], {
 		content: "name,id,permissions"
 	}, function(e, resp) {
-		if (!e) {
+		if (!e)
 			callback(resp.activity, resp.commentaggregate, resp.content)
-		} else
+		else
 			callback(null)
 	})
 },
@@ -446,9 +403,8 @@ getUsersView: function(callback) {
 	return read([
 		"user",
 	], {}, function(e, resp) {
-		if (!e) {
+		if (!e)
 			callback(resp.user)
-		}
 	}, true)
 },
 
@@ -505,11 +461,10 @@ getPageEditView: function(id, parent, callback) {
 },
 
 editPage: function(page, callback) {
-	if (page.id) {
+	if (page.id)
 		request("Content/"+page.id, 'PUT', callback, page)
-	} else {
+	else
 		request("Content", 'POST', callback, page)
-	}
 },
 
 getCategoryView: function(id, page, callback) {
@@ -533,13 +488,12 @@ getCategoryView: function(id, page, callback) {
 	}, function(e, resp) {
 		if (!e) {
 			if (id == 0)
-				var category = $.Entity.categoryMap[0]
+				var category = Entity.categoryMap[0]
 			else
 				category = resp.Cmain[0]
 			callback(category, resp.category, resp.content, resp.Ppinned, page)
-		} else {
+		} else
 			callback(null)
-		}
 	}, true)
 },
 
@@ -565,13 +519,13 @@ sendMessage: function(room, message, meta, callback) {
 doListenInitial: function(callback) {
 	return read([
 		//"systemaggregate",
-		{comment:{reverse:true,limit:20}},
-		{activity:{reverse:true,limit:10}},
-		{activityaggregate:{reverse:true,limit:10}},
+		{comment: {reverse:true, limit:20}},
+		{activity: {reverse:true, limit:10}},
+		{activityaggregate: {reverse:true, limit:10}},
 		"content.0parentId.1contentId.0id", //pages
 		"category.1contentId",
 		"user.0createUserId.1userId.2userIds", //users for comment and activity
-	],{content:"id,createUserId,name,permissions"},callback)
+	], {content: "id,createUserId,name,permissions"}, callback)
 },
 
 doListen: function(lastId, statuses, lastListeners, getMe, callback) {
@@ -656,11 +610,7 @@ lpLoop: function(noCancel) {
 	lpRunning = true
 	//make sure only one instance of this is running
 	var cancelled
-	var bad
 	var x = doListen(lpLastId, lpStatuses, lpLastListeners, noCancel, function(e, resp) {
-		if (bad) {
-			alert("FUCK")
-		}
 		if (noCancel) {
 			lpInit = false
 			noCancel(e, resp)
@@ -696,10 +646,6 @@ lpLoop: function(noCancel) {
 		}
 	})
 	lpCancel = function() {
-		if (noCancel) {
-			bad = true
-			return
-		}
 		cancelled = true
 		lpRunning = false
 		x.abort()
@@ -707,7 +653,7 @@ lpLoop: function(noCancel) {
 },
 
 lpSetListening: function(ids) {
-	var newListeners = {"-1":lpLastListeners[-1]}
+	var newListeners = {"-1": lpLastListeners[-1]}
 	ids.forEach(function(id) {
 		newListeners[id] = lpLastListeners[id] || {"0":""}
 	})

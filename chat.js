@@ -9,13 +9,15 @@ function ChatRoom(id, page) {
 		this.userListInner = $sidebarUserList
 		return
 	}
-	this.messageElements = {}
-	this.status = "active"
-	
-	//this.page = page
-	this.lastUid = NaN
-	this.lastBlock = null
-	this.lastTime = 0
+
+	// page
+	this.pageElement = document.createElement('div')
+	this.pageElement.className = "markup-root pageContents"
+	this.pageInfoElement = Draw.pageInfo(page)
+	$pageInfoPane.appendChild(this.pageInfoElement)
+	$pageContents.appendChild(this.pageElement)
+
+	// user list
 	var ul = Draw.userList()
 	this.userListOuter = ul[0]
 	this.userListInner = ul[1]
@@ -27,29 +29,36 @@ function ChatRoom(id, page) {
 	}
 	this.userListOuter.hidden = true
 	$chatPane.appendChild(this.userListOuter)
-	
+		
+	// chat
+	this.messageElements = {}
+	this.status = "active"
+	this.lastUid = NaN
+	this.lastBlock = null
+	this.lastTime = 0
+
 	var b = Draw.chatMessagePane()
 	this.messagePane = b[0]
 	this.messageList = b[1]
-	$chatPane.appendChild(this.messagePane)
 	var b = Draw.button()
 	b[1].textContent = "load older messages"
 	b[1].onclick = function() {
 		$.loadOlder(100) //todo: lock
 	}
 	this.messagePane.appendChild(b[0])
+	this.messagePane.setAttribute('data-id', page.id)
+	$chatPane.appendChild(this.messagePane)
 
-	this.pageElement = document.createElement('div')
-	this.pageElement.className = "markup-root pageContents"
-	this.pageInfoElement = Draw.pageInfo(page)
-	$pageInfoPane.appendChild(this.pageInfoElement)
-	$pageContents.appendChild(this.pageElement)
+	this.showChat = page.type == "@page.discussion"
+	
 	this.visible = false
 	this.scroller = new Scroller(this.messagePane, this.messageList)
 	this.updatePage(page)
 	var ul = Req.lpProcessedListeners[id] //should this be done with id -1? // what?
 	ul && this.updateUserList(ul)
 	ChatRoom.addRoom(this)
+
+	View.attachResize($chatContainer, $chatResize, false, -1)
 }
 
 // todo: when starting to render any page
@@ -59,13 +68,12 @@ function ChatRoom(id, page) {
 ChatRoom.generateListeners = function(old) {
 	var listeners = {}
 	old = old || {}
-	for (var id in ChatRoom.rooms) {
+	for (var id in ChatRoom.rooms)
 		listeners[id] = old[id] || {"0":""}
-	}
 	return listeners
 }
 
-ChatRoom.prototype.loadOlder = function(num, callback) {
+/*ChatRoom.prototype.loadOlder = function(num, callback) {
 	var $=this
 	for (var firstId in this.messageElements)
 		break
@@ -73,13 +81,12 @@ ChatRoom.prototype.loadOlder = function(num, callback) {
 		comments && $.displayOldMessages(comments)
 		callback()
 	})
-}
+}*/
 
 ChatRoom.generateStatus = function() {
 	var status = {}
-	for (var id in ChatRoom.rooms) {
+	for (var id in ChatRoom.rooms)
 		status[id] = ChatRoom.rooms[id].status
-	}
 	status[-1] = ChatRoom.global.status
 	return status
 }
@@ -91,9 +98,8 @@ ChatRoom.updateStatus = function() {
 ChatRoom.rooms = {}
 
 ChatRoom.updateUserAvatar = function(user) {
-	for (var id in ChatRoom.rooms) {
+	for (var id in ChatRoom.rooms)
 		ChatRoom.rooms[id].updateUserAvatar(user)
-	}
 	if (ChatRoom.global)
 		ChatRoom.global.updateUserAvatar(user)
 }
@@ -111,13 +117,12 @@ ChatRoom.prototype.toggleHiding = function(callback) {
 }
 
 ChatRoom.prototype.updateUserAvatar = function(user) {
-	for (var uid in this.userList) {
+	for (var uid in this.userList)
 		if (this.userList[uid].user.id == user.id) {
 			this.userList[uid].user = user
 			this.updateUserList(this.userList)
 			break
 		}
-	}
 }
 // silly
 Object.defineProperty(ChatRoom.prototype, 'scrollBottom', {
@@ -152,9 +157,8 @@ ChatRoom.setViewing = function(ids) {
 }
 
 ChatRoom.updateUserLists = function(a) {
-	if (a[-1]) {
+	if (a[-1])
 		ChatRoom.global.updateUserList(a[-1])
-	}
 	for (var id in a) {
 		var room = ChatRoom.rooms[id]
 		if (room)
@@ -233,6 +237,7 @@ ChatRoom.prototype.hide = function() {
 }
 
 ChatRoom.prototype.destroy = function() {
+	console.log("DESTROY")
 	if (ChatRoom.currentRoom == this)
 		ChatRoom.currentRoom = null
 	ChatRoom.removeRoom(this)
@@ -245,6 +250,7 @@ ChatRoom.prototype.destroy = function() {
 	this.scroller.destroy()
 	this.scroller = null
 	this.visible = false
+	this.messageElements = {}
 }
 
 // todo: make renderuserlist etc.

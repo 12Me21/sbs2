@@ -26,6 +26,14 @@ if (!HTMLElement.prototype.replaceChildren)
 			this.appendChild(child)
 	}
 
+JSON.safeParse = function(json) {
+	try {
+		return JSON.parse(json)
+	} catch(e) {
+		return undefined
+	}
+}
+
 if (!HTMLElement.prototype.remove)
 	HTMLElement.prototype.remove = function() {
 		if (this.parentNode)
