@@ -45,7 +45,7 @@ function ChatRoom(id, page) {
 	b[1].onclick = function() {
 		$.loadOlder(100) //todo: lock
 	}
-	this.messagePane.appendChild(b[0])
+	this.messagePane.prependChild(b[0])
 	this.messagePane.setAttribute('data-id', page.id)
 	$chatPane.appendChild(this.messagePane)
 
