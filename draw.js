@@ -220,7 +220,8 @@ messageBlock: function(comment) {
 	
 	var av = +comment.meta.a
 	if (av)
-		user = Object.create(user, {
+		user = Object.create(user, { //TODO: this breaks if user is undefined (which I think is possible?)
+			// also used by commentTitle
 			avatar: {value: av}
 		})
 	div.appendChild(avatar(user))

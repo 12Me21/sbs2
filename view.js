@@ -451,6 +451,16 @@ attachResize: function(element, tab, horiz, dir, save) {
 	}
 },
 
+commentTitle: function(comment) {
+	var user = comment.createUser
+	var av = +comment.meta.a
+	if (av)
+		user = Object.create(user, {
+			avatar: {value: av}
+		})
+	titleNotification(comment.content, Draw.avatarURL(user, "size=120&crop=true"))
+},
+
 titleNotification: function(text, icon) {
 	if (text == false) {
 		$.document.title = realTitle

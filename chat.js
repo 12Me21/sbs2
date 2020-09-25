@@ -54,8 +54,8 @@ function ChatRoom(id, page) {
 	this.visible = false
 	this.scroller = new Scroller(this.messagePane, this.messageList)
 	this.updatePage(page)
-	var ul = Req.lpProcessedListeners[id] //should this be done with id -1? // what?
-	ul && this.updateUserList(ul)
+	var l = Req.lpProcessedListeners[id] //should this be done with id -1? // what?
+	l && this.updateUserList(l)
 	ChatRoom.addRoom(this)
 
 	View.attachResize($chatContainer, $chatResize, false, -1)
@@ -267,13 +267,17 @@ ChatRoom.prototype.displayMessage = function(comment, autoscroll) {
 	this.scroller.handlePrint(function() {
 		var old = $.messageElements[comment.id]
 		if (comment.deleted) {
+			// deleted
 			if (old)
 				old.remove()
 		} else {
 			var part = Draw.messagePart(comment)
 			if (old) {
+				// edited
 				old.parentNode.replaceChild(part, old)
 			} else {
+				// new comment
+				View.commentTitle(comment)
 				var uid = comment.createUserId
 				if (!$.lastBlock || uid != $.lastUid || comment.createDate-$.lastTime > 1000*60*5) {
 					$.lastBlock = Draw.messageBlock(comment)
