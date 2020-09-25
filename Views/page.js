@@ -48,21 +48,19 @@ addView('page', {
 	},
 	init: function() {
 		$chatSend.onclick = function() {
-			var msg = $chatTextarea.value
+			var data = readInput()
 			var room = ChatRoom.currentRoom
-			if (msg && room) {
-				var meta = {}
-				var markup = $chatMarkupSelect.checked ? "12y" : "plaintext"
-				if (markup && markup!="plaintext")
-					meta.m = markup
-				if (Req.me)
-					meta.a = Req.me.avatar
-				Req.sendMessage(room.id, msg, meta, function() {
+			if (room && data.content) {
+				var old = data
+				Req.sendMessage(room.id, data.content, data.meta, function(e) {
+					if (e) {
+						//error sending message
+						writeData(old)
+					}
 				})
+				$chatTextarea.value = "" //hack?
 			}
-			$chatTextarea.value = ""
-		}//todo: make a readInput and writeInput, for getting/setting the state of the textbox and markup select
-		// (to use with editing etc. too)
+		}
 		
 		$chatTextarea.onkeypress = function(e) {
 			if (!e.shiftKey && e.keyCode == 13) {
@@ -85,6 +83,25 @@ addView('page', {
 		}
 	}
 })
+
+function readInput() {
+	var data = {
+		meta: {},
+		content: $chatTextarea.value,
+	}
+	
+	if ($chatMarkupSelect.checked)
+		data.meta.m = "12y"
+	if (Req.me)
+		data.meta.a = Req.me.avatar
+	
+	return data
+}
+
+function writeInput(data) {
+	$chatTextarea.value = data.content || ""
+	$chatMarkupSelect.checked = data.meta.m == "12y"
+}
 
 <!--/*
 }(window)) //*/ // pass external values

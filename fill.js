@@ -26,6 +26,10 @@ if (!HTMLElement.prototype.replaceChildren)
 			this.appendChild(child)
 	}
 
+Node.prototype.prependChild = function(child) {
+	this.insertBefore(child, this.firstChild)
+}
+
 JSON.safeParse = function(json) {
 	try {
 		return JSON.parse(json)
