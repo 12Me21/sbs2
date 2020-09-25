@@ -18,22 +18,37 @@ or use `./build.sh <directory>`, which copies `_build.html` to `<directory>/inde
 main html file
 
 ** fill.js
-polyfill
-** navigate.js
-page navigation handling
-** request.js
-http requests, sbs2 api
+this is just a polyfill, I swear
+
 ** entity.js
 recieved data processing
-** view.js
-page rendering
+** request.js
+http requests, sbs2 api
+
 ** draw.js
 html generation
 
-** View/chat.js
-code specific to the chat page
+** view.js
+page rendering
+
 ** View/settings.js
 code specific to the settings/login/register page
+** View/page.js
+code specific to the chat/page view
+** View/images.js
+file viewer?
+** View/editpage.js
+page editor
+** View/category.js
+category
+** View/activity.js
+activity page?
+
+** navigate.js
+page navigation handling
+
+** main.js
+main
 
 ** style.css
 main css file
