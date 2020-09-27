@@ -34,12 +34,16 @@ process: function(resp) {
 	resp.userMap = users
 },
 keyType: function(key) {
+	if (key.substr(0,2) == "CA")
+		return "commentaggregate"
 	if (key[0] == "C")
 		return "category"
 	if (key[0] == "P")
 		return "content"
 	if (key[0] == "U")
 		return "user"
+	if (key[0] == "A")
+		return "activity"
 	return key
 },
 processList: function(type, data, users) {

@@ -77,7 +77,7 @@ window.onerror = function(message, source, line, col, error) {
 
 <horizontal-split class="grow">
 	<main class="grow">
-		<v-b data-view-page data-view-editorMode data-view-categoryMode class="pathBar rem1-5 bottomBorder" id=$path></v-b>
+		<v-b data-view-page data-view-editorMode data-view-categoryMode class="pathBar rem1-5 bottomBorder no-shrink" id=$path></v-b>
 		<v-b data-view-editorMode class="infoPane">
 			<label for=$keywords>Keywords:</label><input placeholder="(space separated, optional)" id=$keywords><br>
 			<label for=$editPageType>Type:</label><input placeholder="@" id="$editPageType"><br>
@@ -159,16 +159,16 @@ window.onerror = function(message, source, line, col, error) {
 
 			<v-b data-view-userMode class="userActivity" id=$userActivity></v-b>
 
-			<v-b data-view-page id=$pageInfoPane class="pageMode pageInfoPane rem2-3 bar bottomBorder">
+			<!--<v-b data-view-page id=$pageInfoPane class="pageMode pageInfoPane rem2-3 bar bottomBorder">
 				
-				<!--<span class="textItem" id=$authorBox></span>
+				<span class="textItem" id=$authorBox></span>
 				<button id=$editButton class="item canEdit">Edit</button>
 				<div class="rightAlign item">
 					<span class="textItem" id=$voteBox>
 						<button class="item" id=$voteButton_b data-vote="b">Bad<br><span id=$voteCount_b>x</span></button><button id="$voteButton_o" class="item" data-vote="o">Ok<br><span id=$voteCount_o>x</span></button><button id="$voteButton_g" class="item" data-vote="g">Great<br><span id=$voteCount_g>x</span></button>
 					</span>
-				</div>-->
-			</v-b>
+				</div>
+			</v-b>-->
 			
 			<!--<div class="pageInfoPane page px40" id="$pageInfoPane">
 				<span id="$gallery" class="gallery" style="display:none;">
@@ -267,7 +267,7 @@ window.onerror = function(message, source, line, col, error) {
 			  Bottom of the page
 		-->
 		<v-b data-view-page id=$chatResize class="resize">RESIZE</v-b>
-		<v-b data-view-page id=$chatContainer class="flex">
+		<v-b data-view-page id=$chatContainer class="flex grow">
 			<v-b data-view-page id=$chatPane class="chatMode grow chatPane"></v-b>
 			
 			<v-b data-view-page class="inputPane chatMode">
@@ -302,7 +302,7 @@ window.onerror = function(message, source, line, col, error) {
 		<div id=$sidebarTabs role="tablist" aria-label="sidebar tab" class="bottomBorder"></div>
 		<div id=$sidebarTop>
 			<div id=$sidebarActivityPanel></div>
-			<div id=$sidebarPinnedPanel class="fill"></div>
+			<div id=$sidebarWatchingPanel class="fill"></div>
 			<div class="fill" id=$sidebarFilePanel>
 				<div class="sidebarUploadingFile">
 					<button id=$fileCancel>Cancel</button><br>

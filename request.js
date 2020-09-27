@@ -28,6 +28,7 @@ lpProcessedListeners: {},
 lpCancel: function(){},
 lpRunning: false,
 currentActivity: {},
+watchingActivity: {},
 lpInit: true,
 
 me: null,
@@ -372,13 +373,15 @@ getRecentActivity: function(callback) {
 	return read([
 		{activity: {createStart: start, createEnd: end}},
 		{commentaggregate: {createStart: start, createEnd: end}},
-		"content.0contentId.1id",
-		"user.0userId.1userIds"
+		{"activity~Awatching": {contentLimit:{watches:true}}},
+		{"commentaggregate~CAwatching": {contentLimit:{watches:true}}},
+		"content.0contentId.1id.2contentId.3id",
+		"user.0userId.1userIds.2userId.3userIds"
 	], {
 		content: "name,id,permissions"
 	}, function(e, resp) {
 		if (!e)
-			callback(resp.activity, resp.commentaggregate, resp.content)
+			callback(resp.activity, resp.commentaggregate, resp.Awatching, resp.CAwatching, resp.content)
 		else
 			callback(null)
 	})

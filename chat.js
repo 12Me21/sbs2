@@ -11,11 +11,14 @@ function ChatRoom(id, page) {
 	}
 
 	// page
+	this.pageContainer = document.createElement('div')
+	this.pageContainer.className = "split-top"
 	this.pageElement = document.createElement('div')
 	this.pageElement.className = "markup-root pageContents"
 	this.pageInfoElement = Draw.pageInfo(page)
-	$pageInfoPane.appendChild(this.pageInfoElement)
-	$pageContents.appendChild(this.pageElement)
+	this.pageContainer.appendChild(this.pageInfoElement)
+	this.pageContainer.appendChild(this.pageElement)
+	$pageContents.appendChild(this.pageContainer)
 
 	// user list
 	var ul = Draw.userList()
@@ -58,7 +61,7 @@ function ChatRoom(id, page) {
 	l && this.updateUserList(l)
 	ChatRoom.addRoom(this)
 
-	View.attachResize($chatContainer, $chatResize, false, -1)
+	View.attachResize(this.pageContainer, $chatResize, false, 1)
 }
 
 // todo: when starting to render any page
@@ -218,8 +221,7 @@ ChatRoom.prototype.show = function() {
 		old.hide()
 	this.messagePane.hidden = false
 	this.userListOuter.hidden = false
-	this.pageElement.hidden = false
-	this.pageInfoElement.hidden = false
+	this.pageContainer.hidden = false
 	this.visible = true
 	ChatRoom.currentRoom = this
 }
@@ -228,8 +230,7 @@ ChatRoom.prototype.hide = function() {
 	if (this.pinned) {
 		this.messagePane.hidden = true
 		this.userListOuter.hidden = true
-		this.pageElement.hidden = true
-		this.pageInfoElement.hidden = true
+		this.pageContainer.hidden = true
 		if (ChatRoom.currentRoom == this)
 			ChatRoom.currentRoom = null
 		this.visible = false
@@ -244,8 +245,7 @@ ChatRoom.prototype.destroy = function() {
 	ChatRoom.removeRoom(this)
 	this.userListOuter.remove()
 	this.messagePane.remove()
-	this.pageElement.remove()
-	this.pageInfoElement.remove()
+	this.pageContainer.remove()
 	this.userListOuter = null //gc
 	this.userListInner = null
 	this.scroller.destroy()

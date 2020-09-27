@@ -272,7 +272,8 @@ linkButton: function() {
 	return [container, button]
 },
 pageInfo: function(page) {
-	var e = document.createElement('span')
+	var e = document.createElement('div')
+	e.className = "pageInfoPane rem2-3 bar bottomBorder"
 	//with(e){
 	e.appendChild(authorBox(page))
 	var b = linkButton()

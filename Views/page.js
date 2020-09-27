@@ -32,6 +32,7 @@ addView('page', {
 		}
 	},
 	className: 'page',
+	splitView: true,
 	render: function(page, comments) {
 		//ChatRoom.setViewing([page.id])
 		setEntityTitle(page)
