@@ -301,6 +301,7 @@ handleView: function(type, id, query, callback) {
 		document.querySelectorAll("v-b").forEach(function(e) {
 			e.hidden = !e.hasAttribute("data-view-"+view.className)
 		})
+		View.flag('splitView', view.splitView==true)
 		View.flag('viewReady', true)
 		View.flag('mobileSidebar', false) //bad (should be function on Sidebar)
 

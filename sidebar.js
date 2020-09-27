@@ -59,7 +59,7 @@ onLoad: function() {
 	  })*/
 	var sidebarPanels = [
 		$sidebarActivityPanel,
-		$sidebarPinnedPanel,
+		//$sidebarWatchingPanel,
 		$sidebarFilePanel,
 		$sidebarSearchPanel,
 	]
@@ -69,7 +69,7 @@ onLoad: function() {
 		e.hidden = true
 	})
 	$sidebarTabs.replaceChildren(Draw.sidebarTabs([
-		{label: "activity"}, {label: "watching"}, {label: "image"}, {label: "search"}
+		{label: "activity"}, /*{label: "watching"},*/ {label: "image"}, {label: "search"}
 	], function(id) {
 		selectTab(id)
 	}))
@@ -117,7 +117,21 @@ onAggregateChange: function(aggregate) {
 	items.forEach(function(item) {
 		$sidebarActivityPanel.appendChild(Draw.activityItem(item))
 	})
+},
 
+onWatchingChange: function(aggregate) {
+	return
+	var items = []
+	for (var id in aggregate)
+		if (aggregate[id].content) //HACK
+			items.push(aggregate[id])
+	items.sort(function(a, b) {
+		return -(a.lastDate - b.lastDate)
+	})
+	$sidebarWatchingPanel.replaceChildren()
+	items.forEach(function(item) {
+		$sidebarWatchingPanel.appendChild(Draw.activityItem(item))
+	})
 },
 
 print: function(text) {

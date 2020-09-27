@@ -266,9 +266,7 @@ html:not(.f-chatMode) .chatMode {
 }*/
 
 #\$chatContainer {
-	flex-basis: auto;
 	overflow-y: hidden;
-	height: 50%;
 }
 
 .bottomBorder {
@@ -603,14 +601,14 @@ message-block > time {
 }
 message-block > img.avatar {
 	display: inline-block;
-	width: 3rem;
-	height: 3rem;
+	width: 3.5rem;
+	height: 3.5rem;
 	border: 1px solid #777;
 	margin-right: 0.5rem;
 	float: left;
 }
 message-block > .username {
-	margin-left: 3.5rem;
+	margin-left: 4rem;
 	display: block;
 	/*white-space: pre;
 	overflow: hidden;
@@ -1236,4 +1234,18 @@ body.pageMode main-scrollable {
 
 .chatScroller > scroll-inner {
 	padding-bottom: 0.5rem;
+}
+
+html.f-splitView main-scrollable {
+	flex-grow: 0;
+	flex-basis: auto;
+	overflow-y: hidden;
+}
+
+.split-top {
+	overflow-y: auto;
+}
+
+.no-shrink {
+	flex-shrink: 0;
 }
