@@ -233,6 +233,7 @@ messageBlock: function(comment) {
 	
 	var contentBox = document.createElement('message-contents')
 	div.appendChild(contentBox)
+	div.setAttribute('data-uid', comment.createUserId)
 	return [div, contentBox]
 },
 messagePart: function(comment){

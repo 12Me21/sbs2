@@ -46,7 +46,12 @@ function ChatRoom(id, page) {
 	var b = Draw.button()
 	b[1].textContent = "load older messages"
 	b[1].onclick = function() {
-		$.loadOlder(100) //todo: lock
+		if (b[1].disabled)
+			return
+		b[1].disabled = true
+		$.loadOlder(30, function() {
+			b[1].disabled = false
+		}) //todo: lock
 	}
 	this.messagePane.prependChild(b[0])
 	this.messagePane.setAttribute('data-id', page.id)
@@ -77,15 +82,46 @@ ChatRoom.generateListeners = function(old) {
 	return listeners
 }
 
-/*ChatRoom.prototype.loadOlder = function(num, callback) {
+ChatRoom.prototype.loadOlder = function(num, callback) {
 	var $=this
 	for (var firstId in this.messageElements)
 		break
 	Req.getCommentsBefore(this.id, firstId, num, function(comments) {
-		comments && $.displayOldMessages(comments)
+		comments && comments.forEach(function(c) {
+			$.displayOldMessage(c)
+		})
 		callback()
 	})
-}*/
+}
+
+// "should be called in reverse order etc. etc. you know
+// times will be incorrect oh well"
+ChatRoom.prototype.displayOldMessage = function(comment) {
+	console.log(comment)
+	var $=this
+	this.scroller.handlePrint(function(){
+		var firstUidBlock = $.messageList.firstChild
+		if (firstUidBlock) {
+			var firstUid = firstUidBlock.getAttribute('data-uid')
+			if (!firstUid)
+				firstUidBlock = null
+			else
+				firstUid = +firstUid
+		}
+		var id = comment.id
+		var uid = comment.createUserId
+		var node = Draw.messagePart(comment)
+		if (uid && firstUid == uid && firstUidBlock) {
+			var contents = firstUidBlock.getElementsByTagName('message-contents')[0]// not great...
+		} else {
+			var b = Draw.messageBlock(comment)
+			$.messageList.prependChild(b[0])
+			contents = b[1]
+		}
+		contents.prependChild(node)
+		$.messageElements[id] = node
+	})
+}
 
 ChatRoom.generateStatus = function() {
 	var status = {}
