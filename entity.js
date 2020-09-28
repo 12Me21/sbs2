@@ -204,7 +204,7 @@ updateAggregateActivity: function(items, activity, page) {
 		var id = a.contentId
 		var item = items[id]
 		if (!item) {
-			if (!pageMap[id])
+			if (!pageMap[id]) //I don't think this is right?
 				return
 			item = items[id] = {
 				content: pageMap[id],
