@@ -1,4 +1,6 @@
-<!--/* trick indenter
+//todo: move some things into view js files
+
+	<!--/* trick indenter
 window.Req = Object.create(null)
 with (Req) (function($) { "use strict"
 Object.assign(Req, { //*/
@@ -613,7 +615,7 @@ lpProcess: function(resp) {
 		if (resp.chains.commentdelete)
 			onMessages(resp.chains.commentdelete)
 		if (resp.chains.activity)
-			onActivity(resp.chains.activity)
+			onActivity(resp.chains.activity, resp.chains.content)
 	}
 },
 

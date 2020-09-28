@@ -19,12 +19,12 @@ Req.onLogin = function() {
 	Req.onListeners = function(a) {
 		ChatRoom.updateUserLists(a)
 	}
-	Req.onActivity = function(a) {
+	Req.onActivity = function(a, p) { //todo: properly link activity with contents?
 		a.forEach(function(a) {
 			if (a.type == 'user')
 				View.updateUserAvatar(a.content)
 		})
-		Entity.updateAggregateActivity(Req.currentActivity, a)
+		Entity.updateAggregateActivity(Req.currentActivity, a, p)
 		Sidebar.onAggregateChange(Req.currentActivity) //this might update unnecessarily often
 	}
 	
