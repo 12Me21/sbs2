@@ -1204,6 +1204,15 @@ table {
 	min-height: 1.15rem;
 }
 
+.half-label {
+	font-weight: bold;
+	/*text-align: right;*/
+}
+
+.entity-title {
+	font-weight: bold;
+}
+
 body.pageMode main-scrollable {
 	display: -webkit-flex;
 	display: flex;
