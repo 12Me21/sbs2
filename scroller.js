@@ -82,12 +82,14 @@ function Scroller(outer, inner) {
 			return
 		}
 		if ($.hasSizeChanged()) {
+			// should I do $.registerSizeChange() here?
 			return
 		}
 		if ($.animationId)
 			$.cancelAutoScroll()
 		$.atBottom = $.scrollBottom < $.outer.clientHeight*$.bottomHeight
 	}, {passive: true})
+	
 	function onResize() {
 		$.registerSizeChange()
 		if ($.atBottom && !$.animationId) // when message is inserted, it triggers the resize detector, which would interrupt the scroll animation, so we don't force scroll if an animation is playing
@@ -179,6 +181,16 @@ Scroller.prototype.handlePrint = function(callback, autoscroll) {
 	if (should)
 		this.autoScroll()
 }
+
+Scroller.prototype.handlePrintTop = function(callback) {
+	var height = this.outer.scrollHeight
+	var scroll = this.outer.scrollTop
+	var elem = callback()
+	if (elem)
+		this.inner.appendChild(elem)
+	this.outer.scrollTop = scroll + (this.outer.scrollHeight-height)
+}
+
 Scroller.prototype.destroy = function() {
 	//disable resize tracking
 	TrackScrollResize(this.inner, null)
