@@ -25,9 +25,11 @@ iconTitle: function(entity, reverse) {
 	var element = document.createDocumentFragment()
 	if (reverse) {
 		element.appendChild(title(entity))
+		element.appendChild(document.createTextNode(" "))
 		element.appendChild(icon(entity))
 	} else {
 		element.appendChild(icon(entity))
+		element.appendChild(document.createTextNode(" "))
 		element.appendChild(title(entity))
 	}
 	return element
@@ -39,6 +41,7 @@ entityLink: function(entity) {
 		var element = Nav.link(path)
 	else
 		element = document.createElement('span')
+	element.className += " entity-title"
 	return element
 },
 
@@ -366,12 +369,15 @@ authorBox: function(page) {
 	var element = document.createDocumentFragment()
 	if (!page)
 		return element
-	element.appendChild(pageEditedTime("Author", page.createDate))
-	element.appendChild(entityTitleLink(page.createUser))
+	element.appendChild(pageEditedTime("Author:", page.createDate))
+	element.appendChild(document.createTextNode(" "))
+	element.appendChild(entityTitleLink(page.createUser, true))
 	if (page.editUserId != page.createUserId) {
-		element.appendChild(pageEditedTime("Edited by", page.editDate))
-		element.appendChild(entityTitleLink(page.editUser))
+		element.appendChild(document.createTextNode(" "))
+		element.appendChild(pageEditedTime("Edited by:", page.editDate))
+		element.appendChild(entityTitleLink(page.editUser, true))
 	} else if (page.createDate != page.editDate) { //edited by same user
+		element.appendChild(document.createTextNode(" "))
 		element.appendChild(pageEditedTime("Edited", page.editDate))
 	}
 	return element
@@ -382,7 +388,7 @@ pageEditedTime: function(label, time) {
 	b.className = "item"
 
 	var a = document.createElement('div')
-	a.className = "half"
+	a.className = "half half-label"
 	a.textContent = label
 	b.appendChild(a)
 
