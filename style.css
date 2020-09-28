@@ -87,6 +87,10 @@ time {
 	font-weight: bold;
 }
 
+.markup-root { /* make sure this is before most things */
+	padding: 0.5rem;
+}
+
 .noColor {
 	color: black;
 }
@@ -94,8 +98,6 @@ time {
 body.chatMode .bottomSpacer {
 	display: none;
 }
-
-
 
 .username {
 	font-weight: bold;
@@ -581,6 +583,9 @@ message-block {
 	clear: both;
 	overflow: auto;
 	display: block;
+	-webkit-box-sizing: content-box;
+	box-sizing: content-box;
+	min-height: 3.5rem;
 }
 
 
@@ -605,7 +610,7 @@ message-block > img.avatar {
 	height: 3.5rem;
 	border: 1px solid #777;
 	margin-right: 0.5rem;
-	float: left;
+/*	float: left;*/
 }
 message-block > .username {
 	margin-left: 4rem;
@@ -627,8 +632,18 @@ message-part.markup-root {
 	padding: 0 0.2rem;
 	margin: 0.2rem 0;
 }
+message-block {
+	position: relative;
+}
+message-block > .avatar {
+	position: absolute;
+}
+message-contents {
+	margin-left: 4rem;
+}
+
 message-part {
-	margin: 0.2rem 0;
+	/*margin: 0.2rem 0;*/
 	padding: 0 0.2rem;
 	display: block;
 }
