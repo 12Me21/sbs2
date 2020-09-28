@@ -623,11 +623,16 @@ message-contents {
 	vertical-align: top;
 	overflow: auto;
 }
-message-contents > p.markup-root {
+message-part.markup-root {
+	padding: 0 0.2rem;
+	margin: 0.2rem 0;
+}
+message-part {
 	margin: 0.2rem 0;
 	padding: 0 0.2rem;
+	display: block;
 }
-message-contents > p.edited {
+message-part.edited {
 	padding-left: 0.1rem;
 	border-left: 3px solid gray;
 }

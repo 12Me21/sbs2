@@ -237,7 +237,7 @@ messageBlock: function(comment) {
 	return [div, contentBox]
 },
 messagePart: function(comment){
-	var element = document.createElement('p')
+	var element = document.createElement('message-part')
 	element.className = "markup-root"
 	element.setAttribute('data-id', comment.id)
 	element.setAttribute('tabindex', "0")
