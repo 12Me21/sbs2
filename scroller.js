@@ -127,11 +127,17 @@ Scroller.prototype.autoScroll = function() {
 		this.scrollBottom = 0
 		this.atBottom = true
 	} else {
+		var $=this
 		if (!this.animationId) {
-			this.animationId = null
+			/*this.animationId = null
 			var now = performance.now()
 			this.animationStart = now - 1000/60 //assume 60fps on first frame..
-			this.autoScrollAnimation(now)
+			this.autoScrollAnimation(now)*/
+			// edited to start animation la-a-a-ater
+			this.animationStart = performance.now()
+			this.animationId = window.requestAnimationFrame(function(time) {
+				$.autoScrollAnimation(time)
+			})
 		}
 	}
 }
