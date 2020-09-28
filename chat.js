@@ -99,7 +99,7 @@ ChatRoom.prototype.loadOlder = function(num, callback) {
 ChatRoom.prototype.displayOldMessage = function(comment) {
 	console.log(comment)
 	var $=this
-	this.scroller.handlePrint(function(){
+	this.scroller.handlePrintTop(function(){
 		var firstUidBlock = $.messageList.firstChild
 		if (firstUidBlock) {
 			var firstUid = firstUidBlock.getAttribute('data-uid')
@@ -223,14 +223,6 @@ ChatRoom.prototype.updateUserList = function(list) {
 	for (var uid in list)
 		d.appendChild(Draw.userListAvatar(list[uid]))
 	this.userListInner.replaceChildren(d)
-}
-
-ChatRoom.prototype.displayOldMessages = function(comments) {
-	var $ = this
-	return //todo
-	comments.forEach(function(comment) {
-		$.displayMessage(comment, false)
-	})
 }
 
 ChatRoom.prototype.displayInitialMessages = function(comments) {
