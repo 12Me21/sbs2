@@ -425,89 +425,11 @@ setVote: function(id, state, callback) {
 	return request("Vote/"+id+"/"+(state||"delete"), 'POST', callback)
 },
 
-getPageView: function(id, callback) {
-	return read([
-		{content: {ids: [+id], includeAbout: true}},
-		"user.0createUserId.0editUserId",
-	], {}, function(e, resp) {
-		if (!e && resp.content[0])
-			callback(resp.content[0])
-		else
-			callback(null)
-	}, true)
-},
-
-getPageEditView: function(id, parent, callback) {
-	if (id) {
-		id = +id
-		return read([
-			{content: {ids: [id]}},
-			"user.0createUserId.0editUserId.0permissions",
-		], {
-			user: "id,username,avatar"
-		}, function(e, resp) {
-			if (!e) {
-				var page = resp.content[0]
-				if (page)
-					callback(page, resp.userMap)
-				else
-					callback(null)
-			} else
-				callback(false)
-		}, true)
-	} else {
-		if (gotCategoryTree) {
-			done()
-			return {abort:function(){}}
-		} else {
-			return read([], {}, function(e, resp) {
-				if (!e)
-					done()
-				else
-					callback(false)
-			}, true)
-		}
-		function done() {
-			callback({parent: Entity.categoryMap[parent]})
-		}
-	}
-},
-
 editPage: function(page, callback) {
 	if (page.id)
 		request("Content/"+page.id, 'PUT', callback, page)
 	else
 		request("Content", 'POST', callback, page)
-},
-
-getCategoryView: function(id, page, callback) {
-	var search = {
-		parentIds: [id],
-		limit: 30,
-		skip: 30*(page-1),
-		sort: 'editDate',
-		reverse: true
-	}
-	return read([
-		{'category~Cmain': {ids: [id]}},
-		{content: search},
-		{category: {parentIds: [id]}},
-		"content.0values_pinned~Ppinned",
-		"user.1createUserId.3createUserId"
-	], {
-		content: "id,name,parentId,createUserId,editDate,permissions",
-		/*category: "id,name,description,parentId,values",*/
-		user: "id,username,avatar"
-	}, function(e, resp) {
-		if (!e) {
-			if (id == 0)
-				var category = Entity.categoryMap[0]
-			else
-				category = resp.Cmain[0]
-			callback(category, resp.category, resp.content, resp.Ppinned, page)
-		} else
-			callback(null)
-	}, true)
 },
 
 getCommentsBefore: function(id, firstId, count, callback) {

@@ -13,12 +13,41 @@ addView('category', {
 			Nav.go("category/"+currentCategory+Req.queryString(currentQuery))
 		}
 	},
+	
 	start: function(id, query, render) {
 		currentQuery = query
 		var page = +query.page || 1
 		navButtons.set(page)
-		return $.Req.getCategoryView(id, page, render)
+
+		var search = {
+			parentIds: [id],
+			limit: 30,
+			skip: 30*(page-1),
+			sort: 'editDate',
+			reverse: true
+		}
+		return Req.read([
+			{'category~Cmain': {ids: [id]}},
+			{content: search},
+			{category: {parentIds: [id]}},
+			"content.0values_pinned~Ppinned",
+			"user.1createUserId.3createUserId"
+		], {
+			content: "id,name,parentId,createUserId,editDate,permissions",
+			/*category: "id,name,description,parentId,values",*/
+			user: "id,username,avatar"
+		}, function(e, resp) {
+			if (!e) {
+				if (id == 0)
+					var category = Entity.categoryMap[0]
+				else
+					category = resp.Cmain[0]
+				render(category, resp.category, resp.content, resp.Ppinned, page)
+			} else
+				render(null)
+		}, true)
 	},
+	
 	className: 'categoryMode',
 	render: function(category, cats, pages, pinned, pageNum) {
 		currentCategory = category.id

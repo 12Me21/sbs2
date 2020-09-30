@@ -48,7 +48,6 @@ window.onerror = function(message, source, line, col, error) {
 <script src=Views/images.js></script>
 <script src=Views/editpage.js></script>
 <script src=Views/category.js></script>
-<script src=Views/activity.js></script>
 
 <script src=navigate.js></script>
 
@@ -273,12 +272,12 @@ window.onerror = function(message, source, line, col, error) {
 			<v-b data-view-page class="inputPane chatMode">
 				<table> <!-- YES it's a TABLE! sorry ... I'm not allowed to use flex so this is the only option -->
 					<tr>
-						<td rowspan="2" class="tableGrow"><textarea class="chatTextarea" id="$chatTextarea" accesskey="z"></textarea></td>
-						<td rowspan="2"><button class="chatSend fill" id="$chatSend">Send</button></td>
-						<td style="white-space: nowrap"><button class="hideWhenEdit chatSend" id=$chatEdit>Edit</button><button class="chatSend hideWhenEdit" id=$chatDelete>Delete</button><button class="chatSend showWhenEdit" id="$cancelEdit">Cancel Edit</button></td>
+						<td rowspan="2" class="tableGrow"><textarea class="chatTextarea" id=$chatTextarea accesskey="z"></textarea></td>
+						<td style="white-space: nowrap;"><label for=$chatMarkupSelect>Markup</label><input type=checkbox id=$chatMarkupSelect></td>
+						<td rowspan="2"><button class="chatSend fill" id=$chatSend>Send</button></td>
 					</tr>
 					<tr>
-						<td><label for=$chatMarkupSelect>Markup</label><input type=checkbox id=$chatMarkupSelect></td>
+						<td><button class="fill" id=$chatEdit>Edit</button></td>
 					</tr>
 				</table>
 			</v-b>

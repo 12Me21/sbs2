@@ -26,9 +26,42 @@ addView('editpage', {
 		$editPageCategory.replaceChildren(categoryInput.element)
 		$editPagePermissions.replaceChildren(permissionInput.element)
 	},
+	
 	start: function(id, query, render) {
-		return Req.getPageEditView(id, query.cid, render)
+		var parent = query.cid
+		if (id) { //edit existing page
+			id = +id
+			return Req.read([
+				{content: {ids: [id]}},
+				"user.0createUserId.0editUserId.0permissions",
+			], {user: "id,username,avatar"}, function(e, resp) {
+				if (!e) {
+					var page = resp.content[0]
+					if (page)
+						render(page, resp.userMap)
+					else
+						render(null)
+				} else
+					render(false)
+			}, true)
+		} else { //create new page
+			if (Req.gotCategoryTree) {
+				done()
+				return {abort:function(){}}
+			} else { //need to request category tree for page editor
+				return Req.read([], {}, function(e, resp) {
+					if (!e)
+						done()
+					else
+						render(false)
+				}, true)
+			}
+			function done() {
+				render({parent: Entity.categoryMap[parent]})
+			}
+		}
 	},
+	
 	className: 'editorMode',
 	render: function(page) {
 		categoryInput.update()
