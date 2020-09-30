@@ -29,12 +29,21 @@ addView('page', {
 			// we might get messages from long polling before
 			// loading the initial messages :(
 			return Req.read([
-				{content: {ids: [+id], includeAbout: true}},
-				"user.0createUserId.0editUserId",
-			], {}, function(e, resp) {
-				if (!e && resp.content[0])
-					render(resp.content[0])
-				else
+				{content: {ids: [id]}},
+				{comment: {parentIds: [id], limit: 20, reverse: true}},
+				"user.0createUserId.0editUserId.1createUserId.1editUserId",
+			], {
+				//content: "name,parentId,type,createUserId,editUserId,createDate,editDate,permissions,id"
+			}, function(e, resp) {
+				// todo: ok so we have 2 levels of error here
+				// either the request fails somehow (e is set)
+				// or, the page/whatever we're trying to access doesn't exist
+				// this exists for pretty much every view/request type
+				// so it would be good to handle it consistently
+				if (!e && resp.content[0]) {
+					resp.comment.reverse()
+					render(resp.content[0], resp.comment)
+				} else
 					render(null)
 			}, true)
 		}
