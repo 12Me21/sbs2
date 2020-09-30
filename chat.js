@@ -97,7 +97,6 @@ ChatRoom.prototype.loadOlder = function(num, callback) {
 // "should be called in reverse order etc. etc. you know
 // times will be incorrect oh well"
 ChatRoom.prototype.displayOldMessage = function(comment) {
-	console.log(comment)
 	var $=this
 	this.scroller.handlePrintTop(function(){
 		var firstUidBlock = $.messageList.firstChild
