@@ -64,7 +64,7 @@ entityTitleLink: function(entity, reverse) {
 },
 
 title: function(entity) {
-	return textItem(entity.name)
+	return textItem(entity ? entity.name : "MISSINGNO.")
 },
 
 textItem: function(text) {
@@ -159,7 +159,7 @@ fileThumbnail: function(file, onclick) {
 
 icon: function(entity) {
 	var element
-	if (entity.Type == 'user') {
+	if (entity && entity.Type == 'user') {
 		element = document.createElement('img')
 		element.className += "item icon avatar"
 		element.src = avatarURL(entity, "size=120&crop=true")
@@ -167,7 +167,9 @@ icon: function(entity) {
 		element = document.createElement('span')
 		element.setAttribute('role', 'img')
 		element.className = "item icon iconBg"
-		if (entity.Type == 'category')
+		if (!entity) {
+			element.style.backgroundImage = "url('resource/unknown.png')"
+		} else if (entity.Type == 'category')
 			element.style.backgroundImage = "url('resource/category.png')"
 		else if (entity.Type == 'content') {
 			if (!hasPerm(entity.permissions, 0, 'r'))
