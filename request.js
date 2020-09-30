@@ -389,29 +389,6 @@ getRecentActivity: function(callback) {
 	})
 },
 
-getChatView: function(id, callback) {
-	return read([
-		{content: {ids: [id]}},
-		{comment: {parentIds: [id], limit: 20, reverse: true}},
-		"user.0createUserId.0editUserId.1createUserId.1editUserId",
-	], {
-		//content: "name,parentId,type,createUserId,editUserId,createDate,editDate,permissions,id"
-	}, function(e, resp) {
-		// todo: ok so we have 2 levels of error here
-		// either the request fails somehow (e is set)
-		// or, the page/whatever we're trying to access doesn't exist
-		// this exists for pretty much every view/request type
-		// so it would be good to handle it consistently
-		if (!e) {
-			if (resp.content[0]) {
-				resp.comment.reverse()
-				callback(resp.content[0], resp.comment)
-			} else
-				callback(null)
-		}
-	}, true)
-},
-
 getUsersView: function(callback) {
 	return read([
 		"user",
