@@ -28,7 +28,15 @@ addView('page', {
 			// the problem is, if we create the room early,
 			// we might get messages from long polling before
 			// loading the initial messages :(
-			return Req.getChatView(id, render)
+			return Req.read([
+				{content: {ids: [+id], includeAbout: true}},
+				"user.0createUserId.0editUserId",
+			], {}, function(e, resp) {
+				if (!e && resp.content[0])
+					render(resp.content[0])
+				else
+					render(null)
+			}, true)
 		}
 	},
 	className: 'page',

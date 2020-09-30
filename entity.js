@@ -1,3 +1,8 @@
+// todo:
+// when replacing user ids with user objects,
+// if the user doesn't exist, we should add a dummy object,
+// so it's possible to at least determine the type of the missing data
+
 // functions for processing recieved entities/
 // DATA PROCESSOR
 //call it process or format or something
