@@ -8,6 +8,15 @@ selectedFile: null,
 scroller: null,
 prePrint: [],
 
+sidebarPanels: null,
+
+selectTab: function(id) {
+	// todo: move graphics update here
+	sidebarPanels.forEach(function(panel, pid) {
+		panel.hidden = pid!=id
+	})
+},
+
 onLoad: function() {
 	$openSidebar.onclick = $closeSidebar.onclick = toggle
 	View.attachResize($sidebar, $sidebarResize, true, -1, "sidebarWidth")
@@ -34,17 +43,6 @@ onLoad: function() {
 			})
 		}
 	}
-	/*$.document.addEventListener("drop", function(e) {
-		e.preventDefault()
-		console.log(e,"drop")
-	})
-	$.document.addEventListener("dragover", function(e) {
-		var items = e.dataTransfer.items
-		if (items && items[0].kind == 'file') {
-			console.log("FILE", items)
-			e.preventDefault()
-		}
-	})*/
 	$fileURL.onclick = function() {
 		$fileURL.select()
 	}
@@ -57,7 +55,7 @@ onLoad: function() {
 	/*document.addEventListener('keydown', function(e) {
 		
 	  })*/
-	var sidebarPanels = [
+	sidebarPanels = [
 		$sidebarActivityPanel,
 		//$sidebarWatchingPanel,
 		$sidebarFilePanel,
@@ -73,11 +71,6 @@ onLoad: function() {
 	], function(id) {
 		selectTab(id)
 	}))
-	function selectTab(id) {
-		sidebarPanels.forEach(function(panel, pid) {
-			panel.hidden = pid!=id
-		})
-	}
 	selectTab(0)
 
 	$searchButton.onclick = function() {
@@ -161,6 +154,7 @@ fileUploaded: function(file) {
 	$fileView.src = ""
 	$fileView.src = URL.createObjectURL(file)
 	selectedFile = file
+	selectTab(1)
 	//fillFileFields(file)
 },
 
