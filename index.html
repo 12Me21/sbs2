@@ -96,7 +96,7 @@ window.onerror = function(message, source, line, col, error) {
 
 		<v-b data-view-fileMode class="fileBox bar" id=$fileBox></v-b>
 
-		<v-b data-view-fileMode>
+		<v-b data-view-fileMode class="bottomBorder">
 			<button id=$fileUploadButton class="fileUploading">Upload Image!</button>
 			Click an image to select
 			<div class="fileSelected">
@@ -145,6 +145,7 @@ window.onerror = function(message, source, line, col, error) {
 				<label for="$cateditLocalSupers">Local Superusers:</label><input id="$cateditLocalSupers"><br>
 				<textarea id="$cateditDescription"></textarea><br>
 			</v-b>
+			<v-b data-view-fileMode class="image-box fill" id=$filePageView></v-b>
 			
 			<v-b data-view-categoryMode id=$categoryDescription class="categoryDescription pre pageContents markup-root"></v-b>
 			<v-b data-view-categoryMode id=$categoryCategories></v-b>
@@ -190,7 +191,7 @@ window.onerror = function(message, source, line, col, error) {
 			<v-b data-view-homeMode class="homePane">
 				<a class="linkBar bar rem2-3" data-static-path=category/0><span class="textItem">Pages</span></a>
 				<a class="linkBar bar rem2-3" data-static-path=users><span class="textItem">Users</span></a>
-				<a class="linkBar bar rem2-3" data-static-path=files><span class="textItem">Images</span></a>
+				<a class="linkBar bar rem2-3" data-static-path=images><span class="textItem">Images</span></a>
 				<a class="linkBar bar rem2-3" data-static-path=settings><span class="textItem">User Settings</span></a>
 				<a class="linkBar bar rem2-3" data-static-path=test><span class="textItem">Test</span></a>
 			</v-b>
@@ -300,9 +301,9 @@ window.onerror = function(message, source, line, col, error) {
 		<!--<span id=$longPollStatus></span>-->
 		<div id=$sidebarTabs role="tablist" aria-label="sidebar tab" class="bottomBorder"></div>
 		<div id=$sidebarTop>
-			<div id=$sidebarActivityPanel></div>
+			<sidebar-panel id=$sidebarActivityPanel></sidebar-panel>
 			<!--<div id=$sidebarWatchingPanel class="fill"></div>-->
-			<div class="fill" id=$sidebarFilePanel>
+			<sidebar-panel id=$sidebarFilePanel class="flex">
 				<div class="sidebarUploadingFile">
 					<button id=$fileCancel>Cancel</button><br>
 					<button id=$fileUpload>Upload Image</button>
@@ -310,15 +311,13 @@ window.onerror = function(message, source, line, col, error) {
 				<div class="sidebarUploadedFile">
 					<input readonly id=$fileURL><button id=$fileDone>Done</button>
 				</div>
-				<div>
-					<img id=$fileView>
-				</div>
+				<div class="image-box grow" id=$fileView></div>
 				<div><input type=file accept="image/*" id=$imageUpload></div>
-			</div>
-			<div id=$sidebarSearchPanel>
+			</sidebar-panel>
+			<sidebar-panel id=$sidebarSearchPanel>
 				<div class="bottomBorder bar rem1-5"><input id=$searchInput class="item"><button id=$searchButton class="item">Search</button></div>
 				<div id=$searchResults></div>
-			</div>
+			</sidebar-panel>
 		</div>
 		
 		<div id=$sidebarResize class="resize">resize</div>

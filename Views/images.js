@@ -31,8 +31,7 @@ function selectFile(file) {
 	$fileValues.value = JSON.stringify(file.values)
 	$fileUser.textContent = file.createUser.username
 
-	$fileView.src = ""
-	$fileView.src = Req.fileURL(file.id)
+	Draw.setBgImage($filePageView, Req.fileURL(file.id))
 	flag('fileSelected', true)
 	flag('canEdit', /u/.test(file.myPerms))
 }
