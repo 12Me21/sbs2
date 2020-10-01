@@ -37,8 +37,6 @@ function ChatRoom(id, page) {
 		
 	// chat
 	this.messageElements = {}
-	this.lastUid = NaN
-	this.lastBlock = null
 	this.lastTime = 0
 
 	var b = Draw.chatMessagePane()
@@ -325,6 +323,8 @@ ChatRoom.prototype.displayMessage = function(comment, autoscroll) {
 				contents.appendChild(part)
 				
 				$.lastTime = comment.createDate //todo: improve
+				
+				View.commentTitle(comment)
 			}
 			$.messageElements[comment.id] = part
 		}

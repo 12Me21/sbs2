@@ -315,6 +315,12 @@ sidebarTabs: function(list, callback) {
 	})
 	return d
 },
+setBgImage: function(element, url) {
+	element.style.backgroundImage = ""
+	if (url)
+		element.style.backgroundImage = "url(\""+url+"\")" //todo: escape chars in url!
+	
+},
 activityItem: function(item) {
 	var bar = entityTitleLink(item.content)
 	bar.className += " linkBar bar rem1-5"
