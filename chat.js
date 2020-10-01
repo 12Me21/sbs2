@@ -7,7 +7,7 @@ function ChatRoom(id, page) {
 	this.id = id
 	this.status = "active"
 	
-	if (id == -1) {
+	if (id <= 0) {
 		this.userListInner = $sidebarUserList
 		return
 	}
