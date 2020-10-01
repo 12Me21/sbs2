@@ -300,23 +300,33 @@ ChatRoom.prototype.displayMessage = function(comment, autoscroll) {
 				old.remove()
 		} else {
 			var part = Draw.messagePart(comment)
-			if (old) {
-				// edited
+			if (old) { // edited
 				old.parentNode.replaceChild(part, old)
-			} else {
-				// new comment
-				View.commentTitle(comment)
-				var uid = comment.createUserId
-				if (!$.lastBlock || uid != $.lastUid || comment.createDate-$.lastTime > 1000*60*5) {
-					$.lastBlock = Draw.messageBlock(comment)
-					var ret = $.lastBlock[0]
+			} else { // new comment
+
+				var lastUidBlock = $.messageList.lastChild
+				if (lastUidBlock) {
+					var lastUid = lastUidBlock.getAttribute('data-uid')
+					if (!lastUid)
+						lastUidBlock = null
+					else
+						lastUid = +lastUid
 				}
-				$.lastBlock[1].appendChild(part)
-				$.lastUid = uid
-				$.lastTime = comment.createDate
+				var id = comment.id
+				var uid = comment.createUserId
+				
+				if (uid && lastUid == uid && lastUidBlock && comment.createDate-$.lastTime <= 1000*60*5) { // insert in current block
+					var contents = lastUidBlock.getElementsByTagName('message-contents')[0]// not great...
+				} else { //create new block
+					var b = Draw.messageBlock(comment)
+					$.messageList.appendChild(b[0])
+					contents = b[1]
+				}
+				contents.appendChild(part)
+				
+				$.lastTime = comment.createDate //todo: improve
 			}
 			$.messageElements[comment.id] = part
-			return ret
 		}
 	}, autoscroll != false)
 }
