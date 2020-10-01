@@ -537,9 +537,9 @@ main-scrollable {
 	border-radius: 3px;
 	background-color: white;
 }
-.icon.avatar {
-	margin-right: 0.2rem;
-}
+/*.icon.avatar {
+	margin-right: -1px;
+}*/
 .rightAlign .icon.avatar {
 	margin-right: 0rem;
 	margin-left: 0.2rem;
