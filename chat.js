@@ -3,8 +3,10 @@ function ChatRoom(id, page) {
 	var old = ChatRoom.rooms[id]
 	if (old)
 		return old
-	var $ = this
+	
 	this.id = id
+	this.status = "active"
+	
 	if (id == -1) {
 		this.userListInner = $sidebarUserList
 		return
@@ -35,7 +37,6 @@ function ChatRoom(id, page) {
 		
 	// chat
 	this.messageElements = {}
-	this.status = "active"
 	this.lastUid = NaN
 	this.lastBlock = null
 	this.lastTime = 0
