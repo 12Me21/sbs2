@@ -11,9 +11,9 @@
 <link rel=image_src href="resource/iconbig.png"> <!-- large 3 -->
 
 <script>
-window.onerror = function(message, source, line, col, error) {
-	alert("ERROR DURING PAGE LOAD!\n"+message+"\nin "+source+"\nat "+line+":"+col)
-}
+	window.onerror = function(message, source, line, col, error) {
+		alert("ERROR DURING PAGE LOAD!\n"+message+"\nin "+source+"\nat "+line+":"+col)
+	}
 </script>
 
 <style>
@@ -54,7 +54,7 @@ window.onerror = function(message, source, line, col, error) {
 <script src=main.js></script>
 <!--END-->
 
-<header class="titlePane bar rem2-3 loadBG" id="$titlePane">
+<header class="titlePane bar rem2-3 loadBG" id=$titlePane>
 	<div class="pageCreate textItem rightAlign">
 		<button id=$openSidebar class="item">|||</button>
 	</div>
@@ -79,7 +79,7 @@ window.onerror = function(message, source, line, col, error) {
 		<v-b data-view-page data-view-editorMode data-view-categoryMode class="pathBar rem1-5 bottomBorder no-shrink" id=$path></v-b>
 		<v-b data-view-editorMode class="infoPane">
 			<label for=$keywords>Keywords:</label><input placeholder="(space separated, optional)" id=$keywords><br>
-			<label for=$editPageType>Type:</label><input placeholder="@" id="$editPageType"><br>
+			<label for=$editPageType>Type:</label><input placeholder="@" id=$editPageType><br>
 			<label for=$editPageCategory>Category:</label><span id=$editPageCategory></span><br>
 			Permissions:<span id=$editPagePermissions></span><br>
 			<label for=$markupSelect>Markup language:</label>
@@ -139,11 +139,11 @@ window.onerror = function(message, source, line, col, error) {
 		
 		<main-scrollable class="grow" id=$main>
 			<v-b data-view-catEditorMode>
-				<label for="$cateditPinned">Pinned pages:</label><input id="$cateditPinned"><br>
-				<label for="$cateditCategory">Parent category:</label><input id="$cateditCategory" type="number"><br>
-				<label for="$cateditPermissions">Permissions:</label><input id="$cateditPermissions"><br>
-				<label for="$cateditLocalSupers">Local Superusers:</label><input id="$cateditLocalSupers"><br>
-				<textarea id="$cateditDescription"></textarea><br>
+				<label for=$cateditPinned>Pinned pages:</label><input id=$cateditPinned><br>
+				<label for=$cateditCategory>Parent category:</label><input id=$cateditCategory type="number"><br>
+				<label for=$cateditPermissions>Permissions:</label><input id=$cateditPermissions><br>
+				<label for=$cateditLocalSupers>Local Superusers:</label><input id=$cateditLocalSupers><br>
+				<textarea id=$cateditDescription></textarea><br>
 			</v-b>
 			<v-b data-view-fileMode class="image-box fill"><img id=$filePageView></v-b>
 			
@@ -165,16 +165,16 @@ window.onerror = function(message, source, line, col, error) {
 				<button id=$editButton class="item canEdit">Edit</button>
 				<div class="rightAlign item">
 					<span class="textItem" id=$voteBox>
-						<button class="item" id=$voteButton_b data-vote="b">Bad<br><span id=$voteCount_b>x</span></button><button id="$voteButton_o" class="item" data-vote="o">Ok<br><span id=$voteCount_o>x</span></button><button id="$voteButton_g" class="item" data-vote="g">Great<br><span id=$voteCount_g>x</span></button>
+						<button class="item" id=$voteButton_b data-vote="b">Bad<br><span id=$voteCount_b>x</span></button><button id=$voteButton_o class="item" data-vote="o">Ok<br><span id=$voteCount_o>x</span></button><button id=$voteButton_g class="item" data-vote="g">Great<br><span id=$voteCount_g>x</span></button>
 					</span>
 				</div>
 			</v-b>-->
 			
-			<!--<div class="pageInfoPane page px40" id="$pageInfoPane">
-				<span id="$gallery" class="gallery" style="display:none;">
+			<!--<div class="pageInfoPane page px40" id=$pageInfoPane>
+				<span id=$gallery class="gallery" style="display:none;">
 					<span class="metaInfo">
-						<span id="$metaKey" class="textItem"></span>
-						<span id="$sbapiInfo" class="textItem"></span>
+						<span id=$metaKey class="textItem"></span>
+						<span id=$sbapiInfo class="textItem"></span>
 					</span>
 				</span>
 	</div>
@@ -242,12 +242,12 @@ window.onerror = function(message, source, line, col, error) {
 				<button id=$logOut>Log out</button><br>
 				Change account settings: <br>
 				<table class="form">
-					<tr><td><label for="$settingsOldPassword">Old Password: </label></td><td><input type="password" id="$settingsOldPassword" required=""></td></tr>
-						<tr><td><label for="$settingsUsername">New Username (Optional): </label></td><td><input autocomplete="off" id="$settingsUsername"></td></tr>
-						<tr><td><label for="$settingsNewPassword">New Password (Optional): </label></td><td><input autocomplete="new-password" type="password" id="$settingsNewPassword"></td></tr>
-						<tr><td><label for="$settingsEmail">New Email (Optional): </label></td><td><input autocomplete="off" type="email" id="$settingsEmail"></td></tr>
+					<tr><td><label for=$settingsOldPassword>Old Password: </label></td><td><input type="password" id=$settingsOldPassword required=""></td></tr>
+						<tr><td><label for=$settingsUsername>New Username (Optional): </label></td><td><input autocomplete="off" id=$settingsUsername></td></tr>
+						<tr><td><label for=$settingsNewPassword>New Password (Optional): </label></td><td><input autocomplete="new-password" type="password" id=$settingsNewPassword></td></tr>
+						<tr><td><label for=$settingsEmail>New Email (Optional): </label></td><td><input autocomplete="off" type="email" id=$settingsEmail></td></tr>
 				</table>
-				<button id="$submitUserSettings">Save</button>
+				<button id=$submitUserSettings>Save</button>
 				<hr>
 				<a data-static-path=files>Change your avatar here</a>
 			</v-b>
@@ -255,9 +255,9 @@ window.onerror = function(message, source, line, col, error) {
 			<v-b data-view-activity id=$activity></v-b>
 			
 			<v-b data-view-testMode>
-				<textarea id="$testTextarea"></textarea><br>
-				<button id="$testButton">Run</button><br>
-				<div id="$testOut" class="pre"></div>
+				<textarea id=$testTextarea></textarea><br>
+				<button id=$testButton>Run</button><br>
+				<div id=$testOut class="pre"></div>
 			</v-b>
 			
 			
