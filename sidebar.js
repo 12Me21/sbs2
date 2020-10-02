@@ -35,7 +35,8 @@ onLoad: function() {
 			Req.uploadFile(selectedFile, function(file) {
 				if (file) {
 					View.flag('sidebarUploaded', true)
-					Draw.setBgImage($fileView, Req.fileURL(file.id))
+					$fileView.src = ""
+					$fileView.src = Req.fileURL(file.id)
 					$fileURL.value = Req.fileURL(file.id)
 				} else {
 				}
@@ -144,13 +145,14 @@ fileCancel: function() {
 
 cleanUp: function() {
 	selectedFile = null
-	Draw.setBgImage($fileView)
+	$fileView.src = ""
 },
 
 fileUploaded: function(file) {
 	View.flag('sidebarUploaded', false)
 	View.flag('sidebarFile', true)
-	Draw.setBgImage($fileView, URL.createObjectURL(file))
+	$fileView.src = ""
+	$fileView.src = URL.createObjectURL(file)
 	selectedFile = file
 	selectTab(1)
 	//fillFileFields(file)

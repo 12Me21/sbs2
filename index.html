@@ -145,7 +145,7 @@ window.onerror = function(message, source, line, col, error) {
 				<label for="$cateditLocalSupers">Local Superusers:</label><input id="$cateditLocalSupers"><br>
 				<textarea id="$cateditDescription"></textarea><br>
 			</v-b>
-			<v-b data-view-fileMode class="image-box fill" id=$filePageView></v-b>
+			<v-b data-view-fileMode class="image-box fill"><img id=$filePageView></v-b>
 			
 			<v-b data-view-categoryMode id=$categoryDescription class="categoryDescription pre pageContents markup-root"></v-b>
 			<v-b data-view-categoryMode id=$categoryCategories></v-b>
@@ -305,13 +305,13 @@ window.onerror = function(message, source, line, col, error) {
 			<!--<div id=$sidebarWatchingPanel class="fill"></div>-->
 			<sidebar-panel id=$sidebarFilePanel class="flex">
 				<div class="sidebarUploadingFile">
-					<button id=$fileCancel>Cancel</button><br>
-					<button id=$fileUpload>Upload Image</button>
+					<button id=$fileCancel>Cancel</button>
+					<button class="rightAlign" id=$fileUpload>Upload Image</button>
 				</div>
 				<div class="sidebarUploadedFile">
 					<input readonly id=$fileURL><button id=$fileDone>Done</button>
 				</div>
-				<div class="image-box grow" id=$fileView></div>
+				<div class="image-box grow"><img id=$fileView></div>
 				<div><input type=file accept="image/*" id=$imageUpload></div>
 			</sidebar-panel>
 			<sidebar-panel id=$sidebarSearchPanel>

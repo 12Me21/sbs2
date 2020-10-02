@@ -238,11 +238,6 @@ html.f-loggedIn .loggedOut {
 	line-height: 1.5rem;
 }
 
-#\$fileView {
-	max-width: 100%;
-	max-height: 100%;
-}
-
 .myAvatar {
 	width: 1.5rem;
 }
@@ -1279,15 +1274,28 @@ html.f-splitView main-scrollable {
 	flex-shrink: 0;
 }
 
-.image-box {
-	background-repeat: no-repeat;
-	background-size: contain;
-	background-position: center;
-	background-color: silver;
-}
-
 sidebar-panel {
 	display: block;
 	width: 100%;
 	height: 100%;
+}
+
+.image-box {
+	overflow: hidden;
+	position: relative;
+}
+
+.image-box > img {
+	position: absolute;
+	left: -10000%;
+	right: -10000%;
+	top: -10000%;
+	bottom: -10000%;
+	margin: auto auto;
+	max-width: 100%;
+	max-height: 100%;
+	box-sizing: border-box;
+	border: 1px solid black;
+	/*-webkit-transform: scale(1); //this should be the inverse of the max-width/height value (5% -> 20, etc.)
+	transform: scale(1);*/
 }
