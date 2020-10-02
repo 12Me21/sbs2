@@ -297,7 +297,7 @@ handleView: function(type, id, query, callback) {
 	}
 
 	function after() {
-		$.document.body.className = view.className
+		//$.document.body.className = view.className
 		document.querySelectorAll("v-b").forEach(function(e) {
 			e.hidden = !e.hasAttribute("data-view-"+view.className)
 		})
