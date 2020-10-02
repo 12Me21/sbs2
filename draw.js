@@ -106,7 +106,7 @@ userList: function() {
 	outer.appendChild(inner)
 	var b = button()
 	b[1].textContent = "Hide"
-	b[0].className += " rightAlign item"
+	b[0].className += " rightAlign item loggedIn"
 	outer.appendChild(b[0])
 	return [outer, inner, b[1]]
 },

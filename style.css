@@ -63,10 +63,14 @@ a:hover {
 }
 
 a:hover .entity-title,
-a.entity-title:hover {
+a.entity-title:hover,
+a[data-static-path]:hover {
 	text-decoration: underline;
 }
+/* todo: make a special link bar class for links that contain other elements and a class for which of those should be underlined */
+/* and make sure normal links are styled correctly too */
 
+a[data-static-path],
 .entity-title {
 	font-weight: bold;
 }
@@ -326,6 +330,7 @@ table.tabs td:last-child {
 
 .myUserBar {
 	background-color: #EEE;
+	padding: 0 0.2rem;
 }
 
 html.f-sidebarUploaded .sidebarUploadingFile,
@@ -481,7 +486,7 @@ main-scrollable {
 }
 .rem1-7 .iconBg {
 	width: 1rem;
-	margin-right: 0.2rem;
+	/*margin-right: 0.2rem;*/
 }
 
 .rem1-5 {
@@ -501,7 +506,7 @@ main-scrollable {
 }
 .rem1-5 .iconBg {
 	width: 1rem;
-	margin-right: 0.2rem;
+	/*margin-right: 0.2rem;*/
 }
 
 .rem2-3 {
@@ -980,7 +985,7 @@ html:not(.f-fileUploading) .fileUploading {
 	background-repeat: no-repeat;
 	background-size: contain;
 	background-position: center;
-	margin-right: 0.3rem;
+	/*margin-right: 0.3rem;*/
 	margin-left: 0.1rem;
 }
 
