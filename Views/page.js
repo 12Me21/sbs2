@@ -1,3 +1,14 @@
+function registerActivity(e) {
+	// 1: if currently inactive, switch to active
+	// 2: record time
+}
+// 3: on a ~1 minute interval timer, check if last activity time was > 3 minutes or whatever, and go inactive 
+
+;['wheel','keydown','mousedown','mousemove','touchstart'].forEach(function(event) {
+	document.addEventListener(event, registerActivity)
+})
+window.addEventListener('focus', registerActivity)
+
 <!--/* trick indenter
 with (View) (function($) { "use strict" //*/
 

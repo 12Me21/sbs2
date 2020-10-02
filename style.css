@@ -59,6 +59,16 @@ a:visited {
 }
 a:hover {
 	color: rgb(0,150,136);
+	/*text-decoration: underline;*/
+}
+
+a:hover .entity-title,
+a.entity-title:hover {
+	text-decoration: underline;
+}
+
+.entity-title {
+	font-weight: bold;
 }
 
 textarea {
@@ -291,8 +301,11 @@ html:not(.f-chatMode) .chatMode {
 
 table.tabs {
 	width: 100%;
+	height: 1px; /* don't worry */
 }
-
+table.tabs tbody, table.tabs tr, table.tabs td {
+	height: 100%;
+}
 table.tabs td {
 	margin: 0;
 	padding: 0;
@@ -304,6 +317,7 @@ table.tabs td button {
 	width: 100%;
 	height: 100%;
 	border: none;
+	vertical-align: top;
 }
 
 table.tabs td:last-child {
@@ -314,9 +328,8 @@ table.tabs td:last-child {
 	background-color: #EEE;
 }
 
-html.f-sidebarFile .sidebarNotFile,
-html:not(.f-sidebarFile) .sidebarFile,
 html.f-sidebarUploaded .sidebarUploadingFile,
+html:not(.f-sidebarFile) .sidebarUploadingFile,
 html:not(.f-sidebarUploaded) .sidebarUploadedFile {
 	display: none;
 }
@@ -443,7 +456,7 @@ main-scrollable {
  ** Category Pane **
  *******************/
 .linkBar {
-	font-weight: bold;
+	/*font-weight: bold;*/
 	background-color: #EEE;
 	padding-left: 0.2rem;
 }
@@ -453,6 +466,7 @@ main-scrollable {
 
 .rem1-7 {
 	min-height: 1.7rem;
+	line-height: 1.7rem;
 }
 .rem1-7 .item {
 	height: 1.7rem;
@@ -472,6 +486,7 @@ main-scrollable {
 
 .rem1-5 {
 	min-height: 1.5rem;
+	line-height: 1.5rem;
 }
 .rem1-5 .item {
 	height: 1.5rem;
@@ -491,6 +506,7 @@ main-scrollable {
 
 .rem2-3 {
 	min-height: 2.3rem;
+	line-height: 2.3rem;
 }
 .rem2-3 .item {
 	height: 2.3rem;
@@ -1186,10 +1202,6 @@ table {
 .half-label {
 	font-weight: bold;
 	/*text-align: right;*/
-}
-
-.entity-title {
-	font-weight: bold;
 }
 
 body.pageMode main-scrollable {

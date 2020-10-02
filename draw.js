@@ -41,7 +41,6 @@ entityLink: function(entity) {
 		var element = Nav.link(path)
 	else
 		element = document.createElement('span')
-	element.className += " entity-title"
 	return element
 },
 
@@ -64,7 +63,10 @@ entityTitleLink: function(entity, reverse) {
 },
 
 title: function(entity) {
-	return textItem(entity ? entity.name : "MISSINGNO.")
+	var element = document.createElement('span')
+	element.textContent = entity ? entity.name : "MISSINGNO."
+	element.className = 'textItem pre entity-title'
+	return element
 },
 
 textItem: function(text) {
@@ -193,10 +195,10 @@ titlePath: function(path) {
 	if (!path)
 		return element
 	path.forEach(function(item, i, path) {
-		if (item) {
+		if (item) { //todo: use entities here instead
 			var link = Nav.link(item[0])
 			link.textContent = item[1]
-			link.className = "textItem pre"
+			link.className = "textItem pre entity-title"
 			element.appendChild(link)
 		}
 		
@@ -443,14 +445,22 @@ categoryInput: function() {
 		},
 		update: function() {
 			elem.replaceChildren()
-			for (var id in Entity.categoryMap) {
-				var cat = Entity.categoryMap[id]
+			var list = []
+			categoryList(Entity.categoryMap[0], list)
+			list.forEach(function(item) {
 				var x = document.createElement('option')
-				x.textContent = cat.name
-				x.value = cat.id
+				x.textContent = item[0]
+				x.value = item[1]
 				elem.appendChild(x)
-			}
+			})
 		}
+	}
+	function categoryList(node, ret, depth) {
+		depth = depth || 0
+		ret.push([">".repeat(depth)+" "+node.name, node.id])
+		node.children && node.children.forEach(function(node) {
+			categoryList(node, ret, depth+1)
+		})
 	}
 	return x
 },
