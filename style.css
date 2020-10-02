@@ -220,6 +220,10 @@ button {
 	border-style: inset;
 }
 
+html {
+	position: fixed;
+}
+
 body {
 	position: fixed;
 	top: 0;
