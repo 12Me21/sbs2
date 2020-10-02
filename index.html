@@ -203,7 +203,7 @@
 			</v-b>
 
 			<v-b data-view-settingsMode class="loggedOut">
-				<div class="registerBox">
+				<div class="registerBox bottomBorder">
 					<h2>Log In</h2>
 					<form id=$loginForm>
 						<input placeholder=Username name=username><br>
@@ -212,7 +212,7 @@
 					</form>
 					<div id=$loginError></div>
 				</div>
-				<div class="registerBox">
+				<div class="registerBox bottomBorder">
 					<h2>Register</h2>
 					<form id=$registerForm autocomplete=off>
 						<input placeholder=Username name=username id=$registerUsername minlength=2 maxlength=20> 2 to 20 characters, no spaces<br>
@@ -225,7 +225,7 @@
 					<input placeholder="Confirmation Code" id=$emailCode>
 					<button id=$registerConfirm>Confirm</button>
 				</div>
-				<div class="registerBox">
+				<div class="registerBox bottomBorder">
 					<h2>Password Reset</h2>
 					<form id=$passwordForm>
 						<input placeholder="Email" type=email name=email><br>
@@ -263,7 +263,7 @@
 			</v-b>
 			
 			
-			<!--<div class="bottomSpacer"></div>-->
+			<v-b data-view-membersMode class="bottomSpacer"></v-b>
 		</main-scrollable>
 		<!--
 			  Bottom of the page
@@ -272,7 +272,7 @@
 		<v-b data-view-page id=$chatContainer class="flex grow">
 			<v-b data-view-page id=$chatPane class="flex chatMode grow chatPane"></v-b>
 			
-			<v-b data-view-page class="inputPane chatMode">
+			<v-b data-view-page class="inputPane chatMode loggedIn">
 				<table> <!-- YES it's a TABLE! sorry ... I'm not allowed to use flex so this is the only option -->
 					<tr>
 						<td rowspan="2" class="tableGrow"><textarea class="chatTextarea" id=$chatTextarea accesskey="z"></textarea></td>
@@ -299,7 +299,7 @@
 			<span class="loggedOut"><a data-static-path=settings class="textItem">Log In or Register</a></span>
 			<a class="loggedIn textItem" data-static-path="settings">Settings</a>
 		</div>
-		<div class="userlist bar rem1-5 bottomBorder"><span id=$sidebarUserList></span><button id=$hideGlobalStatusButton class="item rightAlign">Hide</button></div>
+		<div class="userlist bar rem1-5 bottomBorder"><span id=$sidebarUserList></span><button id=$hideGlobalStatusButton class="item rightAlign loggedIn">Hide</button></div>
 		<!--<span id=$longPollStatus></span>-->
 		<div id=$sidebarTabs role="tablist" aria-label="sidebar tab" class="bottomBorder"></div>
 		<div id=$sidebarTop>
