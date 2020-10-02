@@ -16,6 +16,25 @@
 	display: none !important;
 }
 
+.flex {
+	display: -webkit-flex;
+	display: flex;
+	-webkit-flex-direction: column;
+	flex-direction: column;
+}
+
+.flex-row {
+	display: -webkit-flex;
+	display: flex;
+	-webkit-flex-direction: row;
+	flex-direction: row;
+}
+
+.flex > * {
+	-webkit-flex-shrink: 0;
+	flex-shrink: 0;
+}
+
 .grow {
 	-webkit-flex-grow: 1;
 	flex-grow: 1;
@@ -202,10 +221,6 @@ button {
 }
 
 body {
-	display: -webkit-flex;
-	display: flex;
-	-webkit-flex-direction: column;
-	flex-direction: column;
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -306,8 +321,6 @@ html:not(.f-sidebarUploaded) .sidebarUploadedFile {
  ** Title Pane **
  ****************/
 .titlePane {
-	-webkit-flex-shrink: 0;
-	flex-shrink: 0;
 	border-bottom: 2px solid black;
 	background-color: #FFF;
 	box-shadow: 0 2px 3px rgba(0,0,0,0.3);
@@ -361,10 +374,6 @@ header > :first-child {
  ** content+sidebar container **
  *******************************/
 horizontal-split {
-	display: flex;
-	display: -webkit-flex;
-	-webkit-flex-direction: row;
-	flex-direction: row;
 	overflow-x: hidden;
 }
 
@@ -375,17 +384,10 @@ horizontal-split {
 
 main {
 	width:100%;
-	display: -webkit-flex;
-	display: flex;
-	-webkit-flex-direction: column;
-	flex-direction: column;
 	/*overflow-y: hidden; /* mmm */
 }
 
 sidebar-container {
-	display: -webkit-flex;
-	display: flex;
-	flex-direction: column;
 	-webkit-flex-grow: 0;
 	flex-grow: 0;
 	border-left: 2px solid black;
@@ -415,10 +417,6 @@ html:not(.f-sidebar) main {
  ** main **
  **********/
 main-scrollable {
-	display: -webkit-flex;
-	display: flex;
-	-webkit-flex-direction: column;
-	flex-direction: column;
 	overflow-y: auto;
 	flex-basis: auto;
 	
@@ -517,8 +515,6 @@ main-scrollable {
 }
 
 .nav {
-	-webkit-flex-shrink: 0;
-	flex-shrink: 0;
 	border-bottom: 1px solid gray;
 	background-color: #333;
 }
@@ -546,15 +542,11 @@ main-scrollable {
 .chatPane .userlist {
 	background-color: #EEE;
 	border-bottom: 1px solid gray;
-	-webkit-flex-shrink: 0;
-	flex-shrink: 0;
 	box-shadow: 0 2px 3px rgba(0,0,0,0.3);
 	z-index: 4;
 }
 
 .userlist {
-	-webkit-flex-shrink: 0;
-	flex-shrink: 0;
 	background-color: #EEE;
 }
 
@@ -692,7 +684,6 @@ html:not(.f-editingComment) .showWhenEdit {
 	height: 3.25rem;
 	overflow-y: hidden;
 	border-top: 1px solid gray;
-	flex-shrink: 0;
 }
 
 #\$chatTextarea {
@@ -725,10 +716,6 @@ html:not(.f-editingComment) .showWhenEdit {
  ** Editor Pane **
  *****************/
 .editorPane {
-	display: -webkit-flex;
-	display: flex;
-	-webkit-flex-direction: column;
-	flex-direction: column;
 	-webkit-flex-grow: 1;
 	flex-grow: 1;
 }
@@ -760,8 +747,6 @@ html:not(.f-editingComment) .showWhenEdit {
 
 /* do we even need this */
 .bottomSpacer {
-	-webkit-flex-shrink: 0;
-	flex-shrink: 0;
 	height: 1.5rem;
 }
 
@@ -788,10 +773,6 @@ html:not(.f-editingComment) .showWhenEdit {
 
 .userPageBox {
 	align-items: flex-start;
-	display: -webkit-flex;
-	display: flex;
-	-webkit-flex-direction: row;
-	flex-direction: row;
 	max-height: 40vh;
 	overflow: auto;
 	border-bottom: 1px solid gray;
@@ -845,6 +826,7 @@ html:not(.f-myUserPage) .myUserPage {
 
 @media (max-width: 700px) {
 	.userPageBox {
+		-webkit-flex-direction: column;
 		flex-direction: column;
 		max-height: none;
 	}
@@ -867,15 +849,11 @@ button[data-selected] {
 .pageContents {
 	max-width:100%;
 	overflow-x:auto;
-	-webkit-flex-shrink: 0;
-	flex-shrink: 0;
 }
 
 .pageInfoPane {
 	background-color: #EEE;
 	/*overflow: auto;*/
-	-webkit-flex-shrink: 0;
-	flex-shrink: 0;
 	padding: 0 0.3rem;
 	box-shadow: 0 2px 3px rgba(0,0,0,0.3);
 }
@@ -966,8 +944,6 @@ html:not(.f-fileUploading) .fileUploading {
 
 .fileBox {
 	border-bottom: 1px solid gray;
-	-webkit-flex-shrink: 0;
-	flex-shrink: 0;
 }
 
 #\$filePaste {
@@ -1030,10 +1006,6 @@ button[aria-selected="true"] {
 	background-color: gray;
 }
 
-.flex {
-	display: flex;
-	flex-direction: column;
-}
 
 .debugMessage {
 	padding: 0rem 0.2rem;
@@ -1073,13 +1045,6 @@ scroll-inner {
 #\$sidebarActivity .bar > :last-child {
 	margin-right: -0.2rem;
 }
-
-/*sidebar-inner {
-	display: -webkit-flex;
-	display: flex;
-	flex-direction: column;
-	height: 100%;
-}*/
 
 /* narrow screen: fullscreen sidebar */
 @media (max-width: 700px) {
@@ -1224,8 +1189,6 @@ table {
 }
 
 body.pageMode main-scrollable {
-	display: -webkit-flex;
-	display: flex;
 	height: 100%;
 }
 
@@ -1234,9 +1197,6 @@ body.pageMode main-scrollable {
 }
 
 .chatPane {
-	display: -webkit-flex;
-	display: flex;
-	flex-direction: column;
 	overflow-y: auto;
 	/*flex-basis: 100%;*/
 }
@@ -1268,10 +1228,6 @@ html.f-splitView main-scrollable {
 
 .split-top {
 	overflow-y: auto;
-}
-
-.no-shrink {
-	flex-shrink: 0;
 }
 
 sidebar-panel {

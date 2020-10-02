@@ -90,7 +90,7 @@ iconURL: function(entity) {
 
 chatMessagePane: function() {
 	var outer = document.createElement('scroll-outer')
-	outer.className = "chatScroller"
+	outer.className = "grow chatScroller"
 	outer.hiddden = true
 	var inner = document.createElement('scroll-inner')
 	outer.appendChild(inner)

@@ -54,6 +54,8 @@
 <script src=main.js></script>
 <!--END-->
 
+<body class="flex">
+
 <header class="titlePane bar rem2-3 loadBG" id=$titlePane>
 	<div class="pageCreate textItem rightAlign">
 		<button id=$openSidebar class="item">|||</button>
@@ -74,9 +76,9 @@
 	</v-b>
 </header>
 
-<horizontal-split class="grow">
-	<main class="grow">
-		<v-b data-view-page data-view-editorMode data-view-categoryMode class="pathBar rem1-5 bottomBorder no-shrink" id=$path></v-b>
+<horizontal-split class="flex-row grow">
+	<main class="flex grow">
+		<v-b data-view-page data-view-editorMode data-view-categoryMode class="pathBar rem1-5 bottomBorder" id=$path></v-b>
 		<v-b data-view-editorMode class="infoPane">
 			<label for=$keywords>Keywords:</label><input placeholder="(space separated, optional)" id=$keywords><br>
 			<label for=$editPageType>Type:</label><input placeholder="@" id=$editPageType><br>
@@ -127,7 +129,7 @@
 		
 		<v-b data-view-membersMode class="nav bar rem1-7" id=$memberNav></v-b>
 
-		<v-b data-view-userMode class="userPageBox">
+		<v-b data-view-userMode class="userPageBox flex-row">
 			<a id=$userPageAvatarLink><img id=$userPageAvatar class="userPageAvatar" alt="" src="about:blank"></a>
 			<div class="pageContents pre userPageContents markup-root" id=$userPageContents></div>
 		</v-b>
@@ -137,7 +139,7 @@
 			  one of them will be visible at a time, depending on the view mode
 		-->
 		
-		<main-scrollable class="grow" id=$main>
+		<main-scrollable class="flex grow" id=$main>
 			<v-b data-view-catEditorMode>
 				<label for=$cateditPinned>Pinned pages:</label><input id=$cateditPinned><br>
 				<label for=$cateditCategory>Parent category:</label><input id=$cateditCategory type="number"><br>
@@ -181,7 +183,7 @@
 			-->
 			<v-b data-view-page id=$pageContents class="grow pageMode"></v-b>
 			<v-b data-view-errorMode class="pre errorPage" id=$errorMessage></v-b>
-			<v-b data-view-editorMode class="editorPane">
+			<v-b data-view-editorMode class="editorPane flex">
 				<div class="editorTextarea">
 					<textarea id=$editorTextarea minlength="2" required></textarea>
 				</div>
@@ -268,7 +270,7 @@
 		-->
 		<v-b data-view-page id=$chatResize class="resize">RESIZE</v-b>
 		<v-b data-view-page id=$chatContainer class="flex grow">
-			<v-b data-view-page id=$chatPane class="chatMode grow chatPane"></v-b>
+			<v-b data-view-page id=$chatPane class="flex chatMode grow chatPane"></v-b>
 			
 			<v-b data-view-page class="inputPane chatMode">
 				<table> <!-- YES it's a TABLE! sorry ... I'm not allowed to use flex so this is the only option -->
@@ -284,7 +286,7 @@
 			</v-b>
 		</v-b>
 	</main>
-	<sidebar-container id=$sidebar>
+	<sidebar-container id=$sidebar class="flex">
 		<button class="closeSidebar" id=$closeSidebar>Close Sidebar</button>
 		
 		<div class="bottomBorder bar rem1-5 myUserBar">
@@ -326,3 +328,5 @@
 		</div>
 	</sidebar-container>
 </horizontal-split>
+
+</body>
