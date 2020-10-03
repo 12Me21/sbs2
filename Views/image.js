@@ -4,7 +4,7 @@
 	<!--/* trick indenter
 with (View) (function($) { "use strict" //*/
 
-addView('images', {
+addView('image', {
 	init: function() {
 		var nav = $fileNav
 		navButtons = Draw.navButtons()
@@ -13,7 +13,7 @@ addView('images', {
 			/*if (currentCategory == null)
 				return*/
 			currentQuery.page = pageNum
-			Nav.go("images"+Req.queryString(currentQuery))
+			Nav.go("image"+Req.queryString(currentQuery))
 		}
 					
 		$setAvatarButton.onclick = function() {
