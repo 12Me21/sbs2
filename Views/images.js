@@ -12,7 +12,10 @@ addView('images', {
 				return
 			Req.setBasic({avatar: selectedFile.id}, function(e, resp) {
 				if (!e) {
-					console.log("avatar", resp)
+					// have to do this because rannnnnnnnnnndommmmmmm broke user activityyy
+					var l = [resp]
+					Entity.processList('user', l, {})
+					updateMyUser(l[0])
 				}
 				//todo?
 			})
