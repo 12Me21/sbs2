@@ -99,6 +99,10 @@ rawRequest: function(url, method, callback, data, auth){
 		// this is not recursion because retry is called in async callback functions only!
 		if (time) {
 			console.log("will retry", reason, "in "+time/1000+" sec")
+			if (time > 2000)
+				try {
+					Sidebar.print("Warning: request was rate limited with extremely long wait time: "+time/1000+" seconds")
+				} catch(e) {}
 			$.setTimeout(function() {
 				retry(null, reason)
 			}, time)
