@@ -7,6 +7,8 @@ Otherwise, download the files from https://github.com/12Me21/sbs2-markup and put
 
 Open index.html in a web browser
 
+(You can also go to https://12Me21.github.io/sbs2)
+
 If you are hosting this on a server, it's a good idea to use `build.sh`, to slightly improve load times and avoid problems with caching.
 This will generate `_build.html` and some files in `resource/`, as well as copy the files to a destination.
 You can run `./build.sh <file>`, which copies `_build.html` to <file>, and copies `resource` to the same directory
@@ -72,3 +74,12 @@ license
 
 ** sbs2-markup/
 markup parser subsystem
+
+* Credits
+- random
+- y
+- nicole
+- perska
+- chicken
+- answer
+- snail_
