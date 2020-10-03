@@ -56,9 +56,10 @@ rawRequest: function(url, method, callback, data, auth){
 		else if (code==408 || code==204 || code==524)
 			// record says server uses 408, testing showed only 204. idk
 			retry(null, 'timeout')
-		else if (code == 429) // rate limit
-			retry(1500, "rate limited")
-		else if (code==401 || code==403) //invalid auth code (should this be both?)
+		else if (code == 429) { // rate limit
+			var after = +(x.getResponseHeader('Retry-After') || 1)
+			retry((after+0.5)*1000, "rate limited "+after+"sec")
+		} else if (code==401 || code==403) //invalid auth code (should this be both?)
 			callback('auth', resp)
 		else if (code==404)
 			callback('404', resp)
@@ -97,9 +98,10 @@ rawRequest: function(url, method, callback, data, auth){
 	function retry(time, reason) {
 		// this is not recursion because retry is called in async callback functions only!
 		if (time) {
+			console.log("will retry", reason, "in "+time/1000+" sec")
 			$.setTimeout(function() {
 				retry(null, reason)
-			}, 5000)
+			}, time)
 			x.abort = function() {
 				$.clearTimeout(id)
 			}
@@ -321,12 +323,24 @@ getCategories: function(callback) {
 	return read([], {}, callback, true)
 },
 
+searchUsers: function(text, callback) {
+	var like = text.replace(/%/g,"_") //the best we can do...
+	var count = 20
+	return read([
+		{user: {limit: count, usernameLike: "%"+like+"%"}}
+	],{},function(e, resp) {
+		if (!e)
+			callback(resp.user)
+		else
+			callback(null)
+	})
+},
+
 search1: function(text, callback) {
 	var like = text.replace(/%/g,"_") //the best we can do...
 	var count = 20
 	var page = 0
 	page = page*count
-	var $=this
 	return read([
 		{"user~Usearch": {limit: count, skip: page, usernameLike: like+"%"}}, 
 		{content: {limit: count, skip: page, nameLike: "%"+like+"%"}},
