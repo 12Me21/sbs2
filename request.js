@@ -276,7 +276,14 @@ getMe: function(callback) {
 },
 
 setBasic: function(data, callback) {
-	return request("User/basic", 'PUT', callback, data)
+	return request("User/basic", 'PUT', function(e, resp) {
+		if (!e) {
+			var l = [resp]
+			Entity.processList('user',l,{})
+			callback(l[0])
+		} else
+			callback(null)
+	}, data)
 },
 
 setSensitive: function(data, callback) {
@@ -361,8 +368,9 @@ getUserView: function(id, callback) {
 },
 
 getFileView: function(query, page, callback) {
+	page = page || 1
 	query.limit = 20
-	query.skip = page*query.limit
+	query.skip = (page-1)*query.limit
 	query.reverse = true
 	return read([
 		{file: query},

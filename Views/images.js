@@ -7,17 +7,23 @@ with (View) (function($) { "use strict" //*/
 addView('images', {
 	init: function() {
 		var nav = $fileNav
+		navButtons = Draw.navButtons()
+		nav.appendChild(navButtons.element)
+		navButtons.onchange = function(pageNum) {
+			/*if (currentCategory == null)
+				return*/
+			currentQuery.page = pageNum
+			Nav.go("images"+Req.queryString(currentQuery))
+		}
+					
 		$setAvatarButton.onclick = function() {
 			if (!selectedFile)
 				return
-			Req.setBasic({avatar: selectedFile.id}, function(e, resp) {
-				if (!e) {
+			Req.setBasic({avatar: selectedFile.id}, function(user) {
+				if (user) {
 					// have to do this because rannnnnnnnnnndommmmmmm broke user activityyy
-					var l = [resp]
-					Entity.processList('user', l, {})
-					updateMyUser(l[0])
+					updateMyUser(user)
 				}
-				//todo?
 			})
 		}
 		$fileUpdateButton.onclick = function() {
@@ -31,10 +37,12 @@ addView('images', {
 				//eh
 			})
 		}
-		//nav.replaceChildren(Draw.navButtons())
 	},
 	start: function(id, query, render) {
-		var page = +query.page || 0
+		currentQuery = query
+		var page = +query.page || 1
+		navButtons.set(page)
+		
 		return Req.getFileView({}, page, render)
 	},
 	className: 'fileMode',
@@ -80,6 +88,8 @@ function selectFile(file) {
 }
 
 var selectedFile
+var navButtons
+var currentQuery
 
 <!--/*
 }(window)) //*/ // pass external values
