@@ -22,7 +22,7 @@ Req.onLogin = function() {
 	Req.onActivity = function(a, p) { //todo: properly link activity with contents?
 		a.forEach(function(a) {
 			if (a.type == 'user')
-				View.updateUserAvatar(a.content)
+				View.updateUserAvatar(a.content) //todo: also update your avatar in sidebar
 		})
 		Entity.updateAggregateActivity(Req.currentActivity, a, p)
 		Sidebar.onAggregateChange(Req.currentActivity) //this might update unnecessarily often

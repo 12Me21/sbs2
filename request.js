@@ -197,6 +197,10 @@ tryLoadCachedAuth: function() {
 	return ok
 },
 
+putFile: function(file, callback) {
+	return request("File/"+file.id, 'PUT', callback, file)
+},
+
 register: function(username, password, email, callback) {
 	return request("User/register", 'POST', callback, {
 		username: username,
@@ -273,6 +277,10 @@ getMe: function(callback) {
 
 setBasic: function(data, callback) {
 	return request("User/basic", 'PUT', callback, data)
+},
+
+setSensitive: function(data, callback) {
+	return request("User/sensitive", 'POST', callback, data)
 },
 
 uploadFile: function(file, callback) {
