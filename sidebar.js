@@ -113,8 +113,7 @@ onAggregateChange: function(aggregate) {
 },
 
 onWatchingChange: function(aggregate) {
-	return
-	var items = []
+	/*var items = []
 	for (var id in aggregate)
 		if (aggregate[id].content) //HACK
 			items.push(aggregate[id])
@@ -124,7 +123,7 @@ onWatchingChange: function(aggregate) {
 	$sidebarWatchingPanel.replaceChildren()
 	items.forEach(function(item) {
 		$sidebarWatchingPanel.appendChild(Draw.activityItem(item))
-	})
+	})*/
 },
 
 print: function(text) {
