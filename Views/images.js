@@ -10,8 +10,22 @@ addView('images', {
 		$setAvatarButton.onclick = function() {
 			if (!selectedFile)
 				return
-			Req.setBasic({avatar: selectedFile.id}, function(e) {
+			Req.setBasic({avatar: selectedFile.id}, function(e, resp) {
+				if (!e) {
+					console.log("avatar", resp)
+				}
 				//todo?
+			})
+		}
+		$fileUpdateButton.onclick = function() {
+			if (!selectedFile)
+				return
+			readFields(selectedFile)
+			Req.putFile(selectedFile, function(e, resp) {
+				resp.createUser = selectedFile.createUser //ehhhhh
+				if (!e)
+					selectFile(resp)
+				//eh
 			})
 		}
 		//nav.replaceChildren(Draw.navButtons())
@@ -23,21 +37,38 @@ addView('images', {
 	className: 'fileMode',
 	render: function(files) {
 		setTitle("Files")
+		fileList = files
 		files.forEach(function(file) {
 			$fileBox.appendChild(Draw.fileThumbnail(file, selectFile))
 		})
 	},
 	cleanUp: function() {
 		$fileBox.replaceChildren()
+		selectFile(null)
+		fileList = null
 	},
 })
 
+var fileList
+
+function readFields(data) {
+	data.permissions = JSON.safeParse($filePermissions.value)
+	data.values = JSON.safeParse($fileValues.value)
+	data.name = $fileName.value
+}
+
 function selectFile(file) {
+	if (!file) {
+		selectedFile = file
+		flag('fileSelected', false)
+		$filePageView.src = ""
+		return
+	}
 	selectedFile = file
 	$fileName.value = file.name
 	$filePermissions.value = JSON.stringify(file.permissions)
 	$fileValues.value = JSON.stringify(file.values)
-	$fileUser.textContent = file.createUser.username
+	$fileUser.replaceChildren(Draw.entityTitleLink(file.createUser))
 	$filePageView.src = ""
 	$filePageView.src = Req.fileURL(file.id)
 	//Draw.setBgImage($filePageView, Req.fileURL(file.id))

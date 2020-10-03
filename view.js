@@ -180,7 +180,6 @@ updateUserAvatar: function(user) {
 },
 
 updateMyUser: function(user) {
-	
 	if (user.id != Req.uid)
 		return //uh oh
 	Req.me = user //This probably shouldn't be handled by View...

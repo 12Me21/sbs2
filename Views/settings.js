@@ -84,6 +84,22 @@ addView('settings', {
 				})
 			}
 		}
+
+		$submitUserSettings.onclick = function(e) {
+			e.preventDefault()
+			var data = readChangeFields()
+			if (data.error) {
+				registerError(data.error)
+				return
+			}
+			delete data.error
+			Req.setSensitive(data, function(e, resp) {
+				if (!e)
+					registerError("Updated")
+				else
+					registerError(resp, "Failed:")
+			})
+		}
 	}
 })
 
@@ -105,6 +121,39 @@ function registerError(message, title) {
 	if (title)
 		text = title+"\n"+text
 	$registerError.textContent = text
+}
+
+function readChangeFields() {
+	var form = $changeForm
+	var data = {
+		oldPassword: form.oldPassword.value,
+		username: form.username.value,
+		password: form.password.value,
+		email: form.email.value
+	}
+	data.error = {}
+
+	if (!data.oldPassword)
+		data.error.oldPassword = "Old password is required"
+
+	if (!data.username)
+		delete data.username
+	
+	if (data.password) {
+		if (data.password != form.password2.value)
+			data.error.password2 = "Passwords don't match"
+	} else
+		delete data.password
+
+	if (data.email) {
+		if (data.email != form.email2.value)
+			data.error.email2 = "Emails don't match"
+	} else
+		delete data.email
+
+	if (!Object.keys(data.error).length)
+		data.error = null
+	return data
 }
 
 function readRegisterFields() {

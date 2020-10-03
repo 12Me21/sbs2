@@ -106,10 +106,10 @@
 				<table class="form">
 					<tr>
 						<th>User:</th>
-						<td id=$fileUser></td>
+						<td id=$fileUser class="bar rem1-7"></td>
 					</tr>
 					<tr>
-						<th><label for=$fileName>Name:</label></th>
+						<th><label for=$fileName>File Name:</label></th>
 						<td><input id=$fileName></td>
 					</tr>
 					<tr>
@@ -241,16 +241,18 @@
 			</v-b>
 
 			<v-b data-view-settingsMode class="loggedIn">
-				<button id=$logOut>Log out</button><br>
-				Change account settings: <br>
-				<table class="form">
-					<tr><td><label for=$settingsOldPassword>Old Password: </label></td><td><input type="password" id=$settingsOldPassword required=""></td></tr>
-						<tr><td><label for=$settingsUsername>New Username (Optional): </label></td><td><input autocomplete="off" id=$settingsUsername></td></tr>
-						<tr><td><label for=$settingsNewPassword>New Password (Optional): </label></td><td><input autocomplete="new-password" type="password" id=$settingsNewPassword></td></tr>
-						<tr><td><label for=$settingsEmail>New Email (Optional): </label></td><td><input autocomplete="off" type="email" id=$settingsEmail></td></tr>
-				</table>
-				<button id=$submitUserSettings>Save</button>
-				<hr>
+				<div class="registerBox bottomBorder">
+					<button id=$logOut>Log out</button><br>
+					<h2>Change account settings</h2>
+					<form id=$changeForm>
+						<input placeholder="Old Password" name=oldPassword minlength=8 type=password><br>
+						Only fill out the fields you want to change:<br>
+						(optional) <input placeholder="New Username" name=username minlength=2 maxlength=20> 2 to 20 characters, no spaces<br>
+						(optional) <input placeholder="New Password" name=password type=password minlength=8><input placeholder="Confirm New Password" name=password2 type=password minlength=8> At least 8 characters<br>
+						(optional) <input placeholder="New Email" name=email type=email><input placeholder="Confirm New Email" name=email2 type=email><br>
+						<button id=$submitUserSettings>Save</button>
+					</form>
+				</div>
 				<a data-static-path=images>Change your avatar here</a>
 			</v-b>
 
