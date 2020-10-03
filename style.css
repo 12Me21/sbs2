@@ -542,6 +542,7 @@ main-scrollable {
 .nav {
 	border-bottom: 1px solid gray;
 	background-color: #333;
+	color: white;
 }
 
 .nav > span {
@@ -1273,6 +1274,10 @@ sidebar-panel {
 	max-height: 100%;
 	box-sizing: border-box;
 	border: 1px solid black;
+
+	padding: 1px;
+	background: black;
+	border: 5px solid white;
 	/*-webkit-transform: scale(1); //this should be the inverse of the max-width/height value (5% -> 20, etc.)
 	transform: scale(1);*/
 }
