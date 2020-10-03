@@ -459,6 +459,7 @@ commentTitle: function(comment) {
 		user = Object.create(user, {
 			avatar: {value: av}
 		})
+	//todo: I saw this fail for a user without an avatar, somehow
 	titleNotification(comment.content, Draw.avatarURL(user, "size=120&crop=true"))
 },
 
