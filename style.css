@@ -675,31 +675,27 @@ message-contents img {
 	margin: 0.3rem 0;
 }
 
-html.f-deleteComment message-contents > p:hover {
-	background-color: red;
-}
-
-html.f-editComment message-contents > p:hover {
+html.f-chatEdit message-part:hover {
 	background-color: yellow;
 }
 
-html.f-deleteComment #\$chatDelete {
+html.f-chatEdit #\$chatEdit {
 	background-color: red;
 }
 
-html.f-editComment #\$chatEdit {
-	background-color: red;
-}
-
-message-contents > p[editing] {
+message-part[editing] {
 	background-color: yellow;
 }
 
-html.f-editingComment .hideWhenEdit {
+html.f-chatEditing #\$chatTextarea {
+	background-color: #FFFF80;
+}
+
+html.f-chatEditing .hideWhenEdit {
 	display:none;
 }
 
-html:not(.f-editingComment) .showWhenEdit {
+html:not(.f-chatEditing) .showWhenEdit {
 	display:none;
 }
 
