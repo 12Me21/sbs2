@@ -183,7 +183,10 @@ function writeInput(data) {
 var preEdit = null
 var editingComment = null
 
+$.editComment = editComment //HACK
 function editComment(id) {
+	if (editingComment)
+		cancelEdit()
 	Req.getComment(id, function(comment) {
 		if (!comment)
 			return

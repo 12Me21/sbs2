@@ -654,23 +654,31 @@ message-block > .avatar {
 }
 message-contents {
 	position: relative;
-	padding-left: 4rem;
+	margin-top: 0.2rem;
 }
 
 message-controls {
 	position: absolute;
 	/*margin: 0.2rem 0;*/
-	margin-left: -4rem;
 	width: 4rem;
 	overflow: hidden;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+	border: 1px solid gray;
+}
+
+message-controls:hover + message-part {
+	background-color: rgba(0,0,0,0.1);
 }
 
 message-part:not(.whatever) {
 	/*margin: 0.2rem 0;*/
 	padding: 0 0.2rem;
 	display: block;
-	margin: 0.2rem 0;
-	margin-top: 0;
+	/*margin: 0.2rem 0;*/
+	padding-left: 4.2rem;
+	padding-bottom: 0.2rem
 }
 message-part.edited {
 	padding-left: 0.1rem;
