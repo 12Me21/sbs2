@@ -297,6 +297,15 @@ sidebarTabs: function(list, callback) {
 	var r = document.createElement('tr')
 	d.appendChild(r)
 	var btns = []
+	var x = {
+		elem: d,
+		select: function(i) {
+			list.forEach(function(item, i2) {
+				btns[i2].setAttribute('aria-selected', i==i2)
+				item.elem.hidden = i!=i2
+			})
+		},
+	}
 	list.forEach(function(item, i) {
 		var td = document.createElement('td')
 		var btn = document.createElement('button')
@@ -308,14 +317,11 @@ sidebarTabs: function(list, callback) {
 		r.appendChild(td)
 		btn.textContent = item.label
 		btns[i] = btn
-		btn.onclick = function(e) {
-			btns.forEach(function(e, i2) {
-				e.setAttribute('aria-selected', i==i2)
-			})
-			callback(i)
+		btn.onclick = function() {
+			x.select(i)
 		}
 	})
-	return d
+	return x
 },
 setBgImage: function(element, url) {
 	element.style.backgroundImage = ""
