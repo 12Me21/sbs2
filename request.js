@@ -443,6 +443,17 @@ editPage: function(page, callback) {
 		request("Content", 'POST', callback, page)
 },
 
+getComment: function(id, callback) {
+	return read([
+		{comment: {ids: [id]}}//todo: maybe also get page permissions?
+	], {}, function(e, resp) {
+		if (!e)
+			callback(resp.comment[0])
+		else
+			callback(null)
+	})
+},
+
 getCommentsBefore: function(id, firstId, count, callback) {
 	var fi = {reverse: true, limit: count, parentIds: [id]}
 	if (firstId != null)
@@ -460,6 +471,14 @@ getCommentsBefore: function(id, firstId, count, callback) {
 
 sendMessage: function(room, message, meta, callback) {
 	return request("Comment", 'POST', callback, {parentId: room, content: JSON.stringify(meta)+"\n"+message})
+},
+
+editMessage: function(id, room, message, meta, callback) {
+	return request("Comment/"+id, 'PUT', callback, {parentId: room, content: JSON.stringify(meta)+"\n"+message})
+},
+
+deleteMessage: function(id, callback) {
+	return request("Comment/"+id+"/delete", 'POST', callback)
 },
 
 doListenInitial: function(callback) {

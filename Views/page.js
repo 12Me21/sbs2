@@ -80,14 +80,32 @@ addView('page', {
 			var data = readInput()
 			var room = ChatRoom.currentRoom
 			if (room && data.content) {
-				var old = data
-				Req.sendMessage(room.id, data.content, data.meta, function(e) {
-					if (e) {
-						//error sending message
-						writeData(old)
-					}
-				})
-				$chatTextarea.value = "" //hack?
+				
+				if (editingComment) {
+					Req.editMessage(editingComment.id, editingComment.parentId, data.content, data.meta, function(e) {
+						if (e)
+							alert("Editing comment failed")
+					})
+					cancelEdit()
+				} else {
+					var old = data
+					Req.sendMessage(room.id, data.content, data.meta, function(e) {
+						if (e) {
+							//error sending message
+							writeData(old)
+						}
+					})
+					$chatTextarea.value = "" //hack?
+				}
+			} else if (editingComment) {
+				var resp = confirm("Are you sure you want to delete this message?\n"+editingComment.content)
+				if (resp) {
+					Req.deleteMessage(editingComment.id, function(e, resp) {
+						//
+					})
+					$chatTextarea.focus() //need more of this
+				}
+				cancelEdit()
 			}
 		}
 		
@@ -110,6 +128,36 @@ addView('page', {
 				$hideGlobalStatusButton.disabled = false
 			})
 		}
+
+		$chatEdit.onclick = function() {
+			View.flag('chatEdit', true) // Set Edit Mode
+		}
+		$chatCancelEdit.onclick = function() {
+			cancelEdit()
+		}
+		document.addEventListener('keydown', function(e) {
+			if (e.keyCode == 27) {
+				cancelEditMode()
+				cancelEdit()
+			}
+		})
+		document.addEventListener('click', function(e) {
+			if (View.flags.chatEdit) {
+				View.flag('chatEdit', false)
+				var element = e.target
+				while (element && element instanceof HTMLElement) {
+					if (element.tagName == 'MESSAGE-PART') {
+						var id = element.getAttribute('data-id')
+						if (id) {
+							editComment(+id, element)
+						}
+						break
+					}
+					element = element.parentNode
+				}
+			}
+		}, true)
+
 	}
 })
 
@@ -130,6 +178,33 @@ function readInput() {
 function writeInput(data) {
 	$chatTextarea.value = data.content || ""
 	$chatMarkupSelect.checked = data.meta.m == "12y"
+}
+
+var preEdit = null
+var editingComment = null
+
+function editComment(id) {
+	Req.getComment(id, function(comment) {
+		if (!comment)
+			return
+		cancelEditMode()
+		preEdit = readInput()
+		editingComment = comment
+		writeInput(comment)
+		View.flag('chatEditing', true)
+	})
+}
+
+function cancelEdit() {
+	if (editingComment) {
+		editingComment = null
+		View.flag('chatEditing', false)
+		writeInput(preEdit)
+	}
+}
+
+function cancelEditMode() {
+	View.flag('chatEdit', false)
 }
 
 <!--/*
