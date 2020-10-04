@@ -600,6 +600,7 @@ messageControls: function() {
 	btn[1].onclick = function() {
 		x.onclick()
 	}
+	btn[1].tabIndex = "-1"
 	btn[1].textContent = "edit"
 	btn[0].className += " rightAlign"
 	return x
