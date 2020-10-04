@@ -1,3 +1,5 @@
+// a lot of this (especially message inserting/removing) really needs to be cleaned up...
+
 function ChatRoom(id, page) {
 	var $=this
 	var old = ChatRoom.rooms[id]
@@ -38,6 +40,8 @@ function ChatRoom(id, page) {
 	// chat
 	this.messageElements = {}
 	this.lastTime = 0
+	this.maxMessages = 500
+	this.totalMessages = 0
 
 	var b = Draw.chatMessagePane()
 	this.messagePane = b[0]
@@ -128,9 +132,38 @@ ChatRoom.prototype.displayOldMessage = function(comment) {
 				contents = b[1]
 			}
 			contents.prependChild(node)
+			if (!$.messageElements[comment.id])
+				$.totalMessages++
 			$.messageElements[id] = node
+			$.limitMessages()
 		}
 	})
+}
+
+ChatRoom.prototype.limitMessages = function() {
+	for (var id in this.messageElements) {
+		if (this.totalMessages <= this.maxMessages)
+			break
+		if (!this.removeMessage(id))
+			break //fail
+	}
+}
+
+ChatRoom.prototype.removeMessage = function(id) {
+	var message = this.messageElements[id]
+	if (!message)
+		return false
+	
+	var parent = message.parentNode
+	
+	message.remove()
+	delete this.messageElements[id]
+	this.totalMessages--
+	
+	if (!parent.firstChild)
+		parent.parentNode.remove()
+	
+	return true
 }
 
 ChatRoom.generateStatus = function() {
@@ -317,8 +350,7 @@ ChatRoom.prototype.displayMessage = function(comment, autoscroll) {
 			if (old) { // edited
 				old.parentNode.replaceChild(part, old)
 			} else { // new comment
-
-				var lastUidBlock = $.messageList.lastChild
+					var lastUidBlock = $.messageList.lastChild
 				if (lastUidBlock) {
 					var lastUid = lastUidBlock.getAttribute('data-uid')
 					if (!lastUid)
@@ -342,7 +374,10 @@ ChatRoom.prototype.displayMessage = function(comment, autoscroll) {
 				
 				View.commentTitle(comment)
 			}
+			if (!$.messageElements[comment.id])
+				$.totalMessages++
 			$.messageElements[comment.id] = part
+			$.limitMessages()
 		}
 	}, autoscroll != false)
 }
