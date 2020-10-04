@@ -8,6 +8,7 @@ function ChatRoom(id, page) {
 	
 	this.id = id
 	this.status = "active"
+	this.userList = [] //did this get deleted accidentally???
 	
 	if (id <= 0) {
 		this.userListInner = $sidebarUserList
