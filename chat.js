@@ -61,13 +61,13 @@ function ChatRoom(id, page) {
 	$chatPane.appendChild(this.messagePane)
 
 	this.controlId = null
-	this.controls = document.createElement('message-controls')
-	this.controls.textContent = "Controls"
-	this.controls.onclick = function() {
+	var controls = Draw.messageControls()
+	controls.onclick = function() {
 		if ($.controlId)
 			window.editComment($.controlId)
 	}
-	
+	this.controls = controls.elem
+
 	this.messageList.onmouseover = function(e) {
 		var elem = e.target
 		while (elem != $.messageList && elem instanceof HTMLElement) {
