@@ -670,6 +670,10 @@ message-controls {
 message-controls:hover + message-part {
 	background-color: rgba(0,0,0,0.1);
 }
+message-part:focus {
+	background-color: rgba(0,224,255,0.1);
+	outline: none;
+}
 
 message-part:not(.whatever) {
 	/*margin: 0.2rem 0;*/

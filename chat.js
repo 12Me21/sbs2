@@ -68,6 +68,20 @@ function ChatRoom(id, page) {
 	}
 	this.controls = controls.elem
 
+	this.messageList.addEventListener('focusin', function(e) {
+		var elem = e.target
+		while (elem != $.messageList && elem instanceof HTMLElement) {
+			if (elem.tagName == "MESSAGE-PART") {
+				$.showControls(elem)
+				break
+			}
+			elem = elem.parentNode
+		}
+	})
+	this.messageList.addEventListener('focusout', function(e) {
+		$.showControls(null)
+	})
+
 	this.messageList.onmouseover = function(e) {
 		var elem = e.target
 		while (elem != $.messageList && elem instanceof HTMLElement) {
