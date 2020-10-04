@@ -294,8 +294,12 @@ ChatRoom.prototype.displayMessage = function(comment, autoscroll) {
 		var old = $.messageElements[comment.id]
 		if (comment.deleted) {
 			// deleted
-			if (old)
+			if (old) {
+				var contents = old.parentNode
 				old.remove()
+				if (!contents.firstChild)
+					contents.parentNode.remove()
+			}
 		} else {
 			var part = Draw.messagePart(comment)
 			if (old) { // edited
