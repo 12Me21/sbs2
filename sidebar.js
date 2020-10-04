@@ -10,12 +10,7 @@ prePrint: [],
 
 sidebarPanels: null,
 
-selectTab: function(id) {
-	// todo: move graphics update here
-	sidebarPanels.forEach(function(panel, pid) {
-		panel.hidden = pid!=id
-	})
-},
+selectTab: null,
 
 onLoad: function() {
 	$openSidebar.onclick = $closeSidebar.onclick = toggle
@@ -66,12 +61,15 @@ onLoad: function() {
 		e.setAttribute('aria-labelledby', "sidebar-tab-"+i)
 		e.hidden = true
 	})
-	$sidebarTabs.replaceChildren(Draw.sidebarTabs([
-		{label: "activity"}, /*{label: "watching"},*/ {label: "image"}, {label: "search"}
-	], function(id) {
-		selectTab(id)
-	}))
-	selectTab(0)
+	var sidebarTabs = Draw.sidebarTabs([
+		{label: "activity", elem: $sidebarActivityPanel},
+		/*{label: "watching"},*/
+		{label: "image", elem: $sidebarFilePanel},
+		{label: "search", elem: $sidebarSearchPanel},
+	])
+	$sidebarTabs.replaceChildren(sidebarTabs.elem)
+	sidebarTabs.select(0)
+	selectTab = sidebarTabs.select
 
 	$searchButton.onclick = function() {
 		$searchButton.disabled = true
