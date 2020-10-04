@@ -221,16 +221,21 @@ button {
 	border-radius: 0px;*/
 }
 
+button[data-noreplace] {
+	border: 2px outset gray;
+	border-radius: 0px;
+}
+
 .buttonContainer > a {
 	width: 100%;
 	height: 100%;
 	display: inline-block;
 }
-.buttonContainer button:hover {
+button:hover {
 	border-color: #59E;
 }
 
-.buttonContainer button:active {
+button:active {
 	border-style: inset;
 }
 
@@ -1281,3 +1286,4 @@ sidebar-panel {
 user-select {
 	display: block;
 }
+

@@ -215,7 +215,7 @@ titlePath: function(path) {
 // avatar changes
 // but perhaps this can be abused, and it's probably annoying anyway...
 messageBlock: function(comment) {
-	var user = comment.createUser
+	var user = comment.createUser || {} //fix for deleted comments?
 	var date = comment.createDate
 	
 	var div = document.createElement('message-block')
@@ -227,7 +227,7 @@ messageBlock: function(comment) {
 	
 	var av = +comment.meta.a
 	if (av)
-		user = Object.create(user, { //TODO: this breaks if user is undefined (which I think is possible?)
+		user = Object.create(user, { //TODO: this breaks if user is undefined (which I think is possible?) YES
 			// also used by commentTitle
 			avatar: {value: av}
 		})

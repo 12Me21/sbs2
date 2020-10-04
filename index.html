@@ -282,10 +282,10 @@
 					<tr>
 						<td rowspan="2" class="tableGrow"><textarea class="chatTextarea" id=$chatTextarea accesskey="z"></textarea></td>
 						<td style="white-space: nowrap;"><label for=$chatMarkupSelect>Markup:</label><input type=checkbox checked id=$chatMarkupSelect></td>
-						<td rowspan="2"><button class="chatSend fill" id=$chatSend tabindex=-1><span class="showWhenEdit">Submit Edit</span><span class="hideWhenEdit">Send</span></button></td>
+						<td rowspan="2"><button data-noreplace class="chatSend fill" id=$chatSend tabindex=-1><span class="showWhenEdit">Submit Edit</span><span class="hideWhenEdit">Send</span></button></td>
 					</tr>
 					<tr>
-						<td><button class="fill hideWhenEdit" id=$chatEdit>Edit</button><button class="fill showWhenEdit" id=$chatCancelEdit>Cancel Edit</button></td>
+						<td><button data-noreplace class="fill hideWhenEdit" id=$chatEdit>Edit</button><button class="fill showWhenEdit" id=$chatCancelEdit>Cancel Edit</button></td>
 					</tr>
 				</table>
 			</v-b>
