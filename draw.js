@@ -477,7 +477,112 @@ permissionInput: function() {
 		}
 	}
 	return x
-}
+},
+
+userSelector: function() {
+	var elem = document.createElement('user-select')
+	elem.className = "bar rem1-5"
+	var input = document.createElement('input')
+	input.placeholder = "Search Username"
+	input.className = "item"
+	var dropdown = document.createElement('select')
+	dropdown.className = "item"
+	var placeholder = document.createElement('option')
+	placeholder.textContent = "select user..."
+	placeholder.disabled = true
+	placeholder.hidden = true
+	
+	var placeholder2 = document.createElement('option')
+	placeholder2.textContent = "loading..."
+	placeholder2.disabled = true
+	placeholder2.hidden = true
+	
+	var submit = document.createElement('button')
+	submit.textContent = "select"
+	submit.disabled = true
+	submit.className = "item"
+	
+	var results = null
+	
+	var x = {
+		elem: elem,
+		searchText: null,
+	}
+	input.oninput = function() {
+		reset()
+	}
+	input.onkeypress = function(e) {
+		if (e.keyCode == 13) {
+			e.preventDefault()
+			dropdown.focus()
+		}
+	}
+	dropdown.onkeypress = function(e) {
+		if (e.keyCode == 13 && dropdown.value) {
+			e.preventDefault()
+			submit.click()
+		}
+	}
+	dropdown.onfocus = function() {
+		if (input.value == x.searchText)
+			return
+		x.searchText = input.value
+		dropdown.replaceChildren(placeholder2)
+		placeholder2.selected = true
+		results = true
+		Req.searchUsers(x.searchText, function(users) {
+			dropdown.replaceChildren()
+			if (!users) {
+				x.searchText = null //error
+				return
+			}
+			results = users
+			submit.disabled = false
+			var found = false
+			users.forEach(function(user) {
+				var option = document.createElement('option')
+				option.value = user.id
+				option.textContent = user.username
+				dropdown.appendChild(option)
+				found = true
+			})
+			if (!found) {
+				var option = document.createElement('option')
+				option.value = "0"
+				option.textContent = "(no results)"
+				option.disabled = true
+				dropdown.appendChild(option)
+				dropdown.value = "0"
+				input.focus()
+			}
+		})
+	}
+	submit.onclick = function() {
+		var uid = dropdown.value
+		if (uid) {
+			x.onchange(results[uid])
+			input.focus()
+			input.value=""
+			reset()
+		}
+	}
+	function reset() {
+		if (results) {
+			submit.disabled = true
+			dropdown.replaceChildren(placeholder)
+			placeholder.selected = true
+			results = null
+			x.searchText = null
+		}
+	}
+	
+	elem.appendChild(input)
+	elem.appendChild(dropdown)
+	elem.appendChild(submit)
+	results = true
+	reset()
+	return x
+},
 
 <!--/* 
 }) //*/
