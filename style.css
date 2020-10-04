@@ -646,10 +646,6 @@ message-contents {
 	vertical-align: top;
 	overflow: auto;
 }
-message-part.markup-root {
-	padding: 0 0.2rem;
-	margin: 0.2rem 0;
-}
 message-block {
 	position: relative;
 }
@@ -657,13 +653,24 @@ message-block > .avatar {
 	position: absolute;
 }
 message-contents {
-	margin-left: 4rem;
+	position: relative;
+	padding-left: 4rem;
 }
 
-message-part {
+message-controls {
+	position: absolute;
+	/*margin: 0.2rem 0;*/
+	margin-left: -4rem;
+	width: 4rem;
+	overflow: hidden;
+}
+
+message-part:not(.whatever) {
 	/*margin: 0.2rem 0;*/
 	padding: 0 0.2rem;
 	display: block;
+	margin: 0.2rem 0;
+	margin-top: 0;
 }
 message-part.edited {
 	padding-left: 0.1rem;
