@@ -59,9 +59,14 @@ function ChatRoom(id, page) {
 	this.messagePane.prependChild(b[0])
 	this.messagePane.setAttribute('data-id', page.id)
 	$chatPane.appendChild(this.messagePane)
-	
+
+	this.controlId = null
 	this.controls = document.createElement('message-controls')
 	this.controls.textContent = "Controls"
+	this.controls.onclick = function() {
+		if ($.controlId)
+			window.editComment($.controlId)
+	}
 	
 	this.messageList.onmouseover = function(e) {
 		var elem = e.target
@@ -414,7 +419,9 @@ ChatRoom.prototype.displayMessage = function(comment, autoscroll) {
 ChatRoom.prototype.showControls = function(elem) {
 	if (!elem) {
 		this.controls.remove()
+		this.controlId = null
 		return
 	}
 	elem.parentNode.insertBefore(this.controls, elem)
+	this.controlId = +elem.getAttribute('data-id')
 }
