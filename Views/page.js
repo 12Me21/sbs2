@@ -195,6 +195,7 @@ function editComment(id) {
 		editingComment = comment
 		writeInput(comment)
 		View.flag('chatEditing', true)
+		$chatTextarea.focus()
 	})
 }
 

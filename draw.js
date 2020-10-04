@@ -590,6 +590,21 @@ userSelector: function() {
 	return x
 },
 
+messageControls: function() {
+	var elem = document.createElement('message-controls')
+	var x = {
+		elem: elem
+	}
+	var btn = button()
+	elem.appendChild(btn[0])
+	btn[1].onclick = function() {
+		x.onclick()
+	}
+	btn[1].textContent = "edit"
+	btn[0].className += " rightAlign"
+	return x
+},
+
 <!--/* 
 }) //*/
 

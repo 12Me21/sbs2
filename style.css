@@ -665,7 +665,6 @@ message-controls {
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	user-select: none;
-	border: 1px solid gray;
 }
 
 message-controls:hover + message-part {
@@ -681,8 +680,10 @@ message-part:not(.whatever) {
 	padding-bottom: 0.2rem
 }
 message-part.edited {
-	padding-left: 0.1rem;
-	border-left: 3px solid gray;
+	/* todo: fix this */
+	/* we may just need an extra container for message-parts... */
+	padding-left: 4.1rem;
+	border-left: 0.1rem solid gray;
 }
 
 message-contents img {
