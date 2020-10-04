@@ -98,26 +98,38 @@ ChatRoom.prototype.loadOlder = function(num, callback) {
 ChatRoom.prototype.displayOldMessage = function(comment) {
 	var $=this
 	this.scroller.handlePrintTop(function(){
-		var firstUidBlock = $.messageList.firstChild
-		if (firstUidBlock) {
-			var firstUid = firstUidBlock.getAttribute('data-uid')
-			if (!firstUid)
-				firstUidBlock = null
-			else
-				firstUid = +firstUid
-		}
-		var id = comment.id
-		var uid = comment.createUserId
-		var node = Draw.messagePart(comment)
-		if (uid && firstUid == uid && firstUidBlock) {
-			var contents = firstUidBlock.getElementsByTagName('message-contents')[0]// not great...
+		var old = $.messageElements[comment.id]
+		if (comment.deleted) {
+			// deleted
+			if (old) {
+				var contents = old.parentNode
+				old.remove()
+				if (!contents.firstChild)
+					contents.parentNode.remove()
+			}
 		} else {
-			var b = Draw.messageBlock(comment)
-			$.messageList.prependChild(b[0])
-			contents = b[1]
+			// `old` should never be set here, I think...
+			var firstUidBlock = $.messageList.firstChild
+			if (firstUidBlock) {
+				var firstUid = firstUidBlock.getAttribute('data-uid')
+				if (!firstUid)
+					firstUidBlock = null
+				else
+					firstUid = +firstUid
+			}
+			var id = comment.id
+			var uid = comment.createUserId
+			var node = Draw.messagePart(comment)
+			if (uid && firstUid == uid && firstUidBlock) {
+				var contents = firstUidBlock.getElementsByTagName('message-contents')[0]// not great...
+			} else {
+				var b = Draw.messageBlock(comment)
+				$.messageList.prependChild(b[0])
+				contents = b[1]
+			}
+			contents.prependChild(node)
+			$.messageElements[id] = node
 		}
-		contents.prependChild(node)
-		$.messageElements[id] = node
 	})
 }
 
