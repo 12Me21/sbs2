@@ -88,10 +88,13 @@ function ChatRoom(id, page) {
 		while (elem != $.messageList && elem instanceof HTMLElement) {
 			if (elem.tagName == "MESSAGE-PART") {
 				$.showControls(elem)
-				break
+				return
 			}
+			if (elem.tagName == "MESSAGE-CONTROLS")
+				return
 			elem = elem.parentNode
 		}
+		$.showControls(null)
 	}
 	this.messageList.onmouseleave = function(e) {
 		$.showControls(null)
