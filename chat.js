@@ -59,7 +59,35 @@ function ChatRoom(id, page) {
 	this.messagePane.prependChild(b[0])
 	this.messagePane.setAttribute('data-id', page.id)
 	$chatPane.appendChild(this.messagePane)
-
+	
+	this.controls = document.createElement('message-controls')
+	this.controls.textContent = "Controls"
+	
+	this.messageList.onmouseover = function(e) {
+		var elem = e.target
+		while (elem != $.messageList && elem instanceof HTMLElement) {
+			if (elem.tagName == "MESSAGE-PART") {
+				$.showControls(elem)
+				break
+			}
+			elem = elem.parentNode
+		}
+	}
+	this.messageList.onmouseleave = function(e) {
+		$.showControls(null)
+	/*	if (e.target == $.messageList)
+			
+		return
+		var elem = e.target
+		while (elem != $.messageList && elem instanceof HTMLElement) {
+			if (elem.tagName == "MESSAGE-PART") {
+				$.showControls(null)
+				break
+			}
+			elem = elem.parentNode
+		}*/
+	}
+	
 	this.showChat = page.type == "@page.discussion"
 	
 	this.visible = false
@@ -380,4 +408,13 @@ ChatRoom.prototype.displayMessage = function(comment, autoscroll) {
 			$.limitMessages()
 		}
 	}, autoscroll != false)
+}
+
+// should maybe take id instead of element?
+ChatRoom.prototype.showControls = function(elem) {
+	if (!elem) {
+		this.controls.remove()
+		return
+	}
+	elem.parentNode.insertBefore(this.controls, elem)
 }
