@@ -1281,3 +1281,7 @@ sidebar-panel {
 	/*-webkit-transform: scale(1); //this should be the inverse of the max-width/height value (5% -> 20, etc.)
 	transform: scale(1);*/
 }
+
+user-select {
+	display: block;
+}

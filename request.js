@@ -334,7 +334,7 @@ searchUsers: function(text, callback) {
 		{user: {limit: count, usernameLike: "%"+like+"%"}}
 	],{},function(e, resp) {
 		if (!e)
-			callback(resp.user)
+			callback(resp.userMap)
 		else
 			callback(null)
 	})
