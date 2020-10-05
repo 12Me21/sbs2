@@ -86,6 +86,7 @@ addView('settings', {
 		}
 
 		$submitUserSettings.onclick = function(e) {
+			registerError("Updating data...", undefined, $userSettingsError)
 			e.preventDefault()
 			var data = readChangeFields()
 			if (data.error) {
@@ -95,15 +96,16 @@ addView('settings', {
 			delete data.error
 			Req.setSensitive(data, function(e, resp) {
 				if (!e)
-					registerError("Updated")
+					registerError("Updated", undefined, $userSettingsError)
 				else
-					registerError(resp, "Failed:")
+					registerError(resp, "Failed:", $userSettingsError)
 			})
 		}
 	}
 })
 
-function registerError(message, title) {
+//todo: clean this up
+function registerError(message, title, element) {
 	var text = ""
 	if (message == undefined)
 		text = ""
@@ -120,7 +122,7 @@ function registerError(message, title) {
 	}
 	if (title)
 		text = title+"\n"+text
-	$registerError.textContent = text
+	;(element||$registerError).textContent = text
 }
 
 function readChangeFields() {
