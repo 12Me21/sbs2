@@ -158,6 +158,22 @@ addView('page', {
 			}
 		}, true)
 
+		updateChatTextareaSize()
+		$chatTextarea.addEventListener('input', updateChatTextareaSize)
+		function updateChatTextareaSize() {
+			$chatTextarea.style.height = ''
+			if (ChatRoom.currentRoom) {
+				var oldBottom = ChatRoom.currentRoom.scroller.scrollBottom
+			}
+			var height = $chatTextarea.scrollHeight
+			$chatTextarea.parentNode.style.height = $chatTextarea.style.height =
+				Math.min(Math.max(height, 16), 200)+"px"
+			if (ChatRoom.currentRoom) {
+				ChatRoom.currentRoom.scroller.ignoreScroll = true
+				ChatRoom.currentRoom.scroller.scrollBottom = oldBottom
+			}
+		}
+		TrackResize2($chatTextarea, updateChatTextareaSize)
 	}
 })
 
@@ -213,10 +229,6 @@ function cancelEditMode() {
 
 <!--/*
 }(window)) //*/ // pass external values
-
-
-
-
 
 // when joining a room:
 // - create the ChatRoom object

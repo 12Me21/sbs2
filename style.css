@@ -728,15 +728,9 @@ html:not(.f-chatEditing) .showWhenEdit {
  ** Chat Input **
  ****************/
 .inputPane {
-	height: 3.25rem;
+	/*height: 3.25rem;*/
 	overflow-y: hidden;
 	border-top: 1px solid gray;
-}
-
-#\$chatTextarea {
-	width: 100%;
-	height: 100%;
-	resize: none;
 }
 
 .chatSend {
@@ -1307,3 +1301,24 @@ user-select {
 	display: block;
 }
 
+textarea-container {
+	position: relative;
+	display: block;
+	box-sizing: content-box;
+	border: 2px solid #00C8B4;
+}
+
+textarea-container > textarea {
+	resize: none;
+	height: 2.5em;
+	min-height: 2.5em;
+	position: absolute;
+	box-sizing: content-box;
+	resize: none;
+	width: 100%;
+	border: none;
+	padding: 0;
+	margin: 0;
+	/*background-color: #FFFF80;*/
+	border-radius: 0;
+}

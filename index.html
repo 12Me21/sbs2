@@ -253,7 +253,7 @@
 						(optional) <input placeholder="New Username" name=username minlength=2 maxlength=20> 2 to 20 characters, no spaces<br>
 						(optional) <input placeholder="New Password" name=password type=password minlength=8><input placeholder="Confirm New Password" name=password2 type=password minlength=8> At least 8 characters<br>
 						(optional) <input placeholder="New Email" name=email type=email><input placeholder="Confirm New Email" name=email2 type=email><br>
-						<button id=$submitUserSettings>Save</button>
+						<button name=submit>Save</button>
 					</form>
 					<div id=$userSettingsError class="pre"></div>
 				</div>
@@ -281,7 +281,7 @@
 			<v-b data-view-page class="inputPane chatMode loggedIn">
 				<table> <!-- YES it's a TABLE! sorry ... I'm not allowed to use flex so this is the only option -->
 					<tr>
-						<td rowspan="2" class="tableGrow"><textarea class="chatTextarea" id=$chatTextarea accesskey="z"></textarea></td>
+						<td rowspan="2" class="tableGrow"><textarea-container><textarea class="chatTextarea" id=$chatTextarea accesskey="z"></textarea></textarea-container></td>
 						<td style="white-space: nowrap;"><label for=$chatMarkupSelect>Markup:</label><input type=checkbox checked id=$chatMarkupSelect></td>
 						<td rowspan="2"><button data-noreplace class="chatSend fill" id=$chatSend tabindex=-1><span class="showWhenEdit">Submit Edit</span><span class="hideWhenEdit">Send</span></button></td>
 					</tr>

@@ -1,3 +1,62 @@
+function TrackResize2(element, callback) {
+	var t = TrackResize2.tracking
+	if (callback) {
+		var n = {
+			element: element,
+			callback: callback,
+			height: element.scrollHeight
+		}
+		if (TrackResize2.observer) {
+			TrackResize2.observer.observe(element)
+			t.set(element, n)
+		} else {
+			t.push(n)
+		}
+	} else {
+		if (TrackResize2.observer) {
+			TrackResize2.observer.unobserve(element)
+			t['delete'](element)
+		} else {
+			for (var i=0; i<t.length; i++) {
+				if (t[i].element == element) {
+					t.splice(i, 1)
+					break
+				}
+			}
+		}
+	}
+}
+
+if (window.ResizeObserver) {
+	TrackResize2.tracking = new WeakMap()
+	TrackResize2.observer = new ResizeObserver(function(events) {
+		var t = TrackResize2.tracking
+		events.forEach(function(event) {
+			var item = t.get(event.target)
+			if (item) {
+				if (event.contentRect.width) { //ignore changes for hidden elements
+					var height = event.contentRect.width
+					if (height != item.height) { //need to check if height changed in case of an ignored hide/show cycle
+						item.callback()
+						item.height = height
+					}
+				}
+			}
+		})
+	})
+} else {
+	TrackResize2.tracking = []
+	TrackResize2.interval = window.setInterval(function() {
+		TrackResize2.tracking.forEach(function(item) {
+			var newSize = item.element.getBoundingClientRect()
+			if (newSize.width && newSize.width!=item.height) {
+				item.callback()
+				item.height = newSize.width
+			}
+		})
+	}, 200)
+}
+
 function TrackScrollResize(element, callback) {
 	var t = TrackScrollResize.tracking
 	if (callback) {
