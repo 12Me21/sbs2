@@ -85,7 +85,7 @@ addView('settings', {
 			}
 		}
 
-		$submitUserSettings.onclick = function(e) {
+		$changeForm.submit.onclick = function(e) {
 			registerError("Updating data...", undefined, $userSettingsError)
 			e.preventDefault()
 			var data = readChangeFields()
