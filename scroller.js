@@ -217,7 +217,7 @@ Scroller.prototype.autoScrollAnimation = function(time) {
 	this.scrollBottom = expect
 	
 	this.atBottom = true
-	if (this.scrollBottom <= 0) { // done
+	if (this.scrollBottom <= 0.5) { // done
 		this.animationId = null
 		return
 	}
