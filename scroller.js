@@ -172,7 +172,7 @@ Object.defineProperty(Scroller.prototype, 'scrollBottom', {
 	set: function(value) {
 		var parent = this.outer
 		// need to round here because it would be reversed otherwise
-		value = Math.floor(value*window.devicePixelRatio)/window.devicePixelRatio
+		value = Math.floor(value*window.devicePixelRatio)
 		parent.scrollTop = parent.scrollHeight-parent.clientHeight-value
 	}
 })
