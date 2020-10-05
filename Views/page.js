@@ -168,7 +168,7 @@ addView('page', {
 			}
 			var height = $chatTextarea.scrollHeight
 			$chatTextarea.parentNode.style.height = $chatTextarea.style.height =
-				Math.min(Math.max(height, 16), 200)+"px"
+				Math.min(Math.max(height+1, 16), 200)+"px"
 			if (ChatRoom.currentRoom) {
 				ChatRoom.currentRoom.scroller.ignoreScroll = true
 				ChatRoom.currentRoom.scroller.scrollBottom = oldBottom
