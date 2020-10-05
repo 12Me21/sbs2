@@ -33,18 +33,23 @@ html generation
 ** view.js
 page rendering
 
+** scroller.js
+Autoscroller system
+** chat.js
+chat
+
 ** View/settings.js
 code specific to the settings/login/register page
 ** View/page.js
 code specific to the chat/page view
-** View/images.js
-file viewer?
+** View/image.js
+" file viewer
 ** View/editpage.js
-page editor
+" page editor
 ** View/category.js
-category
-** View/activity.js
-activity page?
+" category pages
+** View/template.js
+template for creating views (unused)
 
 ** navigate.js
 page navigation handling
