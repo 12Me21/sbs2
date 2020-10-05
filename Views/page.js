@@ -96,6 +96,7 @@ addView('page', {
 						}
 					})
 					$chatTextarea.value = "" //hack?
+					updateChatTextareaSize()
 				}
 			} else if (editingComment) {
 				var resp = confirm("Are you sure you want to delete this message?\n"+editingComment.content)
