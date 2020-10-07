@@ -436,7 +436,7 @@ attachResize: function(element, tab, horiz, dir, save) {
 	document.addEventListener('mouseup', up)
 	document.addEventListener('mousemove', move)
 	
-	tab.addEventListener('touchstart', down)
+	tab.addEventListener('touchstart', down) //todo: prevent scrolling on mobile
 	document.addEventListener('touchend', up)
 	document.addEventListener('touchmove', move)
 	if (save) {
