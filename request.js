@@ -73,6 +73,7 @@ rawRequest: function(url, method, callback, data, auth){
 		}
 	}
 	x.onerror = function() {
+		print("Request failed!")
 		var time = Date.now()-start
 		//console.log("xhr onerror after ms:"+time)
 		if (time > 18*1000)

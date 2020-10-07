@@ -174,3 +174,5 @@ isFullscreen: function() {
 
 <!--/*
 }(window)) //*/ // pass external values
+
+window.print = Sidebar.print
