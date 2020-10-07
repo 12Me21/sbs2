@@ -288,11 +288,11 @@
 			<v-b data-view-page id=$chatPane class="flex chatMode grow chatPane"></v-b>
 			
 			<v-b data-view-page class="inputPane chatMode loggedIn flex-row">
-				<button data-noreplace class="showWhenEdit" id=$chatCancelEdit>Cancel Edit</button>
+				<button class="showWhenEdit" id=$chatCancelEdit>Cancel Edit</button>
 				<textarea-container class="grow"><textarea class="chatTextarea" id=$chatTextarea accesskey="z"></textarea></textarea-container>
 				<label for=$chatMarkupSelect class="no-select">Markup:</label>
 				<input type=checkbox checked id=$chatMarkupSelect>
-				<button data-noreplace id=$chatSend>Send</button>
+				<button id=$chatSend class="chatSend">Send</button>
 			</v-b>
 		</v-b>
 	</main>

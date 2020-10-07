@@ -30,7 +30,7 @@
 	flex-direction: row;
 }
 
-.flex > * {
+.flex > *, .flex-row > * {
 	-webkit-flex-shrink: 0;
 	flex-shrink: 0;
 }
@@ -197,6 +197,12 @@ button {
 	font-size: 0.8em;
 	cursor: pointer;
 	font-family: roboto, sans-serif;
+
+	border: 1px solid black;
+	border-radius: 0px;
+	padding: 0 0.5rem;
+
+	background: linear-gradient(#EEE, #CCC);
 }
 .buttonContainer {
 	padding: 1px;
@@ -204,26 +210,20 @@ button {
 }
 .buttonContainer button {
 	margin: 0;
+	height: 100%;
+	overflow-y: hidden;
+	/*
 	padding: 0 0.5rem;
 	background-color: #EEE;
 	border: 2px solid gray;
-	height: 100%;
-	overflow-y: hidden;
 	border-style: outset;
-	border-radius: 0px;
-/*	margin: 0;
+	border-radius: 0px;*/
+/*	
 	padding: 0 0.5rem;
 	background-color: #DDD;
 	border: 2px solid gray;
-	height: 100%;
-	overflow-y: hidden;
 	border-color: white #333 #333 white;
 	border-radius: 0px;*/
-}
-
-button[data-noreplace] {
-	border: 2px outset gray;
-	border-radius: 0px;
 }
 
 .buttonContainer > a {
@@ -235,8 +235,13 @@ button:hover {
 	border-color: #59E;
 }
 
+button[aria-selected="true"] {
+	background: linear-gradient(#888, #AAA);
+}
+
 button:active {
 	border-style: inset;
+	background: linear-gradient(#DDD, #EEE);
 }
 
 html {
@@ -415,8 +420,6 @@ main {
 }
 
 sidebar-container {
-	-webkit-flex-grow: 0;
-	flex-grow: 0;
 	border-left: 2px solid black;
 	overflow:auto;
 	background-color: white;
@@ -586,10 +589,6 @@ main-scrollable {
  ***********************/
 /* ... */
 
-.spacer {
-	border-bottom: 1px solid gray;
-}
-
 /** Chat Messages **/
 message-block {
 	font-size: 1em;
@@ -734,7 +733,7 @@ html:not(.f-chatEditing) .showWhenEdit {
 }
 
 .chatSend {
-	height: 100%;
+	height:2.5rem;
 }
 
 .inputPane > table {
@@ -1316,14 +1315,14 @@ textarea-container {
 }
 
 .inputPane {
-	background-color: #CCC;
+	align-items: end;
 }
 
 textarea-container > textarea {
 	resize: none;
 	height: 2.5em;
 	min-height: 2.5em;
-	/*position: absolute;*/
+		/*position: absolute;*/
 	box-sizing: content-box;
 	resize: none;
 	width: 100%;
@@ -1332,6 +1331,10 @@ textarea-container > textarea {
 	margin: 0;
 	border-radius: 0;
 	box-shadow: none;
+}
+
+textarea-container, textarea-container > textarea {
+	max-height: 25vh;
 }
 
 .no-select {
