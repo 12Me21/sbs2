@@ -134,6 +134,8 @@ addView('page', {
 			View.flag('chatEdit', true) // Set Edit Mode
 		}
 		$chatCancelEdit.onclick = function() {
+			alert("test")
+			return
 			cancelEdit()
 		}
 		document.addEventListener('keydown', function(e) {
@@ -218,13 +220,9 @@ function editComment(id) {
 
 function cancelEdit() {
 	if (editingComment) {
-		try {
-			editingComment = null
-			View.flag('chatEditing', false)
-			writeInput(preEdit)
-		} catch(e) {
-			Sidebar.print(e)
-		}
+		editingComment = null
+		View.flag('chatEditing', false)
+		writeInput(preEdit)
 	}
 }
 
