@@ -130,9 +130,6 @@ addView('page', {
 			})
 		}
 
-		$chatEdit.onclick = function() {
-			View.flag('chatEdit', true) // Set Edit Mode
-		}
 		$chatCancelEdit.onclick = function() {
 			cancelEdit()
 		}
@@ -217,8 +214,6 @@ function editComment(id) {
 }
 
 function cancelEdit() {
-	alert("test2")
-	return
 	if (editingComment) {
 		editingComment = null
 		View.flag('chatEditing', false)

@@ -1310,19 +1310,30 @@ textarea-container {
 	display: block;
 	box-sizing: content-box;
 	border: 2px solid #00C8B4;
+	padding: 3px;
+	overflow: hidden;
+	background-color: white;
+}
+
+.inputPane {
+	background-color: #CCC;
 }
 
 textarea-container > textarea {
 	resize: none;
 	height: 2.5em;
 	min-height: 2.5em;
-	position: absolute;
+	/*position: absolute;*/
 	box-sizing: content-box;
 	resize: none;
 	width: 100%;
 	border: none;
 	padding: 0;
 	margin: 0;
-	/*background-color: #FFFF80;*/
 	border-radius: 0;
+	box-shadow: none;
+}
+
+.no-select {
+	user-select: none;
 }
