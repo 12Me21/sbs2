@@ -23,6 +23,11 @@
 	}
 </style>
 
+<link rel=preload href=resource/roboto-400.woff2 as=font type=font/woff2 crossorigin=anonymous>
+<link rel=preload href=resource/roboto-400i.woff2 as=font type=font/woff2 crossorigin=anonymous>
+<link rel=preload href=resource/roboto-700.woff2 as=font type=font/woff2 crossorigin=anonymous>
+<link rel=preload href=resource/roboto-700i.woff2 as=font type=font/woff2 crossorigin=anonymous>
+
 <!--START-->
 <!-- this part will be replaced by the build script -->
 <link rel=stylesheet href=resource/fonts.css>
@@ -246,18 +251,22 @@
 			<v-b data-view-settingsMode class="loggedIn">
 				<div class="registerBox bottomBorder">
 					<button id=$logOut>Log out</button><br>
+				</div>
+				<div class="registerBox bottomBorder">
 					<h2>Change account settings</h2>
 					<form id=$changeForm>
 						<input placeholder="Old Password" name=oldPassword minlength=8 type=password><br>
 						Only fill out the fields you want to change:<br>
-						(optional) <input placeholder="New Username" name=username minlength=2 maxlength=20> 2 to 20 characters, no spaces<br>
-						(optional) <input placeholder="New Password" name=password type=password minlength=8><input placeholder="Confirm New Password" name=password2 type=password minlength=8> At least 8 characters<br>
-						(optional) <input placeholder="New Email" name=email type=email><input placeholder="Confirm New Email" name=email2 type=email><br>
+						<input placeholder="New Username" name=username minlength=2 maxlength=20> 2 to 20 characters, no spaces<br>
+						<input placeholder="New Password" name=password type=password minlength=8><input placeholder="Confirm New Password" name=password2 type=password minlength=8> At least 8 characters<br>
+						<input placeholder="New Email" name=email type=email><input placeholder="Confirm New Email" name=email2 type=email><br>
 						<button name=submit>Save</button>
 					</form>
 					<div id=$userSettingsError class="pre"></div>
 				</div>
-				<a data-static-path=image>Change your avatar here</a>
+				<div class="registerBox bottomBorder">
+					<a data-static-path=image>Change your avatar here</a>
+				</div>
 			</v-b>
 
 			<v-b data-view-activity id=$activity></v-b>
