@@ -218,9 +218,13 @@ function editComment(id) {
 
 function cancelEdit() {
 	if (editingComment) {
-		editingComment = null
-		View.flag('chatEditing', false)
-		writeInput(preEdit)
+		try {
+			editingComment = null
+			View.flag('chatEditing', false)
+			writeInput(preEdit)
+		} catch(e) {
+			Sidebar.print(e)
+		}
 	}
 }
 
