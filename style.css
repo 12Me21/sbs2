@@ -892,6 +892,10 @@ button[data-selected] {
 	overflow-x:auto;
 }
 
+#\$pageContents {
+	flex-basis: auto;
+}
+
 .pageInfoPane {
 	background-color: #EEE;
 	/*overflow: auto;*/
@@ -1179,7 +1183,7 @@ scroll-inner {
 }
 
 .registerBox {
-	padding: 0 0.5rem;
+	padding: 0.3rem 0.5rem;
 }
 
 .registerBox input {
