@@ -335,12 +335,16 @@ activityItem: function(item) {
 	bar.appendChild(document.createTextNode(" "))
 	var time = timeAgo(item.lastDate)
 	time.className += " textItem"
-	bar.appendChild(time)
+	
 	bar.appendChild(document.createTextNode(" "))
 	//bar.appendChild(textItem("("+item.count+")"))
+	var userContainer = document.createElement('activity-users')
+	userContainer.className = "rightAlign"
+	userContainer.appendChild(time)
+	bar.appendChild(userContainer)
 	item.users.forEach(function(u) {
 		if (u)
-			bar.appendChild(icon(u))
+			userContainer.appendChild(icon(u))
 	})
 	return bar
 },
