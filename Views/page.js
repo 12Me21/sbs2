@@ -76,7 +76,7 @@ addView('page', {
 		room = null
 	},
 	init: function() {
-		$chatSend.onclick = function() {
+		function sendMessage() {
 			var data = readInput()
 			var room = ChatRoom.currentRoom
 			if (room && data.content) {
@@ -113,7 +113,7 @@ addView('page', {
 		$chatTextarea.onkeypress = function(e) {
 			if (!e.shiftKey && e.keyCode == 13) {
 				e.preventDefault()
-				$chatSend.onclick()
+				sendMessage()
 			}
 		}
 		// TODO: make sure this is ready when the long poller starts!
