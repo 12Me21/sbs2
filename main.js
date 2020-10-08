@@ -94,7 +94,7 @@ function ready() {
 
 	window.onerror = function(message, source, line, col, error) {
 		try {
-			console.error(error)
+			console.error(arguments)
 			Sidebar.print("Error: "+message+"\nin "+source+"\nat "+line+":"+col)
 			// to prevent this from throwing more errors
 			// though the scroll event might cause issues...
