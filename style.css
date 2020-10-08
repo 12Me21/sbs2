@@ -564,11 +564,11 @@ main-scrollable {
 }
 /*.icon.avatar {
 	margin-right: -1px;
-}*/
+}
 .rightAlign .icon.avatar {
 	margin-right: 0rem;
 	margin-left: 0.2rem;
-}
+}*/
 
 /*******************
  ** Chat Userlist **
