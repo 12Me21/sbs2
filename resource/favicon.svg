@@ -1,0 +1,6 @@
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><g stroke="#009688"><line x1="7.5" y1="7.5" x2="8.5" y2="8.5" stroke-width="15" stroke-linecap="round" opacity="0.33"/><circle cx="7.5" cy="7.5" r="6.5" fill="#000" stroke-width="2"/></g><defs><path id="s" d="M0,0v-.5l-1-.5h-1l-1,1v1l1,1h1v1h-1l-1,0v.5l1,.5h1l1-1v-1l-1-1h-1v-1h1z"/><g id="sbs"><use href="#s" x="5" y="6"/><path d="M6,5v5h2l1-1v-1l-1-.5l1-.5v-1l-1-1zm1,1h1v1h-1zm0,2h1v1h-1z"/><use href="#s" x="13" y="6"/>
+	 </g>
+  </defs>
+  <use href="#sbs" stroke-width="2" stroke="#000" stroke-linejoin="round"/>
+  <use href="#sbs" fill="#FFF"/> <!-- TEXT -->
+</svg>
