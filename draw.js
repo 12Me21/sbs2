@@ -475,17 +475,70 @@ categoryInput: function() {
 	return x
 },
 
+permissionRow: function(user, perms) {
+	var row = document.createElement('tr')
+	var name = entityTitleLink(user)
+	name.className += " bar rem1-5"
+	row.createChild('th').appendChild(name)
+	;['r','c','u','d'].forEach(function(p) {
+		var inp = row.createChild('td').createChild('input')
+		inp.type = 'checkbox'
+		inp.checked = perms.indexOf(p)>=0
+		inp.value = p
+	})
+	if (user) //hack
+		row.setAttribute('data-id', user)
+	return row
+},
+
 permissionInput: function() {
-	var elem = document.createElement('input')
+	var elem = document.createElement('div')
+
+	var input = Draw.userSelector()
+	elem.appendChild(input.elem)
+	
+	var table = elem.createChild('table')
+	table.className += " permission-table"
+	var header = table.createChild('thead').createChild('tr')
+	header.createChild('th')
+	header.createChild('th').textContent = "View"
+	header.createChild('th').textContent = "Reply"
+	header.createChild('th').textContent = "Edit"
+	header.createChild('th').textContent = "Delete"
+	var body = table.createChild('tbody')
+	body.className += " permission-users"
+
+	var perms = [];
+	
 	var x = {
 		element: elem,
-		set: function(perms) {
-			elem.value = JSON.stringify(perms)
+		set: function(newPerms, users) {
+			body.replaceChildren()
+			newPerms.forEach(function(p, id) {
+				body.appendChild(permissionRow(users[id] || {Type:'user', id:id}, p))
+			})
 		},
 		get: function() {
-			return JSON.parse(elem.value)
+			var ret = {}
+			body.childNodes.forEach(function(row) {
+				var perm = ""
+				row.querySelectorAll('input').forEach(function(check) {
+					perm += check.value
+				})
+				ret[row.getAttribute('data-id')] = perm
+			})
+			return ret
 		}
 	}
+
+	//todo: TRUST THE HTML
+	// !
+	//TEXT NICOLE!!!
+	
+	input.onchange = function(user) {
+		body.appendChild(permissionRow(user, "cr"))
+	}
+	
 	return x
 },
 

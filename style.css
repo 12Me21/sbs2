@@ -90,6 +90,10 @@ select {
 sup {vertical-align: super;}
 sub {vertical-align: sub;}
 
+.avatar {
+	height: 1rem;
+}
+
 .ellipsis {
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -1339,4 +1343,16 @@ textarea-container, textarea-container > textarea {
 
 .no-select {
 	user-select: none;
+}
+
+.permission-table td {
+	text-align: center;
+}
+
+.permission-users td {
+	text-align: center;
+}
+
+.permission-users th {
+	text-align: left;
 }

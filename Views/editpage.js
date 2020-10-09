@@ -114,7 +114,7 @@ function resetFields(page) {
 		categoryInput.set(page.parent.id)
 	else
 		categoryInput.set(-1)
-	permissionInput.set({'0':"r"})
+	permissionInput.set({'0':"r"},{})
 }
 
 function readFields(page) {
@@ -141,7 +141,7 @@ function fillFields(page) {
 	$keywords.value = page.keywords.join(" ")
 	$editPageType.value = page.type
 	categoryInput.set(page.parentId)
-	permissionInput.set(page.permissions)
+	permissionInput.set(page.permissions, page.users)
 }
 
 <!--/*

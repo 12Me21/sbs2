@@ -30,6 +30,12 @@ Node.prototype.prependChild = function(child) {
 	this.insertBefore(child, this.firstChild)
 }
 
+Node.prototype.createChild = function(type) {
+	var elem = this.ownerDocument.createElement(type)
+	this.appendChild(elem)
+	return elem
+}
+
 JSON.safeParse = function(json) {
 	try {
 		return JSON.parse(json)
