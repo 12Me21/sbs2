@@ -438,7 +438,7 @@ timeAgoString: function(date) {
 	if (interval >= 1) return interval + " hours ago"
 	interval = Math.round(seconds / 60)
 	if (interval >= 1) return interval + " minutes ago"
-	if (seconds < 0)
+	if (seconds <= -0.5)
 		return " IN THE FUTURE?"
 	return Math.round(seconds) + " seconds ago"
 },
@@ -482,8 +482,17 @@ permissionRow: function(user, perms) {
 	if (!id) {
 		var name = textItem("Default")
 	} else
-		var name = entityTitleLink(user)
+		var name = entityTitleLink(user, true)
 	name.className += " bar rem1-5"
+	if (id) {
+		var b = button()
+		b[1].textContent = "remove"
+		b[1].onclick = function() {
+			row.remove()
+		}
+		row.createChild('td').appendChild(b[0])
+	} else
+		row.createChild('td')
 	row.createChild('th').appendChild(name)
 	;['r','c','u','d'].forEach(function(p) {
 		var inp = row.createChild('td').createChild('input')
