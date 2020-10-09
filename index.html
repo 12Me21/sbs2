@@ -320,12 +320,12 @@
 			<sidebar-panel id=$sidebarActivityPanel></sidebar-panel>
 			<!--<div id=$sidebarWatchingPanel class="fill"></div>-->
 			<sidebar-panel id=$sidebarFilePanel class="flex">
-				<div class="sidebarUploadingFile">
-					<button id=$fileCancel>Cancel</button>
-					<button class="rightAlign" id=$fileUpload>Upload Image</button>
+				<div class="sidebarUploadingFile bar rem1-5">
+					<button id=$fileCancel class="item">Cancel</button>
+					<button id=$fileUpload class="rightAlign item">Upload Image</button>
 				</div>
-				<div class="sidebarUploadedFile">
-					<input readonly id=$fileURL><button id=$fileDone>Done</button>
+				<div class="sidebarUploadedFile bar rem1-5">
+					<input readonly id=$fileURL class="item"><button id=$fileDone class="item">Done</button>
 				</div>
 				<div class="image-box grow"><img id=$fileView></div>
 				<div><input type=file accept="image/*" id=$imageUpload></div>

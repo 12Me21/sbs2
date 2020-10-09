@@ -8,6 +8,7 @@
 	overflow-wrap: break-word;
 	font-size: 1em;
 }
+
 /* may need more things here */
 .textItem, .item, .buttonContainer button, .avatar, tbody, img {
 	vertical-align: top;
@@ -17,25 +18,21 @@
 	display: none !important;
 }
 
-.flex {
+/**********
+ ** Flex **
+ **********/
+.flex, .flex-row {
 	display: -webkit-flex;
 	display: flex;
+}
+.flex {
 	-webkit-flex-direction: column;
 	flex-direction: column;
 }
-
-.flex-row {
-	display: -webkit-flex;
-	display: flex;
-	-webkit-flex-direction: row;
-	flex-direction: row;
-}
-
 .flex > *, .flex-row > * {
 	-webkit-flex-shrink: 0;
 	flex-shrink: 0;
 }
-
 .grow {
 	-webkit-flex-grow: 1;
 	flex-grow: 1;
@@ -45,12 +42,17 @@
 	flex-basis: 0;
 }
 
+/*********/
+
 /* all elements with user content, where whitespace should be preserved */
 .pre {
 	white-space: pre-wrap;
 	unicode-bidi: embed;
 }
 
+/***********
+ ** Links **
+ ***********/
 a {
 	text-decoration: none;
 	color: rgba(0,60,54);
@@ -62,7 +64,6 @@ a:hover {
 	color: rgb(0,150,136);
 	/*text-decoration: underline;*/
 }
-
 a:hover .entity-title,
 a.entity-title:hover,
 a[data-static-path]:hover {
@@ -70,11 +71,12 @@ a[data-static-path]:hover {
 }
 /* todo: make a special link bar class for links that contain other elements and a class for which of those should be underlined */
 /* and make sure normal links are styled correctly too */
-
 a[data-static-path],
 .entity-title {
 	font-weight: bold;
 }
+
+/**********/
 
 textarea {
 	border-radius: 2px;
@@ -84,6 +86,7 @@ textarea {
 	font-family: roboto, sans-serif;
 	font-size: 0.8em;
 }
+
 select {
 	font-size: 1em;
 }
@@ -92,7 +95,10 @@ sup {vertical-align: super;}
 sub {vertical-align: sub;}
 
 .avatar {
-	height: 1rem;
+	height: 1rem; /*default*/
+	border: 1px solid white;
+	border-radius: 3px;
+	background-color: white;
 }
 
 .ellipsis {
@@ -105,32 +111,18 @@ sub {vertical-align: sub;}
 	white-space: pre !important;
 }
 
-.spacer {
-	-webkit-flex-grow: 1;
-	flex-grow: 1;
-}
 time {
 	color: #333;
 	font-size: 0.9em;
 	vertical-align: baseline;
 }
+
 .rightAlign {
 	float: right;
-}
-.ib {
-	display: inline-block;
-}
-
-.pageName {
-	font-weight: bold;
 }
 
 .markup-root { /* make sure this is before most things */
 	padding: 0.5rem;
-}
-
-.noColor {
-	color: black;
 }
 
 body.chatMode .bottomSpacer {
@@ -143,113 +135,13 @@ body.chatMode .bottomSpacer {
 	white-space: pre-wrap;
 }
 
-.member .avatar {
-	margin-right: 0.7ch;
-}
-
 input {
 	font-size: 0.8em;
 }
+
 html {
 	background-color: #FEE;
 	font-family: roboto, fontello, sans-serif;
-}
-
-/* These 3 classes handle like 90% of the layout lol */
-.bar { /* contains textitems and items */
-	display: block;
-	overflow: hidden;
-	box-sizing: content-box;
-	-webkit-box-sizing: content-box;
-	/* set min-height */
-}
-/*.bar > img:first-child, .bar > .iconBg:first-child {
-	margin-left: -0.5rem !important;
-}
-.bar > img:last-child, .bar > .iconBg:last-child {
-	margin-right: -0.5rem !important;
-}*/
-
-.textItem { /* basically anything within a .bar */
-	max-width: 100%;
-	display: inline;
-	/* set min-height, line-height */
-}
-.item { /* for images and other blocks that can't wrap */
-	display: inline-block;
-	max-width: 100%;
-	/* set height */
-}
-
-.fill {
-	width: 100%;
-	height: 100%;
-}
-
-.loginField {
-	width: 5rem;
-}
-
-.tableGrow {
-	width: 100%;
-}
-
-/**********************
- ** Button Container **
- **********************/
-button {
-	line-height: normal !important;
-	font-size: 0.8em;
-	cursor: pointer;
-	font-family: roboto, sans-serif;
-
-	border: 1px solid black;
-	border-radius: 0px;
-	padding: 0 0.5rem;
-
-	background: linear-gradient(#EEE, #CCC);
-}
-.buttonContainer {
-	padding: 1px;
-	display: inline-block;
-}
-.buttonContainer button {
-	margin: 0;
-	height: 100%;
-	overflow-y: hidden;
-	/*
-	padding: 0 0.5rem;
-	background-color: #EEE;
-	border: 2px solid gray;
-	border-style: outset;
-	border-radius: 0px;*/
-/*	
-	padding: 0 0.5rem;
-	background-color: #DDD;
-	border: 2px solid gray;
-	border-color: white #333 #333 white;
-	border-radius: 0px;*/
-}
-
-.buttonContainer > a {
-	width: 100%;
-	height: 100%;
-	display: inline-block;
-}
-button:hover {
-	border-color: #59E;
-}
-
-button[aria-selected="true"] {
-	background: linear-gradient(#888, #AAA);
-}
-
-button:active {
-	border-style: inset;
-	background: linear-gradient(#DDD, #EEE);
-}
-
-html {
 	position: fixed;
 }
 
@@ -260,227 +152,35 @@ body {
 	right: 0;
 	bottom: 0;
 	background-color: white;
-
 	/*height: 100vh;*/ /* @@@ */
 }
 
-/*************
- ** Top Bar **
- *************/
-
-html.f-error .loadBG {
-	background-color: #800;
-}
-
-html:not(.f-loggedIn) .loggedIn,
-html.f-loggedIn .loggedOut {
-	display: none;
-}
-
-.navPane .item {
-	height: 1.5rem;
-}
-
-.navPane .textItem{
-	min-height: 1.5rem;
-	line-height: 1.5rem;
-}
-
-.myAvatar {
-	width: 1.5rem;
-}
-
-.myName {
-	color: white;
-	margin: 0 0.5rem;
-}
-
-.pathSeparator {
-	padding: 0 0.2rem;
-}
-
-.pathBar {
-	font-weight: bold;
-	padding: 0 0.2rem;
-	/*box-shadow: inset 0 -2px 3px rgba(0,0,0,0.3);*/
-}
-
-/*html.f-chatMode .pageMode,
-html:not(.f-chatMode) .chatMode {
-	display: none;
-}*/
-
-#\$chatContainer {
-	overflow-y: hidden;
-}
-
-.bottomBorder {
-	border-bottom: 1px solid gray;
-}
-
-table.tabs {
+.fill {
 	width: 100%;
-	height: 1px; /* don't worry */
-}
-table.tabs tbody, table.tabs tr, table.tabs td {
 	height: 100%;
 }
-table.tabs td {
-	margin: 0;
-	padding: 0;
-	text-align: center;
-	border-right: 1px solid gray;
+
+/*********
+ ** Bar **
+ *********/
+/* These 3 classes handle like 90% of the layout lol */
+.bar { /* contains textitems and items */
+	display: block;
+	overflow: hidden;
+	box-sizing: content-box;
+	-webkit-box-sizing: content-box;
+	/* set min-height */
 }
 
-table.tabs td button {
-	width: 100%;
-	height: 2rem;
-	border: none;
-	vertical-align: top;
-	font-size: 1em;
+.textItem { /* basically anything within a .bar */
+	max-width: 100%;
+	display: inline;
+	/* set min-height, line-height */
 }
-
-table.tabs td:last-child {
-	border-right: none;
-}
-
-.myUserBar {
-	background-color: #EEE;
-	padding: 0 0.2rem;
-}
-
-html.f-sidebarUploaded .sidebarUploadingFile,
-html:not(.f-sidebarFile) .sidebarUploadingFile,
-html:not(.f-sidebarUploaded) .sidebarUploadedFile {
-	display: none;
-}
-
-/****************
- ** Title Pane **
- ****************/
-.titlePane {
-	border-bottom: 2px solid black;
-	background-color: #FFF;
-	box-shadow: 0 2px 3px rgba(0,0,0,0.3);
-	z-index: 10;
-	padding: 1px;
-	/*-webkit-transition: background-color 0.1s ease;
-	transition: background-color 0.1s ease;*/
-}
-
-.status-idle > .avatar {
-	filter: grayscale(1);
-}
-
-html.f-loading .loadBG {
-	background-color: #ABDDD6;
-}
-
-.titlePane .iconBg {
-	width: 2rem;
-}
-
-.editingLabel {
-	padding-left: 0.3rem;
-	font-weight: bold;
-}
-.pageTitle {
-	font-weight: bold;
-	padding-right: 0.5rem;
-	font-size: 1.6rem;
-}
-
-html:not(.f-canEdit) .canEdit {
-	display: none;
-}
-
-.errorMode .titlePane {
-	color: maroon;
-	font-family: monospace;
-}
-
-header > :first-child {
-	min-width: 0.3rem;
+.item { /* for images and other blocks that can't wrap */
 	display: inline-block;
-}
-
-#\$authorBox .username {
-	margin-right: 0.3rem;
-}
-
-/*******************************
- ** content+sidebar container **
- *******************************/
-horizontal-split {
-	overflow-x: hidden;
-}
-
-.errorPage {
-	padding: 0.2rem;
-	font-family: monospace;
-}
-
-main {
-	width:100%;
-	/*overflow-y: hidden; /* mmm */
-}
-
-sidebar-container {
-	border-left: 2px solid black;
-	overflow:auto;
-	background-color: white;
-	width: 30vw;
-	min-width: 10vw;
-	z-index: 20;
-	box-shadow: -2px 0px 3px rgba(0,0,0,0.3);
-	/*border-bottom: 2px solid black;*/
-}
-
-html:not(.f-sidebar) sidebar-container {
-	display: none;
-}
-
-html.f-sidebar main {
-	overflow:auto;
-}
-
-html:not(.f-sidebar) main {
-	width: 100% !important;
-	overflow:auto;
-}
-
-/**********
- ** main **
- **********/
-main-scrollable {
-	overflow-y: auto;
-	flex-basis: auto;
-	
-	/*padding: 0.5rem;*/
-	/*overflow-y: scroll;*/
-	
-	/*min-height: 300px;
-	height: 300px;*/
-}
-
-.linkBar:focus {
-	background-color: white;
-}
-
-.page-select {
-	
-}
-
-/*******************
- ** Category Pane **
- *******************/
-.linkBar {
-	/*font-weight: bold;*/
-	background-color: #EEE;
-	padding-left: 0.2rem;
-}
-.linkBar, .categoryDescription, .member {
-	border-bottom: 1px solid gray;
+	max-width: 100%;
+	/* set height */
 }
 
 .rem1-7 {
@@ -542,17 +242,259 @@ main-scrollable {
 	width: 1.5rem;
 }
 
-.px40 {
+/**********************
+ ** Button Container **
+ **********************/
+button {
+	line-height: normal !important;
+	font-size: 0.8em;
+	cursor: pointer;
+	font-family: roboto, sans-serif;
+
+	border: 1px solid black;
+	border-radius: 0px;
+	padding: 0 0.5rem;
+
+	background: linear-gradient(#EEE, #CCC);
 }
-.px40 .item {
-	height: 40px;
-	line-height: 40px;
+.buttonContainer {
+	padding: 1px;
+	display: inline-block;
 }
-.px40 .textItem {
-	min-height: 40px;
-	line-height: 40px;
+.buttonContainer button {
+	margin: 0;
+	height: 100%;
+	overflow-y: hidden;
+	/*
+	padding: 0 0.5rem;
+	background-color: #EEE;
+	border: 2px solid gray;
+	border-style: outset;
+	border-radius: 0px;*/
+/*	
+	padding: 0 0.5rem;
+	background-color: #DDD;
+	border: 2px solid gray;
+	border-color: white #333 #333 white;
+	border-radius: 0px;*/
 }
 
+.buttonContainer > a {
+	width: 100%;
+	height: 100%;
+	display: inline-block;
+}
+button:hover {
+	border-color: #59E;
+}
+
+button[aria-selected="true"] {
+	background: linear-gradient(#888, #AAA);
+}
+
+button:active {
+	border-style: inset;
+	background: linear-gradient(#DDD, #EEE);
+}
+
+/**********/
+
+html:not(.f-loggedIn) .loggedIn,
+html.f-loggedIn .loggedOut {
+	display: none;
+}
+
+/*************
+ ** Top Bar **
+ *************/
+
+html.f-error .loadBG {
+	background-color: #800;
+}
+
+.pathSeparator {
+	padding: 0 0.2rem;
+}
+
+.pathBar {
+	font-weight: bold;
+	padding: 0 0.2rem;
+	/*box-shadow: inset 0 -2px 3px rgba(0,0,0,0.3);*/
+}
+
+#\$chatContainer {
+	overflow-y: hidden;
+}
+
+.bottomBorder {
+	border-bottom: 1px solid gray;
+}
+
+/**********
+ ** Tabs **
+ **********/
+table.tabs {
+	width: 100%;
+	height: 1px; /* don't worry */
+}
+table.tabs tbody, table.tabs tr, table.tabs td {
+	height: 100%;
+}
+table.tabs td {
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	border-right: 1px solid gray;
+}
+
+table.tabs td button {
+	width: 100%;
+	height: 2rem;
+	border: none;
+	vertical-align: top;
+	font-size: 1em;
+}
+
+table.tabs td:last-child {
+	border-right: none;
+}
+
+button[aria-selected="true"] {
+	background-color: gray;
+}
+
+/**********/
+
+.myUserBar {
+	background-color: #EEE;
+	padding: 0 0.2rem;
+}
+
+html.f-sidebarUploaded .sidebarUploadingFile,
+html:not(.f-sidebarFile) .sidebarUploadingFile,
+html:not(.f-sidebarUploaded) .sidebarUploadedFile {
+	display: none;
+}
+
+/****************
+ ** Title Pane **
+ ****************/
+.titlePane {
+	border-bottom: 2px solid black;
+	background-color: #FFF;
+	box-shadow: 0 2px 3px rgba(0,0,0,0.3);
+	z-index: 10;
+	padding: 1px;
+	/*-webkit-transition: background-color 0.1s ease;
+	transition: background-color 0.1s ease;*/
+}
+
+.status-idle > .avatar {
+	filter: grayscale(1);
+}
+
+html.f-loading .loadBG {
+	background-color: #ABDDD6;
+}
+
+.titlePane .iconBg {
+	width: 2rem;
+}
+
+.pageTitle {
+	font-weight: bold;
+	padding-right: 0.5rem;
+	font-size: 1.6rem;
+}
+
+html:not(.f-canEdit) .canEdit {
+	display: none;
+}
+
+.errorMode .titlePane {
+	color: maroon;
+	font-family: monospace;
+}
+
+.titlePane > :first-child {
+	min-width: 0.3rem;
+	display: inline-block;
+}
+
+/*******************************
+ ** content+sidebar container **
+ *******************************/
+horizontal-split {
+	overflow-x: hidden;
+}
+
+.errorPage {
+	padding: 0.2rem;
+	font-family: monospace;
+}
+
+main {
+	width:100%;
+	/*overflow-y: hidden; /* mmm */
+}
+
+sidebar-container {
+	border-left: 2px solid black;
+	overflow:auto;
+	background-color: white;
+	width: 30vw;
+	min-width: 10vw;
+	z-index: 20;
+	box-shadow: -2px 0px 3px rgba(0,0,0,0.3);
+}
+
+html:not(.f-sidebar) sidebar-container {
+	display: none;
+}
+
+html.f-sidebar main {
+	overflow:auto;
+}
+
+html:not(.f-sidebar) main {
+	width: 100% !important;
+	overflow:auto;
+}
+
+/**********
+ ** main **
+ **********/
+main-scrollable {
+	overflow-y: auto;
+	flex-basis: auto;
+	
+	/*padding: 0.5rem;*/
+	/*overflow-y: scroll;*/
+	
+	/*min-height: 300px;
+	height: 300px;*/
+}
+
+/*******************
+ ** Category Pane **
+ *******************/
+.linkBar {
+	/*font-weight: bold;*/
+	background-color: #EEE;
+	padding-left: 0.2rem;
+}
+
+.linkBar:focus {
+	background-color: white;
+}
+
+.linkBar, .categoryDescription, .member {
+	border-bottom: 1px solid gray;
+}
+
+/*********
+ ** Nav **
+ *********/
 .nav {
 	border-bottom: 1px solid gray;
 	background-color: #333;
@@ -563,26 +505,12 @@ main-scrollable {
 	color: white;
 }
 
-.avatar {
-	border: 1px solid white;
-	border-radius: 3px;
-	background-color: white;
-}
-/*.icon.avatar {
-	margin-right: -1px;
-}
-.rightAlign .icon.avatar {
-	margin-right: 0rem;
-	margin-left: 0.2rem;
-}*/
-
-/*******************
- ** Chat Userlist **
- *******************/
+/**************
+ ** Userlist **
+ **************/
 .chatPane .userlist {
-	background-color: #EEE;
-	border-bottom: 1px solid gray;
 	box-shadow: 0 2px 3px rgba(0,0,0,0.3);
+	border-bottom: 1px solid gray; /* nn */
 	z-index: 4;
 }
 
@@ -590,12 +518,9 @@ main-scrollable {
 	background-color: #EEE;
 }
 
-/***********************
- ** Chat Message Pane **
- ***********************/
-/* ... */
-
-/** Chat Messages **/
+/*******************
+ ** Chat Messages **
+ *******************/
 message-block {
 	font-size: 1em;
 	padding: 0.4rem 0.5rem;
@@ -611,16 +536,6 @@ message-block {
 	min-height: 3.5rem;
 }
 
-
-.systemMessage {
-	background-color: rgba(187,187,187, 0.2);
-	font-weight: bold;
-	color: #666;
-	border-left: 0.5em solid rgb(187,187,187);
-}
-/*.ownMessage {
-	background-color: rgba(255,153,153, 0.2);
-}*/
 message-block > time {
 	float: right;
 	font-weight: normal;
@@ -638,19 +553,14 @@ message-block > img.avatar {
 message-block > .username {
 	margin-left: 4rem;
 	display: block;
-	/*white-space: pre;
-	overflow: hidden;
-	text-overflow: ellipsis;*/
 }
-/*.messageContents > p:first-child {
-	margin-top: 0;
-}*/
 
 message-contents {
 	display: block;
 	vertical-align: top;
 	overflow: auto;
 }
+
 message-block {
 	position: relative;
 }
@@ -700,18 +610,6 @@ message-contents img {
 	max-height: 10vh;
 	border: 1px solid silver;
 }
-.messageGap {
-	border: 1px dashed gray;
-	margin: 0.3rem 0;
-}
-
-html.f-chatEdit message-part:hover {
-	background-color: yellow;
-}
-
-html.f-chatEdit #\$chatEdit {
-	background-color: red;
-}
 
 message-part[editing] {
 	background-color: yellow;
@@ -724,39 +622,25 @@ html.f-chatEditing #\$chatTextarea {
 html.f-chatEditing .hideWhenEdit {
 	display:none;
 }
-
 html:not(.f-chatEditing) .showWhenEdit {
 	display:none;
+}
+
+.messageGap {
+	border: 1px dashed gray; /*♥*/
+	margin: 0.3rem 0;
 }
 
 /****************
  ** Chat Input **
  ****************/
 .inputPane {
-	/*height: 3.25rem;*/
-	overflow-y: hidden;
 	border-top: 1px solid gray;
 }
 
 .chatSend {
 	height:2.5rem;
 }
-
-.inputPane > table {
-	width: 100%;
-	height: 99%; /* crying */
-	border-collapse: collapse;
-}
-
-.inputPane > table td {
-	padding: 0;
-	margin: 0;
-	height: 100%;
-}
-
-/**********************
- ** Editor Info Pane **
- **********************/
 
 /*****************
  ** Editor Pane **
@@ -779,42 +663,11 @@ html:not(.f-chatEditing) .showWhenEdit {
 	box-sizing: border-box;
 }
 
-/***************
- ** User Page **
- ***************/
-.member {
-	display: block;
-	background-color: #EEE;
-}
-
-.memberName {
-	padding: 0 0.5rem;
-}
+/*********/
 
 /* do we even need this */
 .bottomSpacer {
 	height: 1.5rem;
-}
-
-.listItem {
-	background-color: #EEE;
-	border-bottom: 1px solid gray;
-	padding: 0 0.2rem;
-}
-
-.activityMode > .listItem > *:first-child {
-	margin-left: -0.2rem;
-}
-
-.activityCommentText {
-	color: black;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: pre;
-}
-
-.listItem a {
-	font-weight: bold;
 }
 
 .userPageBox {
@@ -831,31 +684,13 @@ html:not(.f-chatEditing) .showWhenEdit {
 	display: inline-block;
 	-webkit-flex-shrink: 1;
 	flex-shrink: 1;
-/*	border-right: 1px solid gray;
-	border-bottom: 1px solid gray;*/
 	box-shadow: 2px 2px 5px gray;
 	margin-bottom: 5px;
 }
 
 .userPageBox .pageContents {
-	/*width: 10rem;*/
 	-webkit-flex-basis: 0;
 	flex-basis: 0;
-}
-
-table.form {
-	border-collapse: collapse;
-}
-
-table.form td:first-child {
-	/*text-align:right;*/
-}
-table.form td {
-	padding: 0;
-}
-table.form th {
-	padding: 0;
-	text-align:right;
 }
 
 .userPageContents {
@@ -883,6 +718,34 @@ html:not(.f-myUserPage) .myUserPage {
 	}
 }
 
+/*****************
+ ** Form Tables **
+ *****************/
+
+table.form {
+	border-collapse: collapse;
+}
+
+table.form td {
+	padding: 0;
+}
+table.form th {
+	padding: 0;
+	text-align:right;
+}
+
+table.form input {
+	width: 100%;
+}
+
+/* what are these for? */
+table {
+	border-collapse: collapse;
+}
+th {
+	padding: 0 0.3rem;
+}
+
 /**********
  ** Page **
  **********/
@@ -906,52 +769,6 @@ button[data-selected] {
 	/*overflow: auto;*/
 	padding: 0 0.3rem;
 	box-shadow: 0 2px 3px rgba(0,0,0,0.3);
-}
-
-.pageMetaIcon {
-	width: 40px;
-	height: 40px;
-}
-
-.html:not(.f-hasKey) .hasKey {
-	display: none;
-}
-
-.metaKey.brokenKey .metaKey.invalidKey {
-	text-decoration: line-through;
-}
-
-.metaKey {
-	font-family: consolas;
-	font-weight: bold;
-	font-size: 1.3rem;
-	margin: 0 0.5rem;
-}
-
-.metaTitle {
-	font-family: consolas;
-	margin: 0 0.3rem;
-}
-
-.gallery {
-	width: 20rem;
-	height: 10rem;
-	display: inline-block;
-	float: left;
-}
-
-.gallery img {
-	max-height: 100%;
-	max-width: 16rem;
-}
-
-.gallery button {
-	height: 100%;
-	width: 2rem;
-}
-
-.metaInfo {
-	display: inline;
 }
 
 /***********
@@ -996,13 +813,6 @@ html:not(.f-fileUploading) .fileUploading {
 	border-bottom: 1px solid gray;
 }
 
-#\$filePaste {
-	background-color: #EEE;
-	border: 1px solid gray;
-	color: black;
-	padding: 0 0.5rem;
-}
-
 /***********
  ** Icons **
  ***********/
@@ -1014,9 +824,9 @@ html:not(.f-fileUploading) .fileUploading {
 	margin-left: 0.1rem;
 }
 
-/*************
- ** Sidebar **
- *************/
+/************
+ ** Resize **
+ ************/
 .resize {
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
@@ -1028,11 +838,13 @@ html:not(.f-fileUploading) .fileUploading {
 	color: white;
 	background-color: #222;
 }
-
 .resize[dragging] {
 	cursor: grabbing;
 }
 
+/*************
+ ** Sidebar **
+ *************/
 #\$sidebarPinnedResize {
 	display: inline-block;
 }
@@ -1051,15 +863,15 @@ html:not(.f-fileUploading) .fileUploading {
 #\$sidebarBottom {
 	overflow: auto;
 }
-
-button[aria-selected="true"] {
-	background-color: gray;
+#\$sidebarPinned {
+	-webkit-flex-shrink: 1;
+	flex-shrink: 1;
+	overflow-y: auto;
 }
 
-
-.debugMessage {
-	padding: 0rem 0.2rem;
-}
+/**************
+ ** Scroller **
+ **************/
 
 scroll-outer {
 	display: block;
@@ -1069,31 +881,6 @@ scroll-outer {
 
 scroll-inner {
 	display: block;
-}
-
-#\$sidebarPinned {
-	-webkit-flex-shrink: 1;
-	flex-shrink: 1;
-	overflow-y: auto;
-}
-#\$sidebarActivity {
-	-webkit-flex-shrink: 1;
-	flex-shrink: 1;
-}
-
-#\$sidebarActivity .bar {
-	display: block;
-	/*padding: 0.2rem; mmm*/
-	padding: 0 0.2rem;
-	/*border-bottom: 1px solid gray;*/
-}
-
-#\$sidebarActivity .bar > .userLink:first-child {
-	margin-left: -0.2rem;
-}
-
-#\$sidebarActivity .bar > :last-child {
-	margin-right: -0.2rem;
 }
 
 /* narrow screen: fullscreen sidebar */
@@ -1164,29 +951,6 @@ scroll-inner {
 	}*/
 }
 
-.sidebarPageTitle {
-	width: 100%;
-	display: inline-block;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	vertical-align: top;
-	padding-left: 0.2rem;
-	background: linear-gradient(#EEE,white);
-}
-.sidebarPageTitle > .userLink {
-	margin-left: -0.2rem;
-}
-
-.activityContent > .bar {
-	border: none;
-	height: 1.5rem;
-	white-space: pre;
-}
-
-.sidebarPageTitle * {
-	white-space: pre
-}
-
 .registerBox {
 	padding: 0.3rem 0.5rem;
 }
@@ -1204,21 +968,9 @@ input {
 	max-width: 100%;
 }
 
-table.form input {
-	width: 100%;
-}
-
-th {
-	padding: 0 0.3rem;
-}
-
 .permissionRow > th {
 	padding: 0;
 	text-align: left;
-}
-
-table {
-	border-collapse: collapse;
 }
 
 .permissionRow > td {
