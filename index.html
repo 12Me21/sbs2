@@ -87,10 +87,15 @@
 	<main class="flex grow">
 		<v-b data-view-page data-view-editorMode data-view-categoryMode class="pathBar rem1-5 bottomBorder" id=$path></v-b>
 		<v-b data-view-editorMode class="infoPane">
-			<label for=$keywords>Keywords:</label><input placeholder="(space separated, optional)" id=$keywords><br>
-			<label for=$editPageType>Type:</label><input placeholder="@" id=$editPageType><br>
-			<label for=$editPageCategory>Category:</label><span id=$editPageCategory></span><br>
-			Permissions:<span id=$editPagePermissions></span><br>
+			<div class="registerBox bottomBorder">
+				<label for=$keywords>Keywords:</label><input placeholder="(space separated, optional)" id=$keywords><br>
+				<label for=$editPageType>Type:</label><input placeholder="@" id=$editPageType><br>
+				<label for=$editPageCategory>Category:</label><span id=$editPageCategory></span><br>
+			</div>
+			<div class="registerBox bottomBorder">
+				<h2>Permissions:</h2>
+				<div id=$editPagePermissions></div>
+			</div>
 			<label for=$markupSelect>Markup language:</label>
 			<select id=$markupSelect>
 				<option value="plaintext">plain text</option>

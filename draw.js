@@ -476,8 +476,13 @@ categoryInput: function() {
 },
 
 permissionRow: function(user, perms) {
+	var id = user ? user.id : -1
 	var row = document.createElement('tr')
-	var name = entityTitleLink(user)
+	console.log("permrow",id, typeof id)
+	if (!id) {
+		var name = textItem("Default")
+	} else
+		var name = entityTitleLink(user)
 	name.className += " bar rem1-5"
 	row.createChild('th').appendChild(name)
 	;['r','c','u','d'].forEach(function(p) {
@@ -486,8 +491,7 @@ permissionRow: function(user, perms) {
 		inp.checked = perms.indexOf(p)>=0
 		inp.value = p
 	})
-	if (user) //hack
-		row.setAttribute('data-id', user)
+	row.setAttribute('data-id', id)
 	return row
 },
 
@@ -515,7 +519,10 @@ permissionInput: function() {
 		set: function(newPerms, users) {
 			body.replaceChildren()
 			newPerms.forEach(function(p, id) {
+				id = +id
 				body.appendChild(permissionRow(users[id] || {Type:'user', id:id}, p))
+				//ok we really need to fix the problem with null users
+				// one solution is to have a user map lookup function which returns a placeholder object if the user is not found, to store the 2 important (and known) properties, Type and id, just to avoid losing that information.
 			})
 		},
 		get: function() {
@@ -523,7 +530,8 @@ permissionInput: function() {
 			body.childNodes.forEach(function(row) {
 				var perm = ""
 				row.querySelectorAll('input').forEach(function(check) {
-					perm += check.value
+					if (check.checked)
+						perm += check.value
 				})
 				ret[row.getAttribute('data-id')] = perm
 			})
