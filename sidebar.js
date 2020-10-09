@@ -12,6 +12,23 @@ sidebarPanels: null,
 
 selectTab: null,
 
+intervalId: null,
+
+refreshInterval: function(data) {
+	// todo: optimize this.
+	// maybe only update the timestamps
+	// ah a clever idea is to um
+	// run queryselector, find <time> elements
+	// read datetime and redraw!
+	if (intervalId) {
+		$.clearInterval(intervalId)
+		intervalId = null
+	}
+	intervalId = $.setInterval(function() {
+		onAggregateChange(data)
+	}, 1000*60)
+},
+
 onLoad: function() {
 	$openSidebar.onclick = $closeSidebar.onclick = toggle
 	View.attachResize($sidebar, $sidebarResize, true, -1, "sidebarWidth")
@@ -108,6 +125,7 @@ onAggregateChange: function(aggregate) {
 	items.forEach(function(item) {
 		$sidebarActivityPanel.appendChild(Draw.activityItem(item))
 	})
+	refreshInterval(aggregate)
 },
 
 onWatchingChange: function(aggregate) {
