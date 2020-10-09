@@ -1189,8 +1189,12 @@ scroll-inner {
 	padding: 0.3rem 0.5rem;
 }
 
+select {
+	width: 7em;
+}
+
 .registerBox input {
-	margin: 1px;
+	/*margin: 1px;*/
 }
 
 input {

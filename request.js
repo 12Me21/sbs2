@@ -332,7 +332,7 @@ searchUsers: function(text, callback) {
 	var like = text.replace(/%/g,"_") //the best we can do...
 	var count = 20
 	return read([
-		{user: {limit: count, usernameLike: "%"+like+"%"}}
+		{user: {limit: count, usernameLike: "%"+like+"%", sort: 'editDate', reverse: true}}
 	],{},function(e, resp) {
 		if (!e)
 			callback(resp.userMap)
