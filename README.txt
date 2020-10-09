@@ -12,7 +12,7 @@ Open index.html in a web browser
 If you are hosting this on a server, it's a good idea to use `build.sh`, to slightly improve load times and avoid problems with caching.
 This will generate `_build.html` and some files in `resource/`, as well as copy the files to a destination.
 You can run `./build.sh <file>`, which copies `_build.html` to <file>, and copies `resource` to the same directory
-or use `./build.sh <directory>`, which copies `_build.html` to `<directory>/index.html` and `resource` to `<directory>/resource`
+or use `./build.sh <directory>`, which is short for `./build.sh <directory>/index.html`.
 (build.sh only works on linux, but you can follow the instructions in the file to do it manually if you need to)
 
 * Files
