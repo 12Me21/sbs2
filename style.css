@@ -6,6 +6,7 @@
 	box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	overflow-wrap: break-word;
+	font-size: 1em;
 }
 /* may need more things here */
 .textItem, .item, .buttonContainer button, .avatar, tbody, img {
@@ -336,6 +337,7 @@ table.tabs td button {
 	height: 2rem;
 	border: none;
 	vertical-align: top;
+	font-size: 1em;
 }
 
 table.tabs td:last-child {
