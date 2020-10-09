@@ -96,6 +96,7 @@ processItem: {
 		data = processItem.editable(data, users)
 		if (data.parentId != undefined)
 			data.parent = categoryMap[data.parentId]
+		data.users = users //hack for permissions users
 		return data
 	},
 	comment: function(data, users) {
