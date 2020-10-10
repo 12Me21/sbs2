@@ -56,9 +56,9 @@ addView('editpage', {
 						render(false)
 				}, true)
 			}
-			function done() {
-				render({parent: Entity.categoryMap[parent]})
-			}
+		}
+		function done() {
+			render({parent: Entity.categoryMap[parent]})
 		}
 	},
 	

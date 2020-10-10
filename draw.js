@@ -285,9 +285,9 @@ pageInfo: function(page) {
 	//with(e){
 	e.appendChild(authorBox(page))
 	var b = linkButton()
-	b[1].textContent = "Edit"
+	b[1].textContent = "Edit Page"
 	Nav.link("editpage/"+page.id, b[1].parentNode)
-	b[0].className += " item"
+	b[0].className += " item rightAlign"
 	e.appendChild(b[0])
 	return e
 },
