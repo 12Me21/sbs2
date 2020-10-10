@@ -205,10 +205,6 @@
 			
 			<v-b data-view-homeMode class="homePane">
 				<a class="linkBar bar rem2-3" data-static-path=category/0><span class="textItem">Pages</span></a>
-				<a class="linkBar bar rem2-3" data-static-path=users><span class="textItem">Users</span></a>
-				<a class="linkBar bar rem2-3" data-static-path=image><span class="textItem">Images</span></a>
-				<a class="linkBar bar rem2-3" data-static-path=settings><span class="textItem">User Settings</span></a>
-				<a class="linkBar bar rem2-3" data-static-path=test><span class="textItem">Test</span></a>
 			</v-b>
 			
 			<v-b data-view-membersMode class="memberPane">
@@ -272,6 +268,9 @@
 				<div class="registerBox bottomBorder">
 					<a data-static-path=image>Change your avatar here</a>
 				</div>
+				<div class="registerBox bottomBorder">
+					<a data-static-path=users>User list</a>
+				</div>
 			</v-b>
 
 			<v-b data-view-activity id=$activity></v-b>
@@ -320,6 +319,7 @@
 			<sidebar-panel id=$sidebarActivityPanel></sidebar-panel>
 			<!--<div id=$sidebarWatchingPanel class="fill"></div>-->
 			<sidebar-panel id=$sidebarFilePanel class="flex">
+				<a data-static-path=image>Uploaded Images</a>
 				<div class="sidebarUploadingFile bar rem1-5">
 					<button id=$fileCancel class="item">Cancel</button>
 					<button id=$fileUpload class="rightAlign item">Upload Image</button>
