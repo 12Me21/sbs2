@@ -1118,3 +1118,7 @@ textarea-container, textarea-container > textarea {
 .permission-users tr {
 	border-top: 1px solid gray;
 }
+
+#\$pageContents, .split-top {
+	max-height: 100%;
+}
