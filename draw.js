@@ -508,11 +508,12 @@ permissionInput: function() {
 	var elem = document.createElement('div')
 
 	var input = Draw.userSelector()
-	elem.appendChild(input.elem)
+	
 	
 	var table = elem.createChild('table')
 	table.className += " permission-table"
 	var header = table.createChild('thead').createChild('tr')
+	header.createChild('th')
 	header.createChild('th')
 	header.createChild('th').textContent = "View"
 	header.createChild('th').textContent = "Reply"
@@ -521,7 +522,7 @@ permissionInput: function() {
 	var body = table.createChild('tbody')
 	body.className += " permission-users"
 
-	var perms = [];
+	elem.appendChild(input.elem)
 	
 	var x = {
 		element: elem,
@@ -547,10 +548,6 @@ permissionInput: function() {
 			return ret
 		}
 	}
-
-	//todo: TRUST THE HTML
-	// !
-	//TEXT NICOLE!!!
 	
 	input.onchange = function(user) {
 		body.appendChild(permissionRow(user, "cr"))
