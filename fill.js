@@ -13,7 +13,7 @@ String.prototype.split1 = function(sep) {
 // partial, supports 2 args only. be careful
 if (!Object.assign)
 	Object.assign = function(dest, src) {
-		for (key in src)
+		for (var key in src)
 			dest[key] = src[key]
 		return dest
 	}
