@@ -33,6 +33,9 @@ addView('page', {
 				//ChatRoom.setViewing([page.id])
 				room.show()
 				room.pinned = z
+
+				flag('canEdit', /u/.test(page.myPerms))
+				Nav.link("editpage/"+page.id, $pageEditButton)
 			})
 		} else {
 			//todo: maybe we can request the user list early too?
@@ -68,12 +71,16 @@ addView('page', {
 		room = new ChatRoom(page.id, page)
 		room.displayInitialMessages(comments)
 		room.show()
+
+		flag('canEdit', /u/.test(page.myPerms))
+		Nav.link("editpage/"+page.id, $pageEditButton)
 	},
 	cleanUp: function(type) {
 		//$messageList.replaceChildren()
 		if (room)
 			room.hide() //so it's fucking possible for cleanup to get called TWICE if there's an error, sometimes.
 		room = null
+		flag('canEdit', false)
 	},
 	init: function() {
 		function sendMessage() {
