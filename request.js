@@ -370,7 +370,7 @@ getUserView: function(id, callback) {
 	
 	return read([
 		{"user": userSearch},
-		{"content.0id$createUserIds~Puserpage": {type: '@user.page', limit: 1}},
+		{"content.0id$createUserIds~Puserpage": {type: 'userpage', limit: 1}},
 		{"activity.0id$userIds": {limit: 20, reverse: true}},
 		{"commentaggregate.0id$userIds": {limit: 100, reverse: true}},
 		"content.2contentId.3id"
