@@ -1127,3 +1127,7 @@ textarea-container, textarea-container > textarea {
 #\$pageContents, .split-top {
 	max-height: 100%;
 }
+
+.split-top {
+	height: 40vh;
+}
