@@ -53,8 +53,14 @@ views: {
 		},
 		className: 'userMode',
 		render: function(user, userpage, activity, ca, content) {
-			if (user.id == Req.uid)
+			if (user.id == Req.uid) {
 				flag('myUserPage', true)
+				if (userpage) {
+					var path="editpage/"+userpage.id
+				} else
+					var path="editpage?type=@user.page&name="+encodeURIComponent(user.username)+"'s user page"
+				Nav.link(path, $editUserPage)
+			}
 			setEntityTitle(user)
 			/*$userPageAvatarLink.href = Draw.avatarURL(user)*/
 			$userPageAvatar.src = Draw.avatarURL(user, "size=400&crop=true")
@@ -136,6 +142,10 @@ setPath: function(path) {
 	$path.replaceChildren(Draw.titlePath(path))
 },
 setEntityPath: function(page) {
+	if (!page) {
+		setPath([])
+		return
+	}
 	if (page.Type == 'category')
 		var node = page
 	else

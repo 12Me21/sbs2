@@ -478,7 +478,6 @@ categoryInput: function() {
 permissionRow: function(user, perms) {
 	var id = user ? user.id : -1
 	var row = document.createElement('tr')
-	console.log("permrow",id, typeof id)
 	if (!id) {
 		var name = textItem("Default")
 	} else
