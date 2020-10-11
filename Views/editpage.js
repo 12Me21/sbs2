@@ -28,7 +28,6 @@ addView('editpage', {
 	},
 	
 	start: function(id, query, render) {
-		var parent = query.cid
 		if (id) { //edit existing page
 			id = +id
 			return Req.read([
@@ -58,7 +57,11 @@ addView('editpage', {
 			}
 		}
 		function done() {
-			render({parent: Entity.categoryMap[parent]})
+			render({
+				parent: Entity.categoryMap[query.cid || 0],
+				name: query.name,
+				type: query.type
+			})
 		}
 	},
 	
@@ -104,12 +107,12 @@ function updatePreview() {
 }
 
 function resetFields(page) {
-	$titleInput.value = ""
+	$titleInput.value = page.name || ""
 	$markupSelect.value = '12y'
 	$editorTextarea.value = ""
 	updatePreview()
 	$keywords.value = ""
-	$editPageType.value = ""
+	$editPageType.value = page.type || ""
 	if (page.parent)
 		categoryInput.set(page.parent.id)
 	else
