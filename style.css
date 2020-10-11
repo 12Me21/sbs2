@@ -1093,7 +1093,11 @@ textarea-container > textarea {
 	margin: 0;
 	border-radius: 0;
 	box-shadow: none;
-	outline-offset: 3px;
+}
+
+textarea-container > textarea:focus {
+	outline-offset: 2px;
+	outline: 2px solid black;
 }
 
 textarea-container, textarea-container > textarea {
