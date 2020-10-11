@@ -14,7 +14,7 @@ echo 'creating _build.css' >&2
 cat resource/fonts.css style.css markup.css code.css > resource/_build.css
 
 echo 'creating _build.js' >&2
-cat fill.js entity.js request.js sbs2-markup/_build.js draw.js view.js scroller.js sidebar.js chat.js Views/settings.js Views/page.js Views/image.js Views/editpage.js Views/category.js navigate.js main.js > resource/_build.js
+cat fill.js entity.js request.js sbs2-markup/_build.js draw.js view.js scroller.js sidebar.js chat.js Views/settings.js Views/page.js Views/image.js Views/editpage.js Views/category.js Views/user.js navigate.js main.js > resource/_build.js
 
 echo 'creating _build.html' >&2
 date=`date +%s`

@@ -43,38 +43,6 @@ views: {
 			setTitle("Testing")
 		},
 	},
-	user: {
-		start: function(id, query, render) {
-			if (typeof id == 'string' && id[0] == "@")
-				id = id.substr(1)
-			// todo: maybe username without @ should be invalid?
-			// can potentially collide with id numbers
-			return Req.getUserView(id, render)
-		},
-		className: 'userMode',
-		render: function(user, userpage, activity, ca, content) {
-			if (user.id == Req.uid) {
-				flag('myUserPage', true)
-				if (userpage) {
-					var path="editpage/"+userpage.id
-				} else
-					var path="editpage?type=@user.page&name="+encodeURIComponent(user.username)+"'s user page"
-				Nav.link(path, $editUserPage)
-			}
-			setEntityTitle(user)
-			/*$userPageAvatarLink.href = Draw.avatarURL(user)*/
-			$userPageAvatar.src = Draw.avatarURL(user, "size=400&crop=true")
-			//setPath([["users","Users"], [Nav.entityPath(user), user.name]])
-			if (userpage)
-				$userPageContents.replaceChildren(Draw.markup(userpage))
-			else
-				$userPageContents.replaceChildren()
-		},
-		cleanUp: function() { //todo: this probably needs more info to tell what next page is (so, whether to delete certain things)
-			$userPageAvatar.src = ""
-			$userPageContents.replaceChildren()
-		}
-	},
 	// alright, so, the way this works
 	// first, .start is called. this will usually make an API request.
 	// if this fails or something bad happens, it should be handled I think
