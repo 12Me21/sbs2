@@ -112,6 +112,12 @@ function resetFields(page) {
 	$editorTextarea.value = ""
 	updatePreview()
 	$keywords.value = ""
+	if (page.type && validTypes.indexOf(page.type)<0) {
+		$editPageTypeOption.value = page.type
+		$editPageTypeOption.textContent = page.type
+		$editPageTypeOption.hidden = false
+	} else
+		$editPageTypeOption.hidden = true
 	$editPageType.value = page.type || ""
 	if (page.parent)
 		categoryInput.set(page.parent.id)
@@ -142,10 +148,18 @@ function fillFields(page) {
 	$editorTextarea.value = page.content
 	updatePreview()
 	$keywords.value = page.keywords.join(" ")
+	if (validTypes.indexOf(page.type)<0) {
+		$editPageTypeOption.value = page.type
+		$editPageTypeOption.textContent = page.type
+		$editPageTypeOption.hidden = false
+	} else
+		$editPageTypeOption.hidden = true
 	$editPageType.value = page.type
 	categoryInput.set(page.parentId)
 	permissionInput.set(page.permissions, page.users)
 }
+
+var validTypes = ['resource','chat','program','tutorial','documentation']
 
 <!--/*
 }(window)) //*/ // pass external values

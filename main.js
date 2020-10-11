@@ -68,12 +68,7 @@ Req.onGuestLoad = function() {
 
 Req.onLogout = function() {
 	View.flag('loggedIn', false)
-	// this should probably just reload the entire site just to be safe
-	// if not, need to:
-	// stop long poller
-	// clear generated html
-	// reload current page in case it's not public
-	// etc.
+	window.location.reload()
 }
 
 Req.tryLoadCachedAuth()
