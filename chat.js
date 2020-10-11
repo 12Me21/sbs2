@@ -120,6 +120,10 @@ function ChatRoom(id, page) {
 	l && this.updateUserList(l)
 	ChatRoom.addRoom(this)
 
+	if (this.page.type == "resource")
+		this.pageContainer.style.height = "1000px" //whatever
+	else if (this.page.type == "chat")
+		this.pageContainer.style.height = "0"
 	View.attachResize(this.pageContainer, $chatResize, false, 1)
 }
 

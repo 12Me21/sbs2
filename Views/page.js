@@ -13,6 +13,12 @@ window.addEventListener('focus', registerActivity)
 with (View) (function($) { "use strict" //*/
 
 var room
+var renderPage = function(page) {
+	setEntityTitle(page)
+	setEntityPath(page)
+	flag('canEdit', /u/.test(page.myPerms))
+	Nav.link("editpage/"+page.id, $pageEditButton)
+}
 
 addView('page', {
 	// in this case, we sometimes make a request, and sometimes
@@ -28,14 +34,10 @@ addView('page', {
 			room.pinned = true
 			quick(function() {
 				var page = room.page
-				setEntityTitle(page)
-				setEntityPath(page)
 				//ChatRoom.setViewing([page.id])
 				room.show()
 				room.pinned = z
-
-				flag('canEdit', /u/.test(page.myPerms))
-				Nav.link("editpage/"+page.id, $pageEditButton)
+				renderPage(page)
 			})
 		} else {
 			//todo: maybe we can request the user list early too?
@@ -66,14 +68,11 @@ addView('page', {
 	splitView: true,
 	render: function(page, comments) {
 		//ChatRoom.setViewing([page.id])
-		setEntityTitle(page)
-		setEntityPath(page)
 		room = new ChatRoom(page.id, page)
 		room.displayInitialMessages(comments)
 		room.show()
-
-		flag('canEdit', /u/.test(page.myPerms))
-		Nav.link("editpage/"+page.id, $pageEditButton)
+		
+		renderPage(page)
 	},
 	cleanUp: function(type) {
 		//$messageList.replaceChildren()
