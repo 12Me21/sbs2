@@ -107,7 +107,7 @@ setTitle: function(text) {
 },
 
 setPath: function(path) {
-	$path.replaceChildren(Draw.titlePath(path))
+	/*$path.replaceChildren(Draw.titlePath(path))*/
 },
 setEntityPath: function(page) {
 	if (!page) {
