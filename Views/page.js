@@ -46,7 +46,7 @@ addView('page', {
 			// loading the initial messages :(
 			return Req.read([
 				{content: {ids: [id]}},
-				{comment: {parentIds: [id], limit: 20, reverse: true}},
+				{comment: {parentIds: [id], limit: 30, reverse: true}},
 				"user.0createUserId.0editUserId.1createUserId.1editUserId",
 			], {
 				//content: "name,parentId,type,createUserId,editUserId,createDate,editDate,permissions,id"
@@ -120,6 +120,9 @@ addView('page', {
 			if (!e.shiftKey && e.keyCode == 13) {
 				e.preventDefault()
 				sendMessage()
+			}
+			if (!e.ctrlKey && e.key == 'e') {
+				
 			}
 		}
 		// TODO: make sure this is ready when the long poller starts!

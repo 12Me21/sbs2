@@ -330,23 +330,27 @@ setBgImage: function(element, url) {
 	
 },
 activityItem: function(item) {
-	var bar = entityTitleLink(item.content)
-	bar.className += " linkBar bar rem1-5"
-	bar.appendChild(document.createTextNode(" "))
+	var outer = entityLink(item.content)
+	outer.className += " linkBar"
+	var bar = iconTitle(item.content)
+	bar.className += " bar rem1-5"
+	var bar2 = document.createElement('div')
+	bar2.className += " bar rem1-5"
+	outer.appendChild(bar)
+	outer.appendChild(bar2)
+
+	var userContainer = bar2.createChild('activity-users')
+	userContainer.className = "rightAlign"
+
 	var time = timeAgo(item.lastDate)
 	time.className += " textItem"
-	
-	bar.appendChild(document.createTextNode(" "))
-	//bar.appendChild(textItem("("+item.count+")"))
-	var userContainer = document.createElement('activity-users')
-	userContainer.className = "rightAlign"
 	userContainer.appendChild(time)
-	bar.appendChild(userContainer)
+	
 	item.users.forEach(function(u) {
 		if (u)
 			userContainer.appendChild(icon(u))
 	})
-	return bar
+	return outer
 },
 navButtons: function(callback) {
 	var prev = button()

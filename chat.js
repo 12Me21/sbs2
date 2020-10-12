@@ -53,7 +53,7 @@ function ChatRoom(id, page) {
 		if (b[1].disabled)
 			return
 		b[1].disabled = true
-		$.loadOlder(30, function() {
+		$.loadOlder(50, function() {
 			b[1].disabled = false
 		}) //todo: lock
 	}
