@@ -480,6 +480,7 @@ main-scrollable {
  *******************/
 .linkBar {
 	/*font-weight: bold;*/
+	display: block;
 	background-color: #EEE;
 	padding-left: 0.2rem;
 }
