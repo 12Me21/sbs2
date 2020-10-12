@@ -80,10 +80,11 @@ else
 
 function ready() {
 	console.log("ONLOAD!")
-	if (navigator.vendor=="Google Inc.") {
-		//console.info("chrome sucks")
+	if (navigator.vendor=="Google Inc.")
 		document.documentElement.style.imageRendering="-webkit-optimize-contrast"
-	}
+	document.body.addEventListener('touchstart', function(e) {
+		e.preventDefault()
+	})
 	
 	View.onLoad()
 
