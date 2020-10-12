@@ -482,7 +482,7 @@ main-scrollable {
 	/*font-weight: bold;*/
 	display: block;
 	background-color: #EEE;
-	padding-left: 0.2rem;
+	padding: 0.2rem;
 }
 
 .linkBar:focus {
