@@ -332,8 +332,11 @@ setBgImage: function(element, url) {
 activityItem: function(item) {
 	var outer = entityLink(item.content)
 	outer.className += " linkBar"
-	var bar = iconTitle(item.content)
+	
+	var bar = document.createElement('div')
 	bar.className += " bar rem1-5"
+	bar.appendChild(iconTitle(item.content))
+	
 	var bar2 = document.createElement('div')
 	bar2.className += " bar rem1-5"
 	outer.appendChild(bar)

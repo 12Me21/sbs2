@@ -193,11 +193,12 @@ Scroller.prototype.autoScroll = function() {
 			/*this.animationId = null
 			var now = performance.now()
 			this.animationStart = now - 1000/60 //assume 60fps on first frame..
-			this.autoScrollAnimation(now)*/
-			// edited to start animation la-a-a-ater
-			this.animationStart = performance.now()
+			this.autoScrollAnimation(now)
+			// edited to start animation la-a-a-ater*/
 			this.animationId = window.requestAnimationFrame(function(time) {
-				$.autoScrollAnimation(time)
+				var now = performance.now()
+				$.animationStart = now - 1000/60 //assume 60fps on first frame..
+				$.autoScrollAnimation(now)
 			})
 		}
 	}
@@ -209,11 +210,12 @@ Scroller.prototype.cancelAutoScroll = function() {
 	}
 }
 Scroller.prototype.autoScrollAnimation = function(time) {
-	var dt = (time - this.animationStart) / (1000/60)
+	var dt = 1//(time - this.animationStart) / (1000/60)
 	this.animationStart = time
 
 	this.ignoreScroll = true
 	var expect = Math.floor(this.scrollBottom * Math.pow(1-this.rate, dt))
+	console.log(this.scrollBottom, expect)
 	this.scrollBottom = expect
 	
 	this.atBottom = true
