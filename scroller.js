@@ -215,7 +215,6 @@ Scroller.prototype.autoScrollAnimation = function(time) {
 
 	this.ignoreScroll = true
 	var expect = Math.floor(this.scrollBottom * Math.pow(1-this.rate, dt))
-	console.log(this.scrollBottom, expect)
 	this.scrollBottom = expect
 	
 	this.atBottom = true
