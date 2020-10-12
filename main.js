@@ -84,6 +84,7 @@ function ready() {
 		document.documentElement.style.imageRendering="-webkit-optimize-contrast"
 	document.body.addEventListener('touchstart', function(e) {
 		e.preventDefault()
+		print(e.target)
 	})
 	
 	View.onLoad()
