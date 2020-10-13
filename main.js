@@ -82,9 +82,9 @@ function ready() {
 	console.log("ONLOAD!")
 	if (navigator.vendor=="Google Inc.")
 		document.documentElement.style.imageRendering="-webkit-optimize-contrast"
-	document.body.addEventListener('touchstart', function(e) {
+	document.documentElement.addEventListener('touchstart', function(e) {
 		e.preventDefault()
-		print(e.target)
+		print(e.target, e.target.tagName)
 	})
 	
 	View.onLoad()
