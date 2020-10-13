@@ -1,27 +1,5 @@
-
 if (!window.devicePixelRatio)
 	window.devicePixelRatio = 1
-
-HTMLElement.prototype.fixScrolling = function() {
-	var lastY = 0
-	this.addEventListener('touchstart', function(e) {
-		lastY = e.touches[0].clientY
-	})
-	var $=this;
-	this.addEventListener('touchmove', function(e) {
-		var touchY = e.touches[0].clientY
-
-		var scrollTop = $.scrollTop
-		if (
-			scrollTop <= 0 && touchY > lastY ||
-				scrollTop >= $.scrollHeight-$.clientHeight && touchY < lastY
-		) {
-			e.preventDefault()
-		}
-		lastY = touchY
-	})
-	
-}
 
 String.prototype.split1 = function(sep) {
 	var n = this.indexOf(sep)
