@@ -1071,7 +1071,7 @@ textarea-container {
 	display: block;
 	box-sizing: content-box;
 	border: 2px solid #00C8B4;
-	padding: 3px;
+	padding: 5px;
 	overflow: hidden;
 	background-color: white;
 }
@@ -1096,7 +1096,7 @@ textarea-container > textarea {
 }
 
 textarea-container > textarea:focus {
-	outline-offset: 2px;
+	outline-offset: 4px;
 	outline: 2px solid black;
 }
 
