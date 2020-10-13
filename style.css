@@ -20,13 +20,17 @@
 /**********
  ** Flex **
  **********/
-.flex, .flex-row {
+.flex {
+	display: block;
 	display: -webkit-flex;
 	display: flex;
-}
-.flex {
 	-webkit-flex-direction: column;
 	flex-direction: column;
+}
+.flex-row {
+	display: inline-block;
+	display: -webkit-flex;
+	display: flex;
 }
 .flex > *, .flex-row > * {
 	-webkit-flex-shrink: 0;
@@ -894,9 +898,6 @@ scroll-inner {
 	html.f-mobileSidebar body > * {
 	}
 	html.f-mobileSidebar sidebar-container {
-		display: block; /* for devices without flex */
-		display: -webkit-flex;
-		display: flex;
 		border-left: none;
 		position: fixed;
 		left: 0;
@@ -1127,4 +1128,9 @@ textarea-container, textarea-container > textarea {
 
 .split-top {
 	height: 40vh;
+}
+
+.flex-height {
+	webkit-flex-shrink: 1;
+	flex-shrink: 1;
 }
