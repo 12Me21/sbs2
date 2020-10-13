@@ -446,6 +446,7 @@ timeAgoString: function(date) {
 	if (interval >= 1) return interval + " hours ago"
 	interval = Math.round(seconds / 60)
 	if (interval >= 1) return interval + " minutes ago"
+	return "Just now"
 	if (seconds <= -0.5)
 		return " IN THE FUTURE?"
 	return Math.round(seconds) + " seconds ago"
@@ -685,12 +686,29 @@ messageControls: function() {
 },
 
 settings: function(settings) {
-	var x = {}
 	var get = {}
-	x.elem = document.createDocumentFragment()
+	var set = {}
+	var x = {
+		elem: document.createDocumentFragment(),
+		get: function() {
+			var ret = {}
+			get.forEach(function(func, key) {
+				ret[key] = func()
+			})
+			return ret
+		},
+		set: function(data) {
+			set.forEach(function(func, key) {
+				func(data[key])
+			})
+		}
+	}
 	settings.forEach(function(data, name) {
 		var type = data.type
 		var elem
+		var label = document.createElement('label')
+		label.textContent = data.title+": "
+		x.elem.appendChild(label)
 		if (type=='select') {
 			elem = document.createElement('select')
 			data.options.forEach(function(option) {
@@ -707,6 +725,7 @@ settings: function(settings) {
 		}
 		if (elem)
 			x.elem.appendChild(elem)
+		x.elem.createChild('br')
 	})
 	return x
 },

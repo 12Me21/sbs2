@@ -101,6 +101,9 @@ addView('settings', {
 					registerError(resp, "Failed:", $userSettingsError)
 			})
 		}
+
+		var d = Draw.settings(settings)
+		$localSettings.appendChild(d.elem)
 	}
 })
 
