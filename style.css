@@ -439,7 +439,6 @@ main {
 
 sidebar-container {
 	border-left: 2px solid black;
-	overflow:auto;
 	background-color: white;
 	width: 30vw;
 	min-width: 10vw;
@@ -904,7 +903,6 @@ scroll-inner {
 		top: 0;
 		bottom: 0;
 		right: 0;
-		min-height: 100vh;
 	}
 	html:not(.f-mobileSidebar) sidebar-container {
 		display: none;
