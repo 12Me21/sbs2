@@ -229,22 +229,25 @@
 					<form id=$loginForm>
 						<input placeholder=Username name=username><br>
 						<input placeholder=Password name=password type=password><br>
-						<button name=login onclick=event.preventDefault()>Log In</button>
+						<button>Log In</button>
 					</form>
 					<div id=$loginError></div>
 				</div>
 				<div class="registerBox bottomBorder">
 					<h2>Register</h2>
 					<form id=$registerForm autocomplete=off>
-						<input placeholder=Username name=username id=$registerUsername minlength=2 maxlength=20> 2 to 20 characters, no spaces<br>
-						<input placeholder=Password name=password type=password id=$registerPassword minlength=8><input placeholder="Confirm Password" name=password2 type=password id=$registerPassword2 minlength=8> At least 8 characters<br>
-						<input placeholder=Email name=email type=email id=$registerEmail><input placeholder="Confirm Email" name=email2 type=email id=$registerEmail2> Confirmation code will be sent<br>
-						<button id=$registerButton onclick=event.preventDefault()>Register</button></form>
-					<button id=$resendEmail onclick=event.preventDefault()>Resend Email</button>
+						<input placeholder=Username name=username minlength=2 maxlength=20> 2 to 20 characters, no spaces<br>
+						<input placeholder=Password name=password type=passwordminlength=8><input placeholder="Confirm Password" name=password2 type=password minlength=8> At least 8 characters<br>
+						<input placeholder=Email name=email type=email ><input placeholder="Confirm Email" name=email2 type=email> Confirmation code will be sent<br>
+						<button>Register</button>
+						<button name=resend>Resend Email</button>
+					</form>
 					<div id=$registerError class="pre"></div>
 					<h3>Confirm Registration</h3>
-					<input placeholder="Confirmation Code" id=$emailCode>
-					<button id=$registerConfirm>Confirm</button>
+					<form id=$confirmForm>
+						<input placeholder="Confirmation Code" name=code>
+						<button name=submit>Confirm</button>
+					</form>
 				</div>
 				<div class="registerBox bottomBorder">
 					<h2>Password Reset</h2>
@@ -260,10 +263,17 @@
 					</form>
 				</div>
 			</v-b>
-
 			<v-b data-view-settingsMode class="loggedIn">
 				<div class="registerBox bottomBorder">
 					<button id=$logOut>Log out</button><br>
+				</div>
+				<div class="registerBox bottomBorder" id=$localSettings>
+				</div>
+				<div class="registerBox bottomBorder">
+					<a data-static-path=image>Change your avatar here</a>
+				</div>
+				<div class="registerBox bottomBorder">
+					<a data-static-path=users>User list</a>
 				</div>
 				<div class="registerBox bottomBorder">
 					<h2>Change account settings</h2>
@@ -273,15 +283,9 @@
 						<input placeholder="New Username" name=username minlength=2 maxlength=20> 2 to 20 characters, no spaces<br>
 						<input placeholder="New Password" name=password type=password minlength=8><input placeholder="Confirm New Password" name=password2 type=password minlength=8> At least 8 characters<br>
 						<input placeholder="New Email" name=email type=email><input placeholder="Confirm New Email" name=email2 type=email><br>
-						<button name=submit>Save</button>
+						<button>Save</button>
 					</form>
 					<div id=$userSettingsError class="pre"></div>
-				</div>
-				<div class="registerBox bottomBorder">
-					<a data-static-path=image>Change your avatar here</a>
-				</div>
-				<div class="registerBox bottomBorder">
-					<a data-static-path=users>User list</a>
 				</div>
 			</v-b>
 

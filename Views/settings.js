@@ -7,7 +7,7 @@ addView('settings', {
 		setTitle("Account Settings")
 	},
 	init: function() {
-		$loginForm.login.onclick = function(e) {
+		$loginForm.onsubmit = function(e) {
 			e.preventDefault()
 			Req.authenticate($loginForm.username.value, $loginForm.password.value, function(e, resp) {
 			})
@@ -16,7 +16,7 @@ addView('settings', {
 			Req.logOut()
 		}
 
-		$registerForm.$registerButton.onclick = function(e) {
+		$registerForm.submit.onclick = function(e) {
 			e.preventDefault()
 			registerError("Registering...")
 			var data = readRegisterFields()
@@ -39,15 +39,15 @@ addView('settings', {
 				}
 			})
 		}
-		$resendEmail.onclick = function(e) {
+		$registerForm.resend.onclick = function(e) {
 			e.preventDefault()
 			sendConfirmationEmail()
 		}
-		$registerConfirm.onclick = function(e) {
+		$confirmForm.onsubmit = function(e) {
 			e.preventDefault()
 			registerError("Confirming...")
 			// todo: validate the key client-side maybe
-			Req.confirmRegister($emailCode.value, function(e, resp) {
+			Req.confirmRegister($confirmForm.code.value, function(e, resp) {
 				if (!e) {
 					registerError("Registration Complete")
 					// todo: something here
@@ -85,9 +85,9 @@ addView('settings', {
 			}
 		}
 
-		$changeForm.submit.onclick = function(e) {
-			registerError("Updating data...", undefined, $userSettingsError)
+		$changeForm.onsubmit = function(e) {
 			e.preventDefault()
+			registerError("Updating data...", undefined, $userSettingsError)
 			var data = readChangeFields()
 			if (data.error) {
 				registerError(data.error)
@@ -198,6 +198,14 @@ function sendConfirmationEmail() {
 			}
 		})
 	}
+}
+
+var settings = {
+	theme: {
+		title: "Theme",
+		type: 'select',
+		options: ['light','dark'],
+	},
 }
 
 <!--/*

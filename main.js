@@ -11,9 +11,9 @@ Req.onLogin = function() {
 
 	// display user info etc.
 	// start long poller
-	Req.onMessages = function(comments) {
+	Req.onMessages = function(comments, contents) {
 		ChatRoom.displayMessages(comments)
-		Entity.updateAggregateComments(Req.currentActivity, comments)
+		Entity.updateAggregateComments(Req.currentActivity, comments, contents)
 		Sidebar.onAggregateChange(Req.currentActivity)
 	}
 	Req.onListeners = function(a) {

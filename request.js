@@ -564,7 +564,7 @@ lpProcess: function(resp) {
 	}
 	if (resp.chains) {
 		if (resp.chains.comment)
-			onMessages(resp.chains.comment)
+			onMessages(resp.chains.comment, resp.chains.content)
 		if (resp.chains.commentdelete)
 			onMessages(resp.chains.commentdelete)
 		if (resp.chains.activity)

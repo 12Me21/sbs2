@@ -684,6 +684,33 @@ messageControls: function() {
 	return x
 },
 
+settings: function(settings) {
+	var x = {}
+	var get = {}
+	x.elem = document.createDocumentFragment()
+	settings.forEach(function(data, name) {
+		var type = data.type
+		var elem
+		if (type=='select') {
+			elem = document.createElement('select')
+			data.options.forEach(function(option) {
+				var opt = elem.createChild('option')
+				opt.value = option
+				opt.textContent = option
+			})
+			get[name] = function() {
+				return elem.value
+			}
+			set[name] = function(value) {
+				elem.value = value
+			}
+		}
+		if (elem)
+			x.elem.appendChild(elem)
+	})
+	return x
+},
+
 <!--/* 
 }) //*/
 
