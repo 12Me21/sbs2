@@ -102,7 +102,15 @@ addView('settings', {
 			})
 		}
 
-		var d = Draw.settings(settings)
+		var d = Draw.settings(settings, function(name, value) {
+			console.log("SETTINGS", name, value)
+			if (name == "theme") {
+				if (value == "dark") {
+					$customCSS.textContent = "body, img {filter: invert(100%) hue-rotate(180deg);}"
+				} else
+					$customCSS.textContent = ""
+			}
+		})
 		$localSettings.appendChild(d.elem)
 	}
 })

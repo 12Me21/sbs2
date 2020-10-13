@@ -685,7 +685,7 @@ messageControls: function() {
 	return x
 },
 
-settings: function(settings) {
+settings: function(settings, onchange) {
 	var get = {}
 	var set = {}
 	var x = {
@@ -702,6 +702,11 @@ settings: function(settings) {
 				func(data[key])
 			})
 		}
+	}
+	var change = function(name) {
+		var value = get[name]()
+		Store.set("setting-"+name, JSON.stringify(value))
+		onchange(name, value)
 	}
 	settings.forEach(function(data, name) {
 		var type = data.type
@@ -721,6 +726,15 @@ settings: function(settings) {
 			}
 			set[name] = function(value) {
 				elem.value = value
+			}
+			var value = Store.get("setting-"+name)
+			if (value != null) {
+				value = JSON.safeParse(value)
+				set[name](value)
+				onchange(name, value)
+			}
+			elem.onchange = function() {
+				change(name)
 			}
 		}
 		if (elem)
