@@ -148,9 +148,7 @@ function Scroller(outer, inner) {
 			$.cancelAutoScroll()
 		$.atBottom = $.scrollBottom < $.outer.clientHeight*$.bottomHeight
 	}, {passive: true})
-	outer.addEventListener('touchmove', function(e) {
-		e.preventDefault()
-	})
+	outer.fixScrolling()
 	
 	function onResize() {
 		$.registerSizeChange()
