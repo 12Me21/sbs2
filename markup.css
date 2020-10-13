@@ -276,3 +276,7 @@ markup-root .youtube {
 	-moz-tab-size: 4;
 	tab-size: 4;
 }
+
+.markup-root .i {
+	text-decoration: wavy underline red;
+}
