@@ -402,6 +402,7 @@ authorBox: function(page) {
 	if (page.editUserId != page.createUserId) {
 		element.appendChild(document.createTextNode(" "))
 		element.appendChild(pageEditedTime("Edited by:", page.editDate))
+		element.appendChild(document.createTextNode(" "))
 		element.appendChild(entityTitleLink(page.editUser, true))
 	} else if (page.createDate != page.editDate) { //edited by same user
 		element.appendChild(document.createTextNode(" "))

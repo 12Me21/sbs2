@@ -15,7 +15,7 @@ with (View) (function($) { "use strict" //*/
 var room
 var renderPage = function(page) {
 	setEntityTitle(page)
-	setEntityPath(page)
+	setEntityPath(page.parent)
 	flag('canEdit', /u/.test(page.myPerms))
 	Nav.link("editpage/"+page.id, $pageEditButton)
 }

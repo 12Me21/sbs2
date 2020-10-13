@@ -53,7 +53,7 @@ addView('category', {
 		currentCategory = category.id
 		navButtons.set(pageNum)
 		setEntityTitle(category)
-		setEntityPath(category)
+		setEntityPath(category.parent)
 		$categoryDescription.replaceChildren(Parse.parseLang(category.description, category.values.markupLang))
 		$categoryCategories.replaceChildren()
 		Nav.link("editpage?cid="+category.id, $createPage.parentNode)
