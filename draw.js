@@ -232,10 +232,20 @@ messageBlock: function(comment) {
 			avatar: {value: av}
 		})
 	div.appendChild(avatar(user))
-	
+
 	var name = document.createElement('span')
-	name.className = 'username'
-	name.textContent = user.name+":"
+	name.className += " username"
+
+	var link = entityLink(user)
+	name.appendChild(link)
+	
+	var n = document.createElement('span')
+	n.className = "pre"
+	n.textContent = user.name
+
+	link.appendChild(n)
+	link.appendChild(document.createTextNode(":"))
+	
 	div.appendChild(name)
 	
 	var contentBox = document.createElement('message-contents')
@@ -348,10 +358,14 @@ activityItem: function(item) {
 	var time = timeAgo(item.lastDate)
 	time.className += " textItem"
 	userContainer.appendChild(time)
+	userContainer.appendChild(document.createTextNode(" "))
 	
 	item.users.forEach(function(u) {
-		if (u)
-			userContainer.appendChild(icon(u))
+		if (u) {
+			var l = entityLink(u)
+			l.appendChild(icon(u))
+			userContainer.appendChild(l)
+		}
 	})
 	return outer
 },
