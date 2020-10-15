@@ -74,7 +74,7 @@
 	
 	<a data-static-path="" class="textItem"><img class="item" src=resource/iconbig.png alt="SBS"></a>
 	<noscript>This web-site requires JavaScript</noscript>
-	<span id=$path></span><h1 id=$pageTitle class="textItem pageTitle"></h1>
+	<v-b data-view-page data-view-categoryMode><span id=$path></span></v-b><h1 id=$pageTitle class="textItem pageTitle"></h1>
 	
 	<v-b data-view-userMode><a class="textItem loggedIn myUserPage" id=$editUserPage>Edit User Page</a></v-b>
 	<div class="item loggedIn myUserPage">
@@ -222,7 +222,8 @@
 				<div class="editorPreview grow markup-root" id=$editorPreview><div class="markup-root"></div></div>
 			</v-b>
 			
-			<v-b data-view-homeMode class="homePane">
+			<v-b data-view-homeMode>
+				
 				<a class="linkBar bar rem2-3" data-static-path=category/0><span class="textItem">Pages</span></a>
 			</v-b>
 			
