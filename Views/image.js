@@ -31,9 +31,11 @@ addView('image', {
 				return
 			readFields(selectedFile)
 			Req.putFile(selectedFile, function(e, resp) {
-				resp.createUser = selectedFile.createUser //ehhhhh
-				if (!e)
+				
+				if (!e) {
+					resp.createUser = selectedFile.createUser //ehhhhh
 					selectFile(resp)
+				}
 				//eh
 			})
 		}
@@ -64,6 +66,7 @@ var fileList
 
 function readFields(data) {
 	data.permissions = JSON.safeParse($filePermissions.value)
+	data.parentId = $fileParent.value
 	data.values = JSON.safeParse($fileValues.value)
 	data.name = $fileName.value
 }
@@ -79,6 +82,7 @@ function selectFile(file) {
 	$fileName.value = file.name
 	$filePermissions.value = JSON.stringify(file.permissions)
 	$fileValues.value = JSON.stringify(file.values)
+	$fileParent.value = file.parentId
 	$fileUser.replaceChildren(Draw.entityTitleLink(file.createUser))
 	$filePageView.src = ""
 	$filePageView.src = Req.fileURL(file.id)
