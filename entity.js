@@ -174,7 +174,6 @@ updateAggregateCommentAggregate: function(items, ca, page) {
 	return items
 },
 updateAggregateComments: function(items, comments, page) {
-	console.log(comments)
 	var pageMap = {}
 	page && page.forEach(function(p) {
 		pageMap[p.id] = p
