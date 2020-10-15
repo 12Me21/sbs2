@@ -16,15 +16,6 @@ faviconElement: null,
 
 // create public variables here
 views: {
-	"": {
-		className: 'homeMode',
-		render: function() {
-			var text = "Welcome to SmileBASIC Source 2!"
-			//var index = $.Math.random()*(text.length-1)|0
-			//text = text.substring(0,index)+text[index+1]+text[index]+text.substr(index+2)
-			setTitle(text)
-		}
-	},
 	test: {
 		init: function() {
 			$testButton.onclick = function() {
