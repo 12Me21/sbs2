@@ -4,7 +4,7 @@ with (View) (function($) { "use strict" //*/
 addView('', {
 	init: function() {
 	},
-	className: 'homeMode',
+	className: 'home',
 	render: function() {
 		setTitle("Welcome to SmileBASIC Source 2!")
 	},

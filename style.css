@@ -1135,3 +1135,19 @@ textarea-container, textarea-container > textarea {
 	webkit-flex-shrink: 1;
 	flex-shrink: 1;
 }
+
+.gallery-inner {
+	margin: 0 auto;
+	position: relative;
+}
+
+.gallery-inner canvas {
+	width: 100%;
+	vertical-align: top; /* but, why? */
+}
+
+.gallery-inner > div {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
