@@ -6,10 +6,7 @@ addView('', {
 	},
 	className: 'homeMode',
 	render: function() {
-		var text = "Welcome to SmileBASIC Source 2!"
-		setTitle(text)
-	},
-	cleanUp: function() {
+		setTitle("Welcome to SmileBASIC Source 2!")
 	},
 })
 
