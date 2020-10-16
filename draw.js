@@ -461,9 +461,9 @@ timeAgoString: function(date) {
 	interval = Math.round(seconds / 60)
 	if (interval >= 1) return interval + " minutes ago"
 	return "Just now"
-	if (seconds <= -0.5)
+	/*if (seconds <= -0.5)
 		return " IN THE FUTURE?"
-	return Math.round(seconds) + " seconds ago"
+	return Math.round(seconds) + " seconds ago"*/
 },
 
 categoryInput: function() {
@@ -756,6 +756,14 @@ settings: function(settings, onchange) {
 		x.elem.createChild('br')
 	})
 	return x
+},
+
+galleryLabel: function(entity) {
+	var element = entityLink(entity)
+	element.className += " bar rem1-5"
+	var icon = title(entity)
+	element.appendChild(icon)
+	return element
 },
 
 <!--/* 

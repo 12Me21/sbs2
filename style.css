@@ -1061,6 +1061,14 @@ sidebar-panel {
 	transform: scale(1);*/
 }
 
+.image-box-large > img {
+	max-width: 1%;
+	max-height: 1%;
+	-webkit-transform: scale(100);
+	transform: scale(100);
+	border: none;
+}
+
 user-select {
 	display: block;
 }
@@ -1150,4 +1158,11 @@ textarea-container, textarea-container > textarea {
 	position: absolute;
 	width: 100%;
 	height: 100%;
+	background-color: #CCC;
+}
+
+.gallery-title {
+	text-align: center;
+	margin: 0 auto;
+	background-color: #EEE;
 }
