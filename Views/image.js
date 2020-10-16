@@ -66,7 +66,6 @@ var fileList
 
 function readFields(data) {
 	data.permissions = JSON.safeParse($filePermissions.value)
-	data.parentId = $fileParent.value
 	data.values = JSON.safeParse($fileValues.value)
 	data.name = $fileName.value
 }
@@ -82,7 +81,6 @@ function selectFile(file) {
 	$fileName.value = file.name
 	$filePermissions.value = JSON.stringify(file.permissions)
 	$fileValues.value = JSON.stringify(file.values)
-	$fileParent.value = file.parentId
 	$fileUser.replaceChildren(Draw.entityTitleLink(file.createUser))
 	$filePageView.src = ""
 	$filePageView.src = Req.fileURL(file.id)

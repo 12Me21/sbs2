@@ -148,10 +148,6 @@
 						<th><label for=$fileName>Values:</label></th>
 						<td><input id=$fileValues></td>
 					</tr>
-					<tr>
-						<th><label for=$fileParent>Parent:</label></th>
-						<td><input id=$fileParent type=number></td>
-					</tr>
 				</table>
 				<button id=$fileUpdateButton class="fileUpdateButton canEdit loggedIn">Save Settings</button>
 			</div>
@@ -217,24 +213,26 @@
 			<v-b data-view-errorMode class="pre errorPage" id=$errorMessage></v-b>
 			<v-b data-view-editorMode class="editorPane flex">
 				<div class="editorTextarea">
-					<textarea id=$editorTextarea minlength="2" required></textarea>
+					<textarea id=$editorTextarea minlength=2 required></textarea>
 				</div>
 				<div class="editorPreview grow markup-root" id=$editorPreview><div class="markup-root"></div></div>
 			</v-b>
 			
 			<v-b data-view-home>
-				<div>
-					<div class="gallery-inner" style="max-width: 400px">
-						<div>
-							
+				a
+				<div class="gallery-inner" style="max-width: 400px;">
+					<div>
+						<div class="image-box image-box-large fill">
+							<img id=$galleryImage>
 						</div>
-						<canvas width=5 height=3>
-							this canvas makes it so
-							the parent element will
-							have fixed aspect ratio
-						</canvas>
 					</div>
+					<canvas width=5 height=3>
+						this canvas makes it so
+						the parent element will
+						have fixed aspect ratio
+					</canvas>
 				</div>
+				<div class="gallery-title" style="max-width: 400px;" id=$galleryTitle></div>
 				<a class="linkBar bar rem2-3" data-static-path=category/0><span class="textItem">Pages</span></a>
 			</v-b>
 			
