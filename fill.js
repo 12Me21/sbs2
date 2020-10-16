@@ -1,6 +1,11 @@
 if (!window.devicePixelRatio)
 	window.devicePixelRatio = 1
 
+if (!Array.prototype.includes)
+	Array.prototype.includes = function(item) {
+		return this.indexOf(item) >= 0
+	}
+
 String.prototype.split1 = function(sep) {
 	var n = this.indexOf(sep)
 	if (n == -1)

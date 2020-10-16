@@ -14,6 +14,10 @@ Object.assign(Entity, { //*/
 categoryMap: null,
 gotNewCategory: false,
 
+CONTENT_TYPES: [
+	'resource', 'chat', 'program', 'tutorial', 'documentation', 'userpage'
+],
+
 process: function(resp) {
 	// build user map first
 	var users = {}
@@ -65,14 +69,20 @@ processList: function(type, data, users) {
 		data[i].Type = type
 	})
 },
+get: function(map, type, id) {
+	var n = map[id]
+	if (n)
+		return n
+	return {Type:type, id:id, Fake:true}
+},
 processItem: {
 	activity: function(data, users) {
 		if (data.date)
 			data.date = parseDate(data.date)
 		if (data.type == 'user')
-			data.content = users[data.contentId]
+			data.content = get(users, 'user', data.contentId)
 		if (data.userId)
-			data.user = users[data.userId]
+			data.user = get(users, 'user', data.userId)
 		return data
 	},
 	user: function(data, users) {
@@ -116,9 +126,9 @@ processItem: {
 	},
 	editable: function(data, users) {
 		if (data.editUserId)
-			data.editUser = users[data.editUserId]
+			data.editUser = get(users, 'user', data.editUserId)
 		if (data.createUserId)
-			data.createUser = users[data.createUserId]
+			data.createUser = get(users, 'user', data.createUserId)
 		if (data.editDate)
 			data.editDate = parseDate(data.editDate)
 		if (data.createDate)
@@ -130,13 +140,14 @@ processItem: {
 	},
 	activityaggregate: function(data, users) {
 		data.users = data.userIds.map(function(id) {
-			return users[id]
+			return get(users, 'user', id)
 		})
 		return data
 	},
 	commentaggregate: function(data, users) {
-		data.users = data.userIds.map(function(id) {
-			return users[id]
+		// need to filter out uid 0 (I think this comes from deleted comments)
+		data.users = data.userIds.filter(function(x){return x}).map(function(id) {
+			return get(users, 'user', id)
 		})
 		if (data.firstDate)
 			data.firstDate = parseDate(data.firstDate)
@@ -219,6 +230,10 @@ updateAggregateActivity: function(items, activity, page) {
 				lastDate: a.date,
 				count: 0,
 			}
+		} else {
+			// hopefully this takes care of pages in activity list being updated?
+			if (pageMap[id])
+				items[id].content = pageMap[id]
 		}
 		item.users[a.userId] = a.user
 		item.count++

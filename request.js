@@ -415,7 +415,7 @@ getRecentActivity: function(callback) {
 		"content.0contentId.1id.2contentId.3id",
 		"user.0userId.1userIds.2userId.3userIds"
 	], {
-		content: "name,id,permissions"
+		content: "name,id,permissions,type"
 	}, function(e, resp) {
 		if (!e)
 			callback(resp.activity, resp.commentaggregate, resp.Awatching, resp.CAwatching, resp.content)
@@ -491,7 +491,7 @@ doListenInitial: function(callback) {
 		"content.0parentId.1contentId.0id", //pages
 		"category.1contentId",
 		"user.0createUserId.1userId.2userIds", //users for comment and activity
-	], {content: "id,createUserId,name,permissions"}, callback)
+	], {content: "id,createUserId,name,permissions,type"}, callback)
 },
 
 doListen: function(lastId, statuses, lastListeners, getMe, callback) {
@@ -523,7 +523,7 @@ doListen: function(lastId, statuses, lastListeners, getMe, callback) {
 		{actions: actions},
 		{listeners: listeners}
 	], {
-		content: "id,createUserId,name,permissions"
+		content: "id,createUserId,name,permissions,type"
 	}, callback)
 },
 

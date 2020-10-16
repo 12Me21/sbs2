@@ -9,19 +9,27 @@ addView('', {
 			{"content~Pgallery": {
 				type: 'program',
 				limit: 1, sort: 'random',
-				associatedkey: 'thumbnail', associatedvalue: "_%"
-			}}
+				associatedkey: 'photos', associatedvalue: "_%"
+			}},
+			"user.0createUserId",
+			{category: {parentIds: [0]}}
 		],{}, function(e, resp) {
 			if (e) {
 				render(null)
 				return
 			}
-			render(resp.Pgallery, resp)
+			render(resp.Pgallery, resp.category, resp)
 		}, true)
 	},
 	className: 'home',
-	render: function(gallery, resp) {
+	render: function(gallery, categories, resp) {
 		setTitle("Welcome to SmileBASIC Source 2!")
+		$homeCategories.replaceChildren()
+		categories.forEach(function(cat) {
+			var bar = Draw.entityTitleLink(cat)
+			bar.className += " linkBar bar rem2-3"
+			$homeCategories.appendChild(bar)
+		});
 		updateGallery(gallery[0])
 	},
 })
@@ -29,7 +37,9 @@ addView('', {
 function updateGallery(page) {
 	$galleryTitle.replaceChildren(Draw.galleryLabel(page))
 	$galleryImage.src = ""
-	$galleryImage.src = Req.fileURL(page.values.thumbnail)
+	console.log(page.values)
+	var photos = page.values.photos.split(",")
+	$galleryImage.src = Req.fileURL(+photos[0])
 }
 
 <!--/*

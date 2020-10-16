@@ -105,6 +105,8 @@
 					<option value=documentation>Documentation</option>
 				</select>
 				<br>
+				<label for=$editPageThumbnail>Thumbnail:</label><input id=$editPageThumbnail type=number><br>
+				<label for=$editPagePhotos>Photos:</label><input id=$editPagePhotos><br>
 				<label for=$editPageCategory>Category:</label><span id=$editPageCategory></span><br>
 			</div>
 			<div class="registerBox bottomBorder">
@@ -233,7 +235,9 @@
 					</canvas>
 				</div>
 				<div class="gallery-title" style="max-width: 400px;" id=$galleryTitle></div>
-				<a class="linkBar bar rem2-3" data-static-path=category/0><span class="textItem">Pages</span></a>
+				a
+				<div class="bottomBorder"></div>
+				<div id=$homeCategories></div>
 			</v-b>
 			
 			<v-b data-view-membersMode class="memberPane">
@@ -315,7 +319,7 @@
 			</v-b>
 			
 			
-			<v-b data-view-membersMode class="bottomSpacer"></v-b>
+			<v-b data-view-membersMode data-view-home class="bottomSpacer"></v-b>
 		</main-scrollable>
 		<!--
 			  Bottom of the page
@@ -328,7 +332,7 @@
 				<button class="showWhenEdit" id=$chatCancelEdit>Cancel Edit</button>
 				<textarea-container class="grow"><textarea class="chatTextarea" id=$chatTextarea accesskey="z"></textarea></textarea-container>
 				<label for=$chatBigMode class="no-select">Big:</label>
-				<input type=checkbox id=$chatBigMode>
+				<input type=checkbox id=$chatBigMode autocomplete=off>
 				<label for=$chatMarkupSelect class="no-select">Markup:</label>
 				<input type=checkbox checked id=$chatMarkupSelect>
 			</v-b>
