@@ -132,10 +132,20 @@ function readFields(page) {
 		page.values = {}
 	page.values.markupLang = $markupSelect.value
 	page.content = $editorTextarea.value
-	page.keywords = $keywords.value.split(" ")
+	if ($keywords.value)
+		var keywords = $keywords.value.split(" ")
+	else
+		keywords = []
+	page.keywords = keywords
 	page.type = $editPageType.value
 	page.parentId = categoryInput.get()
 	page.permissions = permissionInput.get()
+	var photos = $editPagePhotos.value
+	if (photos)
+		page.values.photos = photos
+	var thumbnail = +$editPageThumbnail.value
+	if (thumbnail)
+		page.values.thumbnail = thumbnail
 }
 
 function fillFields(page) {
@@ -148,6 +158,8 @@ function fillFields(page) {
 	$editorTextarea.value = page.content
 	updatePreview()
 	$keywords.value = page.keywords.join(" ")
+	$editPagePhotos.value = page.values.photos
+	$editPageThumbnail.value = page.values.thumbnail
 	if (validTypes.indexOf(page.type)<0) {
 		$editPageTypeOption.value = page.type
 		$editPageTypeOption.textContent = page.type

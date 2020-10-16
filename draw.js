@@ -159,27 +159,33 @@ fileThumbnail: function(file, onclick) {
 	return div
 },
 
+bgIcon: function(url) {
+	var element = document.createElement('span')
+	element.setAttribute('role', 'img')
+	element.className = "item icon iconBg"
+	element.style.backgroundImage = 'url("'+url+'")'
+	return element
+},
+
 icon: function(entity) {
 	var element
-	if (entity && entity.Type == 'user') {
+	var type = entity && entity.Type
+	if (type == 'user') {
 		element = document.createElement('img')
 		element.className += "item icon avatar"
 		element.src = avatarURL(entity, "size=120&crop=true")
+	} else if (type=='content') {
+		var hidden = !hasPerm(entity.permissions, 0, 'r')
+		var pageType = entity.type
+		if (Entity.CONTENT_TYPES.includes(pageType)) {
+			element = bgIcon('resource/page-'+pageType+'.png')
+		} else {
+			element = bgIcon('resource/unknownpage.png')
+		}
+	} else if (type=='category') {
+		element = bgIcon('resource/category.png')
 	} else {
-		element = document.createElement('span')
-		element.setAttribute('role', 'img')
-		element.className = "item icon iconBg"
-		if (!entity) {
-			element.style.backgroundImage = "url('resource/unknown.png')"
-		} else if (entity.Type == 'category')
-			element.style.backgroundImage = "url('resource/category.png')"
-		else if (entity.Type == 'content') {
-			if (!hasPerm(entity.permissions, 0, 'r'))
-				element.style.backgroundImage = "url('resource/hiddenpage.png')"
-			else
-				element.style.backgroundImage = "url('resource/page.png')"
-		} else
-			element.style.backgroundImage = "url('resource/unknown.png')"
+		element = bgIcon('resource/unknown.png')
 	}
 	return element
 },
@@ -761,8 +767,16 @@ settings: function(settings, onchange) {
 galleryLabel: function(entity) {
 	var element = entityLink(entity)
 	element.className += " bar rem1-5"
-	var icon = title(entity)
+
+	var icon = iconTitle(entity)
 	element.appendChild(icon)
+
+	/*var author = entityTitleLink(entity.createUser, true)
+	var b = document.createElement('div')
+	b.appendChild(author)
+	b.className += " rightAlign"
+	element.appendChild(b)*/
+	
 	return element
 },
 
