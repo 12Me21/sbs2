@@ -45,6 +45,11 @@
 	flex-basis: 0;
 }
 
+.flex-sized {
+	webkit-flex-shrink: 1;
+	flex-shrink: 1;
+}
+
 /*********/
 
 /* all elements with user content, where whitespace should be preserved */
@@ -1137,11 +1142,6 @@ textarea-container, textarea-container > textarea {
 
 .split-top {
 	height: 40vh;
-}
-
-.flex-height {
-	webkit-flex-shrink: 1;
-	flex-shrink: 1;
 }
 
 .gallery-inner {

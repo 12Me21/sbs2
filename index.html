@@ -338,7 +338,7 @@
 			</v-b>
 		</v-b>
 	</main>
-	<sidebar-container id=$sidebar class="flex">
+	<sidebar-container id=$sidebar class="flex flex-sized">
 		<button class="closeSidebar" id=$closeSidebar>Close Sidebar</button>
 		
 		<div class="bottomBorder bar rem1-5 myUserBar">
@@ -354,7 +354,7 @@
 		<div class="userlist bar rem1-5 bottomBorder"><span id=$sidebarUserList></span><button id=$hideGlobalStatusButton class="item rightAlign loggedIn">Hide</button></div>
 		<!--<span id=$longPollStatus></span>-->
 		<div id=$sidebarTabs role="tablist" aria-label="sidebar tab" class="bottomBorder"></div>
-		<div id=$sidebarTop class="flex-height">
+		<div id=$sidebarTop class="flex-sized">
 			<sidebar-panel id=$sidebarActivityPanel></sidebar-panel>
 			<!--<div id=$sidebarWatchingPanel class="fill"></div>-->
 			<sidebar-panel id=$sidebarFilePanel class="flex">
