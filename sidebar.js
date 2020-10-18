@@ -145,6 +145,8 @@ onWatchingChange: function(aggregate) {
 print: function(text) {
 	if (scroller)
 		scroller.handlePrint(function() {
+			displayedMessages++
+			limitMessages()
 			return Draw.sidebarDebug(text)
 		}, true)
 	else
@@ -186,6 +188,47 @@ toggle: function() {
 isFullscreen: function() {
 	return !$.matchMedia || $.matchMedia("(max-width: 700px)").matches
 },
+
+displayedMessages: 0,
+
+displayedIds: {},
+
+displayMessages: function(comments) {
+	scroller.handlePrint(function() {
+		comments.forEach(function(c) {
+			if (c.deleted) {
+				var del = displayedIds[c.id]//scroller.inner.querySelector("scroll-inner > *[data-id='"+c.id+"']")
+				if (del) {
+					del.remove()
+					delete displayedIds[c.id]
+					displayedMessages--
+				}
+			} else {
+				var old = displayedIds[c.id]
+				var nw = Draw.sidebarComment(c)
+				if (old) {
+					old.parentNode.replaceChild(nw, old)
+				} else {
+					scroller.inner.appendChild(nw)
+					displayedMessages++
+				}
+				displayedIds[c.id] = nw
+				limitMessages()
+			}
+		})
+	}, true)
+},
+
+limitMessages: function() {
+	while (displayedMessages > 500) {
+		var n = scroller.inner.firstChild
+		var id = n.getAttribute('data-id')
+		if (id)
+			delete displayedIds[id]
+		n.remove()
+		displayedMessage--
+	}
+}
 
 <!--/* 
 }) //*/
