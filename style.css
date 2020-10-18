@@ -1167,9 +1167,12 @@ textarea-container, textarea-container > textarea {
 	background-color: #EEE;
 }
 
-.sidebarComment {
-	white-space: pre;
+.ellipsis {
 	text-overflow: ellipsis;
+}
+
+.ellipsis, .ellipsis * {
+	white-space: pre;
 }
 
 .debugMessage {

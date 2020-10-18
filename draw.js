@@ -782,7 +782,7 @@ galleryLabel: function(entity) {
 
 sidebarComment: function(comment) {
 	var d = document.createElement('div')
-	d.className += " bar rem1-5 sidebarComment"
+	d.className += " bar rem1-5 sidebarComment ellipsis"
 	d.appendChild(entityTitleLink(comment.createUser))
 	d.appendChild(document.createTextNode(": "))
 	d.appendChild(document.createTextNode(comment.content.replace(/\n/g, "  ")))
