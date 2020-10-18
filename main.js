@@ -15,6 +15,7 @@ Req.onLogin = function() {
 		ChatRoom.displayMessages(comments)
 		Entity.updateAggregateComments(Req.currentActivity, comments, contents)
 		Sidebar.onAggregateChange(Req.currentActivity)
+		Sidebar.displayMessages(comments)
 	}
 	Req.onListeners = function(a) {
 		ChatRoom.updateUserLists(a)

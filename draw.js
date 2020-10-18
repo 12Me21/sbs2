@@ -780,12 +780,20 @@ galleryLabel: function(entity) {
 	return element
 },
 
-/*sidebarMessage: function(comment) {
+sidebarComment: function(comment) {
 	var d = document.createElement('div')
-	d.className += " bar rem1-5"
-	
+	d.className += " bar rem1-5 sidebarComment"
+	d.appendChild(entityTitleLink(comment.createUser))
+	d.appendChild(document.createTextNode(": "))
+	d.appendChild(document.createTextNode(comment.content))
+	d.setAttribute('data-id', comment.id)
+	return d
+},
 
-}*/
+//todo:
+sidebarPageLabel: function(content) {
+	
+}
 
 <!--/* 
 }) //*/
