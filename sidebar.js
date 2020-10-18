@@ -193,7 +193,7 @@ displayedMessages: 0,
 
 displayedIds: {},
 
-displayMessages: function(comments) {
+displayMessages: function(comments, initial) {
 	scroller.handlePrint(function() {
 		comments.forEach(function(c) {
 			if (c.deleted) {
@@ -216,7 +216,7 @@ displayMessages: function(comments) {
 				limitMessages()
 			}
 		})
-	}, true)
+	}, !initial)
 },
 
 limitMessages: function() {

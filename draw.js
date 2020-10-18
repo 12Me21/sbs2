@@ -785,8 +785,9 @@ sidebarComment: function(comment) {
 	d.className += " bar rem1-5 sidebarComment"
 	d.appendChild(entityTitleLink(comment.createUser))
 	d.appendChild(document.createTextNode(": "))
-	d.appendChild(document.createTextNode(comment.content))
+	d.appendChild(document.createTextNode(comment.content.replace(/\n/g, "  ")))
 	d.setAttribute('data-id', comment.id)
+	d.setAttribute('title', comment.createUser.username+" in "+comment.parentId+":\n"+comment.content)
 	return d
 },
 
