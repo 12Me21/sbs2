@@ -16,10 +16,18 @@ cat resource/fonts.css style.css markup.css code.css > resource/_build.css
 echo 'creating _build.js' >&2
 cat fill.js entity.js request.js sbs2-markup/_build.js draw.js view.js scroller.js sidebar.js chat.js settings.js Views/settings.js Views/page.js Views/image.js Views/editpage.js Views/category.js Views/user.js Views/home.js navigate.js main.js > resource/_build.js
 
+# nocache filename -> filename?1234567 (uses date modified)
+# for now this isn't very useful since the files are always new
+# but maybe if we use `make`...
+function nocache {
+	echo -n "$1?"
+	date -r "$1" +%s
+}
+
 echo 'creating _build.html' >&2
 date=`date +%s`
-sed '/<!--START-->/,/<!--END-->/c<link rel="stylesheet" href="resource/_build.css?'"$date"'">\
-<script src="resource/_build.js?'"$date"'"></script>' index.html > _build.html
+sed '/<!--START-->/,/<!--END-->/c<link rel="stylesheet" href="'"$(nocache resource/_build.css)"'">\
+<script src="'"$(nocache resource/_build.js)"'"></script>' index.html > _build.html
 
 if [ "$1" ]
 then
