@@ -102,14 +102,8 @@ addView('settings', {
 			})
 		}
 
-		var d = Draw.settings(settings, function(name, value) {
-			console.log("SETTINGS", name, value)
-			if (name == "theme") {
-				if (value == "dark") {
-					$customCSS.textContent = "body, img {filter: invert(100%) hue-rotate(180deg);}"
-				} else
-					$customCSS.textContent = ""
-			}
+		var d = Draw.settings(Settings.fields, function(name, value) {
+			Settings.change(name, value)
 		})
 		$localSettings.appendChild(d.elem)
 	}
@@ -209,14 +203,6 @@ function sendConfirmationEmail() {
 			}
 		})
 	}
-}
-
-var settings = {
-	theme: {
-		title: "Theme",
-		type: 'select',
-		options: ['light','dark'],
-	},
 }
 
 <!--/*
