@@ -780,6 +780,13 @@ galleryLabel: function(entity) {
 	return element
 },
 
+/*sidebarMessage: function(comment) {
+	var d = document.createElement('div')
+	d.className += " bar rem1-5"
+	
+
+}*/
+
 <!--/* 
 }) //*/
 

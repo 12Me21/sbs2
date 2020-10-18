@@ -81,7 +81,7 @@ else
 function ready() {
 	console.log("ONLOAD!")
 	if (navigator.vendor=="Google Inc.")
-		document.documentElement.style.imageRendering="-webkit-optimize-contrast"
+		document.documentElement.style.imageRendering = "-webkit-optimize-contrast"
 	document.documentElement.addEventListener('touchstart', function(e) {
 		e.preventDefault()
 	})
