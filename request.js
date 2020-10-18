@@ -413,12 +413,13 @@ getRecentActivity: function(callback) {
 		{"activity~Awatching": {contentLimit:{watches:true}}},
 		{"commentaggregate~CAwatching": {contentLimit:{watches:true}}},
 		"content.0contentId.1id.2contentId.3id",
-		"user.0userId.1userIds.2userId.3userIds"
+		{comment: {limit: 30, reverse: true}},
+		"user.0userId.1userIds.2userId.3userIds.5createUserId",
 	], {
 		content: "name,id,permissions,type"
 	}, function(e, resp) {
 		if (!e)
-			callback(resp.activity, resp.commentaggregate, resp.Awatching, resp.CAwatching, resp.content)
+			callback(resp.activity, resp.commentaggregate, resp.Awatching, resp.CAwatching, resp.content, resp.comment.reverse())
 		else
 			callback(null)
 	})
