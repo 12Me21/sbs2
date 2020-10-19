@@ -226,7 +226,7 @@ limitMessages: function() {
 		if (id)
 			delete displayedIds[id]
 		n.remove()
-		displayedMessage--
+		displayedMessages--
 	}
 }
 
