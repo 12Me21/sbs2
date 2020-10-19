@@ -300,6 +300,7 @@ pageInfo: function(page) {
 	e.className = "pageInfoPane rem2-3 bar bottomBorder"
 	//with(e){
 	e.appendChild(authorBox(page))
+	e.appendChild(voteBox(page))
 	/*var b = linkButton()
 	b[1].textContent = "Edit Page"
 	Nav.link("editpage/"+page.id, b[1].parentNode)
@@ -794,6 +795,52 @@ sidebarComment: function(comment) {
 //todo:
 sidebarPageLabel: function(content) {
 	
+},
+
+voteButton: function(disptext, state, page) {
+	var voteAction = function(e) {
+		var vote = e.target.getAttribute('data-vote')
+		Req.setVote(page.id, vote, function(e, resp) {
+			Sidebar.print('Vote sent!')
+		});
+	}
+	
+	var div = document.createElement('div')
+	div.className += 'buttonContainer rightAlign item loggedIn'
+	
+	var b = document.createElement('button')
+	b.id = "$voteButton_" + state
+	b.setAttribute('data-vote', state)
+	b.onclick = voteAction
+
+	var label = document.createElement('div')
+	label.textContent = disptext
+	b.appendChild(label)
+
+	/* TODO: Ask 12 about how votes are retrieved, as getting them
+	 * via page.about doesn't work. */
+	var count = document.createElement('div')
+	count.id = '$voteCount_' + state
+	count.textContent = '0';
+	b.appendChild(count)
+
+	div.appendChild(b)
+	return div
+},
+
+voteBox: function (page) {
+	var element = document.createDocumentFragment()
+	
+	if (!page)
+		return element
+	var buttonStates = [
+		['GREAT', 'g'], ['OK', 'o'], ['BAD', 'b']
+	]
+	buttonStates.forEach(function(x) {
+		var b = voteButton(x[0], x[1], page)
+		element.appendChild(b)
+	})
+	return element
 }
 
 <!--/* 
