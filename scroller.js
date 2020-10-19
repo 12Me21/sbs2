@@ -235,11 +235,14 @@ Scroller.prototype.autoScrollAnimation = function(time) {
 // before AND after inserting the element)
 Scroller.prototype.handlePrint = function(callback, autoscroll) {
 	var should = autoscroll && this.atBottom
-	var elem = callback()
-	if (elem)
-		this.inner.appendChild(elem)
-	if (should)
-		this.autoScroll()
+	try {
+		var elem = callback()
+		if (elem)
+			this.inner.appendChild(elem)
+	} finally {
+		if (should)
+			this.autoScroll()
+	}
 }
 
 Scroller.prototype.handlePrintTop = function(callback) {
