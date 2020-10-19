@@ -732,7 +732,7 @@ settings: function(settings, onchange) {
 		var type = data.type
 		var elem
 		var label = document.createElement('label')
-		label.textContent = data.title+": "
+		label.textContent = data.name+": "
 		x.elem.appendChild(label)
 		if (type=='select') {
 			elem = document.createElement('select')
