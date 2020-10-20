@@ -65,5 +65,3 @@ fi
 # 5: copy these files to wherever you're hosting the site from:
 #  _build.html resource/
 # _build.html can be renamed
-
-# maybe later I'll make a powershell script for this or something
