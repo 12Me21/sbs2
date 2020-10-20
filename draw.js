@@ -847,6 +847,9 @@ voteBox: function (page) {
 			var state = button.getAttribute('data-vote')
 			var vote = state
 			var oldButton = element.querySelector('button[data-selected="true"]')
+			// disable button so that it won't increment multiple times while
+			// query is happening
+			button.disabled = true
 			// check if vote was already toggled
 			if (oldButton &&
 				oldButton.hasAttribute('data-selected') &&
@@ -854,7 +857,7 @@ voteBox: function (page) {
 				vote=undefined
 			Req.setVote(page.id, vote, function(e, resp) {
 				// in case the vote fails when user is blocked from voting
-				if (resp) {
+				if (!e) {
 					// if the vote was already toggled, then remove highlight
 					var replaceVote = function(q, x) {
 						var c = element.querySelector(q);
@@ -876,6 +879,7 @@ voteBox: function (page) {
 						replaceVote('.voteCount[data-vote="' + state + '"]', 1)
 					}
 				}
+				button.disabled = false
 			})
 		}
 		element.appendChild(x)
