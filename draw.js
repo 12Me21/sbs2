@@ -805,7 +805,6 @@ sidebarPageLabel: function(content) {
 voteButton: function(disptext, state, page) {
 	var b = button()
 	b[1].className += ' voteButton'
-	console.log(state, page.about)
 	if (page.about.myVote == state)
 		b[1].setAttribute('data-selected', "true")
 	b[1].setAttribute('data-vote', state)
@@ -833,7 +832,6 @@ voteBox: function (page) {
 	var buttonStates = [
 		['-', 'b'], ['~', 'o'], ['+', 'g']
 	]
-	console.log(button());
 	var buttons = new Array()
 	buttonStates.forEach(function(x) {
 		buttons.push(voteButton(x[0], x[1], page))
