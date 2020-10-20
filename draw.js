@@ -831,7 +831,7 @@ voteBox: function (page) {
 		return element
 
 	var buttonStates = [
-		['+', 'g'], ['~', 'o'], ['-', 'b']
+		['BAD', 'b'], ['OK', 'o'], ['GREAT', 'g']
 	]
 	console.log(button());
 	var buttons = new Array()
