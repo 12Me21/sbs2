@@ -803,41 +803,37 @@ sidebarPageLabel: function(content) {
 // understand how listener is implemented 	in this, so I don't
 // feel like touching it.
 voteButton: function(disptext, state, page) {
-	var div = document.createElement('div')
-	div.className += ' buttonContainer rightAlign item'
-	
-	var b = document.createElement('button')
-	b.className += ' voteButton'
+	var b = button()
+	b[1].className += ' voteButton'
 	console.log(state, page.about)
 	if (page.about.myVote == state)
-		b.setAttribute('data-selected', "true")
-	b.setAttribute('data-vote', state)
+		b[1].setAttribute('data-selected', "true")
+	b[1].setAttribute('data-vote', state)
 	
 	var label = document.createElement('div')
 	label.textContent = disptext
-	b.appendChild(label)
+	b[1].appendChild(label)
 	
 	var count = document.createElement('div')
 	count.className = ' voteCount'
 	count.setAttribute('data-vote', state)
 	count.textContent = page.about.votes[state].count
-	b.appendChild(count)
-
-	console.log(div);
+	b[1].appendChild(count)
 	
-	div.appendChild(b)
-	return div
+	return b[0]
 },
 
 voteBox: function (page) {
-	var element = document.createElement('span')
-	
+	var element = document.createElement('div')
+	element.className += ' buttonContainer rightAlign'
+		
 	if (!page)
 		return element
 
 	var buttonStates = [
 		['+', 'g'], ['~', 'o'], ['-', 'b']
 	]
+	console.log(button());
 	var buttons = new Array()
 	buttonStates.forEach(function(x) {
 		buttons.push(voteButton(x[0], x[1], page))
