@@ -32,15 +32,9 @@ sed '/<!--START-->/,/<!--END-->/c<link rel="stylesheet" href="'"$(nocache resour
 if [ "$1" ]
 then
 	echo 'Copying files' >&2
-	if [ -f "$dest" ]
-	then
-		cp -v -u -r resource "$(dirname "$dest")"/resource
-		cp -v -u _build.html "$dest"
-	else
-		mkdir -vp "$dest"
-		cp -v -u -r resource "$dest"/
-		cp -v -u _build.html "$dest"/index.html
-	fi
+	mkdir -vp "$dest"
+	cp -v -u -r resource "$dest"/
+	cp -v -u _build.html "$dest"/index.html
 fi
 
 # Instructions for humans:
