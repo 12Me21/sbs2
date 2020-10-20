@@ -300,6 +300,7 @@ pageInfo: function(page) {
 	e.className = "pageInfoPane rem2-3 bar bottomBorder"
 	//with(e){
 	e.appendChild(authorBox(page))
+	e.appendChild(voteBox(page))
 	/*var b = linkButton()
 	b[1].textContent = "Edit Page"
 	Nav.link("editpage/"+page.id, b[1].parentNode)
@@ -794,6 +795,92 @@ sidebarComment: function(comment) {
 //todo:
 sidebarPageLabel: function(content) {
 	
+},
+
+// FIXME: There is no live updating of the vote count. It only adds
+// the user's count to the user vote when the user votes,
+// which is clearly an awful way of doing things. I don't
+// understand how listener is implemented 	in this, so I don't
+// feel like touching it.
+voteButton: function(disptext, state, page) {
+	var b = button()
+	b[0].className += ' item'
+	b[1].className += ' voteButton'
+	if (page.about.myVote == state)
+		b[1].setAttribute('data-selected', "true")
+	b[1].setAttribute('data-vote', state)
+	
+	var label = document.createElement('div')
+	label.textContent = disptext
+	b[1].appendChild(label)
+	
+	var count = document.createElement('div')
+	count.className = ' voteCount'
+	count.setAttribute('data-vote', state)
+	count.textContent = page.about.votes[state].count
+	b[1].appendChild(count)
+	
+	return b[0]
+},
+
+voteBox: function (page) {
+	var element = document.createElement('div')
+	element.className += ' item rightAlign'
+		
+	if (!page)
+		return element
+
+	var buttonStates = [
+		['-', 'b'], ['~', 'o'], ['+', 'g']
+	]
+	var buttons = new Array()
+	buttonStates.forEach(function(x) {
+		buttons.push(voteButton(x[0], x[1], page))
+	})
+
+	buttons.forEach(function(x) {
+		x.onclick = function(e) {
+			if (!Req.auth)
+				return
+
+			var button = e.currentTarget.querySelector('button')
+			var state = button.getAttribute('data-vote')
+			var vote = state
+			var oldButton = element.querySelector('button[data-selected="true"]')
+			// check if vote was already toggled
+			if (oldButton &&
+				oldButton.hasAttribute('data-selected') &&
+				button.hasAttribute('data-selected'))
+				vote=undefined
+			Req.setVote(page.id, vote, function(e, resp) {
+				// in case the vote fails when user is blocked from voting
+				if (resp) {
+					// if the vote was already toggled, then remove highlight
+					var replaceVote = function(q, x) {
+						var c = element.querySelector(q);
+						c.textContent = String(Number(c.textContent) + x)
+					}
+					if (!vote) {
+						button.removeAttribute('data-selected')
+						replaceVote('.voteCount[data-vote="' + state + '"]', -1)
+					}
+					// otherwise, we want to remove the highlight from the
+					// button that was already pressed before and highlight
+					// the new button
+					else {
+						if (oldButton) {
+							oldButton.removeAttribute('data-selected')
+							replaceVote('.voteCount[data-vote="' + oldButton.getAttribute('data-vote') + '"]', -1)
+						}
+						button.setAttribute('data-selected', 'true')
+						replaceVote('.voteCount[data-vote="' + state + '"]', 1)
+					}
+				}
+			})
+		}
+		element.appendChild(x)
+	})
+	return element
 }
 
 <!--/* 
@@ -802,7 +889,7 @@ sidebarPageLabel: function(content) {
 function hasPerm(perms, id, perm) {
 	return perms && perms[id] && perms[id].indexOf(perm) != -1
 }
-	
+
 <!--/*
 }(window)) //*/ // pass external values
 
