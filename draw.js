@@ -857,7 +857,7 @@ voteBox: function (page) {
 				vote=undefined
 			Req.setVote(page.id, vote, function(e, resp) {
 				// in case the vote fails when user is blocked from voting
-				if (resp) {
+				if (!e) {
 					// if the vote was already toggled, then remove highlight
 					var replaceVote = function(q, x) {
 						var c = element.querySelector(q);
