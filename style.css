@@ -758,9 +758,19 @@ th {
 /**********
  ** Page **
  **********/
-button[data-selected] {
-	background-color: lime;
-} /* TODO FIX */
+button.voteButton[data-selected="true"][data-vote="g"] {
+	background: linear-gradient(lime, #eee);
+}
+
+button.voteButton[data-selected="true"][data-vote="b"] {
+	background: linear-gradient(red, #eee);
+}
+
+button.voteButton[data-selected="true"][data-vote="o"] {
+	background: linear-gradient(aqua, #eee);
+}
+
+/* TODO FIX */
 /* todo fix more! so this is an issue because vote buttons are now messed up by the button container insertion system, and ummm... something about classes.. ugh*/
 
 /* hecko yo */
