@@ -803,72 +803,34 @@ sidebarPageLabel: function(content) {
 // understand how listener is implemented 	in this, so I don't
 // feel like touching it.
 voteButton: function(disptext, state, page) {
-	var voteAction = function(e) {
-		if (!Req.auth)
-			return
-
-		var oldButton = document.querySelector('button.voteButton[data-selected]')
-		var button = document.querySelector('#\\$voteButton_' + state)
-		var vote = state
-		// check if vote was already toggled
-		if (oldButton &&
-				oldButton.hasAttribute('data-selected') &&
-				button.hasAttribute('data-selected'))
-			vote=undefined
-		Req.setVote(page.id, vote, function(e, resp) {
-			// in case the vote fails when user is blocked from voting
-			if (resp) {
-				// if the vote was already toggled, then remove highlight
-				var replaceVote = function(q, x) {
-					var c = document.querySelector(q);					
-					c.textContent = String(Number(c.textContent) + x)
-				}
-				if (!vote) {
-					button.removeAttribute('data-selected')
-					replaceVote('#\\$voteCount_' + state, -1)
-				}
-				// otherwise, we want to remove the highlight from the
-				// button that was already pressed before and highlight
-				// the new button
-				else {
-					if (oldButton) {
-						oldButton.removeAttribute('data-selected')
-						replaceVote('#\\$voteCount_' + oldButton.id[oldButton.id.length - 1], -1) // yeah i just did that
-					}
-					button.setAttribute('data-selected', 'true')
-					replaceVote('#\\$voteCount_' + state, 1)
-				}
-			}
-		})
-		e.stopPropagation()
-	}
-
 	var div = document.createElement('div')
-	div.className += 'buttonContainer rightAlign item loggedIn'
+	div.className += ' buttonContainer rightAlign item'
 	
 	var b = document.createElement('button')
-	b.id = "$voteButton_" + state
-	b.className += 'voteButton'
+	b.className += ' voteButton'
+	console.log(state, page.about)
 	if (page.about.myVote == state)
 		b.setAttribute('data-selected', "true")
-	b.addEventListener('click', voteAction)
+	b.setAttribute('data-vote', state)
 	
 	var label = document.createElement('div')
 	label.textContent = disptext
 	b.appendChild(label)
 	
 	var count = document.createElement('div')
-	count.id = '$voteCount_' + state
-	count.textContent = page.about.votes[state].count;
+	count.className = ' voteCount'
+	count.setAttribute('data-vote', state)
+	count.textContent = page.about.votes[state].count
 	b.appendChild(count)
 
+	console.log(div);
+	
 	div.appendChild(b)
 	return div
 },
 
 voteBox: function (page) {
-	
-	var element = document.createDocumentFragment()
+	var element = document.createElement('div')
 	
 	if (!page)
 		return element
@@ -876,9 +838,52 @@ voteBox: function (page) {
 	var buttonStates = [
 		['+', 'g'], ['~', 'o'], ['-', 'b']
 	]
+	var buttons = new Array()
 	buttonStates.forEach(function(x) {
-		var b = voteButton(x[0], x[1], page)
-		element.appendChild(b)
+		buttons.push(voteButton(x[0], x[1], page))
+	})
+
+	buttons.forEach(function(x) {
+		x.onclick = function(e) {
+			if (!Req.auth)
+				return
+
+			var button = e.currentTarget.querySelector('button')
+			var state = button.getAttribute('data-vote')
+			var vote = state
+			var oldButton = element.querySelector('button[data-selected="true"]')
+			// check if vote was already toggled
+			if (oldButton &&
+				oldButton.hasAttribute('data-selected') &&
+				button.hasAttribute('data-selected'))
+				vote=undefined
+			Req.setVote(page.id, vote, function(e, resp) {
+				// in case the vote fails when user is blocked from voting
+				if (resp) {
+					// if the vote was already toggled, then remove highlight
+					var replaceVote = function(q, x) {
+						var c = element.querySelector(q);
+						c.textContent = String(Number(c.textContent) + x)
+					}
+					if (!vote) {
+						button.removeAttribute('data-selected')
+						replaceVote('.voteCount[data-vote="' + state + '"]', -1)
+					}
+					// otherwise, we want to remove the highlight from the
+					// button that was already pressed before and highlight
+					// the new button
+					else {
+						if (oldButton) {
+							oldButton.removeAttribute('data-selected')
+							replaceVote('.voteCount[data-vote="' + oldButton.getAttribute('data-vote') + '"]', -1)
+						}
+						button.setAttribute('data-selected', 'true')
+						replaceVote('.voteCount[data-vote="' + state + '"]', 1)
+					}
+				}
+			})
+		}
+		element.appendChild(x)
 	})
 	return element
 }
