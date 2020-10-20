@@ -807,7 +807,7 @@ voteButton: function(disptext, state, page) {
 	b[0].className += ' item'
 	b[1].className += ' voteButton'
 	if (page.about.myVote == state)
-		b[1].setAttribute('data-selected', "true")
+		b[1].setAttribute('data-selected', "")
 	b[1].setAttribute('data-vote', state)
 	
 	var label = document.createElement('div')
@@ -846,7 +846,7 @@ voteBox: function (page) {
 			var button = e.currentTarget.querySelector('button')
 			var state = button.getAttribute('data-vote')
 			var vote = state
-			var oldButton = element.querySelector('button[data-selected="true"]')
+			var oldButton = element.querySelector('button[data-selected]')
 			// disable button so that it won't increment multiple times while
 			// query is happening
 			button.disabled = true
@@ -875,7 +875,7 @@ voteBox: function (page) {
 							oldButton.removeAttribute('data-selected')
 							replaceVote('.voteCount[data-vote="' + oldButton.getAttribute('data-vote') + '"]', -1)
 						}
-						button.setAttribute('data-selected', 'true')
+						button.setAttribute('data-selected', "")
 						replaceVote('.voteCount[data-vote="' + state + '"]', 1)
 					}
 				}
