@@ -34,8 +34,9 @@ $start = $f.IndexOf("<!--START-->")
 $end = $f.IndexOf("<!--END-->") + "<!--END-->".Length
 $f.Remove($start,$end-$start).Insert($start,"<link rel=`"stylesheet`" href=`"$(nocache 'resource/_build.css')`"><script src=`"$(nocache 'resource/_build.js')`">") | sc _build.html
 
-function isnewer([System.IO.FileInfo] $file) {
-	$destfile = [System.IO.FileInfo]::new((Join-Path $dest $file.Name))
+function isnewer([System.IO.FileInfo] $file, $destfilename=$null) {
+	if ($destfilename -eq $null) {$destfilename = $file.Name}
+	$destfile = [System.IO.FileInfo]::new((Join-Path $dest $destfilename))
 	if ($destfile.Exists) {
 		return ((Compare-Object $file $destfile -IncludeEqual -Property LastWriteTime)[0].SideIndicator -eq "<=")
 	}
@@ -45,7 +46,7 @@ function isnewer([System.IO.FileInfo] $file) {
 if ($Args[0]) {
 	Write-Host "Copying files"
 	ls resource | ?{isnewer($_)} | Copy-Item -Destination (Join-Path $dest $_.Name) -Force
-	ls _build.html | ?{isnewer($_)} | Copy-Item -Destination (Join-Path $dest $_.Name) -Force
+	ls _build.html | ?{isnewer $_ "index.html"} | Copy-Item -Destination (Join-Path $dest "index.html") -Force
 }
 
 Set-Location $currdir
