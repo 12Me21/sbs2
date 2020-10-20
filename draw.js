@@ -878,8 +878,8 @@ voteBox: function (page) {
 						button.setAttribute('data-selected', 'true')
 						replaceVote('.voteCount[data-vote="' + state + '"]', 1)
 					}
-					button.disabled = false
 				}
+				button.disabled = false
 			})
 		}
 		element.appendChild(x)
