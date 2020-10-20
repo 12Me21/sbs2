@@ -797,27 +797,66 @@ sidebarPageLabel: function(content) {
 	
 },
 
+// FIXME: There is no live updating of the vote count. It only adds
+// the user's count to the user vote when the user votes,
+// which is clearly an awful way of doing things. I don't
+// understand how listener is implemented 	in this, so I don't
+// feel like touching it.
 voteButton: function(disptext, state, page) {
 	var voteAction = function(e) {
-		var vote = e.target.getAttribute('data-vote')
+		if (!Req.auth)
+			return
+
+		var oldButton = document.querySelector('button.voteButton[data-selected]')
+		var button = document.querySelector('#\\$voteButton_' + state)
+		var vote = state
+		// check if vote was already toggled
+		if (oldButton &&
+				oldButton.hasAttribute('data-selected') &&
+				button.hasAttribute('data-selected'))
+			vote=undefined
 		Req.setVote(page.id, vote, function(e, resp) {
-			// TODO: Make button of colour change depending on vote sent
-			Sidebar.print('Vote sent!')
-		});
+			// in case the vote fails when user is blocked from voting
+			if (resp) {
+				// if the vote was already toggled, then remove highlight
+				var replaceVote = function(q, x) {
+					var c = document.querySelector(q);					
+					c.textContent = String(Number(c.textContent) + x)
+				}
+				if (!vote) {
+					button.removeAttribute('data-selected')
+					replaceVote('#\\$voteCount_' + state, -1)
+				}
+				// otherwise, we want to remove the highlight from the
+				// button that was already pressed before and highlight
+				// the new button
+				else {
+					if (oldButton) {
+						oldButton.removeAttribute('data-selected')
+						replaceVote('#\\$voteCount_' + oldButton.id[oldButton.id.length - 1], -1) // yeah i just did that
+					}
+					button.setAttribute('data-selected', 'true')
+					replaceVote('#\\$voteCount_' + state, 1)
+				}
+			}
+		})
+		e.stopPropagation()
 	}
-	
+
 	var div = document.createElement('div')
 	div.className += 'buttonContainer rightAlign item loggedIn'
 	
 	var b = document.createElement('button')
 	b.id = "$voteButton_" + state
-	b.setAttribute('data-vote', state)
-	b.onclick = voteAction
-
+	b.className += 'voteButton'
+	if (page.about.myVote == state)
+		b.setAttribute('data-selected', "true")
+	b.addEventListener('click', voteAction)
+	
 	var label = document.createElement('div')
 	label.textContent = disptext
 	b.appendChild(label)
-
+	
 	var count = document.createElement('div')
 	count.id = '$voteCount_' + state
 	count.textContent = page.about.votes[state].count;
@@ -828,12 +867,14 @@ voteButton: function(disptext, state, page) {
 },
 
 voteBox: function (page) {
+	
 	var element = document.createDocumentFragment()
 	
 	if (!page)
 		return element
+
 	var buttonStates = [
-		['GREAT', 'g'], ['OK', 'o'], ['BAD', 'b']
+		['+', 'g'], ['~', 'o'], ['-', 'b']
 	]
 	buttonStates.forEach(function(x) {
 		var b = voteButton(x[0], x[1], page)
@@ -848,7 +889,7 @@ voteBox: function (page) {
 function hasPerm(perms, id, perm) {
 	return perms && perms[id] && perms[id].indexOf(perm) != -1
 }
-	
+
 <!--/*
 }(window)) //*/ // pass external values
 
