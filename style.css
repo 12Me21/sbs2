@@ -758,16 +758,16 @@ th {
 /**********
  ** Page **
  **********/
-button[data-selected] {
-	background: linear-gradient(lime, #EEE) !important;
+button.voteButton[data-selected="true"][data-vote="g"] {
+	background: linear-gradient(lime, #eee);
 }
 
-#\$voteButton_b[data-selected] {
-	background: linear-gradient(red, #eee) !important;
+button.voteButton[data-selected="true"][data-vote="b"] {
+	background: linear-gradient(red, #eee);
 }
 
-#\$voteButton_o[data-selected] {
-	background: linear-gradient(aqua, #eee) !important;
+button.voteButton[data-selected="true"][data-vote="o"] {
+	background: linear-gradient(aqua, #eee);
 }
 
 /* TODO FIX */
