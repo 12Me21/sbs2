@@ -758,15 +758,15 @@ th {
 /**********
  ** Page **
  **********/
-button.voteButton[data-selected="true"][data-vote="g"] {
+button.voteButton[data-selected][data-vote="g"] {
 	background: linear-gradient(lime, #eee);
 }
 
-button.voteButton[data-selected="true"][data-vote="b"] {
+button.voteButton[data-selected][data-vote="b"] {
 	background: linear-gradient(red, #eee);
 }
 
-button.voteButton[data-selected="true"][data-vote="o"] {
+button.voteButton[data-selected][data-vote="o"] {
 	background: linear-gradient(aqua, #eee);
 }
 
@@ -1043,7 +1043,7 @@ html.f-splitView main-scrollable {
 }
 
 .split-top {
-	overflow-y: auto;
+	overflow-y: scroll;
 }
 
 sidebar-panel {
