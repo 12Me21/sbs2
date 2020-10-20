@@ -35,13 +35,13 @@ Write-Host "creating _build.html"
 $f = (Get-Content ./index.html -Raw)
 $start = $f.IndexOf("<!--START-->")
 $end = $f.IndexOf("<!--END-->") + "<!--END-->".Length
-$f.Remove($start,$end-$start).Insert($start,"<link rel=`"stylesheet`" href=`"$(nocache 'resource/_build.css')`">`n<script src=`"$(nocache 'resource/_build.js')`">") | sc _build.html
+$f.Remove($start,$end-$start).Insert($start,"<link rel=`"stylesheet`" href=`"$(nocache 'resource/_build.css')`">`n<script src=`"$(nocache 'resource/_build.js')`"></script>") | sc _build.html
 
 function isnewer([System.IO.FileInfo] $file, $destfilename = $null) {
     if ($destfilename -eq $null) {$destfilename = $file.Name}
 	$destfile = [System.IO.FileInfo]::new((Join-Path $dest $destfilename))
 	if ($destfile.Exists) {
-		return ((Compare-Object $file $destfile -IncludeEqual -Property LastWriteTime)[0].SideIndicator -eq "<=")
+		return ((Compare-Object $file $destfile -IncludeEqual -Property LastWriteTime)[0].SideIndicator -eq "=>")
 	}
 	return $true
 }
