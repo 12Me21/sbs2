@@ -804,6 +804,7 @@ sidebarPageLabel: function(content) {
 // feel like touching it.
 voteButton: function(disptext, state, page) {
 	var b = button()
+	b[0].className += ' item'
 	b[1].className += ' voteButton'
 	if (page.about.myVote == state)
 		b[1].setAttribute('data-selected', "true")
@@ -824,7 +825,7 @@ voteButton: function(disptext, state, page) {
 
 voteBox: function (page) {
 	var element = document.createElement('div')
-	element.className += ' buttonContainer rightAlign'
+	element.className += ' item rightAlign'
 		
 	if (!page)
 		return element
