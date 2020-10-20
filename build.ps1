@@ -4,6 +4,9 @@ if ($Args[0]) {
 		$dest = New-Item $Args[0] -ItemType "directory" -Force
 	}
 	$dest = [System.IO.FileInfo]::new((Resolve-Path $Args[0]))
+	if (-not (Test-Path (Join-Path $dest "resource"))) {
+		$temp = New-Item (Join-Path $dest "resource") -ItemType "directory" -Force
+	}
 	Write-Host "Will output files to: $dest"
 	Read-Host -Prompt "(Press Enter)"
 }
@@ -32,10 +35,10 @@ Write-Host "creating _build.html"
 $f = (Get-Content ./index.html -Raw)
 $start = $f.IndexOf("<!--START-->")
 $end = $f.IndexOf("<!--END-->") + "<!--END-->".Length
-$f.Remove($start,$end-$start).Insert($start,"<link rel=`"stylesheet`" href=`"$(nocache 'resource/_build.css')`"><script src=`"$(nocache 'resource/_build.js')`">") | sc _build.html
+$f.Remove($start,$end-$start).Insert($start,"<link rel=`"stylesheet`" href=`"$(nocache 'resource/_build.css')`">`n<script src=`"$(nocache 'resource/_build.js')`">") | sc _build.html
 
-function isnewer([System.IO.FileInfo] $file, $destfilename=$null) {
-	if ($destfilename -eq $null) {$destfilename = $file.Name}
+function isnewer([System.IO.FileInfo] $file, $destfilename = $null) {
+    if ($destfilename -eq $null) {$destfilename = $file.Name}
 	$destfile = [System.IO.FileInfo]::new((Join-Path $dest $destfilename))
 	if ($destfile.Exists) {
 		return ((Compare-Object $file $destfile -IncludeEqual -Property LastWriteTime)[0].SideIndicator -eq "<=")
@@ -45,7 +48,7 @@ function isnewer([System.IO.FileInfo] $file, $destfilename=$null) {
 
 if ($Args[0]) {
 	Write-Host "Copying files"
-	ls resource | ?{isnewer($_)} | Copy-Item -Destination (Join-Path $dest $_.Name) -Force
+	ls resource | ?{isnewer $_ (join-path "resource" $_)} | Copy-Item -Destination (Join-Path $dest (join-path "resource" $_)) -Force
 	ls _build.html | ?{isnewer $_ "index.html"} | Copy-Item -Destination (Join-Path $dest "index.html") -Force
 }
 
