@@ -830,7 +830,7 @@ voteButton: function(disptext, state, page) {
 },
 
 voteBox: function (page) {
-	var element = document.createElement('div')
+	var element = document.createElement('span')
 	
 	if (!page)
 		return element
