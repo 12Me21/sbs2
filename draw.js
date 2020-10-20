@@ -801,6 +801,7 @@ voteButton: function(disptext, state, page) {
 	var voteAction = function(e) {
 		var vote = e.target.getAttribute('data-vote')
 		Req.setVote(page.id, vote, function(e, resp) {
+			// TODO: Make button of colour change depending on vote sent
 			Sidebar.print('Vote sent!')
 		});
 	}
@@ -817,11 +818,9 @@ voteButton: function(disptext, state, page) {
 	label.textContent = disptext
 	b.appendChild(label)
 
-	/* TODO: Ask 12 about how votes are retrieved, as getting them
-	 * via page.about doesn't work. */
 	var count = document.createElement('div')
 	count.id = '$voteCount_' + state
-	count.textContent = '0';
+	count.textContent = page.about.votes[state].count;
 	b.appendChild(count)
 
 	div.appendChild(b)
