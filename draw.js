@@ -847,6 +847,9 @@ voteBox: function (page) {
 			var state = button.getAttribute('data-vote')
 			var vote = state
 			var oldButton = element.querySelector('button[data-selected="true"]')
+			// disable button so that it won't increment multiple times while
+			// query is happening
+			button.disabled = true
 			// check if vote was already toggled
 			if (oldButton &&
 				oldButton.hasAttribute('data-selected') &&
@@ -875,6 +878,7 @@ voteBox: function (page) {
 						button.setAttribute('data-selected', 'true')
 						replaceVote('.voteCount[data-vote="' + state + '"]', 1)
 					}
+					button.disabled = false
 				}
 			})
 		}
