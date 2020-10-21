@@ -59,8 +59,10 @@ rawRequest: function(url, method, callback, data, auth){
 		else if (code == 429) { // rate limit
 			var after = +(x.getResponseHeader('Retry-After') || 1)
 			retry((after+0.5)*1000, "rate limited "+after+"sec")
-		} else if (code==401 || code==403) //invalid auth code (should this be both?)
+		} else if (code==401)
 			callback('auth', resp)
+		else if (code==403)
+			callback('permission', resp)
 		else if (code==404)
 			callback('404', resp)
 		else if (code==400)
