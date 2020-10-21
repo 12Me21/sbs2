@@ -882,11 +882,6 @@ html:not(.f-fileUploading) .fileUploading {
 #\$sidebarBottom {
 	overflow: auto;
 }
-#\$sidebarPinned {
-	-webkit-flex-shrink: 1;
-	flex-shrink: 1;
-	overflow-y: auto;
-}
 
 /**************
  ** Scroller **
@@ -1014,7 +1009,6 @@ body.pageMode main-scrollable {
 
 .chatPane {
 	overflow-y: auto;
-	/*flex-basis: 100%;*/
 }
 
 #\$sidebarPinned {
