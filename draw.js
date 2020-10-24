@@ -784,6 +784,10 @@ galleryLabel: function(entity) {
 sidebarComment: function(comment) {
 	var d = document.createElement('div')
 	d.className += " bar rem1-5 sidebarComment ellipsis"
+	if (comment.editUserId != comment.createUserId) {
+		d.appendChild(entityTitleLink(comment.editUser))
+		d.appendChild(document.createTextNode(" edited "))
+	}
 	d.appendChild(entityTitleLink(comment.createUser))
 	d.appendChild(document.createTextNode(": "))
 	d.appendChild(document.createTextNode(comment.content.replace(/\n/g, "  ")))
