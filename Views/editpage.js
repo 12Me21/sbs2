@@ -100,7 +100,7 @@ function submitEdit(callback) {
 function updatePreview() {
 	var parent = $editorPreview
 	var shouldScroll = parent.scrollHeight-parent.clientHeight-parent.scrollTop < 10
-	$editorPreview.replaceChildren(Parse.parseLang($editorTextarea.value, $markupSelect.value))
+	$editorPreview.replaceChildren(Parse.parseLang($editorTextarea.value, $markupSelect.value, true))
 	// auto scroll down when adding new lines to the end (presumably)
 	if (shouldScroll)
 		parent.scrollTop = parent.scrollHeight-parent.clientHeight
