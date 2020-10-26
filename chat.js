@@ -17,7 +17,7 @@ function ChatRoom(id, page) {
 
 	// page
 	this.pageContainer = document.createElement('div')
-	this.pageContainer.className = "split-top"
+	this.pageContainer.className = "split-top border-list"
 	this.pageElement = document.createElement('div')
 	this.pageElement.className = "markup-root pageContents"
 	this.pageInfoElement = Draw.pageInfo(page)

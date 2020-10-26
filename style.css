@@ -339,6 +339,11 @@ html.f-error .loadBG {
 	border-bottom: 1px solid gray;
 }
 
+.border-list > *:not(:last-child),
+.border-list-2 > * {
+	border-bottom: 1px solid gray;
+}
+
 /**********
  ** Tabs **
  **********/
@@ -497,15 +502,10 @@ main-scrollable {
 	background-color: white;
 }
 
-.linkBar, .categoryDescription, .member {
-	border-bottom: 1px solid gray;
-}
-
 /*********
  ** Nav **
  *********/
 .nav {
-	border-bottom: 1px solid gray;
 	background-color: #333;
 	color: white;
 }
@@ -519,7 +519,6 @@ main-scrollable {
  **************/
 .chatPane .userlist {
 	box-shadow: 0 2px 3px rgba(0,0,0,0.3);
-	border-bottom: 1px solid gray; /* nn */
 	z-index: 4;
 }
 
@@ -643,9 +642,6 @@ html:not(.f-chatEditing) .showWhenEdit {
 /****************
  ** Chat Input **
  ****************/
-.inputPane {
-	border-top: 1px solid gray;
-}
 
 .chatSend {
 	height:2.5rem;
@@ -683,7 +679,6 @@ html:not(.f-chatEditing) .showWhenEdit {
 	align-items: flex-start;
 	max-height: 40vh;
 	overflow: auto;
-	border-bottom: 1px solid gray;
 	/* todo: make this outside of scroller and have activity list scroll separately*/
 }
 
@@ -826,10 +821,6 @@ html:not(.f-fileSelected) .fileSelected {
 
 html:not(.f-fileUploading) .fileUploading {
 	display: none;
-}
-
-.fileBox {
-	border-bottom: 1px solid gray;
 }
 
 /***********
@@ -1134,10 +1125,6 @@ textarea-container, textarea-container > textarea {
 
 .permission-users th {
 	text-align: right;
-}
-
-.permission-users tr {
-	border-top: 1px solid gray;
 }
 
 #\$pageContents, .split-top {
