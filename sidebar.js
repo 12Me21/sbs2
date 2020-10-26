@@ -121,9 +121,9 @@ onAggregateChange: function(aggregate) {
 	items.sort(function(a, b) {
 		return -(a.lastDate - b.lastDate)
 	})
-	$sidebarActivityPanel.replaceChildren()
+	$sidebarActivity.replaceChildren()
 	items.forEach(function(item) {
-		$sidebarActivityPanel.appendChild(Draw.activityItem(item))
+		$sidebarActivity.appendChild(Draw.activityItem(item))
 	})
 	refreshInterval(aggregate)
 },

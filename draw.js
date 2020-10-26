@@ -297,7 +297,7 @@ linkButton: function() {
 },
 pageInfo: function(page) {
 	var e = document.createElement('div')
-	e.className = "pageInfoPane rem2-3 bar bottomBorder"
+	e.className = "pageInfoPane rem2-3 bar"
 	//with(e){
 	e.appendChild(authorBox(page))
 	e.appendChild(voteBox(page))

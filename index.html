@@ -94,7 +94,7 @@
 <horizontal-split class="flex-row grow">
 	<main class="flex grow">
 		<v-b data-view-editorMode class="infoPane">
-			<div class="registerBox bottomBorder">
+			<div class="registerBox">
 				<label for=$keywords>Keywords:</label><input placeholder="(space separated, optional)" id=$keywords><br>
 				<label for=$editPageType>Type:</label>
 				<select id=$editPageType>
@@ -110,7 +110,7 @@
 				<label for=$editPagePhotos>Photos:</label><input id=$editPagePhotos><br>
 				<label for=$editPageCategory>Category:</label><span id=$editPageCategory></span><br>
 			</div>
-			<div class="registerBox bottomBorder">
+			<div class="registerBox">
 				<h2>Permissions:</h2>
 				<div id=$editPagePermissions></div>
 			</div>
@@ -129,7 +129,7 @@
 
 		<v-b data-view-fileMode class="fileBox bar" id=$fileBox></v-b>
 
-		<v-b data-view-fileMode class="bottomBorder">
+		<v-b data-view-fileMode>
 			<button id=$fileUploadButton class="fileUploading">Upload Image!</button>
 			Click an image to select
 			<div class="fileSelected">
@@ -183,7 +183,7 @@
 			<v-b data-view-categoryMode id=$categoryDescription class="categoryDescription pre pageContents markup-root"></v-b>
 			<v-b data-view-categoryMode id=$categoryCategories></v-b>
 			<v-b data-view-categoryMode id=$categoryPinned></v-b>
-			<v-b data-view-categoryMode class="page-select rem1-7 bar bottomBorder">
+			<v-b data-view-categoryMode class="page-select rem1-7 bar">
 				<span id=$categoryNav></span>
 				<button id=$createPage class="item" data-static-link>Create Page</button>
 				<button id=$editCategory class="item canEdit" data-static-link>Edit Category</button>
@@ -192,7 +192,7 @@
 
 			<v-b data-view-userMode class="userActivity" id=$userActivity></v-b>
 
-			<!--<v-b data-view-page id=$pageInfoPane class="pageMode pageInfoPane rem2-3 bar bottomBorder">
+			<!--<v-b data-view-page id=$pageInfoPane class="pageMode pageInfoPane rem2-3 bar">
 				
 				<span class="textItem" id=$authorBox></span>
 				<button id=$editButton class="item canEdit">Edit</button>
@@ -221,24 +221,25 @@
 				<div class="editorPreview grow markup-root" id=$editorPreview><div class="markup-root"></div></div>
 			</v-b>
 			
-			<v-b data-view-home>
-				a
-				<div class="gallery-inner" style="max-width: 400px;">
-					<div>
-						<div class="image-box image-box-large fill">
-							<img id=$galleryImage>
+			<v-b data-view-home class="border-list">
+				<div>
+					a
+					<div class="gallery-inner" style="max-width: 400px;">
+						<div>
+							<div class="image-box image-box-large fill">
+								<img id=$galleryImage>
+							</div>
 						</div>
+						<canvas width=5 height=3>
+							this canvas makes it so
+							the parent element will
+							have fixed aspect ratio
+						</canvas>
 					</div>
-					<canvas width=5 height=3>
-						this canvas makes it so
-						the parent element will
-						have fixed aspect ratio
-					</canvas>
+					<div class="gallery-title" style="max-width: 400px;" id=$galleryTitle></div>
+					a
 				</div>
-				<div class="gallery-title" style="max-width: 400px;" id=$galleryTitle></div>
-				a
-				<div class="bottomBorder"></div>
-				<div id=$homeCategories></div>
+				<div id=$homeCategories class="border-list-2"></div>
 			</v-b>
 			
 			<v-b data-view-membersMode class="memberPane">
@@ -246,7 +247,7 @@
 			</v-b>
 
 			<v-b data-view-settingsMode class="loggedOut">
-				<div class="registerBox bottomBorder">
+				<div class="registerBox">
 					<h2>Log In</h2>
 					<form id=$loginForm>
 						<input placeholder=Username name=username><br>
@@ -255,7 +256,7 @@
 					</form>
 					<div id=$loginError></div>
 				</div>
-				<div class="registerBox bottomBorder">
+				<div class="registerBox">
 					<h2>Register</h2>
 					<form id=$registerForm autocomplete=off>
 						<input placeholder=Username name=username minlength=2 maxlength=20> 2 to 20 characters, no spaces<br>
@@ -271,7 +272,7 @@
 						<button name=submit>Confirm</button>
 					</form>
 				</div>
-				<div class="registerBox bottomBorder">
+				<div class="registerBox">
 					<h2>Password Reset</h2>
 					<form id=$passwordForm>
 						<input placeholder="Email" type=email name=email><br>
@@ -285,19 +286,19 @@
 					</form>
 				</div>
 			</v-b>
-			<v-b data-view-settingsMode class="loggedIn">
-				<div class="registerBox bottomBorder">
+			<v-b data-view-settingsMode class="loggedIn border-list">
+				<div class="registerBox">
 					<button id=$logOut>Log out</button><br>
 				</div>
-				<div class="registerBox bottomBorder" id=$localSettings>
+				<div class="registerBox" id=$localSettings>
 				</div>
-				<div class="registerBox bottomBorder">
+				<div class="registerBox">
 					<a data-static-path=image>Change your avatar here</a>
 				</div>
-				<div class="registerBox bottomBorder">
+				<div class="registerBox">
 					<a data-static-path=users>User list</a>
 				</div>
-				<div class="registerBox bottomBorder">
+				<div class="registerBox">
 					<h2>Change account settings</h2>
 					<form id=$changeForm>
 						<input placeholder="Old Password" name=oldPassword minlength=8 type=password><br>
@@ -326,8 +327,8 @@
 			  Bottom of the page
 		-->
 		<v-b data-view-page id=$chatResize class="resize">RESIZE</v-b>
-		<v-b data-view-page id=$chatContainer class="grow flex">
-			<v-b data-view-page id=$chatPane class="flex chatMode grow chatPane"></v-b>
+		<v-b data-view-page id=$chatContainer class="grow flex border-list">
+			<v-b data-view-page id=$chatPane class="flex chatMode grow chatPane border-list"></v-b>
 			
 			<v-b data-view-page class="inputPane chatMode loggedIn flex-row">
 				<button class="showWhenEdit" id=$chatCancelEdit>Cancel Edit</button>
@@ -339,10 +340,10 @@
 			</v-b>
 		</v-b>
 	</main>
-	<sidebar-container id=$sidebar class="flex flex-sized">
+	<sidebar-container id=$sidebar class="flex flex-sized border-list">
 		<button class="closeSidebar" id=$closeSidebar>Close Sidebar</button>
 		
-		<div class="bottomBorder bar rem1-5 myUserBar">
+		<div class="bar rem1-5 myUserBar">
 			<span class="loggedIn" id=$loggedIn>
 				<a class="item userLink" id=$myUserLink>
 					<span class="myName username textItem" id=$myName></span>
@@ -352,11 +353,13 @@
 			<span class="loggedOut"><a data-static-path=settings class="textItem">Log In or Register</a></span>
 			<a class="loggedIn textItem" data-static-path="settings">Settings</a>
 		</div>
-		<div class="userlist bar rem1-5 bottomBorder"><span id=$sidebarUserList></span><button id=$hideGlobalStatusButton class="item rightAlign loggedIn">Hide</button></div>
+		<div class="userlist bar rem1-5"><span id=$sidebarUserList></span><button id=$hideGlobalStatusButton class="item rightAlign loggedIn">Hide</button></div>
 		<!--<span id=$longPollStatus></span>-->
-		<div id=$sidebarTabs role="tablist" aria-label="sidebar tab" class="bottomBorder"></div>
+		<div id=$sidebarTabs role="tablist" aria-label="sidebar tab"></div>
 		<div id=$sidebarTop class="flex-sized">
-			<sidebar-panel id=$sidebarActivityPanel></sidebar-panel>
+			<sidebar-panel id=$sidebarActivityPanel>
+				<scroll-outer><scroll-inner id="$sidebarActivity" class="border-list-2"></scroll-inner></scroll-outer>
+			</sidebar-panel>
 			<!--<div id=$sidebarWatchingPanel class="fill"></div>-->
 			<sidebar-panel id=$sidebarFilePanel class="flex">
 				<a data-static-path=image>Uploaded Images</a>
@@ -371,14 +374,14 @@
 				<div><input type=file accept="image/*" id=$imageUpload></div>
 			</sidebar-panel>
 			<sidebar-panel id=$sidebarSearchPanel>
-				<div class="bottomBorder bar rem1-5"><input id=$searchInput class="item"><button id=$searchButton class="item">Search</button></div>
+				<div class="bar rem1-5"><input id=$searchInput class="item"><button id=$searchButton class="item">Search</button></div>
 				<div id=$searchResults></div>
 			</sidebar-panel>
 		</div>
 		
 		<div id=$sidebarResize class="resize">resize</div>
 		<div id=$sidebarBottom class="grow">
-			<scroll-outer><scroll-inner id=$sidebarScroller></scroll-inner></scroll-outer>
+			<scroll-outer><scroll-inner id=$sidebarScroller class="border-list"></scroll-inner></scroll-outer>
 		</div>
 	</sidebar-container>
 </horizontal-split>
