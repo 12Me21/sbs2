@@ -69,7 +69,10 @@ rawRequest: function(url, method, callback, data, auth){
 			callback('404', resp)
 		else if (code==418)
 			callback('ban', resp)
-		else { // other
+		else if (code==500) {
+			console.warn('got 500 error', x, resp)
+			retry(1000, '500 error')
+		} else { // other
 			alert("Request failed! "+code+" "+url)
 			console.log("REQUEST FAILED", x)
 			resp = JSON.safeParse(resp)
@@ -678,7 +681,7 @@ if ($.location.protocol=="http:")
 	protocol = "http:"
 else
 	protocol = "https:"
-server = protocol+"//newdev.smilebasicsource.com/api"
+server = protocol+"//smilebasicsource.com/api"
 
 <!--/*
 }(window)) //*/
