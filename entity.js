@@ -115,6 +115,11 @@ processItem: {
 			var m = decodeComment(data.content)
 			data.content = m.t
 			data.meta = m
+			var av = +data.meta.a
+			if (av)
+				data.createUser = Object.create(data.createUser, {
+					avatar: {value: av}
+				})
 		} else { // deleted comment usually
 			data.meta = {}
 		}
@@ -125,14 +130,10 @@ processItem: {
 		return data
 	},
 	editable: function(data, users) {
-		if (data.editUserId)
-			data.editUser = get(users, 'user', data.editUserId)
-		if (data.createUserId)
-			data.createUser = get(users, 'user', data.createUserId)
-		if (data.editDate)
-			data.editDate = parseDate(data.editDate)
-		if (data.createDate)
-			data.createDate = parseDate(data.createDate)
+		data.editUser = get(users, 'user', data.editUserId)
+		data.createUser = get(users, 'user', data.createUserId)
+		data.editDate = parseDate(data.editDate)
+		data.createDate = parseDate(data.createDate)
 		return data
 	},
 	watch: function(data) {
