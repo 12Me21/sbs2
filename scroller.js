@@ -213,15 +213,16 @@ Scroller.prototype.autoScrollAnimation = function(time) {
 	var dt = 1//(time - this.animationStart) / (1000/60)
 	this.animationStart = time
 
-	this.ignoreScroll = true
-	var expect = Math.floor(this.scrollBottom * Math.pow(1-this.rate, dt))
-	this.scrollBottom = expect
-	
 	this.atBottom = true
-	if (this.scrollBottom <= 0.5) { // done
+	this.ignoreScroll = true
+	var old = this.scrollBottom
+	this.scrollBottom = Math.floor(old * Math.pow(1-this.rate, dt))
+
+	if (this.scrollBottom == old || this.scrollBottom <= 0.5) {
 		this.animationId = null
 		return
 	}
+	
 	var $=this
 	this.animationId = window.requestAnimationFrame(function(time) {
 		$.autoScrollAnimation(time)
