@@ -83,7 +83,7 @@ addView('page', {
 	},
 	init: function() {
 		function sendMessage() {
-			var data = readInput()
+			var data = readInput(editingComment, !!editingComment)
 			var room = ChatRoom.currentRoom
 			if (room && data.content) {
 				
@@ -184,16 +184,17 @@ addView('page', {
 	}
 })
 
-function readInput() {
+function readInput(old, edit) {
 	var data = {
-		meta: {},
+		meta: old || {},
 		content: $chatTextarea.value,
 	}
 	
 	if ($chatMarkupSelect.checked)
 		data.meta.m = "12y"
-	if (Req.me)
-		data.meta.a = Req.me.avatar
+	if (!edit)
+		if (Req.me)
+			data.meta.a = Req.me.avatar
 	
 	return data
 }
@@ -204,7 +205,7 @@ function writeInput(data) {
 }
 
 var preEdit = null
-var editingComment = null
+window.editingComment = null
 
 $.editComment = editComment //HACK
 function editComment(id) {
