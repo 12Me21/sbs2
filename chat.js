@@ -171,16 +171,14 @@ ChatRoom.prototype.displayOldMessage = function(comment) {
 			// `old` should never be set here, I think...
 			var firstUidBlock = $.messageList.firstChild
 			if (firstUidBlock) {
-				var firstUid = firstUidBlock.getAttribute('data-uid')
-				if (!firstUid)
+				var firstHash = firstUidBlock.getAttribute('data-merge')
+				if (!firstHash)
 					firstUidBlock = null
 				else
-					firstUid = +firstUid
+					var newHash = Draw.mergeHash(comment)
 			}
-			var id = comment.id
-			var uid = comment.createUserId
 			var node = Draw.messagePart(comment)
-			if (uid && firstUid == uid && firstUidBlock) {
+			if (firstUidBlock && newHash == firstHash) {
 				var contents = firstUidBlock.getElementsByTagName('message-contents')[0]// not great...
 			} else {
 				var b = Draw.messageBlock(comment)
@@ -190,7 +188,7 @@ ChatRoom.prototype.displayOldMessage = function(comment) {
 			contents.prependChild(node)
 			if (!$.messageElements[comment.id])
 				$.totalMessages++
-			$.messageElements[id] = node
+			$.messageElements[comment.id] = node
 			$.limitMessages()
 		}
 	})
@@ -406,19 +404,17 @@ ChatRoom.prototype.displayMessage = function(comment, autoscroll) {
 			if (old) { // edited
 				old.parentNode.replaceChild(part, old)
 			} else { // new comment
-					var lastUidBlock = $.messageList.lastChild
-				if (lastUidBlock) {
-					var lastUid = lastUidBlock.getAttribute('data-uid')
-					if (!lastUid)
-						lastUidBlock = null
+				var lastBlock = $.messageList.lastChild
+				if (lastBlock) {
+					var lastHash = lastBlock.getAttribute('data-merge')
+					if (!lastHash)
+						lastBlock = null
 					else
-						lastUid = +lastUid
+						var newHash = Draw.mergeHash(comment)
 				}
-				var id = comment.id
-				var uid = comment.createUserId
 				
-				if (uid && lastUid == uid && lastUidBlock && comment.createDate-$.lastTime <= 1000*60*5) { // insert in current block
-					var contents = lastUidBlock.getElementsByTagName('message-contents')[0]// not great...
+				if (lastBlock && lastHash == newHash && comment.createDate-$.lastTime <= 1000*60*5) { // insert in current block
+					var contents = lastBlock.getElementsByTagName('message-contents')[0]// not great...
 				} else { //create new block
 					var b = Draw.messageBlock(comment)
 					$.messageList.appendChild(b[0])

@@ -221,7 +221,7 @@ titlePath: function(path) {
 // avatar changes
 // but perhaps this can be abused, and it's probably annoying anyway...
 messageBlock: function(comment) {
-	var user = comment.createUser || {} //fix for deleted comments?
+	var user = comment.createUser
 	var date = comment.createDate
 	
 	var div = document.createElement('message-block')
@@ -231,24 +231,18 @@ messageBlock: function(comment) {
 	timeStamp.textContent = timeString(date)
 	div.appendChild(timeStamp)
 	
-	var av = +comment.meta.a
-	if (av)
-		user = Object.create(user, { //TODO: this breaks if user is undefined (which I think is possible?) YES
-			// also used by commentTitle
-			avatar: {value: av}
-		})
 	div.appendChild(avatar(user))
 
 	var name = document.createElement('span')
 	name.className += " username"
-
+	
 	var link = entityLink(user)
 	name.appendChild(link)
 	
 	var n = document.createElement('span')
 	n.className = "pre"
 	n.textContent = user.name
-
+	
 	link.appendChild(n)
 	link.appendChild(document.createTextNode(":"))
 	
@@ -257,9 +251,13 @@ messageBlock: function(comment) {
 	var contentBox = document.createElement('message-contents')
 	div.appendChild(contentBox)
 	div.setAttribute('data-uid', comment.createUserId)
+	div.setAttribute('data-merge', mergeHash(comment))
 	return [div, contentBox]
 },
-messagePart: function(comment){
+mergeHash: function(comment) {
+	return comment.createUserId + "," + comment.createUser.avatar
+},
+messagePart: function(comment) {
 	var element = document.createElement('message-part')
 	element.className = "markup-root"
 	element.setAttribute('data-id', comment.id)
