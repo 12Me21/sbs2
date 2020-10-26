@@ -176,11 +176,15 @@ icon: function(entity) {
 		element.src = avatarURL(entity, "size=120&crop=true")
 	} else if (type=='content') {
 		var hidden = !hasPerm(entity.permissions, 0, 'r')
-		var pageType = entity.type
-		if (Entity.CONTENT_TYPES.includes(pageType)) {
-			element = bgIcon('resource/page-'+pageType+'.png')
-		} else {
-			element = bgIcon('resource/unknownpage.png')
+		if (hidden) {
+			element = bgIcon('resource/hiddenpage.png')
+		} else { //TODO: make this better!
+			var pageType = entity.type
+			if (Entity.CONTENT_TYPES.includes(pageType)) {
+				element = bgIcon('resource/page-'+pageType+'.png')
+			} else {
+				element = bgIcon('resource/unknownpage.png')
+			}
 		}
 	} else if (type=='category') {
 		element = bgIcon('resource/category.png')
