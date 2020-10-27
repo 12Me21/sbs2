@@ -7,7 +7,28 @@ addView('user', {
 			id = id.substr(1)
 		// todo: maybe username without @ should be invalid?
 		// can potentially collide with id numbers
-		return Req.getUserView(id, render)
+		
+		if (typeof id == 'number')
+			var userSearch = {ids: [id], limit: 1}
+		else
+			var userSearch = {usernames: [id], limit: 1}
+		
+		return Req.read([
+			{"user": userSearch},
+			{"content.0id$createUserIds~Puserpage": {type: 'userpage', limit: 1}},
+			{"activity.0id$userIds": {limit: 20, reverse: true}},
+			{"commentaggregate.0id$userIds": {limit: 100, reverse: true}},
+			"content.2contentId.3id"
+		], {}, function(e, resp) {
+			if (!e) {
+				var user = resp.user[0]
+				if (user)
+					render(user, resp.Puserpage[0], resp.activity, resp.commentaggregate, resp.content)
+				else
+					render(null)
+			} else
+				render(null)
+		}, true)
 	},
 	className: 'userMode',
 	render: function(user, userpage, activity, ca, content) {

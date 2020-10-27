@@ -5,7 +5,7 @@ window.Req = Object.create(null)
 with (Req) (function($) { "use strict"
 Object.assign(Req, { //*/
 
-storageKey: "devauth",
+storageKey: "auth",
 
 protocol: null,
 
@@ -323,6 +323,7 @@ toggleHiding: function(id, callback) {
 		if (me) {
 			var hiding = me.hidelist
 			var hidden = arrayToggle(hiding, id)
+			console.log(hiding)
 			setBasic({hidelist:hiding}, function(){
 				callback(hidden)
 			})
@@ -366,31 +367,6 @@ search1: function(text, callback) {
 		else
 			callback(null)
 	})
-},
-
-// takes a number or a string
-getUserView: function(id, callback) {
-	if (typeof id == 'number')
-		var userSearch = {ids: [id], limit: 1}
-	else
-		var userSearch = {usernames: [id], limit: 1}
-	
-	return read([
-		{"user": userSearch},
-		{"content.0id$createUserIds~Puserpage": {type: 'userpage', limit: 1}},
-		{"activity.0id$userIds": {limit: 20, reverse: true}},
-		{"commentaggregate.0id$userIds": {limit: 100, reverse: true}},
-		"content.2contentId.3id"
-	],{},function(e, resp) {
-		if (!e) {
-			var user = resp.user[0]
-			if (user)
-				callback(user, resp.Puserpage[0], resp.activity, resp.commentaggregate, resp.content)
-			else
-				callback(null)
-		} else
-			callback(null)
-	}, true)
 },
 
 getFileView: function(query, page, callback) {
@@ -681,7 +657,7 @@ if ($.location.protocol=="http:")
 	protocol = "http:"
 else
 	protocol = "https:"
-server = protocol+"//newdev.smilebasicsource.com/api"
+server = protocol+"//smilebasicsource.com/api"
 
 <!--/*
 }(window)) //*/
