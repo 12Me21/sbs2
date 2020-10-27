@@ -44,8 +44,21 @@ addView('image', {
 		currentQuery = query
 		var page = +query.page || 1
 		navButtons.set(page)
-		
-		return Req.getFileView({}, page, render)
+
+		var search = {
+			limit: 20,
+			skip: (page-1)*20,
+			reverse: true,
+		}
+		return Req.read([
+			{file: search},
+			"user.0createUserId"
+		], {}, function(e, resp) {
+			if (!e)
+				render(resp.file)
+			else
+				render(null)
+		}, false) //mm
 	},
 	className: 'fileMode',
 	render: function(files) {
