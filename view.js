@@ -41,7 +41,12 @@ views: {
 	// the first parameter will always exist.
 	users: {
 		start: function(id, query, render) {
-			return Req.getUsersView(render)
+			return Req.read([
+				"user",
+			], {}, function(e, resp) {
+				if (!e)
+					render(resp.user)
+			}, true)
 		},
 		className: 'membersMode',
 		render: function(users) {

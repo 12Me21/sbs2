@@ -1,6 +1,4 @@
-//todo: move some things into view js files
-
-	<!--/* trick indenter
+<!--/* trick indenter
 window.Req = Object.create(null)
 with (Req) (function($) { "use strict"
 Object.assign(Req, { //*/
@@ -369,22 +367,6 @@ search1: function(text, callback) {
 	})
 },
 
-getFileView: function(query, page, callback) {
-	page = page || 1
-	query.limit = 20
-	query.skip = (page-1)*query.limit
-	query.reverse = true
-	return read([
-		{file: query},
-		"user.0createUserId"
-	], {}, function(e, resp) {
-		if (!e)
-			callback(resp.file)
-		else
-			callback(null)
-	}, false) //mm
-},
-
 getRecentActivity: function(callback) {
 	var day = 1000*60*60*24
 	var start = new Date(Date.now() - day).toISOString()
@@ -406,15 +388,6 @@ getRecentActivity: function(callback) {
 		else
 			callback(null)
 	})
-},
-
-getUsersView: function(callback) {
-	return read([
-		"user",
-	], {}, function(e, resp) {
-		if (!e)
-			callback(resp.user)
-	}, true)
 },
 
 setVote: function(id, state, callback) {
