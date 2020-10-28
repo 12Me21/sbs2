@@ -117,7 +117,7 @@ addView('page', {
 		}
 		
 		$chatTextarea.onkeypress = function(e) {
-			if (!e.shiftKey && e.keyCode == 13 && !$chatBigMode.checked) {
+			if (!e.shiftKey && e.keyCode == 13) {
 				e.preventDefault()
 				sendMessage()
 				return
