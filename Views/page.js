@@ -17,7 +17,7 @@ var renderPage = function(page) {
 	setEntityTitle(page)
 	setEntityPath(page.parent)
 	flag('canEdit', /u/.test(page.myPerms))
-	Nav.link("editpage/"+page.id, $pageEditButton.parentNode)
+	Nav.link("editpage/"+page.id, $pageEditLink)
 }
 
 addView('page', {
