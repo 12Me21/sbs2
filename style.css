@@ -414,11 +414,20 @@ html:not(.f-sidebarUploaded) .sidebarUploadedFile {
 }
 
 html.f-loading .loadBG {
-	background-color: #ABDDD6;
+	background-color: #225450;
+}
+
+.loadBG {
+	-webkit-transition: background-color 0.1s ease;
+	transition: background-color 0.1s ease;
 }
 
 .titlePane .iconBg {
 	width: 2rem;
+}
+
+.pageTitle {
+	font-weight: normal;
 }
 
 .titlePane .pageTitle .entity-title {
