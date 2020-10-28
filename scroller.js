@@ -215,10 +215,15 @@ Scroller.prototype.autoScrollAnimation = function(time) {
 
 	this.atBottom = true
 	this.ignoreScroll = true
-	var old = this.scrollBottom
-	this.scrollBottom = Math.floor(old * Math.pow(1-this.rate, dt))
 
-	if (this.scrollBottom == old || this.scrollBottom <= 0.5) {
+	if (this.scrollBottom == this.oldScrollBottom) {
+		this.animationId = null
+		return
+	} // PLEASE
+	this.oldScrollBottom = this.scrollBottom
+
+	this.scrollBottom = Math.floor(this.scrollBottom * Math.pow(1-this.rate, dt))
+	if (this.scrollBottom <= 0.5) {
 		this.animationId = null
 		return
 	}
