@@ -29,7 +29,7 @@ addView('', {
 			var bar = Draw.entityTitleLink(cat)
 			bar.className += " linkBar bar rem1-5"
 			$homeCategories.appendChild(bar)
-		});
+		})
 		updateGallery(gallery[0])
 	},
 })
