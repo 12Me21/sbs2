@@ -62,7 +62,7 @@ addView('category', {
 			var bar = Draw.entityTitleLink(child)
 			bar.className += " linkBar bar rem2-3"
 			$categoryCategories.appendChild(bar)
-		});
+		})
 		pinned.forEach(function(page) {
 			var bar = Draw.pageBar(page)
 			bar.className += " linkBar bar rem2-3"
