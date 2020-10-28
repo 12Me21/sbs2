@@ -11,7 +11,7 @@
 }
 
 .markup-root td, .markup-root th {
-	padding: 0.2rem 0.3rem;
+	padding: 0.2em 0.3em;
 }
 
 .markup-root table {
@@ -37,7 +37,7 @@
 
 .markup-root h2, .markup-root h3 {
 	border-bottom: 1px solid #eaecef;
-	margin-bottom: 0.2rem;
+	margin-bottom: 0.2em;
 	/*display: inline;*/
 }
 
@@ -46,11 +46,11 @@
 }
 
 .markup-root h2 {
-	margin-top: 0.5rem;
+	margin-top: 0.5em;
 }
 
 .markup-root h3 {
-	margin-top: 0.3rem;
+	margin-top: 0.3em;
 }
 
 .markup-root pre {
@@ -66,7 +66,7 @@
 	font-size: 0.9em;
 	font-family: consolas, monospace;
 	background-color: rgba(0,0,0,0.1);
-	padding: 0 0.2rem;
+	padding: 0 0.2em;
 }
 
 .markup-root pre /*, .markup-root table*/ {
@@ -75,12 +75,12 @@
 
 .markup-root pre {
 	border: 1px solid black;
-	padding: 0.5rem;
-	margin: 0.25rem 0;
+	padding: 0.5em;
+	margin: 0.25em 0;
 }
 
 .markup-root {
-	padding: 0.5rem;
+	padding: 0.5em;
 }
 
 .markup-root ol {
@@ -146,7 +146,7 @@ markup-root .youtube {
 .markup-root .videoTitle, .markup-root .videoAuthor {
 	color: white;
 	background-color: rgba(0,0,0,0.3);
-	padding: 0 0.2rem;
+	padding: 0 0.2em;
 	display: inline-block;
 }
 
@@ -179,13 +179,13 @@ markup-root .youtube {
 }
 
 .markup-root .spoilerButton {
-	padding: 0 0.3rem;
+	padding: 0 0.3em;
 	background-color: #EEE;
 	border: 2px solid gray;
 	border-style: outset;
 	border-radius: 2px;
-	margin-left: 0.2rem;
-	margin-right: 0.2rem;
+	margin-left: 0.2em;
+	margin-right: 0.2em;
 	margin-top: 1px;
 	display: table;
 }
@@ -199,7 +199,7 @@ markup-root .youtube {
 }
 
 .markup-root .spoiler {
-	padding: 0.5rem;
+	padding: 0.5em;
 	border: 1px solid gray;
 	background-color: #F8F8F8;
 	margin-bottom: 1px;
@@ -228,14 +228,14 @@ markup-root .youtube {
 .markup-root .error {
 	background-color: #F55;
 	border: 1px solid black;
-	padding: 0.2rem;
+	padding: 0.2em;
 	border-radius: 5px;
 }
 
 .markup-root .tableContainer {
 	overflow-x: auto;
 	max-width: 100%;
-	margin: 0.2rem 0;
+	margin: 0.2em 0;
 }
 
 /*.markup-root th.cell {
@@ -245,22 +245,22 @@ markup-root .youtube {
 }*/
 
 .markup-root blockquote {
-	padding: 0.3rem;
-	padding-left: 0.5rem;
+	padding: 0.3em;
+	padding-left: 0.5em;
 	border: 1px solid gray;
 	background-color: #eee;
 	margin: 1px 0;
 }
 
 .markup-root blockquote > cite {
-	margin-left: -1rem;
+	margin-left: -1em;
 }
 
 /*.markup-root blockquote[cite]::before {
 	content: attr(cite) ":\A";
 	white-space: pre;
 	font-weight: bold;
-	margin-left: -1rem;
+	margin-left: -1em;
 	display: block;
 	margin-bottom: 0.2em;
 }*/
