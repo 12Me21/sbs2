@@ -329,7 +329,19 @@ onLoad: function() {
 		if (!e.button && e.target) // 0 or none (prevent right click etc.)
 			imageFocusClickHandler(e.target)
 	}
+	// clicking outside an image shrinks it
+	// maybe could block this if the click is on a link/button?
+	document.onclick = function(e) {
+		var element = e.target
+		if (!(element instanceof HTMLTextAreaElement)) {
+			if (embiggenedImage && element != embiggenedImage) {
+				embiggenedImage.removeAttribute('bigImage')
+				embiggenedImage = null
+			}
+		}
+	}
 	var embiggenedImage
+	
 	function imageFocusClickHandler(element) {
 		if (element.hasAttribute('shrink')) {
 			// if click on image that's already big:
@@ -341,11 +353,6 @@ onLoad: function() {
 					embiggenedImage.removeAttribute('bigImage')
 				element.setAttribute('bigImage', "")
 				embiggenedImage = element
-			}
-		} else if (!(element instanceof HTMLTextAreaElement)) {
-			if (embiggenedImage && element != embiggenedImage) {
-				embiggenedImage.removeAttribute('bigImage')
-				embiggenedImage = null
 			}
 		}
 	}
