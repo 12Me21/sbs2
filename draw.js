@@ -36,7 +36,7 @@ iconTitle: function(entity, reverse) {
 },
 
 entityLink: function(entity) {
-	var path = Nav.entityPath(entity);
+	var path = Nav.entityPath(entity)
 	if (path)
 		var element = Nav.link(path)
 	else
@@ -866,7 +866,7 @@ voteBox: function (page) {
 				if (!e) {
 					// if the vote was already toggled, then remove highlight
 					var replaceVote = function(q, x) {
-						var c = element.querySelector(q);
+						var c = element.querySelector(q)
 						c.textContent = String(Number(c.textContent) + x)
 					}
 					if (!vote) {
