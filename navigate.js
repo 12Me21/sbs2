@@ -1,5 +1,5 @@
 <!--/* trick indenter
-var Nav = Object.create(null);
+var Nav = Object.create(null)
 with (Nav) void function($) { "use strict"
 Object.assign(Nav, { //*/
 
