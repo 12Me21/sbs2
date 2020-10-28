@@ -35,23 +35,28 @@
 	vertical-align: baseline;
 }*/
 
-.markup-root h2, .markup-root h3 {
-	border-bottom: 1px solid #eaecef;
-	margin-bottom: 0.2em;
-	/*display: inline;*/
-}
-
+.markup-root h2,
+.markup-root h3,
 .markup-root h4 {
-	/*display: inline;*/
+	font-weight: 500;
+	margin-top: 0.5em;
+	margin-bottom: 0.2em;
 }
 
 .markup-root h2 {
-	margin-top: 0.5em;
+	font-size: 2em;
+	border-bottom: 1px solid #ddd;
 }
 
 .markup-root h3 {
-	margin-top: 0.3em;
+	font-size: 1.6em;
+	border-bottom: 1px solid #eaecef;
 }
+
+.markup-root h4 {
+	font-size: 1em;
+}
+
 
 .markup-root pre {
 	font-size: 0.9em;
@@ -77,10 +82,6 @@
 	border: 1px solid black;
 	padding: 0.5em;
 	margin: 0.25em 0;
-}
-
-.markup-root {
-	padding: 0.5em;
 }
 
 .markup-root ol {

@@ -6,6 +6,12 @@
 }
 @font-face{
 	font-family:roboto;
+	font-weight:500;
+	font-style:normal;
+	src:url(roboto-500.woff2) format('woff2'),url(roboto-500.woff) format('woff')
+}
+@font-face{
+	font-family:roboto;
 	font-weight:400;
 	font-style:italic;
 	src:url(roboto-400i.woff2) format('woff2'),url(roboto-400i.woff) format('woff')
