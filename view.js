@@ -157,7 +157,10 @@ updateMyUser: function(user) {
 	if (user.id != Req.uid)
 		return //uh oh
 	Req.me = user //This probably shouldn't be handled by View...
-	$loggedIn.replaceChildren(Draw.entityTitleLink(user, true))
+	var icon = Draw.icon(user)
+	icon.style.height = "100%" //hack
+	Sidebar.myAvatar.replaceChildren(icon)
+	//$loggedIn.replaceChildren(Draw.entityTitleLink(user, true))
 },
 
 handleView: function(type, id, query, callback) {
