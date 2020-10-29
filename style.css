@@ -146,6 +146,10 @@ time {
 	padding: 0.5rem;
 }
 
+#\$categoryDescription.markup-root { /* make sure this is before most things */
+	padding: .75rem 1rem;
+}
+
 body.chatMode .bottomSpacer {
 	display: none;
 }
@@ -381,6 +385,7 @@ table.tabs td button {
 	border: none;
 	vertical-align: top;
 	font-size: 1em;
+	padding: 0;
 }
 
 table.tabs td:last-child {
@@ -1203,4 +1208,15 @@ textarea-container, textarea-container > textarea {
 .debugMessage {
 	background-color: #EEE;
 	padding: 2px 3px;
+}
+
+.linkBar {
+	border-bottom: 1px solid gray;
+	border-top: 1px solid white;
+	padding: 0.15rem 0.2rem 0.2rem 0.2rem;
+}
+
+activity-users {
+	white-space: pre;
+	overflow-x: visible;
 }
