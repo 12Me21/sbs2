@@ -334,7 +334,7 @@ sidebarTabs: function(list, callback) {
 		btn.setAttribute('aria-controls', "sidebar-panel-"+i)
 		td.appendChild(btn)
 		r.appendChild(td)
-		btn.textContent = item.label
+		btn.appendChild(item.label)
 		btns[i] = btn
 		btn.onclick = function() {
 			x.select(i)

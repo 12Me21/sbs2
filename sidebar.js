@@ -14,6 +14,8 @@ selectTab: null,
 
 intervalId: null,
 
+myAvatar: null,
+
 refreshInterval: function(data) {
 	// todo: optimize this.
 	// maybe only update the timestamps
@@ -78,11 +80,14 @@ onLoad: function() {
 		e.setAttribute('aria-labelledby', "sidebar-tab-"+i)
 		e.hidden = true
 	})
+	myAvatar = document.createElement('span')
+	myAvatar.className += " fill"
 	var sidebarTabs = Draw.sidebarTabs([
-		{label: "activity", elem: $sidebarActivityPanel},
+		{label: document.createTextNode("activity"), elem: $sidebarActivityPanel},
 		/*{label: "watching"},*/
-		{label: "image", elem: $sidebarFilePanel},
-		{label: "search", elem: $sidebarSearchPanel},
+		{label: document.createTextNode("image"), elem: $sidebarFilePanel},
+		{label: document.createTextNode("search"), elem: $sidebarSearchPanel},
+		{label: myAvatar, elem: $sidebarUserPanel},
 	])
 	$sidebarTabs.replaceChildren(sidebarTabs.elem)
 	sidebarTabs.select(0)
