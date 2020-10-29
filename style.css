@@ -93,6 +93,10 @@ a[data-static-path],
 	color: #EFF;
 }
 
+h1 {
+	font-size: 1.6em;
+}
+
 /**********/
 
 textarea {
@@ -443,7 +447,6 @@ html.f-loading .loadBG {
 .titlePane .pageTitle .entity-title {
 	color: white;
 	padding-right: 0.5rem;
-	font-size: 1.6rem;
 }
 
 html:not(.f-canEdit) .canEdit {
@@ -1154,7 +1157,7 @@ textarea-container, textarea-container > textarea {
 	text-align: right;
 }
 
-#\$pageContents, .split-top {
+#\$pageContents {
 	max-height: 100%;
 }
 
