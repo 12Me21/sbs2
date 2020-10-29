@@ -39,7 +39,7 @@
 .markup-root h3,
 .markup-root h4 {
 	font-weight: 500;
-	margin-top: 0.5em;
+	margin-top: 0.6em;
 	margin-bottom: 0.2em;
 	
 	margin-left: -.3em;
@@ -59,7 +59,8 @@
 }
 
 .markup-root h4 {
-	font-size: 1em;
+	font-size: 1.2em;
+	border-bottom: 1px solid #EEE;
 }
 
 
