@@ -12,15 +12,15 @@
 <link rel=image_src href="resource/iconbig.png"> <!-- large 3 -->
 
 <script>
-	window.onerror = function(message, source, line, col, error) {
-		alert("ERROR DURING PAGE LOAD!\n"+message+"\nin "+source+"\nat "+line+":"+col)
-	}
+ window.onerror = function(message, source, line, col, error) {
+	 alert("ERROR DURING PAGE LOAD!\n"+message+"\nin "+source+"\nat "+line+":"+col)
+ }
 </script>
 
 <style>
-	html:not(.f-viewReady) v-b {
-		display: none;
-	}
+ html:not(.f-viewReady) v-b {
+	 display: none;
+ }
 </style>
 
 <link rel=preload href=resource/roboto-400.woff2 as=font type=font/woff2 crossorigin=anonymous>
@@ -193,24 +193,24 @@
 			<v-b data-view-userMode class="userActivity" id=$userActivity></v-b>
 
 			<!--<v-b data-view-page id=$pageInfoPane class="pageMode pageInfoPane rem2-3 bar">
-				
-				<span class="textItem" id=$authorBox></span>
-				<button id=$editButton class="item canEdit">Edit</button>
-				<div class="rightAlign item">
-					<span class="textItem" id=$voteBox>
-						<button class="item" id=$voteButton_b data-vote="b">Bad<br><span id=$voteCount_b>x</span></button><button id=$voteButton_o class="item" data-vote="o">Ok<br><span id=$voteCount_o>x</span></button><button id=$voteButton_g class="item" data-vote="g">Great<br><span id=$voteCount_g>x</span></button>
-					</span>
-				</div>
-			</v-b>-->
+				  
+				  <span class="textItem" id=$authorBox></span>
+				  <button id=$editButton class="item canEdit">Edit</button>
+				  <div class="rightAlign item">
+				  <span class="textItem" id=$voteBox>
+				  <button class="item" id=$voteButton_b data-vote="b">Bad<br><span id=$voteCount_b>x</span></button><button id=$voteButton_o class="item" data-vote="o">Ok<br><span id=$voteCount_o>x</span></button><button id=$voteButton_g class="item" data-vote="g">Great<br><span id=$voteCount_g>x</span></button>
+				  </span>
+				  </div>
+				  </v-b>-->
 			
 			<!--<div class="pageInfoPane page px40" id=$pageInfoPane>
-				<span id=$gallery class="gallery" style="display:none;">
-					<span class="metaInfo">
-						<span id=$metaKey class="textItem"></span>
-						<span id=$sbapiInfo class="textItem"></span>
-					</span>
-				</span>
-	</div>
+				  <span id=$gallery class="gallery" style="display:none;">
+				  <span class="metaInfo">
+				  <span id=$metaKey class="textItem"></span>
+				  <span id=$sbapiInfo class="textItem"></span>
+				  </span>
+				  </span>
+				  </div>
 			-->
 			<v-b data-view-page id=$pageContents class="grow pageMode"></v-b>
 			<v-b data-view-errorMode class="pre errorPage" id=$errorMessage></v-b>
@@ -246,72 +246,6 @@
 				<div id=$memberList class="border-list-2"></div>
 			</v-b>
 
-			<v-b data-view-settingsMode class="loggedOut">
-				<div class="registerBox">
-					<h2>Log In</h2>
-					<form id=$loginForm>
-						<input placeholder=Username name=username><br>
-						<input placeholder=Password name=password type=password><br>
-						<button>Log In</button>
-					</form>
-					<div id=$loginError></div>
-				</div>
-				<div class="registerBox">
-					<h2>Register</h2>
-					<form id=$registerForm autocomplete=off>
-						<input placeholder=Username name=username minlength=2 maxlength=20> 2 to 20 characters, no spaces<br>
-						<input placeholder=Password name=password type=passwordminlength=8><input placeholder="Confirm Password" name=password2 type=password minlength=8> At least 8 characters<br>
-						<input placeholder=Email name=email type=email ><input placeholder="Confirm Email" name=email2 type=email> Confirmation code will be sent<br>
-						<button>Register</button>
-						<button name=resend>Resend Email</button>
-					</form>
-					<div id=$registerError class="pre"></div>
-					<h3>Confirm Registration</h3>
-					<form id=$confirmForm>
-						<input placeholder="Confirmation Code" name=code>
-						<button name=submit>Confirm</button>
-					</form>
-				</div>
-				<div class="registerBox">
-					<h2>Password Reset</h2>
-					<form id=$passwordForm>
-						<input placeholder="Email" type=email name=email><br>
-						<button>Send Email</button>
-					</form>
-					<form id=$passwordForm2>
-						<input placeholder="reset code" name=key><br>
-						<input placeholder="new password" name=password>
-						<input placeholder="confirm new password" name=password2><br>
-						<button>Reset Password</button>
-					</form>
-				</div>
-			</v-b>
-			<v-b data-view-settingsMode class="loggedIn border-list">
-				<div class="registerBox">
-					<button id=$logOut>Log out</button><br>
-				</div>
-				<div class="registerBox" id=$localSettings>
-				</div>
-				<div class="registerBox">
-					<a data-static-path=image>Change your avatar here</a>
-				</div>
-				<div class="registerBox">
-					<a data-static-path=users>User list</a>
-				</div>
-				<div class="registerBox">
-					<h2>Change account settings</h2>
-					<form id=$changeForm>
-						<input placeholder="Old Password" name=oldPassword minlength=8 type=password><br>
-						Only fill out the fields you want to change:<br>
-						<input placeholder="New Username" name=username minlength=2 maxlength=20> 2 to 20 characters, no spaces<br>
-						<input placeholder="New Password" name=password type=password minlength=8><input placeholder="Confirm New Password" name=password2 type=password minlength=8> At least 8 characters<br>
-						<input placeholder="New Email" name=email type=email><input placeholder="Confirm New Email" name=email2 type=email><br>
-						<button>Save</button>
-					</form>
-					<div id=$userSettingsError class="pre"></div>
-				</div>
-			</v-b>
-
 			<v-b data-view-activity id=$activity></v-b>
 			
 			<v-b data-view-testMode>
@@ -334,7 +268,7 @@
 				<button class="showWhenEdit" id=$chatCancelEdit>Cancel Edit</button>
 				<textarea-container class="grow"><textarea class="chatTextarea" id=$chatTextarea accesskey="z"></textarea></textarea-container>
 				<!--<label for=$chatBigMode class="no-select">Big:</label>
-				<input type=checkbox id=$chatBigMode autocomplete=off>-->
+					  <input type=checkbox id=$chatBigMode autocomplete=off>-->
 				<label for=$chatMarkupSelect class="no-select">Markup:</label>
 				<input type=checkbox checked id=$chatMarkupSelect>
 			</v-b>
@@ -367,25 +301,78 @@
 				<div><input type=file accept="image/*" id=$imageUpload></div>
 			</sidebar-panel>
 			<sidebar-panel id=$sidebarUserPanel>
-				<span class="loggedOut"><a data-static-path=settings class="textItem">Log In or Register</a></span>
-				<a class="loggedIn textItem" data-static-path="settings">Settings</a>
-<!--		<div class="bar rem1-5 myUserBar">
-			<span class="loggedIn" id=$loggedIn>
-				<a class="item userLink" id=$myUserLink>
-					<span class="myName username textItem" id=$myName></span>
-					<img class="myAvatar item avatar" id=$myAvatar alt="" src="">
-				</a>
-			</span>
-			
-		</div>-->
-
+				<div class="loggedOut">
+					<div class="registerBox">
+						<h2>Log In</h2>
+						<form id=$loginForm>
+							<input placeholder=Username name=username><br>
+							<input placeholder=Password name=password type=password><br>
+							<button>Log In</button>
+						</form>
+						<div id=$loginError></div>
+					</div>
+					<div class="registerBox">
+						<h2>Register</h2>
+						<form id=$registerForm autocomplete=off>
+							<input placeholder=Username name=username minlength=2 maxlength=20> 2 to 20 characters, no spaces<br>
+							<input placeholder=Password name=password type=passwordminlength=8><input placeholder="Confirm Password" name=password2 type=password minlength=8> At least 8 characters<br>
+							<input placeholder=Email name=email type=email ><input placeholder="Confirm Email" name=email2 type=email> Confirmation code will be sent<br>
+							<button>Register</button>
+							<button name=resend>Resend Email</button>
+						</form>
+						<div id=$registerError class="pre"></div>
+						<h3>Confirm Registration</h3>
+						<form id=$confirmForm>
+							<input placeholder="Confirmation Code" name=code>
+							<button name=submit>Confirm</button>
+						</form>
+					</div>
+					<div class="registerBox">
+						<h2>Password Reset</h2>
+						<form id=$passwordForm>
+							<input placeholder="Email" type=email name=email><br>
+							<button>Send Email</button>
+						</form>
+						<form id=$passwordForm2>
+							<input placeholder="reset code" name=key><br>
+							<input placeholder="new password" name=password>
+							<input placeholder="confirm new password" name=password2><br>
+							<button>Reset Password</button>
+						</form>
+					</div>
+				</div>
+				<div class="loggedIn border-list">
+					<div class="registerBox">
+						<button id=$logOut>Log out</button><br>
+					</div>
+					<div class="registerBox" id=$localSettings>
+					</div>
+					<div class="registerBox">
+						<a data-static-path=image>Change your avatar here</a>
+					</div>
+					<div class="registerBox">
+						<a data-static-path=users>User list</a>
+					</div>
+					<div class="registerBox">
+						<h2>Change account settings</h2>
+						<form id=$changeForm>
+							<input placeholder="Old Password" name=oldPassword minlength=8 type=password><br>
+							Only fill out the fields you want to change:<br>
+							<input placeholder="New Username" name=username minlength=2 maxlength=20> 2 to 20 characters, no spaces<br>
+							<input placeholder="New Password" name=password type=password minlength=8><input placeholder="Confirm New Password" name=password2 type=password minlength=8> At least 8 characters<br>
+							<input placeholder="New Email" name=email type=email><input placeholder="Confirm New Email" name=email2 type=email><br>
+							<button>Save</button>
+						</form>
+						<div id=$userSettingsError class="pre"></div>
+					</div>
+				</div>
 			</sidebar-panel>
-		</div>
-		
-		<div id=$sidebarResize class="resize">↕↔</div>
-		<div id=$sidebarBottom class="grow">
-			<scroll-outer><scroll-inner id=$sidebarScroller class="border-list"></scroll-inner></scroll-outer>
-		</div>
+	</div>
+	
+	<div id=$sidebarResize class="resize">↕↔</div>
+	<div id=$sidebarBottom class="grow">
+		<scroll-outer><scroll-inner id=$sidebarScroller class="border-list"></scroll-inner></scroll-outer>
+	</div>
 	</sidebar-container>
 </horizontal-split>
 
