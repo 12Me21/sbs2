@@ -349,6 +349,10 @@
 			<sidebar-panel id=$sidebarActivityPanel>
 				<scroll-outer><scroll-inner id="$sidebarActivity" class="border-list-2"></scroll-inner></scroll-outer>
 			</sidebar-panel>
+			<sidebar-panel id=$sidebarNavPanel>
+				<div class="bar rem1-5"><input id=$searchInput class="item"><button id=$searchButton class="item">Search</button></div>
+				<div id=$searchResults></div>
+			</sidebar-panel>
 			<!--<div id=$sidebarWatchingPanel class="fill"></div>-->
 			<sidebar-panel id=$sidebarFilePanel class="flex">
 				<a data-static-path=image>Uploaded Images</a>
@@ -361,10 +365,6 @@
 				</div>
 				<div class="image-box grow"><img id=$fileView></div>
 				<div><input type=file accept="image/*" id=$imageUpload></div>
-			</sidebar-panel>
-			<sidebar-panel id=$sidebarSearchPanel>
-				<div class="bar rem1-5"><input id=$searchInput class="item"><button id=$searchButton class="item">Search</button></div>
-				<div id=$searchResults></div>
 			</sidebar-panel>
 			<sidebar-panel id=$sidebarUserPanel>
 				<span class="loggedOut"><a data-static-path=settings class="textItem">Log In or Register</a></span>

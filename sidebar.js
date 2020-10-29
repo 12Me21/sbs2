@@ -70,10 +70,11 @@ onLoad: function() {
 		
 	  })*/
 	sidebarPanels = [
+		$sidebarNavPanel,
 		$sidebarActivityPanel,
 		//$sidebarWatchingPanel,
 		$sidebarFilePanel,
-		$sidebarSearchPanel,
+		//$sidebarSearchPanel,
 	]
 	sidebarPanels.forEach(function(e, i) {
 		e.setAttribute('role', "tabpanel")
@@ -83,10 +84,11 @@ onLoad: function() {
 	myAvatar = document.createElement('span')
 	myAvatar.className += " fill"
 	var sidebarTabs = Draw.sidebarTabs([
+		{label: document.createTextNode("navigate"), elem: $sidebarNavPanel},
 		{label: document.createTextNode("activity"), elem: $sidebarActivityPanel},
 		/*{label: "watching"},*/
 		{label: document.createTextNode("image"), elem: $sidebarFilePanel},
-		{label: document.createTextNode("search"), elem: $sidebarSearchPanel},
+		//{label: document.createTextNode("search"), elem: $sidebarSearchPanel},
 		{label: myAvatar, elem: $sidebarUserPanel},
 	])
 	$sidebarTabs.replaceChildren(sidebarTabs.elem)
