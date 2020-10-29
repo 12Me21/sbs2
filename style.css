@@ -363,6 +363,7 @@ html.f-error .loadBG {
 table.tabs {
 	width: 100%;
 	height: 1px; /* don't worry */
+	table-layout: fixed;
 }
 table.tabs tbody, table.tabs tr, table.tabs td {
 	height: 100%;

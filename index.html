@@ -342,17 +342,6 @@
 	</main>
 	<sidebar-container id=$sidebar class="flex flex-sized border-list">
 		<button class="closeSidebar" id=$closeSidebar>Close Sidebar</button>
-		
-		<div class="bar rem1-5 myUserBar">
-			<span class="loggedIn" id=$loggedIn>
-				<a class="item userLink" id=$myUserLink>
-					<span class="myName username textItem" id=$myName></span>
-					<img class="myAvatar item avatar" id=$myAvatar alt="" src="">
-				</a>
-			</span>
-			<span class="loggedOut"><a data-static-path=settings class="textItem">Log In or Register</a></span>
-			<a class="loggedIn textItem" data-static-path="settings">Settings</a>
-		</div>
 		<div class="userlist bar rem1-5"><span id=$sidebarUserList></span><button id=$hideGlobalStatusButton class="item rightAlign loggedIn">Hide</button></div>
 		<!--<span id=$longPollStatus></span>-->
 		<div id=$sidebarTabs role="tablist" aria-label="sidebar tab"></div>
@@ -377,9 +366,23 @@
 				<div class="bar rem1-5"><input id=$searchInput class="item"><button id=$searchButton class="item">Search</button></div>
 				<div id=$searchResults></div>
 			</sidebar-panel>
+			<sidebar-panel id=$sidebarUserPanel>
+				<span class="loggedOut"><a data-static-path=settings class="textItem">Log In or Register</a></span>
+				<a class="loggedIn textItem" data-static-path="settings">Settings</a>
+<!--		<div class="bar rem1-5 myUserBar">
+			<span class="loggedIn" id=$loggedIn>
+				<a class="item userLink" id=$myUserLink>
+					<span class="myName username textItem" id=$myName></span>
+					<img class="myAvatar item avatar" id=$myAvatar alt="" src="">
+				</a>
+			</span>
+			
+		</div>-->
+
+			</sidebar-panel>
 		</div>
 		
-		<div id=$sidebarResize class="resize">↕</div>
+		<div id=$sidebarResize class="resize">↕↔</div>
 		<div id=$sidebarBottom class="grow">
 			<scroll-outer><scroll-inner id=$sidebarScroller class="border-list"></scroll-inner></scroll-outer>
 		</div>
