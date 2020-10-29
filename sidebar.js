@@ -70,8 +70,8 @@ onLoad: function() {
 		
 	  })*/
 	sidebarPanels = [
-		$sidebarNavPanel,
 		$sidebarActivityPanel,
+		$sidebarNavPanel,
 		//$sidebarWatchingPanel,
 		$sidebarFilePanel,
 		//$sidebarSearchPanel,
@@ -84,8 +84,8 @@ onLoad: function() {
 	myAvatar = document.createElement('span')
 	myAvatar.className += " fill"
 	var sidebarTabs = Draw.sidebarTabs([
-		{label: document.createTextNode("navigate"), elem: $sidebarNavPanel},
 		{label: document.createTextNode("activity"), elem: $sidebarActivityPanel},
+		{label: document.createTextNode("navigate"), elem: $sidebarNavPanel},
 		/*{label: "watching"},*/
 		{label: document.createTextNode("image"), elem: $sidebarFilePanel},
 		//{label: document.createTextNode("search"), elem: $sidebarSearchPanel},
