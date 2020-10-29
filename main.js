@@ -71,6 +71,7 @@ Req.onGuestLoad = function() {
 
 Req.onLogout = function() {
 	View.flag('loggedIn', false)
+	//this is all messy
 	window.location.reload()
 }
 
