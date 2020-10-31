@@ -81,15 +81,19 @@ onLoad: function() {
 		e.setAttribute('aria-labelledby', "sidebar-tab-"+i)
 		e.hidden = true
 	})
-	myAvatar = document.createElement('span')
-	myAvatar.className += " fill"
+	var x = document.createElement('span')
+	var y = x.createChild('span')
+	myAvatar = x.createChild('span')
+	myAvatar.className += " loggedIn fill"
+	y.className += " loggedOut"
+	y.textContent = "log in"
 	var sidebarTabs = Draw.sidebarTabs([
 		{label: document.createTextNode("activity"), elem: $sidebarActivityPanel},
 		{label: document.createTextNode("navigate"), elem: $sidebarNavPanel},
 		/*{label: "watching"},*/
 		{label: document.createTextNode("image"), elem: $sidebarFilePanel},
 		//{label: document.createTextNode("search"), elem: $sidebarSearchPanel},
-		{label: myAvatar, elem: $sidebarUserPanel},
+		{label: x, elem: $sidebarUserPanel},
 	])
 	$sidebarTabs.replaceChildren(sidebarTabs.elem)
 	sidebarTabs.select(0)
