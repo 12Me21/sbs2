@@ -492,7 +492,7 @@ sidebar-container {
 	width: 30vw;
 	min-width: 10vw;
 	z-index: 20;
-	box-shadow: -1px 0px 3px rgba(0,0,0,0.3);
+	/*box-shadow: -1px 0px 3px rgba(0,0,0,0.3);*/
 }
 
 html:not(.f-sidebar) sidebar-container {
@@ -884,8 +884,7 @@ html:not(.f-fileUploading) .fileUploading {
 	background-color: #222;
 	height: 1.2em;
 	line-height: 1;
-	box-shadow: 0 -2px 3px rgba(0,0,0,0.3);
-	z-index: 30;
+	/*box-shadow: 0 -2px 3px rgba(0,0,0,0.3);*/
 }
 .resize[dragging] {
 	cursor: grabbing;
@@ -1172,6 +1171,7 @@ textarea-container, textarea-container > textarea {
 
 .split-top {
 	height: 40vh;
+	min-height: 2.3rem;
 }
 
 .gallery-inner {
