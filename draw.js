@@ -25,11 +25,11 @@ iconTitle: function(entity, reverse) {
 	var element = document.createDocumentFragment()
 	if (reverse) {
 		element.appendChild(title(entity))
-		element.appendChild(document.createTextNode(" "))
+		//element.appendChild(document.createTextNode(" "))
 		element.appendChild(icon(entity))
 	} else {
 		element.appendChild(icon(entity))
-		element.appendChild(document.createTextNode(" "))
+		//element.appendChild(document.createTextNode(" "))
 		element.appendChild(title(entity))
 	}
 	return element
