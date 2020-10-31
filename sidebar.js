@@ -178,7 +178,7 @@ fileUploaded: function(file) {
 	$fileView.src = ""
 	$fileView.src = URL.createObjectURL(file)
 	selectedFile = file
-	selectTab(1)
+	selectTab(2) //hack
 	//fillFileFields(file)
 },
 
