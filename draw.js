@@ -353,7 +353,7 @@ activityItem: function(item) {
 	outer.className += " linkBar"
 	
 	var bar = document.createElement('div')
-	bar.className += " bar rem1-5"
+	bar.className += " ellipsis bar rem1-5"
 	bar.appendChild(iconTitle(item.content))
 	
 	var bar2 = document.createElement('div')
