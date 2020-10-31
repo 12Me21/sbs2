@@ -115,6 +115,11 @@ render: function(path, after) {
 	// todo: update url when view is redirected
 	$.View.handleView(path.type, path.id, path.query, after)
 },
+
+reload: function() {
+	$.location += ""
+},
+
 <!--/* 
 }) //*/
 
