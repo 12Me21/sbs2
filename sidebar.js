@@ -17,11 +17,6 @@ intervalId: null,
 myAvatar: null,
 
 refreshInterval: function(data) {
-	// todo: optimize this.
-	// maybe only update the timestamps
-	// ah a clever idea is to um
-	// run queryselector, find <time> elements
-	// read datetime and redraw!
 	if (intervalId) {
 		$.clearInterval(intervalId)
 		intervalId = null
