@@ -451,7 +451,8 @@ pageEditedTime: function(label, time) {
 
 timeAgo: function(time) {
 	var t = document.createElement('time')
-	t.setAttribute('dateTime', time.toISOString())
+	t.className += " time-ago"
+	t.setAttribute('datetime', time.toISOString())
 	t.textContent = timeAgoString(time)
 	t.title = ""+time
 	return t
@@ -891,7 +892,13 @@ voteBox: function (page) {
 		element.appendChild(x)
 	})
 	return element
-}
+},
+
+updateTimestamps: function(element) {
+	element.querySelectorAll("time.time-ago").forEach(function(e) {
+		e.textContent = timeAgoString(new Date(e.getAttribute('datetime')))
+	})
+},
 
 <!--/* 
 }) //*/
