@@ -379,7 +379,7 @@ attachPaste: function(callback) {
 	})
 },
 
-attachResize: function(element, tab, horiz, dir, save) {
+attachResize: function(element, tab, horiz, dir, save, callback) {
 	var startX,startY,held,startW,startH,size = null
 	function getPos(e) {
 		if (e.touches)
@@ -415,6 +415,7 @@ attachResize: function(element, tab, horiz, dir, save) {
 			size = Math.max(0, startH+vy)
 			element.style.height = size+"px"
 		}
+		if (callback) callback(size)
 	}	
 	tab.addEventListener('mousedown', down)
 	document.addEventListener('mouseup', up)
@@ -434,6 +435,7 @@ attachResize: function(element, tab, horiz, dir, save) {
 				element.style.width = size+"px"
 			else
 				element.style.height = size+"px"
+			if (callback) callback(size)
 		}
 	}
 },
