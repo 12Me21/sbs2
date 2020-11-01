@@ -403,6 +403,11 @@ button[aria-selected="true"] {
 	padding: 0 0.2rem;
 }
 
+html.f-sidebarFile .sidebarUploadingHide,
+html.f-sidebarUploaded .sidebarUploadingHide {
+	display: none;
+}
+
 html.f-sidebarUploaded .sidebarUploadingFile,
 html:not(.f-sidebarFile) .sidebarUploadingFile,
 html:not(.f-sidebarUploaded) .sidebarUploadedFile {
@@ -1066,9 +1071,6 @@ html.f-splitView main-scrollable {
 	overflow-y: hidden;
 }
 
-.split-top {
-	overflow-y: scroll;
-}
 
 sidebar-panel {
 	display: block;
@@ -1171,6 +1173,10 @@ textarea-container, textarea-container > textarea {
 }
 
 .split-top {
+	max-height: 100%;
+	
+	overflow-y: scroll;
+
 	height: 40vh;
 	min-height: 2.3rem;
 }
