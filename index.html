@@ -289,16 +289,15 @@
 			</sidebar-panel>
 			<!--<div id=$sidebarWatchingPanel class="fill"></div>-->
 			<sidebar-panel id=$sidebarFilePanel class="flex">
-				<a data-static-path=image>Uploaded Images</a>
-				<div class="sidebarUploadingFile bar rem1-5">
-					<button id=$fileCancel class="item">Cancel</button>
-					<button id=$fileUpload class="rightAlign item">Upload Image</button>
-				</div>
-				<div class="sidebarUploadedFile bar rem1-5">
-					<input readonly id=$fileURL class="item"><button id=$fileDone class="item">Done</button>
+				<div class="bar rem1-5">
+					<input type=file accept="image/*" id=$imageUpload class="sidebarUploadingHide item">
+					<button id=$fileCancel class="sidebarUploadingFile item">Cancel</button>
+					<button id=$fileUpload class="sidebarUploadingFile rightAlign item">Upload Image</button>
+					<input readonly id=$fileURL class="item sidebarUploadedFile">
+					<button id=$fileDone class="item sidebarUploadedFile">Done</button>
 				</div>
 				<div class="image-box grow"><img id=$fileView></div>
-				<div><input type=file accept="image/*" id=$imageUpload></div>
+				<a data-static-path=image>Uploaded Images</a>
 			</sidebar-panel>
 			<sidebar-panel id=$sidebarUserPanel>
 				<div class="loggedOut">
