@@ -27,8 +27,12 @@ refreshInterval: function(data) {
 		intervalId = null
 	}
 	intervalId = $.setInterval(function() {
-		onAggregateChange(data)
-	}, 1000*60)
+		Draw.updateTimestamps($sidebarActivity)
+	}, 1000*30)
+},
+
+updateActivityTimestamps: function() {
+	
 },
 
 onLoad: function() {
