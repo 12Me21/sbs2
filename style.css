@@ -1231,3 +1231,14 @@ activity-users {
 .inputPane {
 	background-color: #DDD;
 }
+
+sidebar-container {
+	position: relative;
+}
+
+.test {
+	position: absolute;
+	left: -1em;
+	width: 1em;
+	height: 100%;
+}
