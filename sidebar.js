@@ -32,7 +32,9 @@ updateActivityTimestamps: function() {
 
 onLoad: function() {
 	$openSidebar.onclick = $closeSidebar.onclick = toggle
-	View.attachResize($sidebar, $sidebarResize, true, -1, "sidebarWidth")
+	View.attachResize($sidebar, $sidebarResize, true, -1, "sidebarWidth", function(size) {
+		$realMain.style.marginRight = size+"px"
+	})
 	View.attachResize($sidebarTop, $sidebarResize, false, 1, "sidebarPinnedHeight")
 	View.flag('sidebar', true)
 	View.attachPaste(function(file) {
