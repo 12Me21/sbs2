@@ -478,7 +478,10 @@ html:not(.f-canEdit) .canEdit {
  ** content+sidebar container **
  *******************************/
 horizontal-split {
-	overflow-x: hidden;
+	display: block;
+	position: relative;
+
+	overflow-x: hidden; /* do we need this anymore? */
 }
 
 .errorPage {
@@ -487,16 +490,21 @@ horizontal-split {
 }
 
 main {
-	width:100%;
+	height: 100%;
 	/*overflow-y: hidden; /* mmm */
 }
 
 sidebar-container {
 	border-left: 1em solid #222;
 	background-color: white;
-	width: 30vw;
+	width: 30vw; /* must be = main margin-right */
 	min-width: 10vw;
 	z-index: 20;
+	
+	position: absolute;
+	right: 0;
+	top: 0;
+	height: 100%;
 	/*box-shadow: -1px 0px 3px rgba(0,0,0,0.3);*/
 }
 
@@ -505,12 +513,13 @@ html:not(.f-sidebar) sidebar-container {
 }
 
 html.f-sidebar main {
-	overflow:auto;
+	overflow: auto;
+	margin-right: 30vw; /* must be = sidebar-container width */
 }
 
 html:not(.f-sidebar) main {
-	width: 100% !important;
-	overflow:auto;
+	margin-right: 0 !important;
+	overflow: auto;
 }
 
 /**********
@@ -956,12 +965,13 @@ scroll-inner {
 	}
 	main {
 		max-width: 100% !important;
+		margin-right: 0 !important;
 	}
 	#\$sidebarActivity {
 		max-height: 100vh;
 	}
 }
-
+/* TODO: margin should be fullscreen mode by default, then disabled with @media (min-width) */
 
 /* for devices with small screens */
 @media (max-width: 700px), (max-height: 500px) {
@@ -1230,15 +1240,4 @@ activity-users {
 
 .inputPane {
 	background-color: #DDD;
-}
-
-sidebar-container {
-	position: relative;
-}
-
-.test {
-	position: absolute;
-	left: -1em;
-	width: 1em;
-	height: 100%;
 }

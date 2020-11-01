@@ -91,8 +91,8 @@
 	</v-b>
 </header>
 
-<horizontal-split class="flex-row grow">
-	<main class="flex grow">
+<horizontal-split class="grow">
+	<main class="flex grow" id=$realMain>
 		<v-b data-view-editorMode class="infoPane">
 			<div class="registerBox">
 				<label for=$keywords>Keywords:</label><input placeholder="(space separated, optional)" id=$keywords><br>
@@ -274,8 +274,7 @@
 			</v-b>
 		</v-b>
 	</main>
-	<sidebar-container id=$sidebar class="flex flex-sized">
-		<!--<div class='test'></div>-->
+	<sidebar-container id=$sidebar class="flex">
 		<button class="closeSidebar" id=$closeSidebar>Close Sidebar</button>
 		<div class="userlist bar rem1-5"><span id=$sidebarUserList></span><button id=$hideGlobalStatusButton class="item rightAlign loggedIn">Hide</button></div>
 		<!--<span id=$longPollStatus></span>-->
