@@ -497,14 +497,9 @@ main {
 sidebar-container {
 	border-left: 1em solid #222;
 	background-color: white;
-	width: 30vw; /* must be = main margin-right */
+	width: 30vw;
 	min-width: 10vw;
 	z-index: 20;
-	
-	position: absolute;
-	right: 0;
-	top: 0;
-	height: 100%;
 	/*box-shadow: -1px 0px 3px rgba(0,0,0,0.3);*/
 }
 
@@ -514,11 +509,9 @@ html:not(.f-sidebar) sidebar-container {
 
 html.f-sidebar main {
 	overflow: auto;
-	margin-right: 30vw; /* must be = sidebar-container width */
 }
 
 html:not(.f-sidebar) main {
-	margin-right: 0 !important;
 	overflow: auto;
 }
 
@@ -965,7 +958,6 @@ scroll-inner {
 	}
 	main {
 		max-width: 100% !important;
-		margin-right: 0 !important;
 	}
 	#\$sidebarActivity {
 		max-height: 100vh;
