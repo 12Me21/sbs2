@@ -91,7 +91,7 @@
 	</v-b>
 </header>
 
-<horizontal-split class="grow">
+<horizontal-split class="grow flex-row">
 	<main class="flex grow" id=$realMain>
 		<v-b data-view-editorMode class="infoPane">
 			<div class="registerBox">
@@ -274,7 +274,7 @@
 			</v-b>
 		</v-b>
 	</main>
-	<sidebar-container id=$sidebar class="flex">
+	<sidebar-container id=$sidebar class="flex flex-sized">
 		<button class="closeSidebar" id=$closeSidebar>Close Sidebar</button>
 		<div class="userlist bar rem1-5"><span id=$sidebarUserList></span><button id=$hideGlobalStatusButton class="item rightAlign loggedIn">Hide</button></div>
 		<!--<span id=$longPollStatus></span>-->
