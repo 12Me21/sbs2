@@ -109,7 +109,7 @@ rawRequest: function(url, method, callback, data, auth){
 				try {
 					Sidebar.print("Warning: request was rate limited with extremely long wait time: "+time/1000+" seconds")
 				} catch(e) {}
-			$.setTimeout(function() {
+			var id = $.setTimeout(function() {
 				retry(null, reason)
 			}, time)
 			x.abort = function() {
