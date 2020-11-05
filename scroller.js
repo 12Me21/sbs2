@@ -246,8 +246,8 @@ Scroller.prototype.handlePrint = function(callback, autoscroll) {
 		if (elem)
 			this.inner.appendChild(elem)
 	} finally {
-		if (should)
-			this.autoScroll()
+		//if (should)
+		//	this.autoScroll()
 	}
 }
 
