@@ -171,13 +171,13 @@ addView('page', {
 		function updateChatTextareaSize() {
 			$chatTextarea.style.height = ''
 			if (ChatRoom.currentRoom) {
-				var oldBottom = ChatRoom.currentRoom.scroller.scrollBottom
+			//	var oldBottom = ChatRoom.currentRoom.scroller.scrollBottom
 			}
 			var height = $chatTextarea.scrollHeight
 			$chatTextarea.parentNode.style.height = $chatTextarea.style.height = height+1+"px"
 			if (ChatRoom.currentRoom) {
-				ChatRoom.currentRoom.scroller.ignoreScroll = true
-				ChatRoom.currentRoom.scroller.scrollBottom = oldBottom
+			//	ChatRoom.currentRoom.scroller.ignoreScroll = true
+			//	ChatRoom.currentRoom.scroller.scrollBottom = oldBottom
 			}
 		}
 		TrackResize2($chatTextarea, updateChatTextareaSize)
