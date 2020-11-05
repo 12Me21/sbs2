@@ -251,6 +251,11 @@ messageBlock: function(comment) {
 	link.appendChild(document.createTextNode(":"))
 	
 	div.appendChild(name)
+
+	/*var anchor = document.createElement('a')
+	anchor.className += " anchor-test"
+	anchor.name = 'owo'+Math.random()
+	div.appendChild(anchor)*/
 	
 	var contentBox = document.createElement('message-contents')
 	div.appendChild(contentBox)
