@@ -2,7 +2,6 @@ function Scroller(outer, inner) {
 	this.outer = outer
 	this.inner = inner
 	this.animationId = null
-	this.atBottom = true
 	this.rate = 0.25 //autoscroll rate: amount of remaining distance to scroll per frame
 	this.bottomHeight = 100 //if within this distance of bottom, autoscroll is enabled
 	var $=this
@@ -11,7 +10,6 @@ Scroller.prototype.scrollInstant = function() {
 	this.cancelAutoScroll()
 	this.ignoreScroll = true
 	this.outer.scrollTop = 0
-	this.atBottom = true
 }
 Scroller.prototype.atBottom = function() {
 	return -this.outer.scrollTop < this.bottomHeight
@@ -45,7 +43,6 @@ Scroller.prototype.autoScrollAnimation = function(time) {
 	var dt = 1//(time - this.animationStart) / (1000/60)
 	this.animationStart = time
 
-	this.atBottom = true
 	this.ignoreScroll = true
 
 	this.outer.scrollTop = this.outer.scrollTop * Math.pow(1-this.rate, dt)
@@ -72,20 +69,17 @@ Scroller.prototype.handlePrint = function(callback, autoscroll) {
 		if (elem)
 			this.inner.appendChild(elem)
 	} finally {
-		if (autoscroll) {
-			this.outer.scrollTop = -(this.outer.scrollHeight - oldHeight)
+		this.outer.scrollTop = -(this.outer.scrollHeight - oldHeight)
+		console.log(this.atBottom(), "A")
+		if (autoscroll && this.atBottom())
 			this.autoScroll()
-		}
 	}
 }
 
 Scroller.prototype.handlePrintTop = function(callback) {
-	var height = this.outer.scrollHeight
-	var scroll = this.outer.scrollTop
 	var elem = callback()
 	if (elem)
 		this.inner.appendChild(elem)
-	this.outer.scrollTop = scroll + (this.outer.scrollHeight-height)
 }
 
 Scroller.prototype.destroy = function() {
