@@ -47,7 +47,7 @@ function ChatRoom(id, page) {
 	var b = Draw.chatMessagePane()
 	this.messagePane = b[0]
 	this.messageList = b[1]
-	var b = Draw.button()
+	/*var b = Draw.button()
 	b[1].textContent = "load older messages"
 	b[1].onclick = function() {
 		if (b[1].disabled)
@@ -57,7 +57,7 @@ function ChatRoom(id, page) {
 			b[1].disabled = false
 		}) //todo: lock
 	}
-	this.messagePane.prependChild(b[0])
+	this.messagePane.prependChild(b[0])*/
 	this.messagePane.setAttribute('data-id', page.id)
 	$chatPane.appendChild(this.messagePane)
 

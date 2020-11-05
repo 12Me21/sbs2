@@ -342,6 +342,9 @@
 				</div>
 				<div class="loggedIn border-list">
 					<div class="registerBox">
+						<a data-static-path id=$myUserPageLink>User Page</a>
+					</div>
+					<div class="registerBox">
 						<button id=$logOut>Log out</button><br>
 					</div>
 					<div class="registerBox" id=$localSettings>
@@ -370,7 +373,7 @@
 	
 	<div id=$sidebarResize class="resize">↕↔</div>
 	<div id=$sidebarBottom class="grow">
-		<scroll-outer><scroll-inner id=$sidebarScroller class="border-list"></scroll-inner></scroll-outer>
+		<scroll-outer class="scroll-reverse"><scroll-inner id=$sidebarScroller class="border-list"></scroll-inner></scroll-outer>
 	</div>
 	</sidebar-container>
 </horizontal-split>

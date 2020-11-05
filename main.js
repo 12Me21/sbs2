@@ -28,6 +28,9 @@ Req.onLogin = function() {
 		Entity.updateAggregateActivity(Req.currentActivity, a, p)
 		Sidebar.onAggregateChange(Req.currentActivity) //this might update unnecessarily often
 	}
+
+	// TODO: we need a callback that runs when you are logged in AND the page it loaded
+	//Nav.link("user/"+Req.uid, $myUserPageLink)
 	
 	console.log("staring long poller")
 	// it's very important that the first long poll request finishes instantly
