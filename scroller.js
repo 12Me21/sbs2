@@ -1,22 +1,192 @@
+function TrackResize2(element, callback) {
+	var t = TrackResize2.tracking
+	if (callback) {
+		var n = {
+			element: element,
+			callback: callback,
+			height: element.scrollHeight
+		}
+		if (TrackResize2.observer) {
+			TrackResize2.observer.observe(element)
+			t.set(element, n)
+		} else {
+			t.push(n)
+		}
+	} else {
+		if (TrackResize2.observer) {
+			TrackResize2.observer.unobserve(element)
+			t['delete'](element)
+		} else {
+			for (var i=0; i<t.length; i++) {
+				if (t[i].element == element) {
+					t.splice(i, 1)
+					break
+				}
+			}
+		}
+	}
+}
+
+if (window.ResizeObserver) {
+	TrackResize2.tracking = new WeakMap()
+	TrackResize2.observer = new ResizeObserver(function(events) {
+		var t = TrackResize2.tracking
+		events.forEach(function(event) {
+			var item = t.get(event.target)
+			if (item) {
+				if (event.contentRect.width) { //ignore changes for hidden elements
+					var height = event.contentRect.width
+					if (height != item.height) { //need to check if height changed in case of an ignored hide/show cycle
+						item.callback()
+						item.height = height
+					}
+				}
+			}
+		})
+	})
+} else {
+	TrackResize2.tracking = []
+	TrackResize2.interval = window.setInterval(function() {
+		TrackResize2.tracking.forEach(function(item) {
+			var newSize = item.element.getBoundingClientRect()
+			if (newSize.width && newSize.width!=item.height) {
+				item.callback()
+				item.height = newSize.width
+			}
+		})
+	}, 200)
+}
+
+function TrackScrollResize(element, callback) {
+	var t = TrackScrollResize.tracking
+	if (callback) {
+		var n = {
+			element: element,
+			callback: callback,
+			height: element.getBoundingClientRect().height,
+		}
+		if (TrackScrollResize.observer) {
+			TrackScrollResize.observer.observe(element)
+			t.set(element, n)
+		} else {
+			t.push(n)
+		}
+	} else {
+		if (TrackScrollResize.observer) {
+			TrackScrollResize.observer.unobserve(element)
+			t['delete'](element)
+		} else {
+			for (var i=0; i<t.length; i++) {
+				if (t[i].element == element) {
+					t.splice(i, 1)
+					break
+				}
+			}
+		}
+	}
+}
+
+if (window.ResizeObserver) {
+	TrackScrollResize.tracking = new WeakMap()
+	TrackScrollResize.observer = new ResizeObserver(function(events) {
+		var t = TrackScrollResize.tracking
+		events.forEach(function(event) {
+			var item = t.get(event.target)
+			if (item) {
+				if (event.contentRect.width) { //ignore changes for hidden elements
+					var height = event.contentRect.height
+					if (height != item.height) { //need to check if height changed in case of an ignored hide/show cycle
+						
+
+						item.callback(item.height, event.contentRect.height)
+						item.height = event.contentRect.height
+					}
+				}
+			}
+		})
+	})
+} else {
+	TrackScrollResize.tracking = []
+	TrackScrollResize.interval = window.setInterval(function() {
+		TrackScrollResize.tracking.forEach(function(item) {
+			var newSize = item.element.getBoundingClientRect()
+			if (newSize.width && newSize.height!=item.height) {
+				item.callback(item.height, newSize.height)
+				item.height = newSize.height
+			}
+		})
+	}, 200)
+}
+
+// goal:
+// any unnatural resize -> scroll to bottom if atbottom set
+// human scrolling -> update atbottom flag
+// message insert -> smooth scroll
+
+// what is human scrolling?
+//  scroll position changes without the element size changing or a message being inserted
+
 function Scroller(outer, inner) {
 	this.outer = outer
 	this.inner = inner
 	this.animationId = null
-	this.rate = 0.25 //autoscroll rate: amount of remaining distance to scroll per frame
-	this.bottomHeight = 100 //if within this distance of bottom, autoscroll is enabled
+	this.atBottom = true
+	this.rate = 0.25 //autoscroll rate: amount of remaining distance to scroll per 1/60 second
+	this.bottomHeight = 0.25 //if within this distance of bottom, autoscroll is enabled
+	this.registerSizeChange()
 	var $=this
+	outer.addEventListener('scroll', function(e) {
+		if ($.ignoreScroll) {
+			$.ignoreScroll = false
+			return
+		}
+		if ($.hasSizeChanged()) {
+			// should I do $.registerSizeChange() here?
+			return
+		}
+		if ($.animationId)
+			$.cancelAutoScroll()
+		$.atBottom = $.scrollBottom < $.outer.clientHeight*$.bottomHeight
+	}, {passive: true})
+	
+	function onResize() {
+		$.registerSizeChange()
+		if ($.atBottom && !$.animationId) // when message is inserted, it triggers the resize detector, which would interrupt the scroll animation, so we don't force scroll if an animation is playing
+			$.scrollInstant()
+	}
+	TrackScrollResize(this.outer, onResize)
+	TrackScrollResize(this.inner, onResize)
 }
+Scroller.prototype.hasSizeChanged = function() {
+	return this.innerHeight!=this.inner.getBoundingClientRect().height || this.outerHeight!=this.outer.getBoundingClientRect().height
+}
+Scroller.prototype.registerSizeChange = function() {
+	this.innerHeight = this.inner.getBoundingClientRect().height
+	this.outerHeight = this.outer.getBoundingClientRect().height
+}
+Object.defineProperty(Scroller.prototype, 'scrollBottom', {
+	get: function() {
+		var parent = this.outer
+		return parent.scrollHeight-parent.clientHeight-parent.scrollTop
+	},
+	set: function(value) {
+		var parent = this.outer
+		// need to round here because it would be reversed otherwise
+		//value = value/window.devicePixelRatio)*window.devicePixelRatio
+		parent.scrollTop = Math.ceil((parent.scrollHeight-parent.clientHeight-value)*window.devicePixelRatio)/window.devicePixelRatio
+	}
+})
 Scroller.prototype.scrollInstant = function() {
 	this.cancelAutoScroll()
 	this.ignoreScroll = true
-	this.outer.scrollTop = 0
-}
-Scroller.prototype.atBottom = function() {
-	return -this.outer.scrollTop < this.bottomHeight
+	this.scrollBottom = 0
+	this.atBottom = true
 }
 Scroller.prototype.autoScroll = function() {
 	if (!window.requestAnimationFrame) {
-		this.scrollInstant()
+		this.ignoreScroll = true
+		this.scrollBottom = 0
+		this.atBottom = true
 	} else {
 		var $=this
 		if (!this.animationId) {
@@ -43,10 +213,17 @@ Scroller.prototype.autoScrollAnimation = function(time) {
 	var dt = 1//(time - this.animationStart) / (1000/60)
 	this.animationStart = time
 
+	this.atBottom = true
 	this.ignoreScroll = true
 
-	this.outer.scrollTop = this.outer.scrollTop * Math.pow(1-this.rate, dt)
-	if (this.outer.scrollTop == 0) {
+	if (this.scrollBottom == this.oldScrollBottom) {
+		this.animationId = null
+		return
+	} // PLEASE
+	this.oldScrollBottom = this.scrollBottom
+
+	this.scrollBottom = Math.floor(this.scrollBottom * Math.pow(1-this.rate, dt))
+	if (this.scrollBottom <= 0.5) {
 		this.animationId = null
 		return
 	}
@@ -63,24 +240,28 @@ Scroller.prototype.autoScrollAnimation = function(time) {
 //(the reason it's inside a function is because it needs to run code
 // before AND after inserting the element)
 Scroller.prototype.handlePrint = function(callback, autoscroll) {
-	var oldHeight = this.outer.scrollHeight
+	var should = autoscroll && this.atBottom
 	try {
 		var elem = callback()
 		if (elem)
 			this.inner.appendChild(elem)
 	} finally {
-		this.outer.scrollTop = -(this.outer.scrollHeight - oldHeight)
-		console.log(this.atBottom(), "A")
-		if (autoscroll && this.atBottom())
+		if (should)
 			this.autoScroll()
 	}
 }
 
 Scroller.prototype.handlePrintTop = function(callback) {
+	var height = this.outer.scrollHeight
+	var scroll = this.outer.scrollTop
 	var elem = callback()
 	if (elem)
 		this.inner.appendChild(elem)
+	this.outer.scrollTop = scroll + (this.outer.scrollHeight-height)
 }
 
 Scroller.prototype.destroy = function() {
+	//disable resize tracking
+	TrackScrollResize(this.inner, null)
+	TrackScrollResize(this.outer, null)
 }

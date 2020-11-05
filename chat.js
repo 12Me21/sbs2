@@ -44,11 +44,9 @@ function ChatRoom(id, page) {
 	this.maxMessages = 500
 	this.totalMessages = 0
 
-	var mm = Draw.chatMessagePane()
-	this.messagePane = mm[0]
-	var m = document.createElement('div')
-	mm[1].appendChild(m)
-	this.messageList = m
+	var b = Draw.chatMessagePane()
+	this.messagePane = b[0]
+	this.messageList = b[1]
 	var b = Draw.button()
 	b[1].textContent = "load older messages"
 	b[1].onclick = function() {
@@ -59,7 +57,7 @@ function ChatRoom(id, page) {
 			b[1].disabled = false
 		}) //todo: lock
 	}
-	mm[1].prependChild(b[0])
+	this.messagePane.prependChild(b[0])
 	this.messagePane.setAttribute('data-id', page.id)
 	$chatPane.appendChild(this.messagePane)
 
