@@ -3,7 +3,7 @@ window.Req = Object.create(null)
 with (Req) (function($) { "use strict"
 Object.assign(Req, { //*/
 
-storageKey: "devauth",
+storageKey: "auth",
 
 protocol: null,
 
@@ -630,7 +630,7 @@ if ($.location.protocol=="http:")
 	protocol = "http:"
 else
 	protocol = "https:"
-server = protocol+"//newdev.smilebasicsource.com/api"
+server = protocol+"//smilebasicsource.com/api"
 
 <!--/*
 }(window)) //*/
