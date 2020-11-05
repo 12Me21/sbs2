@@ -1063,7 +1063,7 @@ body.pageMode main-scrollable {
 	height: 100vh;
 }
 
-.chatScroller > scroll-inner {
+.chatScroller scroll-inner {
 	padding-bottom: 0.5rem;
 }
 
@@ -1232,4 +1232,15 @@ activity-users {
 
 .inputPane {
 	background-color: #DDD;
+}
+
+scroll-outer.scroll-reverse {
+	display: -webkit-flex;
+	display: flex;
+	-webkit-flex-direction: column-reverse;
+	flex-direction: column-reverse;
+}
+
+scroll-outer.scroll-reverse > scroll-inner {
+	flex-basis: 0; /* IE fix */
 }

@@ -149,13 +149,13 @@ function Scroller(outer, inner) {
 		$.atBottom = $.scrollBottom < $.outer.clientHeight*$.bottomHeight
 	}, {passive: true})
 	
-	function onResize() {
+	/*function onResize() {
 		$.registerSizeChange()
 		if ($.atBottom && !$.animationId) // when message is inserted, it triggers the resize detector, which would interrupt the scroll animation, so we don't force scroll if an animation is playing
 			$.scrollInstant()
-	}
-	TrackScrollResize(this.outer, onResize)
-	TrackScrollResize(this.inner, onResize)
+	}*/
+	//TrackScrollResize(this.outer, onResize)
+	//TrackScrollResize(this.inner, onResize)
 }
 Scroller.prototype.hasSizeChanged = function() {
 	return this.innerHeight!=this.inner.getBoundingClientRect().height || this.outerHeight!=this.outer.getBoundingClientRect().height
