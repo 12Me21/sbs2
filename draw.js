@@ -92,7 +92,7 @@ iconURL: function(entity) {
 
 chatMessagePane: function() {
 	var outer = document.createElement('scroll-outer')
-	outer.className = "grow chatScroller scroll-reverse"
+	outer.className = "grow chatScroller"
 	outer.hiddden = true
 	var inner = document.createElement('scroll-inner')
 	outer.appendChild(inner)
@@ -251,11 +251,6 @@ messageBlock: function(comment) {
 	link.appendChild(document.createTextNode(":"))
 	
 	div.appendChild(name)
-
-	/*var anchor = document.createElement('a')
-	anchor.className += " anchor-test"
-	anchor.name = 'owo'+Math.random()
-	div.appendChild(anchor)*/
 	
 	var contentBox = document.createElement('message-contents')
 	div.appendChild(contentBox)

@@ -83,8 +83,7 @@ markup parser subsystem
 - random
 - y
 - nicole
-- answer
-- tint
 - perska
 - chicken
-- snail
+- answer
+- snail_
