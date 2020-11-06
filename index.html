@@ -85,7 +85,7 @@
 	<div class="item loggedIn myUserPage">
 		<div id=$userPageStatus class="textItem userMode"></div>
 	</div>
-	<v-b data-view-editorMode data-view-catEditMode>
+	<v-b data-view-editpage data-view-catEditMode>
 		<input class="item" id=$titleInput placeholder="Title" required>
 		<button class="item" id=$submitEdit>Submit</button>
 		<button class="item" id=$deletePage>DELETE</button>
@@ -102,7 +102,10 @@
 		|| TOP OF PAGE ||
 		\=============-->
 
-		<v-b data-view-editorMode class="infoPane">
+		<v-b data-view-editpage>
+			<button id=$toggleEditorMode>Toggle Preview</button>
+		</v-b>
+		<v-b data-view-editpage class="editorNotPreview">
 			<div class="registerBox">
 				<label for=$keywords>Keywords:</label><input placeholder="(space separated, optional)" id=$keywords><br>
 				<label for=$editPageType>Type:</label>
@@ -200,11 +203,10 @@
 
 			<v-b data-view-page id=$pageContents class="grow pageMode"></v-b>
 			<v-b data-view-errorMode class="pre errorPage" id=$errorMessage></v-b>
-			<v-b data-view-editorMode class="editorPane flex">
-				<div class="editorTextarea">
-					<textarea id=$editorTextarea minlength=2 required></textarea>
+			<v-b data-view-editpage class="grow editorPreview">
+				<div class="split-top" id=$editorPreviewPane>
+					<div id=$editorPreview class="markup-root"></div>
 				</div>
-				<div class="editorPreview grow markup-root" id=$editorPreview><div class="markup-root"></div></div>
 			</v-b>
 			
 			<v-b data-view-home class="border-list">
@@ -248,6 +250,13 @@
 		|| BOTTOM OF PAGE ||
 		\================-->
 
+		<v-b data-view-editpage id=$editorPreviewResize class="resize editorPreview">↕</v-b>
+		<v-b data-view-editpage id=$editorTextareaPanel class="grow">
+			<div class="editorTextarea fill">
+				<textarea id=$editorTextarea minlength=2 required class="fill"></textarea>
+			</div>
+		</v-b>
+		
 		<v-b data-view-page id=$chatResize class="resize"> ↕</v-b>
 		<v-b data-view-page id=$chatContainer class="grow flex">
 			<v-b data-view-page id=$chatPane class="flex chatMode grow chatPane border-list"></v-b>
