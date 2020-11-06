@@ -25,8 +25,13 @@ addView('editpage', {
 		permissionInput = Draw.permissionInput()
 		$editPageCategory.replaceChildren(categoryInput.element)
 		$editPagePermissions.replaceChildren(permissionInput.element)
+		$toggleEditorMode.onclick = function() {
+			var e = View.flags.editorPreview
+			View.flag('editorPreview', !e)
+		}
+		View.attachResize($editorPreviewPane, $editorPreviewResize, false, 1)
 	},
-	
+	splitView: true,
 	start: function(id, query, render) {
 		if (id) { //edit existing page
 			id = +id
@@ -65,7 +70,7 @@ addView('editpage', {
 		}
 	},
 	
-	className: 'editorMode',
+	className: 'editpage',
 	render: function(page) {
 		categoryInput.update()
 		if (page.id) {
