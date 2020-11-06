@@ -441,14 +441,7 @@ attachResize: function(element, tab, horiz, dir, save, callback) {
 },
 
 commentTitle: function(comment) {
-	var user = comment.createUser
-	var av = +comment.meta.a
-	if (av)
-		user = Object.create(user, {
-			avatar: {value: av}
-		})
-	//todo: I saw this fail for a user without an avatar, somehow
-	titleNotification(comment.content, Draw.avatarURL(user, "size=120&crop=true"))
+	titleNotification(comment.content, Draw.avatarURL(comment.createUser, "size=120&crop=true"))
 },
 
 titleNotification: function(text, icon) {
