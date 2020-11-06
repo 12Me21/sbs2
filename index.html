@@ -68,6 +68,10 @@
 
 <body class="flex">
 
+<!--=======\
+|| HEADER ||
+\========-->
+
 <header class="titlePane bar rem2-3 loadBG" id=$titlePane>
 	<div class="pageCreate textItem rightAlign">
 		<button id=$openSidebar class="item">|||</button>
@@ -93,6 +97,11 @@
 
 <horizontal-split class="grow flex-row">
 	<main class="flex grow" id=$realMain>
+
+		<!--============\
+		|| TOP OF PAGE ||
+		\=============-->
+
 		<v-b data-view-editorMode class="infoPane">
 			<div class="registerBox">
 				<label for=$keywords>Keywords:</label><input placeholder="(space separated, optional)" id=$keywords><br>
@@ -156,8 +165,6 @@
 			</div>
 		</v-b>
 		
-		<!--<v-b data-view-activity class="page-select rem1-7 nav bar"></v-b>-->
-		
 		<v-b data-view-membersMode class="nav bar rem1-7" id=$memberNav></v-b>
 
 		<v-b data-view-userMode class="userPageBox flex-row">
@@ -165,11 +172,10 @@
 			<div class="pageContents pre userPageContents markup-root" id=$userPageContents></div>
 		</v-b>
 
-		<!--
-			  These panes have the main content
-			  one of them will be visible at a time, depending on the view mode
-		-->
-		
+		<!--=======================\
+		|| MAIN SCROLLING SECTION ||
+		\========================-->
+
 		<main-scrollable class="flex grow" id=$main>
 			<v-b data-view-catEditorMode>
 				<label for=$cateditPinned>Pinned pages:</label><input id=$cateditPinned><br>
@@ -192,26 +198,6 @@
 
 			<v-b data-view-userMode class="userActivity" id=$userActivity></v-b>
 
-			<!--<v-b data-view-page id=$pageInfoPane class="pageMode pageInfoPane rem2-3 bar">
-				  
-				  <span class="textItem" id=$authorBox></span>
-				  <button id=$editButton class="item canEdit">Edit</button>
-				  <div class="rightAlign item">
-				  <span class="textItem" id=$voteBox>
-				  <button class="item" id=$voteButton_b data-vote="b">Bad<br><span id=$voteCount_b>x</span></button><button id=$voteButton_o class="item" data-vote="o">Ok<br><span id=$voteCount_o>x</span></button><button id=$voteButton_g class="item" data-vote="g">Great<br><span id=$voteCount_g>x</span></button>
-				  </span>
-				  </div>
-				  </v-b>-->
-			
-			<!--<div class="pageInfoPane page px40" id=$pageInfoPane>
-				  <span id=$gallery class="gallery" style="display:none;">
-				  <span class="metaInfo">
-				  <span id=$metaKey class="textItem"></span>
-				  <span id=$sbapiInfo class="textItem"></span>
-				  </span>
-				  </span>
-				  </div>
-			-->
 			<v-b data-view-page id=$pageContents class="grow pageMode"></v-b>
 			<v-b data-view-errorMode class="pre errorPage" id=$errorMessage></v-b>
 			<v-b data-view-editorMode class="editorPane flex">
@@ -257,9 +243,11 @@
 			
 			<v-b data-view-membersMode data-view-home class="bottomSpacer"></v-b>
 		</main-scrollable>
-		<!--
-			  Bottom of the page
-		-->
+
+		<!--===============\
+		|| BOTTOM OF PAGE ||
+		\================-->
+
 		<v-b data-view-page id=$chatResize class="resize"> ↕</v-b>
 		<v-b data-view-page id=$chatContainer class="grow flex">
 			<v-b data-view-page id=$chatPane class="flex chatMode grow chatPane border-list"></v-b>
@@ -274,6 +262,11 @@
 			</v-b>
 		</v-b>
 	</main>
+
+	<!--========\
+	|| SIDEBAR ||
+	\=========-->
+
 	<sidebar-container id=$sidebar class="flex flex-sized">
 		<button class="closeSidebar" id=$closeSidebar>Close Sidebar</button>
 		<div class="userlist bar rem1-5"><span id=$sidebarUserList></span><button id=$hideGlobalStatusButton class="item rightAlign loggedIn">Hide</button></div>
