@@ -83,10 +83,11 @@ onLoad: function() {
 	y.className += " loggedOut"
 	y.textContent = "log in"
 	var sidebarTabs = Draw.sidebarTabs([
-		{label: document.createTextNode("activity"), elem: $sidebarActivityPanel},
-		{label: document.createTextNode("navigate"), elem: $sidebarNavPanel},
+		{label: document.createTextNode("A"), elem: $sidebarActivityPanel},
+		{label: document.createTextNode("W"), elem: $sidebarWatchPanel},
+		{label: document.createTextNode("N"), elem: $sidebarNavPanel},
 		/*{label: "watching"},*/
-		{label: document.createTextNode("image"), elem: $sidebarFilePanel},
+		{label: document.createTextNode("I"), elem: $sidebarFilePanel},
 		//{label: document.createTextNode("search"), elem: $sidebarSearchPanel},
 		{label: x, elem: $sidebarUserPanel},
 	])
@@ -135,17 +136,18 @@ onAggregateChange: function(aggregate) {
 },
 
 onWatchingChange: function(aggregate) {
-	/*var items = []
+	var items = []
 	for (var id in aggregate)
 		if (aggregate[id].content) //HACK
 			items.push(aggregate[id])
 	items.sort(function(a, b) {
 		return -(a.lastDate - b.lastDate)
 	})
-	$sidebarWatchingPanel.replaceChildren()
+	$sidebarWatch.replaceChildren()
 	items.forEach(function(item) {
-		$sidebarWatchingPanel.appendChild(Draw.activityItem(item))
-	})*/
+		$sidebarWatch.appendChild(Draw.activityItem(item))
+	})
+	//refreshInterval(aggregate) todo
 },
 
 print: function(text) {
@@ -177,7 +179,7 @@ fileUploaded: function(file) {
 	$fileView.src = ""
 	$fileView.src = URL.createObjectURL(file)
 	selectedFile = file
-	selectTab(2) //hack
+	selectTab(3) //hack HACK
 	//fillFileFields(file)
 },
 
