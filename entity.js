@@ -173,7 +173,12 @@ makePageMap: function(page) {
 	return pageMap
 },
 
-// yuck
+// ew
+// this system merges Activity, Comment, and CommentAggregate
+// so we need these 3 awful functions to handle them slightly differently
+
+// CommentAggregate is the worst because users are sorted by id
+// instead of what we want, which is by most recent comment. oh well
 updateAggregateCommentAggregate: function(items, ca, pageMap, watch) {
 	ca.forEach(function(a) {
 		var item = items[a.id]
@@ -184,7 +189,7 @@ updateAggregateCommentAggregate: function(items, ca, pageMap, watch) {
 		a.users.forEach(function(user) {
 			// this is bad.
 			// users are sorted in the default order (by uid) here
-			activityUserUpdate(item, user)
+			activityUserUpdate(item, user, true)
 		})
 		item.count += a.count
 		if (a.firstDate < item.firstDate)
@@ -247,13 +252,16 @@ newActivityItem: function(page, date) {
 },
 
 // add or move+update user to start of list
-activityUserUpdate: function(item, user) {
+activityUserUpdate: function(item, user, bad) {
 	if (!user) return // just in case
 	for (var i=0; i<item.users.length; i++)
 		if (item.users[i].id == user.id) {
 			item.users.splice(i, 1)
 			break
 		}
+	// temp fix maybe? mark unsorted users and render them differentlyyy
+	/*if (bad && !user.unsorted)
+		user = Object.create(user, {unsorted: {value: true}})*/
 	item.users.unshift(user)
 },
 
