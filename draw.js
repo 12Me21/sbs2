@@ -326,6 +326,10 @@ sidebarTabs: function(list, callback) {
 		},
 	}
 	list.forEach(function(item, i) {
+		item.elem.setAttribute('role', "tabpanel")
+		item.elem.setAttribute('aria-labelledby', "sidebar-tab-"+i)
+		item.elem.hidden = true
+
 		var td = document.createElement('td')
 		var btn = document.createElement('button')
 		btn.setAttribute('role', "tab")

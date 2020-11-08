@@ -64,18 +64,6 @@ onLoad: function() {
 	/*document.addEventListener('keydown', function(e) {
 		
 	  })*/
-	sidebarPanels = [
-		$sidebarActivityPanel,
-		$sidebarNavPanel,
-		//$sidebarWatchingPanel,
-		$sidebarFilePanel,
-		//$sidebarSearchPanel,
-	]
-	sidebarPanels.forEach(function(e, i) {
-		e.setAttribute('role', "tabpanel")
-		e.setAttribute('aria-labelledby', "sidebar-tab-"+i)
-		e.hidden = true
-	})
 	var x = document.createElement('span')
 	var y = x.createChild('span')
 	myAvatar = x.createChild('span')
