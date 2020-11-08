@@ -74,9 +74,7 @@ onLoad: function() {
 		{label: document.createTextNode("A"), elem: $sidebarActivityPanel},
 		{label: document.createTextNode("W"), elem: $sidebarWatchPanel},
 		{label: document.createTextNode("N"), elem: $sidebarNavPanel},
-		/*{label: "watching"},*/
 		{label: document.createTextNode("I"), elem: $sidebarFilePanel},
-		//{label: document.createTextNode("search"), elem: $sidebarSearchPanel},
 		{label: x, elem: $sidebarUserPanel},
 	])
 	$sidebarTabs.replaceChildren(sidebarTabs.elem)
@@ -107,7 +105,7 @@ onLoad: function() {
 		}
 	}
 },
-// todo: currently this uses "time ago" so those times need to be updated occasionally
+
 onAggregateChange: function(aggregate) {
 	var items = []
 	for (var id in aggregate)
@@ -117,25 +115,14 @@ onAggregateChange: function(aggregate) {
 		return -(a.lastDate - b.lastDate)
 	})
 	$sidebarActivity.replaceChildren()
-	items.forEach(function(item) {
-		$sidebarActivity.appendChild(Draw.activityItem(item))
-	})
-	refreshInterval(aggregate)
-},
-
-onWatchingChange: function(aggregate) {
-	var items = []
-	for (var id in aggregate)
-		if (aggregate[id].content) //HACK
-			items.push(aggregate[id])
-	items.sort(function(a, b) {
-		return -(a.lastDate - b.lastDate)
-	})
 	$sidebarWatch.replaceChildren()
 	items.forEach(function(item) {
-		$sidebarWatch.appendChild(Draw.activityItem(item))
+		$sidebarActivity.appendChild(Draw.activityItem(item))
+		if (item.watching) {
+			$sidebarWatch.appendChild(Draw.activityItem(item))
+		}
 	})
-	//refreshInterval(aggregate) todo
+	refreshInterval(aggregate)
 },
 
 redrawCategoryTree: function(cats) {
