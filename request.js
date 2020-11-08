@@ -383,6 +383,7 @@ getRecentActivity: function(callback) {
 	], {
 		content: "name,id,permissions,type"
 	}, function(e, resp) {
+		console.log(resp)
 		if (!e)
 			callback(resp.activity, resp.commentaggregate, resp.Awatching, resp.CAwatching, resp.content, resp.comment.reverse())
 		else

@@ -15,6 +15,8 @@ Req.onLogin = function() {
 		ChatRoom.displayMessages(comments)
 		Entity.updateAggregateComments(Req.currentActivity, comments, contents)
 		Sidebar.onAggregateChange(Req.currentActivity)
+		Entity.updateAggregateComments(Req.watchingActivity, comments, contents)
+		Sidebar.onWatchingChange(Req.watchingActivity)
 		Sidebar.displayMessages(comments)
 	}
 	Req.onListeners = function(a) {
@@ -27,6 +29,8 @@ Req.onLogin = function() {
 		})
 		Entity.updateAggregateActivity(Req.currentActivity, a, p)
 		Sidebar.onAggregateChange(Req.currentActivity) //this might update unnecessarily often
+		Entity.updateAggregateActivity(Req.watchingActivity, a, p)
+		Sidebar.onWatchingChange(Req.watchingActivity) //this might update unne
 	}
 	
 	console.log("staring long poller")
@@ -43,6 +47,7 @@ Req.onLogin = function() {
 		}
 	})
 
+	// bad arguments :(
 	Req.getRecentActivity(function(a, c, wa, wc, p, com) {
 		Entity.updateAggregateActivity(Req.currentActivity, a, p)
 		Entity.updateAggregateCommentAggregate(Req.currentActivity, c, p)
