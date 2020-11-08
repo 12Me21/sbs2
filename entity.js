@@ -164,27 +164,27 @@ processItem: {
 		return data
 	},
 },
-updateAggregateCommentAggregate: function(items, ca, page, watch) {
+
+makePageMap: function(page) {
 	var pageMap = {}
 	page && page.forEach(function(p) {
 		pageMap[p.id] = p
 	})
+	return pageMap
+},
+
+// yuck
+updateAggregateCommentAggregate: function(items, ca, pageMap, watch) {
 	ca.forEach(function(a) {
 		var item = items[a.id]
-		if (!item) {
-			item = items[a.id] = {
-				content: pageMap[a.id],
-				users: {},
-				firstDate: a.firstDate,
-				lastDate: a.firstDate,
-				count: 0,
-			}
-		}
+		if (!item)
+			item = items[a.id] = newActivityItem(pageMap[a.id], a.firstDate)
 		if (watch)
 			item.watching = true
 		a.users.forEach(function(user) {
-			if (user)
-				item.users[user.id] = user
+			// this is bad.
+			// users are sorted in the default order (by uid) here
+			activityUserUpdate(item, user)
 		})
 		item.count += a.count
 		if (a.firstDate < item.firstDate)
@@ -194,29 +194,17 @@ updateAggregateCommentAggregate: function(items, ca, page, watch) {
 	})
 	return items
 },
-updateAggregateComments: function(items, comments, page, watch) {
-	var pageMap = {}
-	page && page.forEach(function(p) {
-		pageMap[p.id] = p
-	})
+updateAggregateComments: function(items, comments, pageMap, watch) {
 	comments.forEach(function(c) {
 		var id = c.parentId
 		var item = items[id]
-		if (!item) {
-			item = items[id] = {
-				content: pageMap[id],
-				users: {},
-				firstDate: c.editDate,
-				lastDate: c.editDate,
-				count: 0,
-			}
-		}
+		if (!item)
+			item = items[id] = newActivityItem(pageMap[id], c.editDate)
 		if (watch)
 			item.watching = true
 		// todo: commentaggregate only tracks createDate
 		// so maybe use that here for consistency between reloads
-		if (c.createUser)
-			item.users[c.createUser.id] = c.createUser // maybe edituser too?
+		activityUserUpdate(item, c.createUser) // maybe edituser too?
 		item.count++
 		if (c.editDate < item.firstDate)
 			item.firstDate = c.editDate
@@ -224,24 +212,14 @@ updateAggregateComments: function(items, comments, page, watch) {
 			item.lastDate = c.editDate
 	})
 },
-updateAggregateActivity: function(items, activity, page, watch) {
-	var pageMap = {}
-	page && page.forEach(function(p) {
-		pageMap[p.id] = p
-	})
+updateAggregateActivity: function(items, activity, pageMap, watch) {
 	activity.forEach(function(a) {
 		var id = a.contentId
 		var item = items[id]
 		if (!item) {
 			if (!pageMap[id]) //I don't think this is right?
 				return
-			item = items[id] = {
-				content: pageMap[id],
-				users: {},
-				firstDate: a.date,
-				lastDate: a.date,
-				count: 0,
-			}
+			item = items[id] = newActivityItem(pageMap[id], a.date)
 		} else {
 			// hopefully this takes care of pages in activity list being updated?
 			if (pageMap[id])
@@ -249,7 +227,7 @@ updateAggregateActivity: function(items, activity, page, watch) {
 		}
 		if (watch)
 			item.watching = true
-		item.users[a.userId] = a.user
+		activityUserUpdate(item, a.user)
 		item.count++
 		if (a.date < item.firstDate)
 			item.firstDate = a.date
@@ -257,6 +235,28 @@ updateAggregateActivity: function(items, activity, page, watch) {
 			item.lastDate = a.date
 	})
 },
+
+newActivityItem: function(page, date) {
+	return {
+		content: page,
+		users: [],
+		count: 0,
+		firstDate: date,
+		lastDate: date,
+	}
+},
+
+// add or move+update user to start of list
+activityUserUpdate: function(item, user) {
+	if (!user) return // just in case
+	for (var i=0; i<item.users.length; i++)
+		if (item.users[i].id == user.id) {
+			item.users.splice(i, 1)
+			break
+		}
+	item.users.unshift(user)
+},
+
 rebuildCategoryTree: function() {
 	gotNewCategory = false
 	for (var id in categoryMap)
