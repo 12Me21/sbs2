@@ -180,6 +180,8 @@ updateAggregateCommentAggregate: function(items, ca, page, watch) {
 				count: 0,
 			}
 		}
+		if (watch)
+			item.watching = true
 		a.users.forEach(function(user) {
 			if (user)
 				item.users[user.id] = user
@@ -209,6 +211,8 @@ updateAggregateComments: function(items, comments, page, watch) {
 				count: 0,
 			}
 		}
+		if (watch)
+			item.watching = true
 		// todo: commentaggregate only tracks createDate
 		// so maybe use that here for consistency between reloads
 		if (c.createUser)
@@ -243,6 +247,8 @@ updateAggregateActivity: function(items, activity, page, watch) {
 			if (pageMap[id])
 				items[id].content = pageMap[id]
 		}
+		if (watch)
+			item.watching = true
 		item.users[a.userId] = a.user
 		item.count++
 		if (a.date < item.firstDate)
