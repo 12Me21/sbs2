@@ -13,7 +13,7 @@ Req.onLogin = function() {
 	// start long poller
 	Req.onMessages = function(comments, contents) {
 		ChatRoom.displayMessages(comments)
-		Entity.updateAggregateComments(Req.currentActivity, comments, contents)
+		Entity.updateAggregateComments(Req.currentActivity, comments, Entity.makePageMap(contents))
 		Sidebar.onAggregateChange(Req.currentActivity)
 		Sidebar.displayMessages(comments)
 	}
@@ -25,7 +25,7 @@ Req.onLogin = function() {
 			if (a.type == 'user')
 				View.updateUserAvatar(a.content) //todo: also update your avatar in sidebar
 		})
-		Entity.updateAggregateActivity(Req.currentActivity, a, p)
+		Entity.updateAggregateActivity(Req.currentActivity, a, Entity.makePageMap(p))
 		Sidebar.onAggregateChange(Req.currentActivity) //this might update unnecessarily often
 	}
 	
@@ -45,6 +45,7 @@ Req.onLogin = function() {
 
 	// bad arguments :(
 	Req.getRecentActivity(function(a, c, wa, wc, p, com) {
+		p = Entity.makePageMap(p)
 		Entity.updateAggregateActivity(Req.currentActivity, a, p)
 		Entity.updateAggregateCommentAggregate(Req.currentActivity, c, p)
 		Entity.updateAggregateActivity(Req.currentActivity, wa, p, true)
@@ -63,6 +64,7 @@ Entity.onCategoryUpdate = function(cats) {
 
 Req.onGuestLoad = function() {
 	Req.getRecentActivity(function(a, c, wa, wc, p, com) {
+		p = Entity.makePageMap(p)
 		Entity.updateAggregateActivity(Req.currentActivity, a, p)
 		Entity.updateAggregateCommentAggregate(Req.currentActivity, c, p)
 		Entity.updateAggregateActivity(Req.currentActivity, wa, p, true)
