@@ -291,6 +291,7 @@
 			<sidebar-panel id=$sidebarNavPanel>
 				<div class="bar rem1-5"><input id=$searchInput class="item"><button id=$searchButton class="item">Search</button></div>
 				<div id=$searchResults></div>
+				<div id=$sidebarCategories></div>
 			</sidebar-panel>
 			<!--<div id=$sidebarWatchingPanel class="fill"></div>-->
 			<sidebar-panel id=$sidebarFilePanel class="flex">
@@ -371,12 +372,12 @@
 					</div>
 				</div>
 			</sidebar-panel>
-	</div>
-	
-	<div id=$sidebarResize class="resize">↕↔</div>
-	<div id=$sidebarBottom class="grow">
-		<scroll-outer><scroll-inner id=$sidebarScroller class="border-list"></scroll-inner></scroll-outer>
-	</div>
+		</div>
+		
+		<div id=$sidebarResize class="resize">↕↔</div>
+		<div id=$sidebarBottom class="grow">
+			<scroll-outer><scroll-inner id=$sidebarScroller class="border-list"></scroll-inner></scroll-outer>
+		</div>
 	</sidebar-container>
 </horizontal-split>
 
