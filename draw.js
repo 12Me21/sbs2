@@ -900,6 +900,21 @@ updateTimestamps: function(element) {
 	})
 },
 
+navCategory: function(cat) {
+	var elem = document.createElement('div')
+	var label = entityTitleLink(cat)
+	label.className += " bar rem1-5 linkBar"
+	elem.appendChild(label)
+	var elem2 = document.createElement('div')
+	elem.appendChild(elem2)
+	elem2.className += " category-childs"
+	if (cat.children)
+		cat.children.forEach(function(c) {
+			elem2.appendChild(navCategory(c))
+		})
+	return elem
+}
+
 <!--/* 
 }) //*/
 

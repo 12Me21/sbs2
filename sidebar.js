@@ -150,6 +150,10 @@ onWatchingChange: function(aggregate) {
 	//refreshInterval(aggregate) todo
 },
 
+redrawCategoryTree: function(cats) {
+	$sidebarCategories.replaceChildren(Draw.navCategory(cats[0]))
+},
+
 print: function(text) {
 	if (scroller)
 		scroller.handlePrint(function() {

@@ -14,6 +14,8 @@ Object.assign(Entity, { //*/
 categoryMap: null,
 gotNewCategory: false,
 
+onCategoryUpdate: null,
+
 CONTENT_TYPES: [
 	'resource', 'chat', 'program', 'tutorial', 'documentation', 'userpage'
 ],
@@ -38,9 +40,14 @@ process: function(resp) {
 		if (type != 'user' && key != 'Ctree')
 			processList(type, resp[key], users)
 	}
-	if (gotNewCategory)
-		rebuildCategoryTree()
 	resp.userMap = users
+	
+	if (gotNewCategory) {
+		rebuildCategoryTree()
+		$.setTimeout(function() {
+			onCategoryUpdate && onCategoryUpdate(categoryMap)
+		}, 0)
+	}
 },
 keyType: function(key) {
 	if (key.substr(0,2) == "CA")
@@ -157,7 +164,7 @@ processItem: {
 		return data
 	},
 },
-updateAggregateCommentAggregate: function(items, ca, page) {
+updateAggregateCommentAggregate: function(items, ca, page, watch) {
 	var pageMap = {}
 	page && page.forEach(function(p) {
 		pageMap[p.id] = p
@@ -185,7 +192,7 @@ updateAggregateCommentAggregate: function(items, ca, page) {
 	})
 	return items
 },
-updateAggregateComments: function(items, comments, page) {
+updateAggregateComments: function(items, comments, page, watch) {
 	var pageMap = {}
 	page && page.forEach(function(p) {
 		pageMap[p.id] = p
@@ -213,7 +220,7 @@ updateAggregateComments: function(items, comments, page) {
 			item.lastDate = c.editDate
 	})
 },
-updateAggregateActivity: function(items, activity, page) {
+updateAggregateActivity: function(items, activity, page, watch) {
 	var pageMap = {}
 	page && page.forEach(function(p) {
 		pageMap[p.id] = p

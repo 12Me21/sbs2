@@ -29,7 +29,7 @@ Req.onLogin = function() {
 		})
 		Entity.updateAggregateActivity(Req.currentActivity, a, p)
 		Sidebar.onAggregateChange(Req.currentActivity) //this might update unnecessarily often
-		Entity.updateAggregateActivity(Req.watchingActivity, a, p)
+		Entity.updateAggregateActivity(Req.watchingActivity, a, p, true)
 		Sidebar.onWatchingChange(Req.watchingActivity) //this might update unne
 	}
 	
@@ -51,8 +51,8 @@ Req.onLogin = function() {
 	Req.getRecentActivity(function(a, c, wa, wc, p, com) {
 		Entity.updateAggregateActivity(Req.currentActivity, a, p)
 		Entity.updateAggregateCommentAggregate(Req.currentActivity, c, p)
-		Entity.updateAggregateActivity(Req.watchingActivity, wa, p)
-		Entity.updateAggregateCommentAggregate(Req.watchingActivity, wc, p)
+		Entity.updateAggregateActivity(Req.watchingActivity, wa, p, true)
+		Entity.updateAggregateCommentAggregate(Req.watchingActivity, wc, p, true)
 		Sidebar.onAggregateChange(Req.currentActivity)
 		Sidebar.onWatchingChange(Req.watchingActivity)
 		Sidebar.displayMessages(com, true)
@@ -62,12 +62,16 @@ Req.onLogin = function() {
 	// update currently viewed page (in case page was hidden)
 }
 
+Entity.onCategoryUpdate = function(cats) {
+	Sidebar.redrawCategoryTree(cats)
+}
+
 Req.onGuestLoad = function() {
 	Req.getRecentActivity(function(a, c, wa, wc, p, com) {
 		Entity.updateAggregateActivity(Req.currentActivity, a, p)
 		Entity.updateAggregateCommentAggregate(Req.currentActivity, c, p)
-		Entity.updateAggregateActivity(Req.watchingActivity, wa, p)
-		Entity.updateAggregateCommentAggregate(Req.watchingActivity, wc, p)
+		Entity.updateAggregateActivity(Req.watchingActivity, wa, p, true)
+		Entity.updateAggregateCommentAggregate(Req.watchingActivity, wc, p, true)
 		Sidebar.onAggregateChange(Req.currentActivity)
 		Sidebar.onWatchingChange(Req.watchingActivity)
 		Sidebar.displayMessages(com, true)

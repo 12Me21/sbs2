@@ -229,6 +229,10 @@ body {
 	/*margin-right: 0.2rem;*/
 }
 
+.linkBar.rem1-5 {
+	padding: 0;
+}
+
 .rem1-5 {
 	min-height: 1.5rem;
 	line-height: 1.5rem;
@@ -1239,4 +1243,8 @@ activity-users {
 html:not(.f-editorPreview) .editorPreview,
 html.f-editorPreview .editorNotPreview {
 	display: none;
+}
+
+.category-childs {
+	margin-left: 1rem;
 }
