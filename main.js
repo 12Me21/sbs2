@@ -15,8 +15,6 @@ Req.onLogin = function() {
 		ChatRoom.displayMessages(comments)
 		Entity.updateAggregateComments(Req.currentActivity, comments, contents)
 		Sidebar.onAggregateChange(Req.currentActivity)
-		Entity.updateAggregateComments(Req.watchingActivity, comments, contents)
-		Sidebar.onWatchingChange(Req.watchingActivity)
 		Sidebar.displayMessages(comments)
 	}
 	Req.onListeners = function(a) {
@@ -29,8 +27,6 @@ Req.onLogin = function() {
 		})
 		Entity.updateAggregateActivity(Req.currentActivity, a, p)
 		Sidebar.onAggregateChange(Req.currentActivity) //this might update unnecessarily often
-		Entity.updateAggregateActivity(Req.watchingActivity, a, p, true)
-		Sidebar.onWatchingChange(Req.watchingActivity) //this might update unne
 	}
 	
 	console.log("staring long poller")
@@ -51,10 +47,9 @@ Req.onLogin = function() {
 	Req.getRecentActivity(function(a, c, wa, wc, p, com) {
 		Entity.updateAggregateActivity(Req.currentActivity, a, p)
 		Entity.updateAggregateCommentAggregate(Req.currentActivity, c, p)
-		Entity.updateAggregateActivity(Req.watchingActivity, wa, p, true)
-		Entity.updateAggregateCommentAggregate(Req.watchingActivity, wc, p, true)
+		Entity.updateAggregateActivity(Req.currentActivity, wa, p, true)
+		Entity.updateAggregateCommentAggregate(Req.currentActivity, wc, p, true)
 		Sidebar.onAggregateChange(Req.currentActivity)
-		Sidebar.onWatchingChange(Req.watchingActivity)
 		Sidebar.displayMessages(com, true)
 	})
 
@@ -70,10 +65,9 @@ Req.onGuestLoad = function() {
 	Req.getRecentActivity(function(a, c, wa, wc, p, com) {
 		Entity.updateAggregateActivity(Req.currentActivity, a, p)
 		Entity.updateAggregateCommentAggregate(Req.currentActivity, c, p)
-		Entity.updateAggregateActivity(Req.watchingActivity, wa, p, true)
-		Entity.updateAggregateCommentAggregate(Req.watchingActivity, wc, p, true)
+		Entity.updateAggregateActivity(Req.currentActivity, wa, p, true)
+		Entity.updateAggregateCommentAggregate(Req.currentActivity, wc, p, true)
 		Sidebar.onAggregateChange(Req.currentActivity)
-		Sidebar.onWatchingChange(Req.watchingActivity)
 		Sidebar.displayMessages(com, true)
 	})
 }
