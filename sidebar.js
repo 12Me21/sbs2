@@ -106,6 +106,8 @@ onLoad: function() {
 	}
 },
 
+// this needs to be optimized
+// it redraws the entire list of pages in activity + watching, EVERY time they update
 onAggregateChange: function(aggregate) {
 	var items = []
 	for (var id in aggregate)
