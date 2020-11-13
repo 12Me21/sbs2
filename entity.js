@@ -187,9 +187,8 @@ updateAggregateCommentAggregate: function(items, ca, pageMap, watch) {
 		if (watch)
 			item.watching = true
 		a.users.forEach(function(user) {
-			// this is bad.
-			// users are sorted in the default order (by uid) here
-			activityUserUpdate(item, user, true)
+			// this is bad, because we don't have lastDate per user
+			activityUserUpdate(item, user, 0)
 		})
 		item.count += a.count
 		if (a.firstDate < item.firstDate)
@@ -209,7 +208,7 @@ updateAggregateComments: function(items, comments, pageMap, watch) {
 			item.watching = true
 		// todo: commentaggregate only tracks createDate
 		// so maybe use that here for consistency between reloads
-		activityUserUpdate(item, c.createUser) // maybe edituser too?
+		activityUserUpdate(item, c.editUser, c.editDate)
 		item.count++
 		if (c.editDate < item.firstDate)
 			item.firstDate = c.editDate
@@ -232,7 +231,7 @@ updateAggregateActivity: function(items, activity, pageMap, watch) {
 		}
 		if (watch)
 			item.watching = true
-		activityUserUpdate(item, a.user)
+		activityUserUpdate(item, a.user, a.date)
 		item.count++
 		if (a.date < item.firstDate)
 			item.firstDate = a.date
@@ -240,7 +239,11 @@ updateAggregateActivity: function(items, activity, pageMap, watch) {
 			item.lastDate = a.date
 	})
 },
-
+//todo: somewhere we are getting Fake users with uid 0/
+// found on page 2870 date Sun Nov 08 2020 17:55:52 GMT-0500
+// AFTER loading comments
+// most likely a deleted comment.
+// perhaps just filter those out immediately
 newActivityItem: function(page, date) {
 	return {
 		content: page,
@@ -252,17 +255,24 @@ newActivityItem: function(page, date) {
 },
 
 // add or move+update user to start of list
-activityUserUpdate: function(item, user, bad) {
+activityUserUpdate: function(item, user, date) {
 	if (!user) return // just in case
+	// remove old user
 	for (var i=0; i<item.users.length; i++)
-		if (item.users[i].id == user.id) {
+		if (item.users[i].user.id == user.id) {
+			if (date <= item.users[i].date) //old user has newer date, don't remove
+				return
 			item.users.splice(i, 1)
 			break
 		}
+	// insert new user
+	for (var i=0; i<item.users.length; i++)
+		if (date >= item.users[i].date)
+			break
+	item.users.splice(i, 0, {user:user, date:date})
 	// temp fix maybe? mark unsorted users and render them differentlyyy
-	/*if (bad && !user.unsorted)
+	/*if (!date && !user.unsorted)
 		user = Object.create(user, {unsorted: {value: true}})*/
-	item.users.unshift(user)
 },
 
 rebuildCategoryTree: function() {

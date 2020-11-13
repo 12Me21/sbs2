@@ -374,9 +374,9 @@ activityItem: function(item) {
 	userContainer.appendChild(document.createTextNode(" "))
 	
 	item.users.forEach(function(u) {
-		if (u) {
-			var l = entityLink(u)
-			l.appendChild(icon(u))
+		if (u && u.user) {
+			var l = entityLink(u.user)
+			l.appendChild(icon(u.user))
 			userContainer.appendChild(l)
 		}
 	})
