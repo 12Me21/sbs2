@@ -28,7 +28,6 @@ lpProcessedListeners: {},
 lpCancel: function(){},
 lpRunning: false,
 currentActivity: {},
-watchingActivity: {},
 lpInit: true,
 
 me: null,
