@@ -27,7 +27,6 @@ lpLastListeners: {"-1":{"0":""}},
 lpProcessedListeners: {},
 lpCancel: function(){},
 lpRunning: false,
-currentActivity: {},
 lpInit: true,
 
 me: null,

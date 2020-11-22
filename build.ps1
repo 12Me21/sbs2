@@ -22,7 +22,7 @@ Get-Content "resource/fonts.css","style.css","markup.css","code.css" | Set-Conte
 
 
 Write-Host "creating _build.js"
-Get-Content "fill.js","entity.js","request.js","sbs2-markup/_build.js","draw.js","view.js","scroller.js","sidebar.js","chat.js","settings.js","Views/settings.js","Views/page.js","Views/image.js","Views/editpage.js","Views/category.js","Views/user.js","Views/home.js","navigate.js","main.js"` | sc resource/_build.js
+Get-Content "fill.js","entity.js","activity.js","request.js","sbs2-markup/_build.js","draw.js","view.js","scroller.js","sidebar.js","chat.js","settings.js","Views/settings.js","Views/page.js","Views/image.js","Views/editpage.js","Views/category.js","Views/user.js","Views/home.js","navigate.js","main.js"` | sc resource/_build.js
 
 function unixtime($t) {
 	return [int64](Get-Date $t -UFormat "%s")

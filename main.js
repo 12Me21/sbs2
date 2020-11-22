@@ -13,8 +13,8 @@ Req.onLogin = function() {
 	// start long poller
 	Req.onMessages = function(comments, contents) {
 		ChatRoom.displayMessages(comments)
-		Entity.updateAggregateComments(Req.currentActivity, comments, Entity.makePageMap(contents))
-		Sidebar.onAggregateChange(Req.currentActivity)
+		Act.newComments(comments, Entity.makePageMap(contents))
+		Sidebar.onAggregateChange(Act.items)
 		Sidebar.displayMessages(comments)
 	}
 	Req.onListeners = function(a) {
@@ -25,8 +25,8 @@ Req.onLogin = function() {
 			if (a.type == 'user')
 				View.updateUserAvatar(a.content) //todo: also update your avatar in sidebar
 		})
-		Entity.updateAggregateActivity(Req.currentActivity, a, Entity.makePageMap(p))
-		Sidebar.onAggregateChange(Req.currentActivity) //this might update unnecessarily often
+		Act.newActivity(a, Entity.makePageMap(p))
+		Sidebar.onAggregateChange(Act.items) //this might update unnecessarily often
 	}
 	
 	console.log("staring long poller")
@@ -43,16 +43,7 @@ Req.onLogin = function() {
 		}
 	})
 
-	// bad arguments :(
-	Req.getRecentActivity(function(a, c, wa, wc, p, com) {
-		p = Entity.makePageMap(p)
-		Entity.updateAggregateActivity(Req.currentActivity, a, p)
-		Entity.updateAggregateCommentAggregate(Req.currentActivity, c, p)
-		Entity.updateAggregateActivity(Req.currentActivity, wa, p, true)
-		Entity.updateAggregateCommentAggregate(Req.currentActivity, wc, p, true)
-		Sidebar.onAggregateChange(Req.currentActivity)
-		Sidebar.displayMessages(com, true)
-	})
+	Act.pullRecent()
 
 	//TODO
 	// update currently viewed page (in case page was hidden)
@@ -63,15 +54,7 @@ Entity.onCategoryUpdate = function(cats) {
 }
 
 Req.onGuestLoad = function() {
-	Req.getRecentActivity(function(a, c, wa, wc, p, com) {
-		p = Entity.makePageMap(p)
-		Entity.updateAggregateActivity(Req.currentActivity, a, p)
-		Entity.updateAggregateCommentAggregate(Req.currentActivity, c, p)
-		Entity.updateAggregateActivity(Req.currentActivity, wa, p, true)
-		Entity.updateAggregateCommentAggregate(Req.currentActivity, wc, p, true)
-		Sidebar.onAggregateChange(Req.currentActivity)
-		Sidebar.displayMessages(com, true)
-	})
+	Act.pullRecent()
 }
 
 Req.onLogout = function() {
