@@ -1,9 +1,18 @@
+window.onerror = function(message, source, line, col, error) {
+	try {
+		console.error(arguments)
+		if (!error)
+			return
+		Sidebar.print("Error: "+message+"\nin "+source+"\nat "+line+":"+col)
+		// to prevent this from throwing more errors
+		// though the scroll event might cause issues...
+	} catch(e) {
+		// yeah no
+	}
+}
+
 Sidebar.print("hi!")
 delete window.sidebar // obsolete firefox global variable
-
-/*window.onerror = function(message, source, line, col, error) {
-	console.log("e")
-}*/
 
 Req.onLogin = function() {
 	console.log("login")
@@ -74,24 +83,12 @@ function ready() {
 	console.log("ONLOAD!")
 	if (navigator.vendor=="Google Inc.")
 		document.documentElement.style.imageRendering = "-webkit-optimize-contrast"
+	//can't remember if this is still needed
 	document.documentElement.addEventListener('touchstart', function(e) {
 		e.preventDefault()
 	})
 	
 	View.onLoad()
-
-	window.onerror = function(message, source, line, col, error) {
-		try {
-			console.error(arguments)
-			if (!error)
-				return
-			Sidebar.print("Error: "+message+"\nin "+source+"\nat "+line+":"+col)
-			// to prevent this from throwing more errors
-			// though the scroll event might cause issues...
-		} catch(e) {
-			// yeah no
-		}
-	}
-
+	
 	Nav.initial()
 }
