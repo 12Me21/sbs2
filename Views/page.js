@@ -67,13 +67,8 @@ addView('page', {
 	className: 'page',
 	splitView: true,
 	render: function(page, comments) {
-		var activityItem = Req.currentActivity[page.id]
-		if (activityItem) { //quick hack gosh the entire activity system needs so much work
-			comments.forEach(function(c) {
-				Entity.activityUserUpdate(activityItem, c.editUser, c.editDate)
-			})
-			Sidebar.onAggregateChange(Req.currentActivity)
-		}
+		Act.newPageComments(page, comments)
+		Act.redraw()
 		//ChatRoom.setViewing([page.id])
 		room = new ChatRoom(page.id, page)
 		room.displayInitialMessages(comments)
