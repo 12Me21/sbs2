@@ -10,6 +10,10 @@ Object.assign(Act, { //*/
 
 items: {},
 
+redraw: function() {
+	Sidebar.onAggregateChange(items)
+},
+
 pullRecent: function() {
 	// bad arguments :(
 	Req.getRecentActivity(function(a, c, wa, wc, p, com) {
@@ -60,6 +64,19 @@ newComments: function(comments, pageMap, watch) {
 			item.firstDate = c.editDate
 		if (c.editDate > item.lastDate)
 			item.lastDate = c.editDate
+	})
+},
+
+// this ONLY updates the order of users in the list
+// this should NOT add page to activity items if it isn't there already
+// problem: this can be called before initial activity data is loaded
+// so this function doesn't work on the first page you visit
+newPageComments: function(page, comments) {
+	var item = items[page.id]
+	if (!item) //old page
+		return
+	comments.forEach(function(c) {
+		userUpdate(item, c.editUser, c.editDate)
 	})
 },
 
