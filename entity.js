@@ -130,6 +130,7 @@ processItem: {
 		} else { // deleted comment usually
 			data.meta = {}
 		}
+if (data.parentId==3314) data.deleted=true
 		return data
 	},
 	file: function(data, users) {
