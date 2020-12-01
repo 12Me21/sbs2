@@ -23,7 +23,8 @@ if (!Object.assign)
 	}
 
 // note: only supports 1 child element, which must be a node (not a string)
-if (!HTMLElement.prototype.replaceChildren)
+// update: we need to replace this ALWAYS because ios safari implemented it wrong (fails when 0 arguments are passed)
+//if (!HTMLElement.prototype.replaceChildren)
 	HTMLElement.prototype.replaceChildren = function(child) {
 		this.textContent = ""
 		if (child)
