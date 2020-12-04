@@ -188,7 +188,7 @@ addView('page', {
 
 function readInput(old, edit) {
 	var data = {
-		meta: old || {},
+		meta: old ? old.meta : {},
 		content: $chatTextarea.value,
 	}
 	
