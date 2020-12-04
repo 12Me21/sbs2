@@ -194,6 +194,8 @@ function readInput(old, edit) {
 	
 	if ($chatMarkupSelect.checked)
 		data.meta.m = "12y"
+	else
+		data.meta.m = "plaintext"
 	if (!edit)
 		if (Req.me)
 			data.meta.a = Req.me.avatar
