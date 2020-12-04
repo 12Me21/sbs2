@@ -121,6 +121,7 @@ processItem: {
 		if (data.content) {
 			var m = decodeComment(data.content)
 			data.content = m.t
+			delete m.t //IMPORTANT
 			data.meta = m
 			var av = +data.meta.a
 			if (av)
@@ -130,7 +131,6 @@ processItem: {
 		} else { // deleted comment usually
 			data.meta = {}
 		}
-if (data.parentId==3314) data.deleted=true
 		return data
 	},
 	file: function(data, users) {
