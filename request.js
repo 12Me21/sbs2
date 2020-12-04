@@ -629,7 +629,7 @@ if ($.location.protocol=="http:")
 	protocol = "http:"
 else
 	protocol = "https:"
-server = protocol+"//smilebasicsource.com/api"
+server = protocol+"//newdev.smilebasicsource.com/api"
 
 <!--/*
 }(window)) //*/
