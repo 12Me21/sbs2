@@ -414,7 +414,7 @@ getComment: function(id, callback) {
 getCommentsBefore: function(id, firstId, count, callback) {
 	var fi = {reverse: true, limit: count, parentIds: [id]}
 	if (firstId != null)
-		fi.maxId = firstId-1
+		fi.maxId = firstId // maxId is EXCLUSIVE
 	return read([
 		{comment: fi},
 		"user.0createUserId.0editUserId",
@@ -629,7 +629,7 @@ if ($.location.protocol=="http:")
 	protocol = "http:"
 else
 	protocol = "https:"
-server = protocol+"//newdev.smilebasicsource.com/api"
+server = protocol+"//smilebasicsource.com/api"
 
 <!--/*
 }(window)) //*/
