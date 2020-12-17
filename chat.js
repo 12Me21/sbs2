@@ -146,7 +146,7 @@ ChatRoom.prototype.loadOlder = function(num, callback) {
 	var $=this
 	for (var firstId in this.messageElements)
 		break
-	Req.getCommentsBefore(this.id, firstId, num, function(comments) {
+	Req.getCommentsBefore(this.id, +firstId, num, function(comments) {
 		comments && comments.forEach(function(c) {
 			$.displayOldMessage(c)
 		})
