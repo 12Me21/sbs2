@@ -326,7 +326,7 @@ onLoad: function() {
 	// need to detect when the video is played
 	// using a custom event
 	document.addEventListener('videoclicked', function(e) {
-		imageFocusClickHandler(e.target)
+		imageFocusClickHandler(e.target, true)
 	})
 	document.onmousedown = function(e) {
 		if (!e.button && e.target) // 0 or none (prevent right click etc.)
@@ -345,12 +345,14 @@ onLoad: function() {
 	}
 	var embiggenedImage
 	
-	function imageFocusClickHandler(element) {
+	function imageFocusClickHandler(element, growOnly) {
 		if (element.hasAttribute('shrink')) {
 			// if click on image that's already big:
 			if (embiggenedImage && embiggenedImage == element) {
-				embiggenedImage.removeAttribute('bigImage')
-				embiggenedImage = null
+				if (!growOnly) {
+					embiggenedImage.removeAttribute('bigImage')
+					embiggenedImage = null
+				}
 			} else if (element != embiggenedImage) { // if click on new iamge
 				if (embiggenedImage)
 					embiggenedImage.removeAttribute('bigImage')
