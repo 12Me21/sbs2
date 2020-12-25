@@ -261,9 +261,13 @@ messageBlock: function(comment) {
 mergeHash: function(comment) {
 	return comment.createUserId + "," + comment.createUser.avatar
 },
+// this needs to be improved
 searchComment: function(comment) {
 	var outer = document.createElement('div')
 	outer.className += " bottomBorder"
+	var pg = entityTitleLink(comment.parent)
+	pg.className += " bar rem1-5 linkBar"
+	outer.appendChild(pg)
 
 	var firstId = comment.id
 	var lastId = comment.id
