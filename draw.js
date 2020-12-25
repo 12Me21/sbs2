@@ -262,9 +262,51 @@ mergeHash: function(comment) {
 	return comment.createUserId + "," + comment.createUser.avatar
 },
 searchComment: function(comment) {
+	var outer = document.createElement('div')
+	outer.className += " bottomBorder"
+
+	var firstId = comment.id
+	var lastId = comment.id
+	var firstElem
+	var lastElem
+	
+	var b = button()
+	b[1].textContent = "Load Older"
+	outer.appendChild(b[0])
+	b[1].onclick = function() {
+		Req.getCommentsBefore(comment.parentId, firstId, 10, function(comments) {
+			if (!comments) return
+			comments.forEach(function(c) {
+				firstId = c.id
+				var d = messageBlock(c)
+				d[1].appendChild(messagePart(c))
+				outer.insertBefore(d[0], firstElem)
+				firstElem = d[0]
+			})
+		})
+	}
+	
 	var d = messageBlock(comment)
 	d[1].appendChild(messagePart(comment))
-	return d[0]
+	outer.appendChild(d[0])
+	firstElem = lastElem = d[0]
+
+	var b = button()
+	b[1].textContent = "Load Newer"
+	outer.appendChild(b[0])
+	b[1].onclick = function() {
+		Req.getCommentsAfter(comment.parentId, lastId, 10, function(comments) {
+			if (!comments) return
+			comments.forEach(function(c) {
+				lastId = c.id
+				var d = messageBlock(c)
+				d[1].appendChild(messagePart(c))
+				outer.insertBefore(d[0], b[0]) // yes
+			})
+		})
+	}
+	
+	return outer
 },
 messagePart: function(comment) {
 	var element = document.createElement('message-part')
