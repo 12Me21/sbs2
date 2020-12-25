@@ -58,6 +58,7 @@
 <script src=Views/category.js></script>
 <script src=Views/user.js></script>
 <script src=Views/home.js></script>
+<script src=Views/chatlogs.js></script>
 
 <script src=navigate.js></script>
 
@@ -176,6 +177,10 @@
 			<div class="pageContents pre userPageContents markup-root" id=$userPageContents></div>
 		</v-b>
 
+		<v-b data-view-chatlogs>
+			
+		</v-b>
+
 		<!--=======================\
 		|| MAIN SCROLLING SECTION ||
 		\========================-->
@@ -208,6 +213,10 @@
 				<div class="split-top" id=$editorPreviewPane>
 					<div id=$editorPreview class="markup-root"></div>
 				</div>
+			</v-b>
+
+			<v-b data-view-chatlogs id=$chatlogSearchResults>
+				
 			</v-b>
 			
 			<v-b data-view-home class="border-list">
