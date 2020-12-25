@@ -644,6 +644,8 @@ if ($.location.protocol=="http:")
 	protocol = "http:"
 else
 	protocol = "https:"
+//this is to trick a script
+server = protocol+"//newdevsmilebasicsource.com/api"
 server = protocol+"//smilebasicsource.com/api"
 
 <!--/*
