@@ -261,6 +261,11 @@ messageBlock: function(comment) {
 mergeHash: function(comment) {
 	return comment.createUserId + "," + comment.createUser.avatar
 },
+searchComment: function(comment) {
+	var d = messageBlock(comment)
+	d[1].appendChild(messagePart(comment))
+	return d[0]
+},
 messagePart: function(comment) {
 	var element = document.createElement('message-part')
 	element.className = "markup-root"
