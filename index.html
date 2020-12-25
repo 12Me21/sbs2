@@ -178,7 +178,11 @@
 		</v-b>
 
 		<v-b data-view-chatlogs>
-			
+			<input id=$chatlogSearchText placeholder="text">
+			<input type=number id=$chatlogSearchRoom placeholder="room id">
+			<input type=number id=$chatlogSearchUser placeholder="user id">
+			<button id=$chatlogSearchButton>Search</button>
+			<!--<span id=$chatlogSearchUser></span>-->
 		</v-b>
 
 		<!--=======================\
@@ -215,9 +219,7 @@
 				</div>
 			</v-b>
 
-			<v-b data-view-chatlogs id=$chatlogSearchResults>
-				
-			</v-b>
+			<v-b data-view-chatlogs id=$chatlogSearchResults></v-b>
 			
 			<v-b data-view-home class="border-list">
 				<div>
