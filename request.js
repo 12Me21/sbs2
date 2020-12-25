@@ -426,6 +426,21 @@ getCommentsBefore: function(id, firstId, count, callback) {
 	})
 },
 
+getCommentsAfter: function(id, lastId, count, callback) {
+	var fi = {limit: count, parentIds: [id]}
+	if (lastId != null)
+		fi.minId = lastId+1
+	return read([
+		{comment: fi},
+		"user.0createUserId.0editUserId",
+	], {}, function(e, resp) {
+		if (!e)
+			callback(resp.comment)
+		else
+			callback(null)
+	})
+},
+
 sendMessage: function(room, message, meta, callback) {
 	return request("Comment", 'POST', callback, {parentId: room, content: JSON.stringify(meta)+"\n"+message})
 },

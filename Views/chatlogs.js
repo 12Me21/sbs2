@@ -3,9 +3,18 @@ with (View) (function($) { "use strict" //*/
 
 addView('chatlogs', {
 	init: function() {
+		//var sel = Draw.userSelector()
+		//$chatlogSearchUser.replaceChildren(sel.elem)
+		$chatlogSearchButton.onclick = function() {
+			var query = {}
+			query.t = $chatlogSearchText.value
+			query.pid = $chatlogSearchRoom.value
+			query.uid = $chatlogSearchUser.value
+			Nav.go("chatlogs"+Req.queryString(query))
+		}
 	},
 	start: function(id, query, render) {
-		var search = {limit: 100}
+		var search = {limit: 100, reverse: true}
 		if (query.t)
 			search.contentLike = "%"+query.t+"%"
 		if (query.pid)
@@ -18,11 +27,15 @@ addView('chatlogs', {
 			"user.0createUserId",
 		], {}, function(e, resp){
 			if (e) return render(null)
-			render(resp.comment)
+			render(resp.comment, query)
 		})
 	},
 	className: 'chatlogs',
-	render: function(comments) {
+	render: function(comments, query) {
+		$chatlogSearchText.value = query.t || ""
+		$chatlogSearchRoom.value = query.pid || ""
+		$chatlogSearchUser.value = query.uid || ""
+
 		$chatlogSearchResults.replaceChildren()
 		comments.forEach(function(c) {
 			$chatlogSearchResults.appendChild(Draw.searchComment(c))
