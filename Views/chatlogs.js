@@ -27,17 +27,19 @@ addView('chatlogs', {
 			"user.0createUserId",
 		], {}, function(e, resp){
 			if (e) return render(null)
-			render(resp.comment, query)
+			render(resp.comment, query, resp.content)
 		})
 	},
 	className: 'chatlogs',
-	render: function(comments, query) {
+	render: function(comments, query, pages) {
+		var map = Entity.makePageMap(pages)
 		$chatlogSearchText.value = query.t || ""
 		$chatlogSearchRoom.value = query.pid || ""
 		$chatlogSearchUser.value = query.uid || ""
 
 		$chatlogSearchResults.replaceChildren()
 		comments.forEach(function(c) {
+			c.parent = map[c.parentId]
 			$chatlogSearchResults.appendChild(Draw.searchComment(c))
 		})
 		//TODO: results are links to chatlog viewer which lets you load surrounding messages etc.
