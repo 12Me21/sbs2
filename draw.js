@@ -767,6 +767,11 @@ messageControls: function() {
 settings: function(settings, onchange) {
 	var get = {}
 	var set = {}
+	var change = function(name) {
+		var value = get[name]()
+		Store.set("setting-"+name, JSON.stringify(value))
+		onchange(name, value)
+	}
 	var x = {
 		elem: document.createDocumentFragment(),
 		get: function() {
@@ -780,12 +785,12 @@ settings: function(settings, onchange) {
 			set.forEach(function(func, key) {
 				func(data[key])
 			})
+		},
+		saveAll: function() {
+			get.forEach(function(func, key) {
+				change(key);
+			})
 		}
-	}
-	var change = function(name) {
-		var value = get[name]()
-		Store.set("setting-"+name, JSON.stringify(value))
-		onchange(name, value)
 	}
 	settings.forEach(function(data, name) {
 		var type = data.type
@@ -800,22 +805,30 @@ settings: function(settings, onchange) {
 				opt.value = option
 				opt.textContent = option
 			})
-			get[name] = function() {
-				return elem.value
-			}
-			set[name] = function(value) {
-				elem.value = value
-			}
-			var value = Store.get("setting-"+name)
-			if (value != null) {
-				value = JSON.safeParse(value)
-				set[name](value)
-				onchange(name, value)
-			}
+		} else if (type=='textarea') {
+			elem = document.createElement('textarea')
+		} else {
+			return // invalid setting field type
+		}
+		get[name] = function() {
+			return elem.value
+		}
+		set[name] = function(value) {
+			elem.value = value
+		}
+		
+		var value = Store.get("setting-"+name)
+		if (value != null) {
+			value = JSON.safeParse(value)
+			set[name](value)
+			onchange(name, value)
+		}
+		if (data.autosave != false) {
 			elem.onchange = function() {
-				change(name)
+				change(name);
 			}
 		}
+		
 		if (elem)
 			x.elem.appendChild(elem)
 		x.elem.createChild('br')
