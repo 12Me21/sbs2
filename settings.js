@@ -14,6 +14,14 @@ fields: {
 			} else
 				$customCSS.textContent = ""
 		}
+	},
+	sitejs: {
+		name: "Custom Javascript",
+		type: 'textarea',
+		autosave: false, //todo: maybe highlight when changed, to notify user that they need to save manually?
+		update: function(value) {
+			eval(value)
+		},
 	}
 },
 
