@@ -1248,3 +1248,7 @@ html.f-editorPreview .editorNotPreview {
 .category-childs {
 	margin-left: 1rem;
 }
+
+.inputPane > * {
+	height: 100%;
+}
