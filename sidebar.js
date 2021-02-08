@@ -209,6 +209,7 @@ displayMessages: function(comments, initial) {
 },
 
 limitMessages: function() {
+	var x = scroller.scrollBottom
 	while (displayedMessages > 500) {
 		var n = scroller.inner.firstChild
 		var id = n.getAttribute('data-id')
@@ -217,6 +218,7 @@ limitMessages: function() {
 		n.remove()
 		displayedMessages--
 	}
+	scroller.scrollBottom = x
 }
 
 <!--/* 
