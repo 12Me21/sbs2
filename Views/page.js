@@ -218,6 +218,8 @@ function editComment(id) {
 	Req.getComment(id, function(comment) {
 		if (!comment)
 			return
+		if (editingComment)
+			cancelEdit()
 		cancelEditMode()
 		preEdit = readInput()
 		editingComment = comment
