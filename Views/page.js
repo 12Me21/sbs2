@@ -100,7 +100,7 @@ addView('page', {
 					Req.sendMessage(room.id, data.content, data.meta, function(e) {
 						if (e) {
 							//error sending message
-							writeData(old)
+							writeInput(old)
 						}
 					})
 					$chatTextarea.value = "" //hack?
