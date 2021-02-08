@@ -210,13 +210,15 @@ ChatRoom.prototype.removeMessage = function(id) {
 		return false
 	
 	var parent = message.parentNode
-	
+
+	var x = this.scroller.scrollBottom
 	message.remove()
 	delete this.messageElements[id]
 	this.totalMessages--
 	
 	if (!parent.firstChild)
 		parent.parentNode.remove()
+	this.scroller.scrollBottom = x
 	
 	return true
 }
