@@ -106,6 +106,9 @@ addView('settings', {
 			Settings.change(name, value)
 		})
 		$localSettings.appendChild(d.elem)
+		$localSettingsSave.onclick = function() {
+			d.saveAll()
+		}
 	}
 })
 
