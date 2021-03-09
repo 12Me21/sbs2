@@ -447,6 +447,8 @@ commentTitle: function(comment) {
 },
 
 titleNotification: function(text, icon) {
+	if (!Req.me)
+		return;
 	if (text == false) {
 		$.document.title = realTitle
 		changeFavicon(false)
