@@ -6,7 +6,7 @@ Object.assign(Nav, { //*/
 currentPath: null,
 
 initialPop: false,
-
+canonicalLink: null,
 init: false,
 
 entityPath: function(entity) {
@@ -60,6 +60,8 @@ initial: function() {
 		return
 	initialPop = true
 	init = true
+	canonicalLink = document.createElement('link')
+	canonicalLink.rel = "canonical"
 	updateFromLocation()
 },
 
@@ -108,10 +110,26 @@ decodePath: function(path) {
 	return path
 },
 
+haloopdyLink: function(path) {
+	var url = "https://smilebasicsource.com/"
+	if (path.type) {
+		url += "?p="+path.type
+		if (path.id !== undefined)
+			url += "-"+path.id
+	}
+	return url
+},
+
 render: function(path, after) {
 	path = String(path)
+
 	var path = decodePath(path)
-	
+	try {
+		document.head.removeChild(canonicalLink);
+	} catch(e) {};
+	canonicalLink.href = haloopdyLink(path);
+	document.head.appendChild(canonicalLink);
+
 	// todo: update url when view is redirected
 	$.View.handleView(path.type, path.id, path.query, after)
 },

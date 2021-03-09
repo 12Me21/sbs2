@@ -87,7 +87,6 @@ function ready() {
 	document.documentElement.addEventListener('touchstart', function(e) {
 		e.preventDefault()
 	})
-	
 	View.onLoad()
 	
 	Nav.initial()
