@@ -121,13 +121,22 @@ processItem: {
 		if (data.content) {
 			var m = decodeComment(data.content)
 			data.content = m.t
-			delete m.t //IMPORTANT
 			data.meta = m
 			var av = +data.meta.a
+			var nick = data.meta.b || data.meta.n
 			if (av)
 				data.createUser = Object.create(data.createUser, {
 					avatar: {value: av}
 				})
+			if (nick)
+				data.createUser = Object.create(data.createUser, {
+					name: {value: nick}
+				})
+			// this is exclusively for bridges, which
+			// adds a <USERNAME> in front of each message
+			if (data.meta.b)
+				data.content = m.t.replace(/<[^>]*> /, '')
+			delete m.t //IMPORTANT
 		} else { // deleted comment usually
 			data.meta = {}
 		}
