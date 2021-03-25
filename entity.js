@@ -134,8 +134,10 @@ processItem: {
 				})
 			// this is exclusively for bridges, which
 			// adds a <USERNAME> in front of each message
-			if (data.meta.b)
-				data.content = m.t.replace(/<[^>]*> /, '')
+			if (data.meta.b) {
+				var regex = new RegExp('<' + nick + '> ')
+				data.content = m.t.replace(regex, '')
+			}
 			delete m.t //IMPORTANT
 		} else { // deleted comment usually
 			data.meta = {}
