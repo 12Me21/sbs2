@@ -432,7 +432,7 @@ getCommentsBefore: function(id, firstId, count, callback) {
 getCommentsAfter: function(id, lastId, count, callback) {
 	var fi = {limit: count, parentIds: [id]}
 	if (lastId != null)
-		fi.minId = lastId+1
+		fi.minId = lastId
 	return read([
 		{comment: fi},
 		"user.0createUserId.0editUserId",
