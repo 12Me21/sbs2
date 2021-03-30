@@ -36,7 +36,11 @@ onLoad: function() {
 	})
 	$imageUpload.onchange = function(e) {
 		var file = this.files[0]
-		file && fileUploaded(file)
+		try {
+			file && fileUploaded(file)
+		} finally {
+			this.value = ""
+		}
 	}
 	$fileCancel.onclick = $fileDone.onclick = fileCancel
 	$fileUpload.onclick = function() {
