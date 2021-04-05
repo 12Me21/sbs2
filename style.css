@@ -167,7 +167,9 @@ input {
 html {
 	background-color: #FEE;
 	font-family: roboto, fontello, sans-serif;
+	font-variant-ligatures: none;
 	position: fixed;
+	
 }
 
 body {
