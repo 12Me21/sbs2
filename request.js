@@ -372,14 +372,13 @@ getRecentActivity: function(callback) {
 	var day = 1000*60*60*24
 	var start = new Date(Date.now() - day).toISOString()
 	// "except no that won't work if site dies lol"
-	var end = new Date(Date.now()).toISOString()
 	return read([
-		{activity: {createStart: start, createEnd: end}},
-		{commentaggregate: {createStart: start, createEnd: end}},
+		{activity: {createStart: start}},
+		{commentaggregate: {createStart: start}},
 		{"activity~Awatching": {contentLimit:{watches:true}}},
 		{"commentaggregate~CAwatching": {contentLimit:{watches:true}}},
 		"content.0contentId.1id.2contentId.3id",
-		{comment: {limit: 30, reverse: true}},
+		{comment: {limit: 50, reverse: true, createStart: start}},
 		"user.0userId.1userIds.2userId.3userIds.5createUserId",
 	], {
 		content: "name,id,permissions,type"
