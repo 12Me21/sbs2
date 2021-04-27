@@ -105,6 +105,7 @@ textarea {
 	box-shadow: 0.1rem 0.2rem 0.3rem -0.2rem rgba(13,13,13,0.5);
 	max-width: 100%;
 	font-family: roboto, sans-serif;
+	font-variant-ligatures: none;
 	font-size: 0.8em;
 }
 
