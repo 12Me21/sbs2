@@ -98,7 +98,7 @@ addView('settings', {
 				if (!e)
 					registerError("Updated", undefined, $userSettingsError)
 				else
-					registerError(resp, "Failed:", $userSettingsError)
+					registerError(resp, "Failed:", $userSettingsError) //todo: this doesn't work?
 			})
 		}
 
