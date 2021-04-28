@@ -303,6 +303,25 @@ setSensitive: function(data, callback) {
 	return request("User/sensitive", 'POST', callback, data)
 },
 
+// this should accept as many types as possible
+uploadImage: function(thing, callback) {
+	if (thing instanceof HTMLCanvasElement) {
+		thing.toBlob(function(blob) {
+			if (blob)
+				uploadFile(blob, callback)
+			else
+				callback(null)
+		})
+	} else if (thing instanceof File || thing instanceof Blob) {
+		uploadFile(thing, callback)
+	} else if (thing instanceof Image) {
+		callback(null)
+		// todo
+	} else {
+		callback(null)
+	}
+},
+
 uploadFile: function(file, callback) {
 	var form = new FormData()
 	form.append('file', file)
