@@ -179,4 +179,4 @@ function fillFields(page) {
 var validTypes = ['resource','chat','program','tutorial','documentation']
 
 <!--/*
-}(window)) //*/ // pass external values
+}(window)) //*/

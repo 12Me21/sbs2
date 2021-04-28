@@ -15,7 +15,7 @@ addView('settings', {
 		$logOut.onclick = function(e) {
 			Req.logOut()
 		}
-
+		
 		$registerForm.submit.onclick = function(e) {
 			e.preventDefault()
 			registerError("Registering...")
@@ -84,7 +84,7 @@ addView('settings', {
 				})
 			}
 		}
-
+		
 		$changeForm.onsubmit = function(e) {
 			e.preventDefault()
 			registerError("Updating data...", undefined, $userSettingsError)
@@ -101,7 +101,7 @@ addView('settings', {
 					registerError(resp, "Failed:", $userSettingsError) //todo: this doesn't work?
 			})
 		}
-
+		
 		var d = Draw.settings(Settings.fields, function(name, value) {
 			Settings.change(name, value)
 		})
@@ -142,10 +142,10 @@ function readChangeFields() {
 		email: form.email.value
 	}
 	data.error = {}
-
+	
 	if (!data.oldPassword)
 		data.error.oldPassword = "Old password is required"
-
+	
 	if (!data.username)
 		delete data.username
 	
@@ -154,13 +154,13 @@ function readChangeFields() {
 			data.error.password2 = "Passwords don't match"
 	} else
 		delete data.password
-
+	
 	if (data.email) {
 		if (data.email != form.email2.value)
 			data.error.email2 = "Emails don't match"
 	} else
 		delete data.email
-
+	
 	if (!Object.keys(data.error).length)
 		data.error = null
 	return data
@@ -209,4 +209,4 @@ function sendConfirmationEmail() {
 }
 
 <!--/*
-}(window)) //*/ // pass external values
+}(window)) //*/

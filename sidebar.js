@@ -66,7 +66,7 @@ onLoad: function() {
 	prePrint = null
 	// todo: maybe a global ESC handler?
 	/*document.addEventListener('keydown', function(e) {
-		
+	  
 	  })*/
 	var x = document.createElement('span')
 	var y = x.createChild('span')
@@ -84,7 +84,7 @@ onLoad: function() {
 	$sidebarTabs.replaceChildren(sidebarTabs.elem)
 	sidebarTabs.select(0)
 	selectTab = sidebarTabs.select
-
+	
 	$searchButton.onclick = function() {
 		$searchButton.disabled = true
 		Req.search1($searchInput.value, function(users, pages) {
@@ -229,6 +229,6 @@ limitMessages: function() {
 }) //*/
 
 <!--/*
-}(window)) //*/ // pass external values
+}(window)) //*/
 
 window.print = Sidebar.print

@@ -27,4 +27,4 @@ addView('template', {
 })
 
 <!--/*
-}(window)) //*/ // pass external values
+}(window)) //*/

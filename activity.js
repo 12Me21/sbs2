@@ -133,7 +133,7 @@ userUpdate: function(item, user, date) {
 	item.users.splice(i, 0, {user:user, date:date})
 	// temp fix maybe? mark unsorted users and render them differentlyyy
 	/*if (!date && !user.unsorted)
-		user = Object.create(user, {unsorted: {value: true}})*/
+	  user = Object.create(user, {unsorted: {value: true}})*/
 },
 
 <!--/* 
@@ -141,4 +141,4 @@ userUpdate: function(item, user, date) {
 
 
 <!--/*
-}(window)) //*/ // pass external values
+}(window)) //*/
