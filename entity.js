@@ -5,7 +5,7 @@
 
 // functions for processing recieved entities/
 // DATA PROCESSOR
-//call it process or format or something
+
 <!--/* trick indenter
 var Entity = Object.create(null)
 with (Entity) (function($) { "use strict"
@@ -229,4 +229,4 @@ categoryMap = {0: {
 }}
 
 <!--/*
-}(window)) //*/ // pass external values
+}(window)) //*/

@@ -182,7 +182,7 @@ handleView: function(type, id, query, callback) {
 		}
 		$main.scrollTop = 0
 	}
-
+	
 	var cancelled = false
 	if (!view) {
 		whenPageLoaded(function() {
@@ -256,7 +256,7 @@ handleView: function(type, id, query, callback) {
 		}
 		loadEnd()
 	}
-
+	
 	function errorRender(message, error) {
 		cleanUp()
 		currentView = view = errorView
@@ -271,7 +271,7 @@ handleView: function(type, id, query, callback) {
 		}
 		cancelled = true
 	}
-
+	
 	function after() {
 		//$.document.body.className = view.className
 		document.querySelectorAll("v-b").forEach(function(e) {
@@ -280,7 +280,7 @@ handleView: function(type, id, query, callback) {
 		View.flag('splitView', view.splitView==true)
 		View.flag('viewReady', true)
 		View.flag('mobileSidebar', false) //bad (should be function on Sidebar)
-
+		
 		Req.lpLastListeners = ChatRoom.generateListeners(Req.lpLastListeners)
 		Req.lpStatuses = ChatRoom.generateStatus()
 		Req.lpRefresh()
@@ -321,7 +321,7 @@ onLoad: function() {
 		f()
 	})
 	runOnLoad = null
-
+	
 	// video player does not fire 'click' events so instead
 	// need to detect when the video is played
 	// using a custom event
@@ -478,12 +478,8 @@ changeFavicon: function(src) {
 <!--/* 
 }) //*/
 
-// create private variables here
-// these will override public vars
-
-
 <!--/*
-}(window)) //*/ // pass external values
+}(window)) //*/
 
 
 //todo: rename resource to avoid collision with request.js

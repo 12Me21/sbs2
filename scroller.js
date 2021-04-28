@@ -97,7 +97,7 @@ if (window.ResizeObserver) {
 					var height = event.contentRect.height
 					if (height != item.height) { //need to check if height changed in case of an ignored hide/show cycle
 						
-
+						
 						item.callback(item.height, event.contentRect.height)
 						item.height = event.contentRect.height
 					}
@@ -191,10 +191,10 @@ Scroller.prototype.autoScroll = function() {
 		var $=this
 		if (!this.animationId) {
 			/*this.animationId = null
-			var now = performance.now()
-			this.animationStart = now - 1000/60 //assume 60fps on first frame..
-			this.autoScrollAnimation(now)
-			// edited to start animation la-a-a-ater*/
+			  var now = performance.now()
+			  this.animationStart = now - 1000/60 //assume 60fps on first frame..
+			  this.autoScrollAnimation(now)
+			  // edited to start animation la-a-a-ater*/
 			this.animationId = window.requestAnimationFrame(function(time) {
 				var now = performance.now()
 				$.animationStart = now - 1000/60 //assume 60fps on first frame..
@@ -212,16 +212,16 @@ Scroller.prototype.cancelAutoScroll = function() {
 Scroller.prototype.autoScrollAnimation = function(time) {
 	var dt = 1//(time - this.animationStart) / (1000/60)
 	this.animationStart = time
-
+	
 	this.atBottom = true
 	this.ignoreScroll = true
-
+	
 	if (this.scrollBottom == this.oldScrollBottom) {
 		this.animationId = null
 		return
 	} // PLEASE
 	this.oldScrollBottom = this.scrollBottom
-
+	
 	this.scrollBottom = Math.floor(this.scrollBottom * Math.pow(1-this.rate, dt))
 	if (this.scrollBottom <= 0.5) {
 		this.animationId = null

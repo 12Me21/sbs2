@@ -4,7 +4,7 @@ with (Req) (function($) { "use strict"
 Object.assign(Req, { //*/
 
 /*
-storageKey: "devauth",
+  storageKey: "devauth",
 */
 storageKey: "auth",
 
@@ -38,7 +38,7 @@ rawRequest: function(url, method, callback, data, auth){
 	var x = new XMLHttpRequest()
 	x.open(method, url)
 	var args = arguments
-
+	
 	var start = Date.now()
 	x.onload = function() {
 		var type = x.getResponseHeader('Content-Type')
@@ -87,11 +87,11 @@ rawRequest: function(url, method, callback, data, auth){
 		else
 			retry(5000, "request error")
 	}
-
+	
 	x.setRequestHeader('Cache-Control', "no-cache, no-store, must-revalidate")
 	x.setRequestHeader('Pragma', "no-cache") // for internet explorer
 	auth && x.setRequestHeader('Authorization', "Bearer "+auth)
-
+	
 	if (data == undefined)
 		x.send()
 	else if (data.constructor == Object) { //plain object. we do need to support sending strings etc. as json later though...
@@ -101,7 +101,7 @@ rawRequest: function(url, method, callback, data, auth){
 		x.send(data)
 	
 	return x
-
+	
 	function retry(time, reason) {
 		// this is not recursion because retry is called in async callback functions only!
 		if (time) {

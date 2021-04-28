@@ -122,14 +122,14 @@ haloopdyLink: function(path) {
 
 render: function(path, after) {
 	path = String(path)
-
+	
 	var path = decodePath(path)
 	try {
 		document.head.removeChild(canonicalLink);
 	} catch(e) {};
 	canonicalLink.href = haloopdyLink(path);
 	document.head.appendChild(canonicalLink);
-
+	
 	// todo: update url when view is redirected
 	$.View.handleView(path.type, path.id, path.query, after)
 },

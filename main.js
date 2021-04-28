@@ -17,7 +17,7 @@ delete window.sidebar // obsolete firefox global variable
 Req.onLogin = function() {
 	console.log("login")
 	View.flag('loggedIn', true)
-
+	
 	// display user info etc.
 	// start long poller
 	Req.onMessages = function(comments, contents) {
@@ -51,9 +51,9 @@ Req.onLogin = function() {
 			alert("INITIAL LONG POLL FAILED!")
 		}
 	})
-
+	
 	Act.pullRecent()
-
+	
 	//TODO
 	// update currently viewed page (in case page was hidden)
 }

@@ -36,7 +36,7 @@ addView('chatlogs', {
 		$chatlogSearchText.value = query.t || ""
 		$chatlogSearchRoom.value = query.pid || ""
 		$chatlogSearchUser.value = query.uid || ""
-
+		
 		$chatlogSearchResults.replaceChildren()
 		comments.forEach(function(c) {
 			c.parent = map[c.parentId]

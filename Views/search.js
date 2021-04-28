@@ -15,4 +15,4 @@ addView('search', {
 })
 
 <!--/*
-}(window)) //*/ // pass external values
+}(window)) //*/

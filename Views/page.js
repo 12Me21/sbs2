@@ -132,7 +132,7 @@ addView('page', {
 		// right now it PROBABLY will be but that isn't certain
 		// the long poller could technically start before onload
 		ChatRoom.global = new ChatRoom(-1)
-
+		
 		$hideGlobalStatusButton.onclick = function() {
 			if ($hideGlobalStatusButton.disabled)
 				return
@@ -141,7 +141,7 @@ addView('page', {
 				$hideGlobalStatusButton.disabled = false
 			})
 		}
-
+		
 		$chatCancelEdit.onclick = function() {
 			cancelEdit()
 		}
@@ -167,7 +167,7 @@ addView('page', {
 				}
 			}
 		}, true)
-
+		
 		updateChatTextareaSize()
 		$chatTextarea.addEventListener('input', updateChatTextareaSize)
 		function updateChatTextareaSize() {
@@ -242,7 +242,7 @@ function cancelEditMode() {
 }
 
 <!--/*
-}(window)) //*/ // pass external values
+}(window)) //*/
 
 // when joining a room:
 // - create the ChatRoom object

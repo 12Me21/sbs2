@@ -143,8 +143,8 @@ fileThumbnail: function(file, onclick) {
 	var div = document.createElement('div')
 	div.className = "fileThumbnail item"
 	/*div.onclick = function() {
-		selectFile(file)
-		}*/
+	  selectFile(file)
+	  }*/
 	div.setAttribute('data-id', file.id)
 	var img = document.createElement('img')
 	img.src = Req.fileURL(file.id, "size=50")
@@ -236,7 +236,7 @@ messageBlock: function(comment) {
 	div.appendChild(timeStamp)
 	
 	div.appendChild(avatar(user))
-
+	
 	var name = document.createElement('span')
 	name.className += " username"
 	
@@ -268,7 +268,7 @@ searchComment: function(comment) {
 	var pg = entityTitleLink(comment.parent)
 	pg.className += " bar rem1-5 linkBar"
 	outer.appendChild(pg)
-
+	
 	var firstId = comment.id
 	var lastId = comment.id
 	var firstElem
@@ -294,7 +294,7 @@ searchComment: function(comment) {
 	d[1].appendChild(messagePart(comment))
 	outer.appendChild(d[0])
 	firstElem = lastElem = d[0]
-
+	
 	var b = button()
 	b[1].textContent = "Load Newer"
 	outer.appendChild(b[0])
@@ -355,10 +355,10 @@ pageInfo: function(page) {
 	e.appendChild(authorBox(page))
 	e.appendChild(voteBox(page))
 	/*var b = linkButton()
-	b[1].textContent = "Edit Page"
-	Nav.link("editpage/"+page.id, b[1].parentNode)
-	b[0].className += " item rightAlign"
-	e.appendChild(b[0])*/
+	  b[1].textContent = "Edit Page"
+	  Nav.link("editpage/"+page.id, b[1].parentNode)
+	  b[0].className += " item rightAlign"
+	  e.appendChild(b[0])*/
 	return e
 },
 sidebarTabs: function(list, callback) {
@@ -380,7 +380,7 @@ sidebarTabs: function(list, callback) {
 		item.elem.setAttribute('role', "tabpanel")
 		item.elem.setAttribute('aria-labelledby', "sidebar-tab-"+i)
 		item.elem.hidden = true
-
+		
 		var td = document.createElement('td')
 		var btn = document.createElement('button')
 		btn.setAttribute('role', "tab")
@@ -415,10 +415,10 @@ activityItem: function(item) {
 	bar2.className += " bar rem1-5"
 	outer.appendChild(bar)
 	outer.appendChild(bar2)
-
+	
 	var userContainer = bar2.createChild('activity-users')
 	userContainer.className = "rightAlign"
-
+	
 	var time = timeAgo(item.lastDate)
 	time.className += " textItem"
 	userContainer.appendChild(time)
@@ -492,12 +492,12 @@ authorBox: function(page) {
 pageEditedTime: function(label, time) {
 	var b = document.createElement('span')
 	b.className = "item"
-
+	
 	var a = document.createElement('div')
 	a.className = "half half-label"
 	a.textContent = label
 	b.appendChild(a)
-
+	
 	a = timeAgo(time)
 	a.className += " half"
 	b.appendChild(a)
@@ -527,8 +527,8 @@ timeAgoString: function(date) {
 	if (interval >= 1) return interval + " minutes ago"
 	return "Just now"
 	/*if (seconds <= -0.5)
-		return " IN THE FUTURE?"
-	return Math.round(seconds) + " seconds ago"*/
+	  return " IN THE FUTURE?"
+	  return Math.round(seconds) + " seconds ago"*/
 },
 
 categoryInput: function() {
@@ -593,7 +593,7 @@ permissionRow: function(user, perms) {
 
 permissionInput: function() {
 	var elem = document.createElement('div')
-
+	
 	var input = Draw.userSelector()
 	
 	
@@ -608,7 +608,7 @@ permissionInput: function() {
 	header.createChild('th').textContent = "Delete"
 	var body = table.createChild('tbody')
 	body.className += " permission-users"
-
+	
 	elem.appendChild(input.elem)
 	
 	var x = {
@@ -839,15 +839,15 @@ settings: function(settings, onchange) {
 galleryLabel: function(entity) {
 	var element = entityLink(entity)
 	element.className += " bar rem1-5"
-
+	
 	var icon = iconTitle(entity)
 	element.appendChild(icon)
-
+	
 	/*var author = entityTitleLink(entity.createUser, true)
-	var b = document.createElement('div')
-	b.appendChild(author)
-	b.className += " rightAlign"
-	element.appendChild(b)*/
+	  var b = document.createElement('div')
+	  b.appendChild(author)
+	  b.className += " rightAlign"
+	  element.appendChild(b)*/
 	
 	return element
 },
@@ -901,10 +901,10 @@ voteButton: function(disptext, state, page) {
 voteBox: function (page) {
 	var element = document.createElement('div')
 	element.className += ' item rightAlign'
-		
+	
 	if (!page)
 		return element
-
+	
 	var buttonStates = [
 		['-', 'b'], ['~', 'o'], ['+', 'g']
 	]
@@ -912,12 +912,12 @@ voteBox: function (page) {
 	buttonStates.forEach(function(x) {
 		buttons.push(voteButton(x[0], x[1], page))
 	})
-
+	
 	buttons.forEach(function(x) {
 		x.onclick = function(e) {
 			if (!Req.auth)
 				return
-
+			
 			var button = e.currentTarget.querySelector('button')
 			var state = button.getAttribute('data-vote')
 			var vote = state
@@ -927,8 +927,8 @@ voteBox: function (page) {
 			button.disabled = true
 			// check if vote was already toggled
 			if (oldButton &&
-				oldButton.hasAttribute('data-selected') &&
-				button.hasAttribute('data-selected'))
+				 oldButton.hasAttribute('data-selected') &&
+				 button.hasAttribute('data-selected'))
 				vote=undefined
 			Req.setVote(page.id, vote, function(e, resp) {
 				// in case the vote fails when user is blocked from voting
@@ -991,5 +991,4 @@ function hasPerm(perms, id, perm) {
 }
 
 <!--/*
-}(window)) //*/ // pass external values
-
+}(window)) //*/

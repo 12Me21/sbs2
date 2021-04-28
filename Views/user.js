@@ -56,4 +56,4 @@ addView('user', {
 })
 
 <!--/*
-}(window)) //*/ // pass external values
+}(window)) //*/

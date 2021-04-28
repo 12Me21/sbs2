@@ -1,5 +1,5 @@
 if (!window.devicePixelRatio)
-	window.devicePixelRatio = 1
+window.devicePixelRatio = 1
 
 if (!Array.prototype.includes)
 	Array.prototype.includes = function(item) {
@@ -25,11 +25,11 @@ if (!Object.assign)
 // note: only supports 1 child element, which must be a node (not a string)
 // update: we need to replace this ALWAYS because ios safari implemented it wrong (fails when 0 arguments are passed)
 //if (!HTMLElement.prototype.replaceChildren)
-	HTMLElement.prototype.replaceChildren = function(child) {
-		this.textContent = ""
-		if (child)
-			this.appendChild(child)
-	}
+HTMLElement.prototype.replaceChildren = function(child) {
+	this.textContent = ""
+	if (child)
+		this.appendChild(child)
+}
 
 Node.prototype.prependChild = function(child) {
 	this.insertBefore(child, this.firstChild)
@@ -108,28 +108,28 @@ Object.defineProperty(Object.prototype, 'forEach', {
 })
 
 /*function NodeBlock(node, child) {
-	// create object containing override properties
-	// set this object's prototype to `node`
-	return Object.create(node, {
-		childNodes: {
-			get: function() {return child.childNodes}
-		},
-		firstChild: {
-			get: function() {return child.firstChild}
-		},
-		lastChild: {
-			get: function() {return child.lastChild}
-		},
-		nodeValue: {
-			get: function() {return child.nodeValue},
-			set: function(x) {child.nodeValue = x}
-		},
-		textContent: {
-			get: function() {return child.textContent}
-			set: function(x) {child.textContent = x}
-		},
-		// and then functions like appendChild etx.
-	})
+// create object containing override properties
+// set this object's prototype to `node`
+return Object.create(node, {
+childNodes: {
+get: function() {return child.childNodes}
+},
+firstChild: {
+get: function() {return child.firstChild}
+},
+lastChild: {
+get: function() {return child.lastChild}
+},
+nodeValue: {
+get: function() {return child.nodeValue},
+set: function(x) {child.nodeValue = x}
+},
+textContent: {
+get: function() {return child.textContent}
+set: function(x) {child.textContent = x}
+},
+// and then functions like appendChild etx.
+})
 }*/
 
 //talking excitedly about javasscript getters and setters for an hour and then crying

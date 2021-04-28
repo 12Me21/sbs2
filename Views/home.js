@@ -43,4 +43,4 @@ function updateGallery(page) {
 }
 
 <!--/*
-}(window)) //*/ // pass external values
+}(window)) //*/

@@ -18,7 +18,7 @@ addView('category', {
 		currentQuery = query
 		var page = +query.page || 1
 		navButtons.set(page)
-
+		
 		var search = {
 			parentIds: [id],
 			limit: 30,
@@ -92,4 +92,4 @@ var currentCategory
 var currentQuery
 
 <!--/*
-}(window)) //*/ // pass external values
+}(window)) //*/

@@ -1,7 +1,7 @@
 // oh I just realized...
 // the function($){...}(window) trick won't work here
 // because View has been initialized, so it COULD have a property named `window`...
-	<!--/* trick indenter
+<!--/* trick indenter
 with (View) (function($) { "use strict" //*/
 
 addView('image', {
@@ -11,11 +11,11 @@ addView('image', {
 		nav.appendChild(navButtons.element)
 		navButtons.onchange = function(pageNum) {
 			/*if (currentCategory == null)
-				return*/
+			  return*/
 			currentQuery.page = pageNum
 			Nav.go("image"+Req.queryString(currentQuery))
 		}
-					
+		
 		$setAvatarButton.onclick = function() {
 			if (!selectedFile)
 				return
@@ -44,7 +44,7 @@ addView('image', {
 		currentQuery = query
 		var page = +query.page || 1
 		navButtons.set(page)
-
+		
 		var search = {
 			limit: 20,
 			skip: (page-1)*20,
@@ -107,4 +107,4 @@ var navButtons
 var currentQuery
 
 <!--/*
-}(window)) //*/ // pass external values
+}(window)) //*/

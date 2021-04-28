@@ -14,7 +14,7 @@ function ChatRoom(id, page) {
 		this.userListInner = $sidebarUserList
 		return
 	}
-
+	
 	// page
 	this.pageContainer = document.createElement('div')
 	this.pageContainer.className = "split-top border-list"
@@ -24,7 +24,7 @@ function ChatRoom(id, page) {
 	this.pageContainer.appendChild(this.pageInfoElement)
 	this.pageContainer.appendChild(this.pageElement)
 	$pageContents.appendChild(this.pageContainer)
-
+	
 	// user list
 	var ul = Draw.userList()
 	this.userListOuter = ul[0]
@@ -37,13 +37,13 @@ function ChatRoom(id, page) {
 	}
 	this.userListOuter.hidden = true
 	$chatPane.appendChild(this.userListOuter)
-		
+	
 	// chat
 	this.messageElements = {}
 	this.lastTime = 0
 	this.maxMessages = 500
 	this.totalMessages = 0
-
+	
 	var b = Draw.chatMessagePane()
 	this.messagePane = b[0]
 	this.messageList = b[1]
@@ -60,7 +60,7 @@ function ChatRoom(id, page) {
 	this.messagePane.prependChild(b[0])
 	this.messagePane.setAttribute('data-id', page.id)
 	$chatPane.appendChild(this.messagePane)
-
+	
 	this.controlId = null
 	var controls = Draw.messageControls()
 	controls.onclick = function() {
@@ -68,7 +68,7 @@ function ChatRoom(id, page) {
 			window.editComment($.controlId)
 	}
 	this.controls = controls.elem
-
+	
 	this.messageList.addEventListener('focusin', function(e) {
 		var elem = e.target
 		while (elem != $.messageList && elem instanceof HTMLElement) {
@@ -82,7 +82,7 @@ function ChatRoom(id, page) {
 	this.messageList.addEventListener('focusout', function(e) {
 		$.showControls(null)
 	})
-
+	
 	this.messageList.onmouseover = function(e) {
 		var elem = e.target
 		while (elem != $.messageList && elem instanceof HTMLElement) {
@@ -98,17 +98,17 @@ function ChatRoom(id, page) {
 	}
 	this.messageList.onmouseleave = function(e) {
 		$.showControls(null)
-	/*	if (e.target == $.messageList)
+		/*	if (e.target == $.messageList)
 			
-		return
-		var elem = e.target
-		while (elem != $.messageList && elem instanceof HTMLElement) {
+			return
+			var elem = e.target
+			while (elem != $.messageList && elem instanceof HTMLElement) {
 			if (elem.tagName == "MESSAGE-PART") {
-				$.showControls(null)
-				break
+			$.showControls(null)
+			break
 			}
 			elem = elem.parentNode
-		}*/
+			}*/
 	}
 	
 	this.showChat = page.type == "@page.discussion"
@@ -119,7 +119,7 @@ function ChatRoom(id, page) {
 	var l = Req.lpProcessedListeners[id] //should this be done with id -1? // what?
 	l && this.updateUserList(l)
 	ChatRoom.addRoom(this)
-
+	
 	if (this.page.type == "resource")
 		this.pageContainer.style.height = "1000px" //whatever
 	else if (this.page.type == "chat")
@@ -209,7 +209,7 @@ ChatRoom.prototype.removeMessage = function(id) {
 		return false
 	
 	var parent = message.parentNode
-
+	
 	//var x = this.scroller.scrollBottom
 	message.remove()
 	delete this.messageElements[id]
