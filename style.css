@@ -726,9 +726,10 @@ html:not(.f-chatEditing) .showWhenEdit {
 
 .userPageBox {
 	align-items: flex-start;
-	max-height: 40vh;
+	/*max-height: 40vh;*/
+	height: 100%;
 	overflow: auto;
-	/* todo: make this outside of scroller and have activity list scroll separately*/
+	/* todo: make this outside of scroller and have activity list scroll separately*/ /* ??? */
 }
 
 .userPageAvatar {
