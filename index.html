@@ -172,11 +172,6 @@
 		
 		<v-b data-view-membersMode class="nav bar rem1-7" id=$memberNav></v-b>
 		
-		<v-b data-view-userMode class="userPageBox flex-row">
-			<a id=$userPageAvatarLink><img id=$userPageAvatar class="userPageAvatar" alt="" src=""></a>
-			<div class="pageContents pre userPageContents markup-root" id=$userPageContents></div>
-		</v-b>
-		
 		<v-b data-view-chatlogs>
 			<input id=$chatlogSearchText placeholder="text">
 			<input type=number id=$chatlogSearchRoom placeholder="room id">
@@ -190,6 +185,11 @@
 		\========================-->
 		
 		<main-scrollable class="flex grow" id=$main>
+			<v-b data-view-userMode class="userPageBox flex-row">
+				<a id=$userPageAvatarLink><img id=$userPageAvatar class="userPageAvatar" alt="" src=""></a>
+				<div class="pageContents pre userPageContents markup-root" id=$userPageContents></div>
+			</v-b>
+			
 			<v-b data-view-catEditorMode>
 				<label for=$cateditPinned>Pinned pages:</label><input id=$cateditPinned><br>
 				<label for=$cateditCategory>Parent category:</label><input id=$cateditCategory type="number"><br>
