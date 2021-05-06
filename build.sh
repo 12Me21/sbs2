@@ -8,13 +8,13 @@ fi
 cd "$(dirname "$0")"
 
 echo 'Building markup system' >&2
-./sbs2-markup/build.sh
+./markup/build.sh
 
 echo 'creating _build.css' >&2
 cat resource/fonts.css style.css markup.css code.css > resource/_build.css
 
 echo 'creating _build.js' >&2
-cat fill.js entity.js activity.js request.js sbs2-markup/_build.js draw.js view.js scroller.js sidebar.js chat.js settings.js Views/settings.js Views/page.js Views/image.js Views/editpage.js Views/category.js Views/user.js Views/home.js Views/chatlogs.js navigate.js main.js > resource/_build.js
+cat fill.js entity.js activity.js request.js markup/_build.js draw.js view.js scroller.js sidebar.js chat.js settings.js Views/settings.js Views/page.js Views/image.js Views/editpage.js Views/category.js Views/user.js Views/home.js Views/chatlogs.js navigate.js main.js > resource/_build.js
 
 # nocache filename -> filename?1234567 (uses date modified)
 # for now this isn't very useful since the files are always new
@@ -39,14 +39,14 @@ fi
 
 # Instructions for humans:
 
-# 1: follow the instructions in sbs2-markup/build.sh
+# 1: follow the instructions in markup/build.sh
 
 # 2: combine the contents of the files (in order):
 #  fonts.css style.css markup.css code.css
 # into resource/_build.css
  
 # 3: combine the contents of the files (in order):
-#  sbs2-markup/_build.js fill.js entity.js request.js draw.js view.js navigate.js main.js
+#  markup/_build.js fill.js entity.js request.js draw.js view.js navigate.js main.js
 # into resource/_build.js
 
 # 4: open index.html
