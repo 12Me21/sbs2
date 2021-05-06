@@ -176,7 +176,11 @@ markup-root .youtube {
 }
 
 .markup-root [data-bgcolor="blue"] {
-	background-color: #DEF;
+	background-color: #CEF;
+}
+
+.markup-root [data-bgcolor="purple"] {
+	background-color: #ECF;
 }
 
 .markup-root [data-bgcolor="gray"] {
