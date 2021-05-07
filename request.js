@@ -8,7 +8,7 @@ Object.assign(Req, { //*/
 */
 storageKey: "auth",
 
-protocol: "https",
+protocol: "https:",
 
 auth: null,
 onLogin: null,
