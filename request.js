@@ -8,7 +8,7 @@ Object.assign(Req, { //*/
 */
 storageKey: "auth",
 
-protocol: null,
+protocol: "https",
 
 auth: null,
 onLogin: null,
@@ -662,10 +662,10 @@ function arrayToggle(array, value) {
 	return false
 }
 
-if ($.location.protocol=="http:")
-	protocol = "http:"
-else
-	protocol = "https:"
+//if ($.location.protocol=="http:")
+//	protocol = "http:"
+//else
+//	protocol = "https:"
 //this is to trick a script
 server = protocol+"//newdev.smilebasicsource.com/api"
 server = protocol+"//smilebasicsource.com/api"
