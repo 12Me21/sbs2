@@ -79,13 +79,14 @@ rawRequest: function(url, method, callback, data, auth){
 		}
 	}
 	x.onerror = function() {
-		print("Request failed!")
 		var time = Date.now()-start
 		//console.log("xhr onerror after ms:"+time)
 		if (time > 18*1000)
-			retry(null, "3ds timeout")
-		else
+			retry(null, "3ds timeout") // i think other browsers do this too now?
+		else {
+			print("Request failed!")
 			retry(5000, "request error")
+		}
 	}
 	
 	x.setRequestHeader('Cache-Control', "no-cache, no-store, must-revalidate")
