@@ -2,7 +2,6 @@
 window.Req = Object.create(null)
 with (Req) (function($) { "use strict"
 Object.assign(Req, { //*/
-
 /*
   storageKey: "devauth",
 */
