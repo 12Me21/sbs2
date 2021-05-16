@@ -20,6 +20,8 @@ var renderPage = function(page) {
 	Nav.link("editpage/"+page.id, $pageEditLink)
 }
 
+var lastSent = null;
+
 addView('page', {
 	// in this case, we sometimes make a request, and sometimes
 	// load the page instantly because the chatroom is cached
@@ -97,10 +99,12 @@ addView('page', {
 					cancelEdit()
 				} else {
 					var old = data
-					Req.sendMessage(room.id, data.content, data.meta, function(e) {
+					Req.sendMessage(room.id, data.content, data.meta, function(e, resp) {
 						if (e) {
 							//error sending message
 							writeInput(old)
+						} else {
+							lastSent = resp.id;
 						}
 					})
 					$chatTextarea.value = "" //hack?
@@ -118,14 +122,17 @@ addView('page', {
 			}
 		}
 		
+		$chatTextarea.onkeydown = function(e) {
+			if (e.keyCode==38 && $chatTextarea.value=="") { // up arrow
+				if (lastSent)
+					editComment(lastSent);
+			}
+		}
 		$chatTextarea.onkeypress = function(e) {
-			if (!e.shiftKey && e.keyCode == 13) {
+			if (!e.shiftKey && e.keyCode == 13) { // enter
 				e.preventDefault()
 				sendMessage()
 				return
-			}
-			if (!e.ctrlKey && e.key == 'e') {
-				
 			}
 		}
 		// TODO: make sure this is ready when the long poller starts!
