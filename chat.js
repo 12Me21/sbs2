@@ -57,7 +57,16 @@ function ChatRoom(id, page) {
 			b[1].disabled = false
 		}) //todo: lock
 	}
+	var label = document.createElement('label')
+	var checkbox = label.createChild('input')
+	checkbox.type = 'checkbox'
+	this.limitCheckbox = checkbox
+	var text = document.createTextNode('disable limit')
+	label.appendChild(text)
+	
+	this.messagePane.prependChild(label)
 	this.messagePane.prependChild(b[0])
+	
 	this.messagePane.setAttribute('data-id', page.id)
 	$chatPane.appendChild(this.messagePane)
 	
@@ -195,6 +204,8 @@ ChatRoom.prototype.displayOldMessage = function(comment) {
 }
 
 ChatRoom.prototype.limitMessages = function() {
+	if (this.limitCheckbox.checked)
+		return;
 	for (var id in this.messageElements) {
 		if (this.totalMessages <= this.maxMessages)
 			break
