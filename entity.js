@@ -123,11 +123,26 @@ processItem: {
 			data.content = m.t
 			delete m.t //IMPORTANT
 			data.meta = m
+			// avatar override
 			var av = +data.meta.a
 			if (av)
 				data.createUser = Object.create(data.createUser, {
 					avatar: {value: av}
 				})
+			// discord name hack override
+			var nick = data.meta.b
+			if (nick !== undefined) {
+				if (
+					data.meta.m == '12y' &&
+					data.content.substr(0, nick.length+4) == "<"+nick+"> {" &&
+					data.content.substr(-1)=="}"
+				) {
+					data.content = data.content.substring(nick.length+4, data.content.length-1)
+				}
+			}
+			// todo: we should render the nickname in other places too (add this to the title() etc. functions.
+			// and then put like, some icon or whatever to show that they're nicked, I guess.
+			
 		} else { // deleted comment usually
 			data.meta = {}
 		}

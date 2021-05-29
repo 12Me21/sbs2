@@ -330,14 +330,6 @@ messagePart: function(comment) {
 	element.setAttribute('data-id', comment.id)
 	element.setAttribute('tabindex', "0")
 	
-	// strip discord name
-	var nick = comment.meta.b
-	if (nick !== undefined) {
-		if (comment.meta.m == '12y' && comment.content.substr(0, nick.length+3) == "<"+nick+"> ") {
-			comment.content = comment.content.substr(nick.length+3)
-		}
-	}
-	
 	var contents = Parse.parseLang(comment.content, comment.meta.m, false)
 	if (comment.createDate.getTime() != comment.editDate.getTime())
 		element.className += " edited"
