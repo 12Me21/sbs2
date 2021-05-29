@@ -221,37 +221,46 @@ titlePath: function(path) {
 	})
 	return element
 },
-// I wonder if maybe there should be a message split when
-// avatar changes
-// but perhaps this can be abused, and it's probably annoying anyway...
 messageBlock: function(comment) {
 	var user = comment.createUser
 	var date = comment.createDate
 	
 	var div = document.createElement('message-block')
-	
+	// time
 	var timeStamp = document.createElement('time')
 	timeStamp.setAttribute("datetime", date+"")
 	timeStamp.textContent = timeString(date)
 	div.appendChild(timeStamp)
-	
+	// avatar
 	div.appendChild(avatar(user))
-	
+	// username
 	var name = document.createElement('span')
 	name.className += " username"
+	div.appendChild(name)
 	
 	var link = entityLink(user)
 	name.appendChild(link)
 	
 	var n = document.createElement('span')
 	n.className = "pre"
-	n.textContent = user.name
-	
 	link.appendChild(n)
-	link.appendChild(document.createTextNode(":"))
 	
-	div.appendChild(name)
+	if (comment.meta.b !== undefined)
+		n.textContent = comment.meta.b
+	else
+		n.textContent = user.name
 	
+	if (comment.meta.b !== undefined) {
+		link.appendChild(document.createTextNode(" ("))
+		n = document.createElement('span')
+		n.className = "pre"
+		n.textContent = user.name
+		link.appendChild(n)
+		link.appendChild(document.createTextNode("):"))
+	} else
+		link.appendChild(document.createTextNode(":"))
+	
+	// contents
 	var contentBox = document.createElement('message-contents')
 	div.appendChild(contentBox)
 	div.setAttribute('data-uid', comment.createUserId)
@@ -259,7 +268,10 @@ messageBlock: function(comment) {
 	return [div, contentBox]
 },
 mergeHash: function(comment) {
-	return comment.createUserId + "," + comment.createUser.avatar
+	if (comment.meta.b)
+		return comment.createUserId + "," + comment.createUser.avatar + "," + comment.meta.b
+	else
+		return comment.createUserId + "," + comment.createUser.avatar
 },
 // this needs to be improved
 searchComment: function(comment) {
@@ -317,6 +329,15 @@ messagePart: function(comment) {
 	element.className = "markup-root"
 	element.setAttribute('data-id', comment.id)
 	element.setAttribute('tabindex', "0")
+	
+	// strip discord name
+	var nick = comment.meta.b
+	if (nick !== undefined) {
+		if (comment.meta.m == '12y' && comment.content.substr(0, nick.length+3) == "<"+nick+"> ") {
+			comment.content = comment.content.substr(nick.length+3)
+		}
+	}
+	
 	var contents = Parse.parseLang(comment.content, comment.meta.m, false)
 	if (comment.createDate.getTime() != comment.editDate.getTime())
 		element.className += " edited"
