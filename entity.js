@@ -134,10 +134,9 @@ processItem: {
 			if (nick !== undefined) {
 				if (
 					data.meta.m == '12y' &&
-					data.content.substr(0, nick.length+4) == "<"+nick+"> {" &&
-					data.content.substr(-1)=="}"
+					data.content.substr(0, nick.length+3) == "<"+nick+"> "
 				) {
-					data.content = data.content.substring(nick.length+4, data.content.length-1)
+					data.content = data.content.substring(nick.length+3, data.content.length)
 				}
 			}
 			// todo: we should render the nickname in other places too (add this to the title() etc. functions.
