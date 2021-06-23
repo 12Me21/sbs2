@@ -47,6 +47,7 @@ function ChatRoom(id, page) {
 	var b = Draw.chatMessagePane()
 	this.messagePane = b[0]
 	this.messageList = b[1]
+	
 	var b = Draw.button()
 	b[1].textContent = "load older messages"
 	b[1].onclick = function() {
@@ -66,6 +67,15 @@ function ChatRoom(id, page) {
 	
 	this.messagePane.prependChild(label)
 	this.messagePane.prependChild(b[0])
+	
+	if (page.values.pinned) { //todo: check if actually we have any real pinned messages
+		var pinnedSeparator = document.createElement('div')
+		pinnedSeparator.className = "messageGap"
+		this.messagePane.prependChild(pinnedSeparator)
+		
+		this.pinnedList = document.createElement('scroll-inner')
+		this.messagePane.prependChild(this.pinnedList)
+	}
 	
 	this.messagePane.setAttribute('data-id', page.id)
 	$chatPane.appendChild(this.messagePane)
@@ -335,11 +345,18 @@ ChatRoom.prototype.updateUserList = function(list) {
 	this.userListInner.replaceChildren(d)
 }
 
-ChatRoom.prototype.displayInitialMessages = function(comments) {
+ChatRoom.prototype.displayInitialMessages = function(comments, pinned) {
 	var $ = this
 	comments.forEach(function(comment) {
 		$.displayMessage(comment, false)
 	})
+	if (pinned && $.pinnedList) {
+		pinned.forEach(function(comment) {
+			var b = Draw.messageBlock(comment)
+			$.pinnedList.appendChild(b[0])
+			b[1].appendChild(Draw.messagePart(comment))
+		})
+	}
 	// ugh why do we need this?
 	window.setTimeout(function() {
 		$.scroller.scrollInstant()

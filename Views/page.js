@@ -50,7 +50,8 @@ addView('page', {
 			return Req.read([
 				{content: {ids: [id], IncludeAbout: ["votes","watches"]}},
 				{comment: {parentIds: [id], limit: 30, reverse: true}},
-				"user.0createUserId.0editUserId.1createUserId.1editUserId",
+				"comment.0values_pinned~Mpinned",//: {parentIds: [id]}},
+				"user.0createUserId.0editUserId.1createUserId.1editUserId.2createUserId.2editUserId",
 			], {
 				//content: "name,parentId,type,createUserId,editUserId,createDate,editDate,permissions,id"
 			}, function(e, resp) {
@@ -61,7 +62,8 @@ addView('page', {
 				// so it would be good to handle it consistently
 				if (!e && resp.content[0]) {
 					resp.comment.reverse()
-					render(resp.content[0], resp.comment)
+					console.log(resp.Mpinned);
+					render(resp.content[0], resp.comment, resp.Mpinned)
 				} else
 					render(null)
 			}, true)
@@ -69,12 +71,12 @@ addView('page', {
 	},
 	className: 'page',
 	splitView: true,
-	render: function(page, comments) {
+	render: function(page, comments, pinned) {
 		Act.newPageComments(page, comments)
 		Act.redraw()
 		//ChatRoom.setViewing([page.id])
 		room = new ChatRoom(page.id, page)
-		room.displayInitialMessages(comments)
+		room.displayInitialMessages(comments, pinned) //todo: when page is edited, update pinned messages
 		room.show()
 		
 		renderPage(page)

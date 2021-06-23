@@ -60,6 +60,8 @@ keyType: function(key) {
 		return "user"
 	if (key[0] == "A")
 		return "activity"
+	if (key[0] == "M")
+		return "comment"
 	return key
 },
 processList: function(type, data, users) {
