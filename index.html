@@ -109,31 +109,30 @@
 		</v-b>
 		<v-b data-view-editpage class="editorNotPreview">
 			<div class="registerBox">
-				<label for=$keywords>Keywords:</label><input placeholder="(space separated, optional)" id=$keywords><br>
-				<label for=$editPageType>Type:</label>
-				<select id=$editPageType>
+				<label>Keywords:<input placeholder="(space separated, optional)" id=$keywords></label><br>
+				<label>Type:<select id=$editPageType>
 					<option id=$editPageTypeOption disabled hidden></option>
 					<option value=resource>Resource</option>
 					<option value=chat>Chat</option>
 					<option value=program>Program</option>
 					<option value=tutorial>Tutorial</option>
 					<option value=documentation>Documentation</option>
-				</select>
+				</select></label>
 				<br>
-				<label for=$editPageThumbnail>Thumbnail:</label><input id=$editPageThumbnail type=number><br>
-				<label for=$editPagePhotos>Photos:</label><input id=$editPagePhotos><br>
-				<label for=$editPageCategory>Category:</label><span id=$editPageCategory></span><br>
+				<label>Thumbnail:<input id=$editPageThumbnail type=number></label><br>
+				<label>Photos:<input id=$editPagePhotos></label><br>
+				<label>Category:<span id=$editPageCategory></span></label><br>
 			</div>
 			<div class="registerBox">
 				<h2>Permissions:</h2>
 				<div id=$editPagePermissions></div>
 			</div>
-			<label for=$markupSelect>Markup language:</label>
-			<select id=$markupSelect>
+			<label>Markup language:<select id=$markupSelect>
 				<option value="plaintext">plain text</option>
 				<option value="12y">12-y documentation markup format</option>
 				<option disabled value="bbcode">bbcode</option>
-			</select><button id=$markupUpdate>Update Preview</button>
+			</select></label>
+			<button id=$markupUpdate>Update Preview</button>
 		</v-b>
 		
 		<v-b data-view-fileMode class="rem1-7 bar nav">
@@ -191,10 +190,10 @@
 			</v-b>
 			
 			<v-b data-view-catEditorMode>
-				<label for=$cateditPinned>Pinned pages:</label><input id=$cateditPinned><br>
-				<label for=$cateditCategory>Parent category:</label><input id=$cateditCategory type="number"><br>
-				<label for=$cateditPermissions>Permissions:</label><input id=$cateditPermissions><br>
-				<label for=$cateditLocalSupers>Local Superusers:</label><input id=$cateditLocalSupers><br>
+				<label>Pinned pages:<input id=$cateditPinned></label><br>
+				<label>Parent category:<input id=$cateditCategory type=number></label><br>
+				<label>Permissions:<input id=$cateditPermissions></label><br>
+				<label>Local Superusers:<input id=$cateditLocalSupers></label><br>
 				<textarea id=$cateditDescription></textarea><br>
 			</v-b>
 			<v-b data-view-fileMode class="image-box fill"><img id=$filePageView></v-b>
@@ -278,8 +277,8 @@
 				<textarea-container class="grow"><textarea class="chatTextarea" id=$chatTextarea accesskey="z"></textarea></textarea-container>
 				<!--<label for=$chatBigMode class="no-select">Big:</label>
 					  <input type=checkbox id=$chatBigMode autocomplete=off>-->
-				<label for=$chatMarkupSelect class="no-select">Markup:</label>
-				<input type=checkbox checked id=$chatMarkupSelect>
+				<label class="no-select">Markup:</label><input type=checkbox checked id=$chatMarkupSelect>
+				
 			</v-b>
 		</v-b>
 	</main>
