@@ -99,6 +99,7 @@ function submitEdit(callback) {
 	if (!editingPage)
 		return
 	readFields(editingPage)
+	//console.log(editingPage)
 	Req.editPage(editingPage, callback)
 }
 
@@ -138,7 +139,7 @@ function readFields(page) {
 	page.values.markupLang = $markupSelect.value
 	page.content = $editorTextarea.value
 	if ($keywords.value)
-		var keywords = $keywords.value.split(" ")
+		var keywords = $keywords.value.split(/[, ]/)
 	else
 		keywords = []
 	page.keywords = keywords
@@ -148,6 +149,9 @@ function readFields(page) {
 	var photos = $editPagePhotos.value
 	if (photos)
 		page.values.photos = photos
+	var pinned = $editPagePinned.value //todo: some way to validate comma separated list (of numbers?)
+	if (pinned)
+		page.values.pinned = pinned
 	var thumbnail = +$editPageThumbnail.value
 	if (thumbnail)
 		page.values.thumbnail = thumbnail
@@ -163,8 +167,9 @@ function fillFields(page) {
 	$editorTextarea.value = page.content
 	updatePreview()
 	$keywords.value = page.keywords.join(" ")
-	$editPagePhotos.value = page.values.photos
+	$editPagePhotos.value = page.values.photos || ""
 	$editPageThumbnail.value = page.values.thumbnail
+	$editPagePinned.value = page.values.pinned || ""
 	if (validTypes.indexOf(page.type)<0) {
 		$editPageTypeOption.value = page.type
 		$editPageTypeOption.textContent = page.type
