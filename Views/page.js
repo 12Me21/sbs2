@@ -17,6 +17,7 @@ var renderPage = function(page) {
 	setEntityTitle(page)
 	setEntityPath(page.parent)
 	flag('canEdit', /u/.test(page.myPerms))
+	$chatTextarea.disabled = !(page.createUserId==Req.uid || /c/.test(page.permissions[Req.uid] || page.permissions[0]));
 	Nav.link("editpage/"+page.id, $pageEditLink)
 }
 

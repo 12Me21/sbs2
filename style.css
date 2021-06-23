@@ -670,6 +670,10 @@ message-part[editing] {
 	background-color: yellow;
 }
 
+#\$chatTextarea[disabled] {
+	background-color: silver;
+}
+
 html.f-chatEditing #\$chatTextarea {
 	background-color: #FFFF80;
 }
