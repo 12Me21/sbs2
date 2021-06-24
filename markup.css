@@ -64,7 +64,7 @@
 
 .markup-root pre {
 	font-size: 0.9em;
-	font-family: consolas, monospace;
+	font-family: 'cascadia code', consolas, monospace;
 	color: white;
 	background-color: black;
 	white-space: pre-wrap;
@@ -73,7 +73,7 @@
 
 .markup-root code {
 	font-size: 0.9em;
-	font-family: consolas, monospace;
+	font-family: 'cascadia code', consolas, monospace;
 	background-color: rgba(0,0,0,0.1);
 	padding: 0 0.2em;
 }
