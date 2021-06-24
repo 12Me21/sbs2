@@ -47,6 +47,17 @@ onLoad: function() {
 		if (selectedFile) {
 			Req.uploadFile(selectedFile, function(file) {
 				if (file) {
+					// setting the filename takes a second request
+					if ($fileUploadName.value) {
+						$fileUploadNameOut.textContent = "(setting name...)"
+						file.name = $fileUploadName.value
+						Req.putFile(file, function(e, resp) {
+							$fileUploadNameOut.textContent = resp.name
+							// yea
+						})
+					} else {
+						$fileUploadNameOut.textContent = ""
+					}
 					View.flag('sidebarUploaded', true)
 					$fileView.src = ""
 					$fileView.src = Req.fileURL(file.id)
@@ -156,6 +167,7 @@ fileCancel: function() {
 cleanUp: function() {
 	selectedFile = null
 	$fileView.src = ""
+	$fileUploadName.value = ""
 },
 
 fileUploaded: function(file) {
@@ -163,6 +175,7 @@ fileUploaded: function(file) {
 	View.flag('sidebarFile', true)
 	$fileView.src = ""
 	$fileView.src = URL.createObjectURL(file)
+	$fileUploadName.value = file.name || ""
 	selectedFile = file
 	selectTab(3) //hack HACK
 	//fillFileFields(file)
