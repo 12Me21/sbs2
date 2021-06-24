@@ -49,8 +49,9 @@ onLoad: function() {
 				if (file) {
 					// setting the filename takes a second request
 					if ($fileUploadName.value) {
-						$fileUploadNameOut.textContent = "(setting name...)"
+						$fileUploadNameOut.textContent = "(setting metadata...)"
 						file.name = $fileUploadName.value
+						console.log(file)
 						Req.putFile(file, function(e, resp) {
 							$fileUploadNameOut.textContent = resp.name
 							// yea
