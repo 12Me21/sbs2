@@ -16,7 +16,7 @@ addView('settings', {
 			Req.logOut()
 		}
 		
-		$registerForm.submit.onclick = function(e) {
+		$registerForm.onsubmit = function(e) {
 			e.preventDefault()
 			registerError("Registering...")
 			var data = readRegisterFields()
@@ -39,7 +39,7 @@ addView('settings', {
 				}
 			})
 		}
-		$registerForm.resend.onclick = function(e) {
+		$registerResend.onclick = function(e) {
 			e.preventDefault()
 			sendConfirmationEmail()
 		}
