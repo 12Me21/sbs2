@@ -278,7 +278,7 @@
 				<textarea-container class="grow"><textarea class="chatTextarea" id=$chatTextarea accesskey="z"></textarea></textarea-container>
 				<!--<label for=$chatBigMode class="no-select">Big:</label>
 					  <input type=checkbox id=$chatBigMode autocomplete=off>-->
-				<label class="no-select">Markup:<input type=checkbox checked id=$chatMarkupSelect></label>
+				<label class="no-select">Markup:<input type=checkbox checked autocomplete=off id=$chatMarkupSelect></label>
 				
 			</v-b>
 		</v-b>
@@ -324,7 +324,7 @@
 				<div class="loggedOut">
 					<div class="registerBox">
 						<h2>Log In</h2>
-						<form id=$loginForm>
+						<form id=$loginForm method=dialog>
 							<input placeholder=Username name=username><br>
 							<input placeholder=Password name=password type=password><br>
 							<button>Log In</button>
@@ -333,7 +333,7 @@
 					</div>
 					<div class="registerBox">
 						<h2>Register</h2>
-						<form id=$registerForm autocomplete=off>
+						<form id=$registerForm autocomplete=off method=dialog> <!-- I set method=dialog so the form can't be submitted -->
 							<input placeholder=Username name=username minlength=2 maxlength=20> 2 to 20 characters, no spaces<br>
 							<input placeholder=Password name=password type=passwordminlength=8><input placeholder="Confirm Password" name=password2 type=password minlength=8> At least 8 characters<br>
 							<input placeholder=Email name=email type=email><input placeholder="Confirm Email" name=email2 type=email> Confirmation code will be sent<br>
@@ -342,18 +342,18 @@
 						<button id=$registerResend>Resend Email</button>
 						<div id=$registerError class="pre"></div>
 						<h3>Confirm Registration</h3>
-						<form id=$confirmForm>
+						<form id=$confirmForm method=dialog>
 							<input placeholder="Confirmation Code" name=code>
 							<button>Confirm</button>
 						</form>
 					</div>
 					<div class="registerBox">
 						<h2>Password Reset</h2>
-						<form id=$passwordForm>
+						<form id=$passwordForm method=dialog>
 							<input placeholder="Email" type=email name=email><br>
 							<button>Send Email</button>
 						</form>
-						<form id=$passwordForm2>
+						<form id=$passwordForm2 method=dialog>
 							<input placeholder="reset code" name=key><br>
 							<input placeholder="new password" name=password>
 							<input placeholder="confirm new password" name=password2><br>
@@ -377,7 +377,7 @@
 					</div>
 					<div class="registerBox">
 						<h2>Change account settings</h2>
-						<form id=$changeForm>
+						<form id=$changeForm method=dialog>
 							<input placeholder="Old Password" name=oldPassword minlength=8 type=password><br>
 							Only fill out the fields you want to change:<br>
 							<input placeholder="New Username" name=username minlength=2 maxlength=20> 2 to 20 characters, no spaces<br>
