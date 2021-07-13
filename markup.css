@@ -289,3 +289,7 @@ markup-root .youtube {
 .markup-root .i {
 	text-decoration: wavy underline red;
 }
+
+a.customLink {
+	background-color: rgba(0,0,255,0.1);
+}
