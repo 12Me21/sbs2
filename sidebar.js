@@ -45,7 +45,9 @@ onLoad: function() {
 	$fileCancel.onclick = $fileDone.onclick = fileCancel
 	$fileUpload.onclick = function() {
 		if (selectedFile) {
+			$fileUpload.disabled = true
 			Req.uploadFile(selectedFile, function(file) {
+				$fileUpload.disabled = false
 				if (file) {
 					// setting the filename takes a second request
 					if ($fileUploadName.value) {
@@ -227,7 +229,7 @@ displayMessages: function(comments, initial) {
 },
 
 limitMessages: function() {
-	var x = scroller.scrollBottom
+	//var x = scroller.scrollBottom
 	while (displayedMessages > 500) {
 		var n = scroller.inner.firstChild
 		var id = n.getAttribute('data-id')
@@ -236,7 +238,7 @@ limitMessages: function() {
 		n.remove()
 		displayedMessages--
 	}
-	scroller.scrollBottom = x
+	//scroller.scrollBottom = x
 }
 
 <!--/* 
