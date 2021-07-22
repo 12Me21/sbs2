@@ -11,7 +11,7 @@ window.onerror = function(message, source, line, col, error) {
 	}
 }
 
-Sidebar.print("hi!")
+Sidebar.print("hi!\ncommit: "+window.commit)
 delete window.sidebar // obsolete firefox global variable
 
 Req.onLogin = function() {
