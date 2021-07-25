@@ -5,8 +5,11 @@
 	margin: 0;
 	box-sizing: border-box;
 	-webkit-box-sizing: border-box;
-	overflow-wrap: break-word;
+}
+
+html {
 	font-variant-ligatures: none;
+	overflow-wrap: break-word;
 }
 
 /* may need more things here */
@@ -605,7 +608,7 @@ message-block > img.avatar {
 	margin-right: 0.5rem;
 /*	float: left;*/
 }
-message-block > .username {
+message-block > .username-label {
 	margin-left: 4rem;
 	display: block;
 }
