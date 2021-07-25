@@ -16,7 +16,7 @@ addView('chatlogs', {
 	start: function(id, query, render) {
 		var search = {limit: 100, reverse: true}
 		if (query.t)
-			search.contentLike = "%"+query.t+"%"
+			search.contentLike = "%\n%"+query.t+"%"
 		if (query.pid)
 			search.parentIds = query.pid.split(",").map(Number) //whatever
 		if (query.uid)
