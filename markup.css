@@ -15,7 +15,7 @@
 }
 
 .markup-root table {
-	
+	overflow-wrap: break-word;
 }
 
 .markup-root a {
