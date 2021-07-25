@@ -235,30 +235,30 @@ messageBlock: function(comment) {
 	div.appendChild(avatar(user))
 	// username
 	var name = document.createElement('span')
-	name.className += " username"
+	name.className += " username-label"
 	div.appendChild(name)
 	
 	var link = entityLink(user)
 	name.appendChild(link)
 	
 	var n = document.createElement('span')
-	n.className = "pre"
+	n.className = "pre username"
 	link.appendChild(n)
 	
-	if (comment.meta.b !== undefined)
-		n.textContent = comment.meta.b
-	else
+	// if nickname is set, render as "nickname (realname):"
+	if (user.nickname !== undefined) {
+		n.textContent = user.nickname
+		link.appendChild(document.createTextNode(": ("))
+		var n2 = document.createElement('span')
+		n2.className = "pre"
+		n2.textContent = user.realname
+		link.appendChild(n2)
+		link.appendChild(document.createTextNode(")"))
+	} else {
+		// otherwise render as "name:"
 		n.textContent = user.name
-	
-	if (comment.meta.b !== undefined) {
-		link.appendChild(document.createTextNode(" ("))
-		n = document.createElement('span')
-		n.className = "pre"
-		n.textContent = user.name
-		link.appendChild(n)
-		link.appendChild(document.createTextNode("):"))
-	} else
 		link.appendChild(document.createTextNode(":"))
+	}
 	
 	// contents
 	var contentBox = document.createElement('message-contents')
