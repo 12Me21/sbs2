@@ -98,6 +98,13 @@ a[data-static-path],
 	color: #EFF;
 }
 
+.nav a {
+	color: #DEF;
+}
+.nav a:hover {
+	color: #EFF;
+}
+
 h1 {
 	font-size: 1.6em;
 }
@@ -1018,9 +1025,9 @@ scroll-inner {
 	padding: 0.3rem 0.5rem;
 }
 
-select {
+/*select {
 	width: 7em;
-}
+}*/
 
 .registerBox input {
 	/*margin: 1px;*/
@@ -1029,6 +1036,10 @@ select {
 input {
 	min-width: 0;
 	max-width: 100%;
+}
+
+.permission-input {
+	display: block;
 }
 
 .permissionRow > th {
