@@ -13,7 +13,7 @@ addView('chatlogs', {
 			Nav.go("chatlogs"+Req.queryString(query))
 		}
 	},
-	start: function(id, query, render) {
+	start: function(id, query, render, quick) {
 		var search = {limit: 100, reverse: true}
 		if (query.t)
 			search.contentLike = "%\n%"+query.t+"%"
@@ -21,6 +21,12 @@ addView('chatlogs', {
 			search.parentIds = query.pid.split(",").map(Number) //whatever
 		if (query.uid)
 			search.userIds = query.uid.split(",").map(Number)
+		if (!(search.contentLike || search.parentIds || search.userIds)) {
+			quick(function(){
+				$chatlogSearchResults.replaceChildren()
+			})
+			return;
+		}
 		return Req.read([
 			{comment: search},
 			"content.0parentId",
@@ -42,10 +48,14 @@ addView('chatlogs', {
 			c.parent = map[c.parentId]
 			$chatlogSearchResults.appendChild(Draw.searchComment(c))
 		})
+		if (!comments.length) {
+			$chatlogSearchResults.textContent = "(no result)"
+		}
 		//TODO: results are links to chatlog viewer which lets you load surrounding messages etc.
 		// show page name etc.
 	},
 	cleanUp: function() {
+		$chatlogSearchResults.replaceChildren()
 	},
 })
 
