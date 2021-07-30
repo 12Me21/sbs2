@@ -22,7 +22,14 @@ fields: {
 		update: function(value) {
 			eval(value)
 		},
-	}
+	},
+	nickname: {
+		name: "Chat Nickname",
+		type: 'textarea',
+		update: function(value) {
+			ChatRoom.nickname = value
+		},
+	},
 },
 
 change: function(name, value) {
