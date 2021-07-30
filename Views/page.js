@@ -206,9 +206,12 @@ function readInput(old, edit) {
 		data.meta.m = "12y"
 	else
 		data.meta.m = "plaintext"
-	if (!edit)
+	if (!edit) {
 		if (Req.me)
 			data.meta.a = Req.me.avatar
+		if (ChatRoom.nickname)
+			data.meta.n = ChatRoom.nickname
+	}
 	
 	return data
 }

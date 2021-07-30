@@ -2,7 +2,7 @@ wrote by 12Me21
 
 * Instructions
 Make sure markup/ isn't empty
-If you're using git, you can run `git pull --recurse-submodules` to download it.
+If you're using git, you can run `git submodule update --init` to download it.
 Otherwise, download the files from https://github.com/12Me21/sbs2-markup and put them in markup/
 
 Open index.html in a web browser
