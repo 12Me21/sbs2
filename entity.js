@@ -22,7 +22,7 @@ CONTENT_TYPES: [
 
 filterNickname: function(name) {
 	return name.substr(0,50).replace(/\n/g, "  ")
-}
+},
 
 process: function(resp) {
 	// build user map first
