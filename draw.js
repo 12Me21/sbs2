@@ -268,10 +268,7 @@ messageBlock: function(comment) {
 	return [div, contentBox]
 },
 mergeHash: function(comment) {
-	if (comment.meta.b)
-		return comment.createUserId + "," + comment.createUser.avatar + "," + comment.meta.b
-	else
-		return comment.createUserId + "," + comment.createUser.avatar
+	return comment.createUserId + "," + comment.createUser.avatar + "," + comment.createUser.name + " " + (comment.createUser.nickname || "")
 },
 // this needs to be improved
 searchComment: function(comment) {
