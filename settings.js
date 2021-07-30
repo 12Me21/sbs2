@@ -27,7 +27,7 @@ fields: {
 		name: "Chat Nickname",
 		type: 'textarea',
 		update: function(value) {
-			ChatRoom.nickname = value.substr(0, 50);
+			ChatRoom.nickname = value.substr(0, 50).replace(/\n/g, "  ");
 		},
 	},
 },
