@@ -20,6 +20,10 @@ CONTENT_TYPES: [
 	'resource', 'chat', 'program', 'tutorial', 'documentation', 'userpage'
 ],
 
+filterNickname: function(name) {
+	return name.substr(0,50).replace(/\n/g, "  ")
+}
+
 process: function(resp) {
 	// build user map first
 	var users = {}
@@ -153,12 +157,12 @@ processItem: {
 				if (bridge != undefined)
 					data.createUser = Object.create(data.createUser, {
 						name: {value: bridge},
-						nickname: {value: nick},
+						nickname: {value: filterNickname(nick)},
 						realname: {value: data.createUser.name},
 					})
 				else
 					data.createUser = Object.create(data.createUser, {
-						nickname: {value: nick},
+						nickname: {value: filterNickname(nick)},
 						realname: {value: data.createUser.name},
 					})
 			}
