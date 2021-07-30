@@ -133,7 +133,7 @@ processItem: {
 				})
 			// nicknames
 			var nick = undefined
-			var bridge = false
+			var bridge = undefined
 			if (typeof data.meta.b == 'string') {
 				nick = data.meta.b
 				bridge = nick
