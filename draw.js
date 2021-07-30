@@ -576,7 +576,7 @@ categoryInput: function() {
 	return x
 },
 
-permissionRow: function(user, perms, simple) {
+permissionRow: function(user, perms) {
 	var id = user ? user.id : -1
 	var row = document.createElement('tr')
 	if (!id) {
@@ -594,40 +594,35 @@ permissionRow: function(user, perms, simple) {
 	} else
 		row.createChild('td')
 	row.createChild('th').appendChild(name)
-	if (!simple) {
-		;['r','c','u','d'].forEach(function(p) {
-			var inp = row.createChild('td').createChild('input')
-			inp.type = 'checkbox'
-			inp.checked = perms.indexOf(p)>=0
-			inp.value = p
-		})
-	}
+	;['r','c','u','d'].forEach(function(p) {
+		var inp = row.createChild('td').createChild('input')
+		inp.type = 'checkbox'
+		inp.checked = perms.indexOf(p)>=0
+		inp.value = p
+	})
 	row.setAttribute('data-id', id)
 	return row
 },
 
-// `simple` is a hack to allow using this for selecting a list of users rather than permissions
-permissionInput: function(simple) {
-	var elem = document.createElement('permission-input')
+permissionInput: function() {
+	var elem = document.createElement('div')
 	
 	var input = Draw.userSelector()
-	
-	elem.appendChild(input.elem)
 	
 	
 	var table = elem.createChild('table')
 	table.className += " permission-table"
-	if (!simple) {
-		var header = table.createChild('thead').createChild('tr')
-		header.createChild('th')
-		header.createChild('th')
-		header.createChild('th').textContent = "View"
-		header.createChild('th').textContent = "Reply"
-		header.createChild('th').textContent = "Edit"
-		header.createChild('th').textContent = "Delete"
-	}
+	var header = table.createChild('thead').createChild('tr')
+	header.createChild('th')
+	header.createChild('th')
+	header.createChild('th').textContent = "View"
+	header.createChild('th').textContent = "Reply"
+	header.createChild('th').textContent = "Edit"
+	header.createChild('th').textContent = "Delete"
 	var body = table.createChild('tbody')
 	body.className += " permission-users"
+	
+	elem.appendChild(input.elem)
 	
 	var x = {
 		element: elem,
@@ -635,7 +630,7 @@ permissionInput: function(simple) {
 			body.replaceChildren()
 			newPerms.forEach(function(p, id) {
 				id = +id
-				body.appendChild(permissionRow(users[id] || {Type:'user', id:id}, p, simple))
+				body.appendChild(permissionRow(users[id] || {Type:'user', id:id}, p))
 				//ok we really need to fix the problem with null users
 				// one solution is to have a user map lookup function which returns a placeholder object if the user is not found, to store the 2 important (and known) properties, Type and id, just to avoid losing that information.
 			})
@@ -651,32 +646,11 @@ permissionInput: function(simple) {
 				ret[row.getAttribute('data-id')] = perm
 			})
 			return ret
-		},
-		getUsers: function() {
-			var ret = [];
-			body.childNodes.forEach(function(row) {
-				ret.push(Number(row.getAttribute('data-id')))
-			})
-			return ret
-		},
-		setUsers: function(ids, users) {
-			body.replaceChildren()
-			ids.forEach(function(id) {
-				id = +id
-				body.appendChild(permissionRow(users[id] || {Type:'user', id:id}, 'cr', simple))
-			})
-		},
+		}
 	}
 	
 	input.onchange = function(user) {
-		var found
-		body.childNodes.forEach(function(row) {
-			if (row.getAttribute('data-id') == user.id)
-				found = true
-		})
-		if (found)
-			return
-		body.appendChild(permissionRow(user, "cr", simple))
+		body.appendChild(permissionRow(user, "cr"))
 	}
 	
 	return x
@@ -701,7 +675,7 @@ userSelector: function() {
 	placeholder2.hidden = true
 	
 	var submit = document.createElement('button')
-	submit.textContent = "enter"
+	submit.textContent = "select"
 	submit.disabled = true
 	submit.className = "item"
 	
@@ -717,9 +691,6 @@ userSelector: function() {
 	input.onkeypress = function(e) {
 		if (e.keyCode == 13) {
 			e.preventDefault()
-//			if (input.value=="")
-//				x.onempty && x.onempty()
-//			else {
 			dropdown.focus()
 		}
 	}

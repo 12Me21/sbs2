@@ -172,13 +172,11 @@
 		
 		<v-b data-view-membersMode class="nav bar rem1-7" id=$memberNav></v-b>
 		
-		<v-b data-view-chatlogs class="nav">
-			<form method=dialog id=$chatlogSearchForm>
-				<div class="bar rem1-5">
-					<input id=$chatlogSearchText placeholder="text" width=10><input type=number id=$chatlogSearchRoom placeholder="room ids"><button class="item" id=$chatlogSearchButton>Search</button>
-				</div>
-				<div id=$chatlogSearchUserSelect></div>
-			</form>
+		<v-b data-view-chatlogs>
+			<input id=$chatlogSearchText placeholder="text">
+			<input type=number id=$chatlogSearchRoom placeholder="room id">
+			<input type=number id=$chatlogSearchUser placeholder="user id">
+			<button id=$chatlogSearchButton>Search</button>
 			<!--<span id=$chatlogSearchUser></span>-->
 		</v-b>
 		

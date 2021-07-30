@@ -150,7 +150,7 @@ queryString: function(obj) {
 			})
 		// otherwise, key=value
 		else
-			items.push(item+$.encodeURIComponent(val).replace(/%2C/g,","))
+			items.push(item+$.encodeURIComponent(val))
 	}
 	
 	if (!items.length)
