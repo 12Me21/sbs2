@@ -677,7 +677,7 @@ message-part[editing] {
 }
 
 html.f-chatEditing #\$chatTextarea {
-	background-color: #FFFF80;
+	background-color: var(--edit-textarea-bg-color);
 }
 
 html.f-chatEditing .hideWhenEdit {
