@@ -426,7 +426,7 @@ attachResize: function(element, tab, horiz, dir, save, callback) {
 	tab.addEventListener('touchstart', function(e) {
 		e.preventDefault()
 		down(e)
-	}) //todo: prevent scrolling on mobile
+	}, {passive:true}) //todo: prevent scrolling on mobile
 	document.addEventListener('touchend', up)
 	document.addEventListener('touchmove', move)
 	if (save) {
