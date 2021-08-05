@@ -22,6 +22,7 @@ html {
 	--bgblue: #CEF;
 	--bgpurple: #ECF;
 	--bggray: #DDD;
+	--edit-textarea-bg-color: #FFFF80;
 	
 	--invert-color: white;
 	--link-invert-color: #DEF;
@@ -33,7 +34,7 @@ html {
 	--error-invert-bg-color: #800;
 }
 
-html[data-theme="dark"], html[data-dark]:not([data-theme]) {
+html[data-theme="dark"], html.f-dark:not([data-theme]) {
 	color-scheme: dark;
 	--text-color: white;
 	--link-color: #9CE;
@@ -58,6 +59,7 @@ html[data-theme="dark"], html[data-dark]:not([data-theme]) {
 	--bgorange: rgba(255,150,50,0.3);
 	--bggray: rgba(128,128,128,0.1);
 	--bgpurple: rgba(200,50,255,0.3);
+	--edit-textarea-bg-color: #750;
 	
 	--invert-color: var(--text-color);
 	--link-invert-color: var(--link-color);
