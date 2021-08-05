@@ -4,7 +4,7 @@ with (Settings) (function($) { "use strict"
 Object.assign(Settings, { //*/
 
 fields: {
-	theme: {
+	/*theme: {
 		name: "Theme",
 		type: 'select',
 		options: ['light','dark'],
@@ -14,7 +14,7 @@ fields: {
 			} else
 				$customCSS.textContent = ""
 		}
-	},
+	},*/
 	sitejs: {
 		name: "Custom Javascript",
 		type: 'textarea',
