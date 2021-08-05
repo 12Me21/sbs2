@@ -11,6 +11,9 @@ window.onerror = function(message, source, line, col, error) {
 	}
 }
 
+if (window.matchMedia("(prefers-color-scheme: dark)").matches)
+	document.documentElement.dataset.dark = ""
+
 Sidebar.print("hi!\ncommit: "+window.commit)
 delete window.sidebar // obsolete firefox global variable
 

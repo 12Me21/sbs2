@@ -4,17 +4,17 @@ with (Settings) (function($) { "use strict"
 Object.assign(Settings, { //*/
 
 fields: {
-	/*theme: {
+	theme: {
 		name: "Theme",
 		type: 'select',
-		options: ['light','dark'],
+		options: ['auto','light','dark'],
 		update: function(value) {
-			if (value == "dark") {
-				$customCSS.textContent = "body, img {filter: invert(100%) hue-rotate(180deg);}"
-			} else
-				$customCSS.textContent = ""
+			if (value != 'auto')
+				$.document.documentElement.dataset.theme = value
+			else
+				delete $.document.documentElement.dataset.theme
 		}
-	},*/
+	},
 	sitejs: {
 		name: "Custom Javascript",
 		type: 'textarea',
