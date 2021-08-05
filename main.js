@@ -84,9 +84,9 @@ function ready() {
 	if (navigator.vendor=="Google Inc.")
 		document.documentElement.style.imageRendering = "-webkit-optimize-contrast"
 	//can't remember if this is still needed
-	document.documentElement.addEventListener('touchstart', function(e) {
-		e.preventDefault()
-	})
+	//document.documentElement.addEventListener('touchstart', function(e) {
+	//	e.preventDefault()
+	//})
 	View.onLoad()
 	
 	Nav.initial()
