@@ -7,6 +7,79 @@
 	-webkit-box-sizing: border-box;
 }
 
+:root {
+	--text-color: black;
+	--link-color: #045;
+	--link-hover-color: rgb(0,150,136);
+	--time-color: #333;
+	--border-color: gray;
+	--chat-dim-color: #666;
+	--image-border-color: silver;
+	
+	--bg-color: white;
+	--avatar-bg-color: white;
+	--button-hover-color: #59E;
+	--bar-bg-color: #EEE;
+	--button-background: linear-gradient(#EEE, #CCC);
+	--button-active-bg: linear-gradient(#DDD, #EEE);
+	--button-selected-bg: linear-gradient(#888, #AAA);
+	--error-bg-color: pink;
+	--bgred: #FCC;
+	--bgorange: #FEA;
+	--bgyellow: #FF8;
+	--bggreen: #CFC;
+	--bgblue: #CEF;
+	--bgpurple: #ECF;
+	--bggray: #DDD;
+	
+	--invert-color: white;
+	--link-invert-color: #DEF;
+	--link-invert-hover-color: #EFF;
+	
+	--bg-invert-color: #222;
+	--bg-light-invert-color: #333;
+	--loading-invert-color: #225450;
+	--error-invert-bg-color: #800;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		color-scheme: dark;
+		--text-color: white;
+		--link-color: #9CE;
+		--link-hover-color: #5CE;
+		--time-color: #EEE;
+		--border-color: black;
+		--chat-dim-color: #666;
+		--image-border-color: gray;
+		
+		--bg-color: #292929;
+		--avatar-bg-color: gray;
+		--button-hover-color: #59E;
+		--bar-bg-color: #555;
+		--button-background: linear-gradient(#048, #035);
+		--button-active-bg: linear-gradient(#047, #047);
+		--button-selected-bg: linear-gradient(#048, #07A);
+		--error-bg-color: maroon;
+		--bgred: rgba(255,50,50,0.3);
+		--bgblue: rgba(50,150,255,0.3);
+		--bggreen: rgba(50,255,50,0.3);
+		--bgyellow: rgba(255,255,50,0.3);
+		--bgorange: rgba(255,150,50,0.3);
+		--bggray: rgba(128,128,128,0.1);
+		--bgpurple: rgba(200,50,255,0.3);
+		
+		--invert-color: var(--text-color);
+		--link-invert-color: var(--link-color);
+		--link-invert-hover-color: var(--link-hover-color);
+		
+		--bg-invert-color: #000;
+		--bg-light-invert-color: #111;
+		--loading-invert-color: #225450;
+		--error-invert-bg-color: #800;
+	}
+}
+
 html {
 	font-variant-ligatures: none;
 	overflow-wrap: break-word;
@@ -68,13 +141,12 @@ html {
  ***********/
 a {
 	text-decoration: none;
-	color: #045;
 }
-a:visited {
-	color: #045;
+a, a:visited {
+	color: var(--link-color);
 }
 a:hover {
-	color: rgb(0,150,136);
+	color: var(--link-hover-color);
 	/*text-decoration: underline;*/
 }
 a:hover .entity-title,
@@ -91,11 +163,11 @@ a[data-static-path],
 
 /* todo: make class for dark bg elements */
 .titlePane a {
-	color: #DEF;
+	color: var(--link-invert-color);
 	font-weight: normal;
 }
 .titlePane a:hover {
-	color: #EFF;
+	color: var(--link-invert-hover-color);
 }
 
 h1 {
@@ -112,6 +184,8 @@ textarea {
 	font-family: roboto, sans-serif;
 	
 	font-size: 0.8em;
+	color: var(--text-color);
+	background-color: var(--bg-color);
 }
 
 select {
@@ -123,9 +197,9 @@ sub {vertical-align: sub;}
 
 .avatar {
 	height: 1rem; /*default*/
-	border: 1px solid white;
+	border: 1px solid var(--image-border-color);
 	border-radius: 3px;
-	background-color: white;
+	background-color: var(--avatar-bg-color);
 }
 
 .ellipsis {
@@ -139,7 +213,7 @@ sub {vertical-align: sub;}
 }
 
 time {
-	color: #333;
+	color: var(--time-color);
 	font-size: 0.9em;
 	vertical-align: baseline;
 }
@@ -174,6 +248,7 @@ html {
 	background-color: #FEE;
 	font-family: roboto, fontello, sans-serif;
 	position: fixed;
+	color: var(--text-color);
 }
 
 body {
@@ -183,7 +258,7 @@ body {
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background-color: white;
+	background-color: var(--bg-color);
 	/*height: 100vh;*/ /* @@@ */
 }
 
@@ -291,7 +366,7 @@ button {
 	border-radius: 0px;
 	padding: 0 0.5rem;
 
-	background: linear-gradient(#EEE, #CCC);
+	background: var(--button-background);
 }
 .buttonContainer {
 	padding: 1px;
@@ -321,16 +396,16 @@ button {
 	display: inline-block;
 }
 button:hover {
-	border-color: #59E;
+	border-color: var(--button-hover-color);
 }
 
 button[aria-selected="true"] {
-	background: linear-gradient(#888, #AAA);
+	background: var(--button-selected-bg);
 }
 
 button:active {
 	border-style: inset;
-	background: linear-gradient(#DDD, #EEE);
+	background: var(--button-active-bg);
 }
 
 /**********/
@@ -345,7 +420,7 @@ html.f-loggedIn .loggedOut {
  *************/
 
 html.f-error .loadBG {
-	background-color: #800;
+	background-color: var(--error-invert-bg-color);
 }
 
 .pathSeparator {
@@ -363,12 +438,12 @@ html.f-error .loadBG {
 }
 
 .bottomBorder {
-	border-bottom: 1px solid gray;
+	border-bottom: 1px solid var(--border-color);
 }
 
 .border-list > *:not(:last-child),
 .border-list-2 > * {
-	border-bottom: 1px solid gray;
+	border-bottom: 1px solid var(--border-color);
 }
 
 /**********
@@ -386,7 +461,7 @@ table.tabs td {
 	margin: 0;
 	padding: 0;
 	text-align: center;
-	border-right: 1px solid gray;
+	border-right: 1px solid var(--border-color);
 }
 
 table.tabs td button {
@@ -408,11 +483,6 @@ button[aria-selected="true"] {
 
 /**********/
 
-.myUserBar {
-	background-color: #EEE;
-	padding: 0 0.2rem;
-}
-
 html.f-sidebarFile .sidebarUploadingHide,
 html.f-sidebarUploaded .sidebarUploadingHide {
 	display: none;
@@ -429,8 +499,8 @@ html:not(.f-sidebarUploaded) .sidebarUploadedFile {
  ****************/
 .titlePane {
 	/*border-bottom: 2px solid black;*/
-	background-color: #222;
-	color: white;
+	background-color: var(--bg-invert-color);
+	color: var(--invert-color);
 	/*box-shadow: 0 2px 3px rgba(0,0,0,0.3);*/
 	z-index: 10;
 	padding: 1px;
@@ -441,7 +511,7 @@ html:not(.f-sidebarUploaded) .sidebarUploadedFile {
 
 .titlePane .entity-title {
 	font-weight: normal;
-	color: #DEF;
+	color: var(--link-invert-color);
 }
 
 .status-idle > .avatar {
@@ -449,7 +519,7 @@ html:not(.f-sidebarUploaded) .sidebarUploadedFile {
 }
 
 html.f-loading .loadBG {
-	background-color: #225450;
+	background-color: var(--loading-invert-color);
 }
 
 .loadBG {
@@ -466,7 +536,7 @@ html.f-loading .loadBG {
 }
 
 .titlePane .pageTitle .entity-title {
-	color: white;
+	color: var(--invert-color);
 	padding-right: 0.5rem;
 }
 
@@ -475,7 +545,7 @@ html:not(.f-canEdit) .canEdit {
 }
 
 .errorMode .titlePane {
-	color: maroon;
+	color: var(--error-invert-bg-color);
 	font-family: monospace;
 }
 
@@ -505,8 +575,8 @@ main {
 }
 
 sidebar-container {
-	border-left: 1em solid #222;
-	background-color: white;
+	border-left: 1em solid var(--bg-invert-color);
+	background-color: var(--bg-color);
 	width: 30vw;
 	min-width: 10vw;
 	z-index: 20;
@@ -545,24 +615,24 @@ main-scrollable {
 .linkBar {
 	/*font-weight: bold;*/
 	display: block;
-	background-color: #EEE;
+	background-color: var(--bg-color);
 	padding: 0.2rem;
 }
 
 .linkBar:focus {
-	background-color: white;
+	background-color: var(--bar-bg-color);
 }
 
 /*********
  ** Nav **
  *********/
 .nav {
-	background-color: #333;
-	color: white;
+	background-color: var(--bg-light-invert-color);
+	color: var(--invert-color);
 }
 
 .nav > span {
-	color: white;
+	color: var(--invert-color);
 }
 
 /**************
@@ -574,7 +644,7 @@ main-scrollable {
 }
 
 .userlist {
-	background-color: #EEE;
+	background-color: var(--bar-bg-color);
 }
 
 /*******************
@@ -599,15 +669,16 @@ message-block > time {
 	float: right;
 	font-weight: normal;
 	padding-right: .5em;
-	color: #666;
+	color: var(--chat-dim-color);
 }
 message-block > img.avatar {
 	display: inline-block;
 	width: 3.5rem;
 	height: 3.5rem;
-	border: 1px solid #777;
+	border: none;/*1px solid #777;*/
+	/*background-color: transparent;*/
+	/*background-color: #AAB;*/
 	margin-right: 0.5rem;
-/*	float: left;*/
 }
 message-block > .username-label {
 	margin-left: 4rem;
@@ -661,13 +732,13 @@ message-part.edited {
 	/* todo: fix this */
 	/* we may just need an extra container for message-parts... */
 	padding-left: 4.1rem;
-	border-left: 0.1rem solid gray;
+	border-left: 0.1rem solid var(--border-color);
 }
 
 message-contents img {
 	max-width: 100%;
 	max-height: 10vh;
-	border: 1px solid silver;
+	border: 1px solid var(--image-border-color);
 }
 
 message-part[editing] {
@@ -838,7 +909,7 @@ button.voteButton[data-selected][data-vote="o"] {
 }
 
 .pageInfoPane {
-	background-color: #EEE;
+	background-color: var(--bar-bg-color);
 	/*overflow: auto;*/
 	padding: 0 0.3rem;
 	box-shadow: 0 2px 3px rgba(0,0,0,0.3);
@@ -904,8 +975,8 @@ html:not(.f-fileUploading) .fileUploading {
 	-ms-user-select: none;
 	user-select: none;
 	cursor: grab;
-	color: white;
-	background-color: #222;
+	color: var(--invert-color);
+	background-color: var(--bg-invert-color);
 	height: 1.2em;
 	line-height: 1;
 	overflow: hidden;
@@ -1140,7 +1211,7 @@ textarea-container {
 	border: 2px solid #00C8B4;
 	padding: 5px;
 	overflow: hidden;
-	background-color: white;
+	background-color: var(--bg-color);
 }
 
 .inputPane {
@@ -1214,13 +1285,13 @@ textarea-container, textarea-container > textarea {
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	background-color: #CCC;
+	background-color: var(--bar-bg-color);
 }
 
 .gallery-title {
 	text-align: center;
 	margin: 0 auto;
-	background-color: #EEE;
+	background-color: var(--bar-bg-color);
 }
 
 .ellipsis {
@@ -1232,12 +1303,12 @@ textarea-container, textarea-container > textarea {
 }
 
 .debugMessage {
-	background-color: #EEE;
+	background-color: var(--bar-bg-color);
 	padding: 2px 3px;
 }
 
 .linkBar {
-	border-bottom: 1px solid gray;
+	border-bottom: 1px solid var(--border-color);
 	border-top: 1px solid white;
 	padding: 0.15rem 0.2rem 0.2rem 0.2rem;
 }
@@ -1248,7 +1319,7 @@ activity-users {
 }
 
 .inputPane {
-	background-color: #DDD;
+	background-color: var(--bar-bg-color);
 }
 
 html:not(.f-editorPreview) .editorPreview,
