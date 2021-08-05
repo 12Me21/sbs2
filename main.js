@@ -11,8 +11,11 @@ window.onerror = function(message, source, line, col, error) {
 	}
 }
 
-if (window.matchMedia("(prefers-color-scheme: dark)").matches)
-	View.flag('dark', true)
+var dark = window.matchMedia("(prefers-color-scheme: dark)")
+dark.onchange = function(query) {
+	View.flag('dark', query.matches)
+}
+dark.onchange(dark)
 
 Sidebar.print("hi!\ncommit: "+window.commit)
 delete window.sidebar // obsolete firefox global variable
