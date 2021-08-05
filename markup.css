@@ -98,6 +98,10 @@
 	padding-left: 0;
 }
 
+.markup-root video {
+	min-width: 8rem;
+}
+
 .markup-root img, .markup-root audio, .markup-root video {
 	max-width: 100%;
 	max-height: 10vh;
