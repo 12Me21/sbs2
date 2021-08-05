@@ -1,0 +1,70 @@
+html {
+	--text-color: black;
+	--link-color: #045;
+	--link-hover-color: rgb(0,150,136);
+	--time-color: #333;
+	--border-color: gray;
+	--chat-dim-color: #666;
+	--image-border-color: silver;
+	
+	--bg-color: white;
+	--avatar-bg-color: white;
+	--button-hover-color: #59E;
+	--bar-bg-color: #EEE;
+	--button-background: linear-gradient(#EEE, #CCC);
+	--button-active-bg: linear-gradient(#DDD, #EEE);
+	--button-selected-bg: linear-gradient(#888, #AAA);
+	--error-bg-color: pink;
+	--bgred: #FCC;
+	--bgorange: #FEA;
+	--bgyellow: #FF8;
+	--bggreen: #CFC;
+	--bgblue: #CEF;
+	--bgpurple: #ECF;
+	--bggray: #DDD;
+	
+	--invert-color: white;
+	--link-invert-color: #DEF;
+	--link-invert-hover-color: #EFF;
+	
+	--bg-invert-color: #222;
+	--bg-light-invert-color: #333;
+	--loading-invert-color: #225450;
+	--error-invert-bg-color: #800;
+}
+
+html[data-theme="dark"], html[data-dark]:not([data-theme]) {
+	color-scheme: dark;
+	--text-color: white;
+	--link-color: #9CE;
+	--link-hover-color: #5CE;
+	--time-color: #EEE;
+	--border-color: black;
+	--chat-dim-color: #666;
+	--image-border-color: gray;
+	
+	--bg-color: #292929;
+	--avatar-bg-color: gray;
+	--button-hover-color: #59E;
+	--bar-bg-color: #555;
+	--button-background: linear-gradient(#048, #035);
+	--button-active-bg: linear-gradient(#047, #047);
+	--button-selected-bg: linear-gradient(#048, #07A);
+	--error-bg-color: maroon;
+	--bgred: rgba(255,50,50,0.3);
+	--bgblue: rgba(50,150,255,0.3);
+	--bggreen: rgba(50,255,50,0.3);
+	--bgyellow: rgba(255,255,50,0.3);
+	--bgorange: rgba(255,150,50,0.3);
+	--bggray: rgba(128,128,128,0.1);
+	--bgpurple: rgba(200,50,255,0.3);
+	
+	--invert-color: var(--text-color);
+	--link-invert-color: var(--link-color);
+	--link-invert-hover-color: var(--link-hover-color);
+	
+	--bg-invert-color: #000;
+	--bg-light-invert-color: #111;
+	--loading-invert-color: #225450;
+	--error-invert-bg-color: #800;
+}
