@@ -56,6 +56,8 @@ page navigation handling
 ** main.js
 main
 
+** theme.css
+variable definitions
 ** style.css
 main css file
 ** markup.css
