@@ -6,7 +6,7 @@
 }
 
 .markup-root table, .markup-root td, .markup-root th {
-	border: 1px solid black;
+	border: 1px solid var(--text-color);
 	border-collapse: collapse;
 }
 
@@ -19,16 +19,16 @@
 }
 
 .markup-root a {
-	color: rgb(0, 80, 150);
+	/*color: rgb(0, 80, 150);*/
 	text-decoration: underline;
 }
 
 .markup-root a:visited {
-	color: rgb(0, 80, 150);
+	/*color: rgb(0, 80, 150);*/
 }
 
 .markup-root a:hover {
-	color: rgb(50, 130, 200)
+	/*color: rgb(50, 130, 200)*/
 }
 
 /*.markup-root * {
@@ -79,7 +79,7 @@
 }
 
 .markup-root pre /*, .markup-root table*/ {
-	box-shadow: 2px 2px 2px #888888;
+	box-shadow: 2px 2px 2px var(--border-color);
 }
 
 .markup-root pre {
@@ -160,40 +160,34 @@ markup-root .youtube {
 }
 
 .markup-root .cell {
-	background-color: white; /* needed to reset for nested tables */
+	background-color: var(--bg-color); /* needed to reset for nested tables */
 }
 
 .markup-root [data-bgcolor="red"] {
-	background-color: #FCC;
+	background-color: var(--bgred);
 }
-
 .markup-root [data-bgcolor="green"] {
-	background-color: #CFC;
+	background-color: var(--bggreen);
 }
-
 .markup-root [data-bgcolor="yellow"] {
-	background-color: #FF8;
+	background-color: var(--bgyellow);
 }
-
 .markup-root [data-bgcolor="orange"] {
-	background-color: #FEA;
+	background-color: var(--bgorange);
 }
-
 .markup-root [data-bgcolor="blue"] {
-	background-color: #CEF;
+	background-color: var(--bgblue);
 }
-
 .markup-root [data-bgcolor="purple"] {
-	background-color: #ECF;
+	background-color: var(--bgpurple);
 }
-
 .markup-root [data-bgcolor="gray"] {
-	background-color: #DDD;
+	background-color: var(--bggray);
 }
 
 .markup-root .spoilerButton {
 	padding: 0 0.3em;
-	background-color: #EEE;
+	background-color: var(--bar-bg-color);
 	border: 2px solid gray;
 	border-style: outset;
 	border-radius: 2px;
@@ -204,7 +198,7 @@ markup-root .youtube {
 }
 
 .markup-root .spoilerButton:hover {
-	border-color: #59E;
+	border-color: var(--button-hover-color);
 }
 
 .markup-root spoilerButton:active {
@@ -213,8 +207,8 @@ markup-root .youtube {
 
 .markup-root .spoiler {
 	padding: 0.5em;
-	border: 1px solid gray;
-	background-color: #F8F8F8;
+	border: 1px solid var(--border-color);
+	background-color: var(--bar-bg-color);
 	margin-bottom: 1px;
 }
 
@@ -235,11 +229,11 @@ markup-root .youtube {
 }
 
 .markup-root .invalid {
-	background-color: pink;
+	background-color: var(--error-bg-color);
 }
 
 .markup-root .error {
-	background-color: #F55;
+	background-color: var(--error-bg-color);
 	border: 1px solid black;
 	padding: 0.2em;
 	border-radius: 5px;
@@ -260,8 +254,8 @@ markup-root .youtube {
 .markup-root blockquote {
 	padding: 0.3em;
 	padding-left: 0.5em;
-	border: 1px solid gray;
-	background-color: #eee;
+	border: 1px solid var(--border-color);
+	background-color: var(--bar-bg-color);
 	margin: 1px 0;
 }
 
