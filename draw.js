@@ -372,13 +372,10 @@ pageInfo: function(page) {
 	return e
 },
 sidebarTabs: function(list, callback) {
-	var d = document.createElement('table')
-	d.className = "tabs"
-	var r = document.createElement('tr')
-	d.appendChild(r)
 	var btns = []
+	var r = document.createDocumentFragment();
 	var x = {
-		elem: d,
+		elem: r,
 		select: function(i) {
 			list.forEach(function(item, i2) {
 				btns[i2].setAttribute('aria-selected', i==i2)
@@ -391,14 +388,12 @@ sidebarTabs: function(list, callback) {
 		item.elem.setAttribute('aria-labelledby', "sidebar-tab-"+i)
 		item.elem.hidden = true
 		
-		var td = document.createElement('td')
 		var btn = document.createElement('button')
 		btn.setAttribute('role', "tab")
 		btn.setAttribute('aria-selected', "false")
 		btn.id = "sidebar-tab-"+i
 		btn.setAttribute('aria-controls', "sidebar-panel-"+i)
-		td.appendChild(btn)
-		r.appendChild(td)
+		r.appendChild(btn)
 		btn.appendChild(item.label)
 		btns[i] = btn
 		btn.onclick = function() {
