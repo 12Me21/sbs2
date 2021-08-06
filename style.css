@@ -390,8 +390,9 @@ tab-list > button {
 	padding: 0;
 }
 
-table.tabs td:last-child {
-	border-right: none;
+tab-list > button img.avatar {
+	height: 100%;
+	width: auto;
 }
 
 button[aria-selected="true"] {

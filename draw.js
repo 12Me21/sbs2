@@ -13,9 +13,10 @@ avatarURL: function(user, params) {
 
 largeIcon: function(entity) {
 	var element = document.createElement('img')
-	if (entity.Type == 'user')
+	if (entity.Type == 'user') {
 		element.src = avatarURL(entity, "size=400&crop=true")
-	else
+		element.width = element.height = 400
+	} else
 		element.src = "resource/unknown.png"
 	return entity
 },
@@ -135,7 +136,8 @@ linkAvatar: function(user) {
 avatar: function(user) {
 	var element = document.createElement('img')
 	element.className += "item avatar"
-	element.src = avatarURL(user, "size=120&crop=true")
+	element.src = avatarURL(user, "size=100&crop=true")
+	element.width = element.height = 100
 	return element
 },
 
@@ -173,7 +175,8 @@ icon: function(entity) {
 	if (type == 'user') {
 		element = document.createElement('img')
 		element.className += "item icon avatar"
-		element.src = avatarURL(entity, "size=120&crop=true")
+		element.src = avatarURL(entity, "size=100&crop=true")
+		element.width = element.height = 100
 	} else if (type=='content') {
 		var hidden = !hasPerm(entity.permissions, 0, 'r')
 		if (hidden) {
