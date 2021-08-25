@@ -138,6 +138,8 @@
 		
 		<v-b data-view-fileMode class="rem1-7 bar nav">
 			<span id=$fileNav></span>
+		  	<label for=$fileSearchBucket>Bucket:</label>
+			<input id=$fileSearchBucket>
 			<div class="rightAlign">Upload images in sidebar →</div>
 		</v-b>
 		
@@ -164,6 +166,10 @@
 					<tr>
 						<th><label for=$fileName>Values:</label></th>
 						<td><input id=$fileValues></td>
+					</tr>
+					<tr>
+						<th><label for=$fileName>Bucket:</label></th>
+						<td><input id=$fileBucketName></td>
 					</tr>
 				</table>
 				<button id=$fileUpdateButton class="fileUpdateButton canEdit loggedIn">Save Settings</button>
@@ -316,6 +322,8 @@
 				</div>
 				<div class="bar sidebarUploadedFile" id=$fileUploadNameOut></div>
 				<label class="sidebarUploadingFile bar">filename:<input id=$fileUploadName class="item"></label>
+				<label class="sidebarUploadingFile bar">bucket:<input id=$fileBucketName class="item"></label>
+
 				<div class="image-box grow"><img id=$fileView></div>
 				<a data-static-path=image>Uploaded Images</a>
 			</sidebar-panel>
