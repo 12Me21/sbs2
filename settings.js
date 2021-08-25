@@ -7,12 +7,12 @@ fields: {
 	theme: {
 		name: "Theme",
 		type: 'select',
-		options: ['light','dark'],
+		options: ['auto','light','dark'],
 		update: function(value) {
-			if (value == "dark") {
-				$customCSS.textContent = "body, img {filter: invert(100%) hue-rotate(180deg);}"
-			} else
-				$customCSS.textContent = ""
+			if (value != 'auto')
+				$.document.documentElement.dataset.theme = value
+			else
+				delete $.document.documentElement.dataset.theme
 		}
 	},
 	sitejs: {
@@ -22,7 +22,14 @@ fields: {
 		update: function(value) {
 			eval(value)
 		},
-	}
+	},
+	nickname: {
+		name: "Chat Nickname",
+		type: 'textarea',
+		update: function(value) {
+			ChatRoom.nickname = value.substr(0, 50).replace(/\n/g, "  ");
+		},
+	},
 },
 
 change: function(name, value) {

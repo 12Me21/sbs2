@@ -11,10 +11,11 @@ echo 'Building markup system' >&2
 ./markup/build.sh
 
 echo 'creating _build.css' >&2
-cat resource/fonts.css style.css markup.css code.css > resource/_build.css
+cat theme.css resource/fonts.css style.css markup.css code.css > resource/_build.css
 
 echo 'creating _build.js' >&2
-cat fill.js entity.js activity.js request.js markup/_build.js draw.js view.js scroller.js sidebar.js chat.js settings.js Views/settings.js Views/page.js Views/image.js Views/editpage.js Views/category.js Views/user.js Views/home.js Views/chatlogs.js navigate.js main.js > resource/_build.js
+printf 'window.commit = "%q";\n\n' "`git log -1 --format='%h [%ad] %s'`" | cat - fill.js entity.js activity.js request.js markup/_build.js draw.js view.js scroller.js sidebar.js chat.js settings.js Views/settings.js Views/page.js Views/image.js Views/editpage.js Views/category.js Views/user.js Views/home.js Views/chatlogs.js navigate.js main.js > resource/_build.js
+
 
 # nocache filename -> filename?1234567 (uses date modified)
 # for now this isn't very useful since the files are always new

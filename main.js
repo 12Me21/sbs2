@@ -11,7 +11,13 @@ window.onerror = function(message, source, line, col, error) {
 	}
 }
 
-Sidebar.print("hi!")
+var dark = window.matchMedia("(prefers-color-scheme: dark)")
+dark.onchange = function(query) {
+	View.flag('dark', query.matches)
+}
+dark.onchange(dark)
+
+Sidebar.print("hi!\ncommit: "+window.commit)
 delete window.sidebar // obsolete firefox global variable
 
 Req.onLogin = function() {
@@ -84,9 +90,9 @@ function ready() {
 	if (navigator.vendor=="Google Inc.")
 		document.documentElement.style.imageRendering = "-webkit-optimize-contrast"
 	//can't remember if this is still needed
-	document.documentElement.addEventListener('touchstart', function(e) {
-		e.preventDefault()
-	})
+	//document.documentElement.addEventListener('touchstart', function(e) {
+	//	e.preventDefault()
+	//})
 	View.onLoad()
 	
 	Nav.initial()

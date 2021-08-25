@@ -5,8 +5,12 @@
 	margin: 0;
 	box-sizing: border-box;
 	-webkit-box-sizing: border-box;
-	overflow-wrap: break-word;
+}
+
+html {
 	font-variant-ligatures: none;
+	overflow-wrap: break-word;
+	overflow-wrap: anywhere; /*break-word;*/
 }
 
 /* may need more things here */
@@ -64,13 +68,12 @@
  ***********/
 a {
 	text-decoration: none;
-	color: #045;
 }
-a:visited {
-	color: #045;
+a, a:visited {
+	color: var(--linkcolor);
 }
 a:hover {
-	color: rgb(0,150,136);
+	color: var(--link-hover-color);
 	/*text-decoration: underline;*/
 }
 a:hover .entity-title,
@@ -87,11 +90,11 @@ a[data-static-path],
 
 /* todo: make class for dark bg elements */
 .titlePane a {
-	color: #DEF;
+	color: var(--link-invert-color);
 	font-weight: normal;
 }
 .titlePane a:hover {
-	color: #EFF;
+	color: var(--link-invert-hover-color);
 }
 
 h1 {
@@ -108,6 +111,8 @@ textarea {
 	font-family: roboto, sans-serif;
 	
 	font-size: 0.8em;
+	color: var(--maintxtcolor);
+	background-color: var(--mainbgcolor);
 }
 
 select {
@@ -119,9 +124,9 @@ sub {vertical-align: sub;}
 
 .avatar {
 	height: 1rem; /*default*/
-	border: 1px solid white;
+	border: 1px solid var(--image-border-color);
 	border-radius: 3px;
-	background-color: white;
+	background: var(--avatar-bg);
 }
 
 .ellipsis {
@@ -135,7 +140,7 @@ sub {vertical-align: sub;}
 }
 
 time {
-	color: #333;
+	color: var(--time-color);
 	font-size: 0.9em;
 	vertical-align: baseline;
 }
@@ -170,6 +175,7 @@ html {
 	background-color: #FEE;
 	font-family: roboto, fontello, sans-serif;
 	position: fixed;
+	color: var(--maintxtcolor);
 }
 
 body {
@@ -179,7 +185,7 @@ body {
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background-color: white;
+	background: var(--mainbgcolor);
 	/*height: 100vh;*/ /* @@@ */
 }
 
@@ -282,12 +288,12 @@ button {
 	font-size: 0.8em;
 	cursor: pointer;
 	font-family: roboto, sans-serif;
-
+	
 	border: 1px solid black;
 	border-radius: 0px;
 	padding: 0 0.5rem;
-
-	background: linear-gradient(#EEE, #CCC);
+	
+	background: var(--button-bg);
 }
 .buttonContainer {
 	padding: 1px;
@@ -317,16 +323,16 @@ button {
 	display: inline-block;
 }
 button:hover {
-	border-color: #59E;
+	border-color: var(--button-hover-color);
 }
 
 button[aria-selected="true"] {
-	background: linear-gradient(#888, #AAA);
+	background: var(--button-selected-bg);
 }
 
 button:active {
 	border-style: inset;
-	background: linear-gradient(#DDD, #EEE);
+	background: var(--button-active-bg);
 }
 
 /**********/
@@ -341,7 +347,7 @@ html.f-loggedIn .loggedOut {
  *************/
 
 html.f-error .loadBG {
-	background-color: #800;
+	background: var(--error-invert-bg);
 }
 
 .pathSeparator {
@@ -359,43 +365,34 @@ html.f-error .loadBG {
 }
 
 .bottomBorder {
-	border-bottom: 1px solid gray;
+	border-bottom: 1px solid var(--border-color);
 }
 
 .border-list > *:not(:last-child),
 .border-list-2 > * {
-	border-bottom: 1px solid gray;
+	border-bottom: 1px solid var(--border-color);
 }
 
 /**********
  ** Tabs **
  **********/
-table.tabs {
+tab-list {
 	width: 100%;
-	height: 1px; /* don't worry */
-	table-layout: fixed;
+	display: flex;
+	flex-direction: row;
 }
-table.tabs tbody, table.tabs tr, table.tabs td {
-	height: 100%;
-}
-table.tabs td {
-	margin: 0;
-	padding: 0;
-	text-align: center;
-	border-right: 1px solid gray;
-}
-
-table.tabs td button {
-	width: 100%;
+tab-list > button {
+	flex-grow: 1;
+	flex-basis: 0;
 	height: 2rem;
-	border: none;
 	vertical-align: top;
 	font-size: 1em;
 	padding: 0;
 }
 
-table.tabs td:last-child {
-	border-right: none;
+tab-list > button img.avatar {
+	height: 100%;
+	width: auto;
 }
 
 button[aria-selected="true"] {
@@ -403,11 +400,6 @@ button[aria-selected="true"] {
 }
 
 /**********/
-
-.myUserBar {
-	background-color: #EEE;
-	padding: 0 0.2rem;
-}
 
 html.f-sidebarFile .sidebarUploadingHide,
 html.f-sidebarUploaded .sidebarUploadingHide {
@@ -425,8 +417,8 @@ html:not(.f-sidebarUploaded) .sidebarUploadedFile {
  ****************/
 .titlePane {
 	/*border-bottom: 2px solid black;*/
-	background-color: #222;
-	color: white;
+	background: var(--databarbgcolor);
+	color: var(--databartxtcolor);
 	/*box-shadow: 0 2px 3px rgba(0,0,0,0.3);*/
 	z-index: 10;
 	padding: 1px;
@@ -437,7 +429,7 @@ html:not(.f-sidebarUploaded) .sidebarUploadedFile {
 
 .titlePane .entity-title {
 	font-weight: normal;
-	color: #DEF;
+	color: var(--link-invert-color);
 }
 
 .status-idle > .avatar {
@@ -445,7 +437,7 @@ html:not(.f-sidebarUploaded) .sidebarUploadedFile {
 }
 
 html.f-loading .loadBG {
-	background-color: #225450;
+	background: var(--loading-invert-bg);
 }
 
 .loadBG {
@@ -462,7 +454,7 @@ html.f-loading .loadBG {
 }
 
 .titlePane .pageTitle .entity-title {
-	color: white;
+	color: var(--databartxtcolor);
 	padding-right: 0.5rem;
 }
 
@@ -471,7 +463,7 @@ html:not(.f-canEdit) .canEdit {
 }
 
 .errorMode .titlePane {
-	color: maroon;
+	color: var(--error-invert-bg);
 	font-family: monospace;
 }
 
@@ -501,8 +493,8 @@ main {
 }
 
 sidebar-container {
-	border-left: 1em solid #222;
-	background-color: white;
+	border-left: 1em solid var(--databarbgcolor);
+	background: var(--mainbgcolor);
 	width: 30vw;
 	min-width: 10vw;
 	z-index: 20;
@@ -541,36 +533,36 @@ main-scrollable {
 .linkBar {
 	/*font-weight: bold;*/
 	display: block;
-	background-color: #EEE;
+	background: var(--mainbgcolor);
 	padding: 0.2rem;
 }
 
 .linkBar:focus {
-	background-color: white;
+	background: var(--bar-bg);
 }
 
 /*********
  ** Nav **
  *********/
 .nav {
-	background-color: #333;
-	color: white;
+	background: var(--light-invert-bg);
+	color: var(--databartxtcolor);
 }
 
 .nav > span {
-	color: white;
+	color: var(--databartxtcolor);
 }
 
 /**************
  ** Userlist **
  **************/
 .chatPane .userlist {
-	box-shadow: 0 2px 3px rgba(0,0,0,0.3);
+	box-shadow: var(--normal-shadow);
 	z-index: 4;
 }
 
 .userlist {
-	background-color: #EEE;
+	background: var(--bar-bg);
 }
 
 /*******************
@@ -595,17 +587,18 @@ message-block > time {
 	float: right;
 	font-weight: normal;
 	padding-right: .5em;
-	color: #666;
+	color: var(--chat-dim-color);
 }
 message-block > img.avatar {
 	display: inline-block;
 	width: 3.5rem;
 	height: 3.5rem;
-	border: 1px solid #777;
+	border: none;/*1px solid #777;*/
+	/*background-color: transparent;*/
+	/*background-color: #AAB;*/
 	margin-right: 0.5rem;
-/*	float: left;*/
 }
-message-block > .username {
+message-block > .username-label {
 	margin-left: 4rem;
 	display: block;
 }
@@ -638,10 +631,10 @@ message-controls {
 }
 
 message-controls:hover + message-part {
-	background-color: rgba(0,0,0,0.1);
+	background: rgba(0,0,0,0.1);
 }
 message-part:focus {
-	background-color: rgba(0,224,255,0.1);
+	background: rgba(0,224,255,0.1);
 	outline: none;
 }
 
@@ -657,25 +650,25 @@ message-part.edited {
 	/* todo: fix this */
 	/* we may just need an extra container for message-parts... */
 	padding-left: 4.1rem;
-	border-left: 0.1rem solid gray;
+	border-left: 0.1rem solid var(--border-color);
 }
 
 message-contents img {
 	max-width: 100%;
 	max-height: 10vh;
-	border: 1px solid silver;
+	border: 1px solid var(--image-border-color);
 }
 
 message-part[editing] {
-	background-color: yellow;
+	background: yellow;
 }
 
 #\$chatTextarea[disabled] {
-	background-color: silver;
+	background: silver;
 }
 
 html.f-chatEditing #\$chatTextarea {
-	background-color: #FFFF80;
+	background: var(--edit-textarea-bg);
 }
 
 html.f-chatEditing .hideWhenEdit {
@@ -834,10 +827,10 @@ button.voteButton[data-selected][data-vote="o"] {
 }
 
 .pageInfoPane {
-	background-color: #EEE;
+	background: var(--bar-bg);
 	/*overflow: auto;*/
 	padding: 0 0.3rem;
-	box-shadow: 0 2px 3px rgba(0,0,0,0.3);
+	box-shadow: var(--normal-shadow);
 }
 
 /***********
@@ -900,8 +893,8 @@ html:not(.f-fileUploading) .fileUploading {
 	-ms-user-select: none;
 	user-select: none;
 	cursor: grab;
-	color: white;
-	background-color: #222;
+	color: var(--databartxtcolor);
+	background: var(--databarbgcolor);
 	height: 1.2em;
 	line-height: 1;
 	overflow: hidden;
@@ -1136,7 +1129,7 @@ textarea-container {
 	border: 2px solid #00C8B4;
 	padding: 5px;
 	overflow: hidden;
-	background-color: white;
+	background: var(--mainbgcolor);
 }
 
 .inputPane {
@@ -1210,13 +1203,13 @@ textarea-container, textarea-container > textarea {
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	background-color: #CCC;
+	background: var(--bar-bg);
 }
 
 .gallery-title {
 	text-align: center;
 	margin: 0 auto;
-	background-color: #EEE;
+	background: var(--bar-bg);
 }
 
 .ellipsis {
@@ -1228,12 +1221,12 @@ textarea-container, textarea-container > textarea {
 }
 
 .debugMessage {
-	background-color: #EEE;
+	background: var(--bar-bg);
 	padding: 2px 3px;
 }
 
 .linkBar {
-	border-bottom: 1px solid gray;
+	border-bottom: 1px solid var(--border-color);
 	border-top: 1px solid white;
 	padding: 0.15rem 0.2rem 0.2rem 0.2rem;
 }
@@ -1244,7 +1237,7 @@ activity-users {
 }
 
 .inputPane {
-	background-color: #DDD;
+	background: var(--bar-bg);
 }
 
 html:not(.f-editorPreview) .editorPreview,

@@ -68,8 +68,10 @@ rawRequest: function(url, method, callback, data, auth){
 		else if (code==418)
 			callback('ban', resp)
 		else if (code==500) {
+			print("got 500 error! "+resp)
 			console.warn('got 500 error', x, resp)
-			retry(1000, '500 error')
+			callback('error', JSON.safeParse(resp))
+			//retry(1000, '500 error')
 		} else { // other
 			alert("Request failed! "+code+" "+url)
 			console.log("REQUEST FAILED", x)

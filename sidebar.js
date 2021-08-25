@@ -83,17 +83,17 @@ onLoad: function() {
 	/*document.addEventListener('keydown', function(e) {
 	  
 	  })*/
-	var x = document.createElement('span')
+	var x = document.createDocumentFragment()
 	var y = x.createChild('span')
 	myAvatar = x.createChild('span')
 	myAvatar.className += " loggedIn fill"
 	y.className += " loggedOut"
 	y.textContent = "log in"
 	var sidebarTabs = Draw.sidebarTabs([
-		{label: document.createTextNode("A"), elem: $sidebarActivityPanel},
+		{label: document.createTextNode("✨"), elem: $sidebarActivityPanel},
 		{label: document.createTextNode("W"), elem: $sidebarWatchPanel},
-		{label: document.createTextNode("N"), elem: $sidebarNavPanel},
-		{label: document.createTextNode("I"), elem: $sidebarFilePanel},
+		{label: document.createTextNode("🔍"), elem: $sidebarNavPanel},
+		{label: document.createTextNode("📷"), elem: $sidebarFilePanel},
 		{label: x, elem: $sidebarUserPanel},
 	])
 	$sidebarTabs.replaceChildren(sidebarTabs.elem)

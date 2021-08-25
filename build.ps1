@@ -18,7 +18,7 @@ Write-Host "Building markup system"
 Set-Location (Split-Path $PSCommandPath)
 
 Write-Host "creating _build.css"
-Get-Content "resource/fonts.css","style.css","markup.css","code.css" | Set-Content resource/_build.css
+Get-Content "theme.css","resource/fonts.css","style.css","markup.css","code.css" | Set-Content resource/_build.css
 
 
 Write-Host "creating _build.js"
