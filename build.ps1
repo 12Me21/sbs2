@@ -22,7 +22,9 @@ Get-Content "theme.css","resource/fonts.css","style.css","markup.css","code.css"
 
 
 Write-Host "creating _build.js"
-Get-Content "fill.js","entity.js","activity.js","request.js","markup/_build.js","draw.js","view.js","scroller.js","sidebar.js","chat.js","settings.js","Views/settings.js","Views/page.js","Views/image.js","Views/editpage.js","Views/category.js","Views/user.js","Views/home.js","Views/chatlogs.js","navigate.js","main.js"` | sc resource/_build.js
+$jsfiles =
+"fill.js","entity.js","activity.js","request.js","markup/_build.js","draw.js","view.js","scroller.js","sidebar.js","chat.js","settings.js","Views/settings.js","Views/page.js","Views/image.js","Views/editpage.js","Views/category.js","Views/user.js","Views/home.js","Views/chatlogs.js","navigate.js","main.js"
+Get-Content $jsfiles | Set-Content resource/_build.js
 
 function unixtime($t) {
 	return [int64](Get-Date $t -UFormat "%s")
@@ -35,7 +37,7 @@ Write-Host "creating _build.html"
 $f = (Get-Content ./index.html -Raw)
 $start = $f.IndexOf("<!--START-->")
 $end = $f.IndexOf("<!--END-->") + "<!--END-->".Length
-$f.Remove($start,$end-$start).Insert($start,"<link rel=`"stylesheet`" href=`"$(nocache 'resource/_build.css')`">`n<script src=`"$(nocache 'resource/_build.js')`"></script>") | sc _build.html
+$f.Remove($start,$end-$start).Insert($start,"<link rel=`"stylesheet`" href=`"$(nocache 'resource/_build.css')`">`n<script src=`"$(nocache 'resource/_build.js')`"></script>") | Set-Content _build.html
 
 function isnewer([System.IO.FileInfo] $file, $destfilename = $null) {
     if ($destfilename -eq $null) {$destfilename = $file.Name}

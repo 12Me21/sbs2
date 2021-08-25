@@ -213,7 +213,9 @@ tryLoadCachedAuth: function() {
 },
 
 putFile: function(file, callback) {
-	return request("File/"+file.id, 'PUT', callback, file)
+	//bucket = (bucket ? "?bucket="+bucket : "")
+	var bucket = (file.bucket ? "?bucket="+file.bucket : "")
+	return request("File/"+file.id+bucket, 'PUT', callback, file)
 },
 
 register: function(username, password, email, callback) {
@@ -306,7 +308,7 @@ setSensitive: function(data, callback) {
 },
 
 // this should accept as many types as possible
-uploadImage: function(thing, callback) {
+uploadImage: function(thing, bucket, callback) {
 	if (thing instanceof HTMLCanvasElement) {
 		thing.toBlob(function(blob) {
 			if (blob)
@@ -327,6 +329,7 @@ uploadImage: function(thing, callback) {
 uploadFile: function(file, callback) {
 	var form = new FormData()
 	form.append('file', file)
+	//bucket = (bucket ? "?bucket="+bucket : "")
 	request("File", 'POST', function(e, resp) {
 		if (e)
 			callback(null)
