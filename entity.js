@@ -20,6 +20,10 @@ CONTENT_TYPES: [
 	'resource', 'chat', 'program', 'tutorial', 'documentation', 'userpage'
 ],
 
+filterNickname: function(name) {
+	return name.substr(0,50).replace(/\n/g, "  ")
+},
+
 process: function(resp) {
 	// build user map first
 	var users = {}
@@ -131,15 +135,36 @@ processItem: {
 				data.createUser = Object.create(data.createUser, {
 					avatar: {value: av}
 				})
-			// discord name hack override
-			var nick = data.meta.b
-			if (nick !== undefined) {
+			// nicknames
+			var nick = undefined
+			var bridge = undefined
+			if (typeof data.meta.b == 'string') {
+				nick = data.meta.b
+				bridge = nick
 				if (
 					data.meta.m == '12y' &&
 					data.content.substr(0, nick.length+3) == "<"+nick+"> "
 				) {
 					data.content = data.content.substring(nick.length+3, data.content.length)
 				}
+			}
+			if (typeof data.meta.n == 'string')
+				nick = data.meta.n
+			if (nick != undefined) {
+				// if the bridge name is set, we set the actual .name property to that, so it will render as the true name in places where nicknames aren't handled (i.e. in the sidebar)
+				// todo: clean this up..
+				// and it's kinda dangerous that .b property is trusted so much..
+				if (bridge != undefined)
+					data.createUser = Object.create(data.createUser, {
+						name: {value: bridge},
+						nickname: {value: filterNickname(nick)},
+						realname: {value: data.createUser.name},
+					})
+				else
+					data.createUser = Object.create(data.createUser, {
+						nickname: {value: filterNickname(nick)},
+						realname: {value: data.createUser.name},
+					})
 			}
 			// todo: we should render the nickname in other places too (add this to the title() etc. functions.
 			// and then put like, some icon or whatever to show that they're nicked, I guess.

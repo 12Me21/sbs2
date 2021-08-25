@@ -13,9 +13,10 @@ avatarURL: function(user, params) {
 
 largeIcon: function(entity) {
 	var element = document.createElement('img')
-	if (entity.Type == 'user')
+	if (entity.Type == 'user') {
 		element.src = avatarURL(entity, "size=400&crop=true")
-	else
+		element.width = element.height = 400
+	} else
 		element.src = "resource/unknown.png"
 	return entity
 },
@@ -135,7 +136,8 @@ linkAvatar: function(user) {
 avatar: function(user) {
 	var element = document.createElement('img')
 	element.className += "item avatar"
-	element.src = avatarURL(user, "size=120&crop=true")
+	element.src = avatarURL(user, "size=100&crop=true")
+	element.width = element.height = 100
 	return element
 },
 
@@ -173,7 +175,8 @@ icon: function(entity) {
 	if (type == 'user') {
 		element = document.createElement('img')
 		element.className += "item icon avatar"
-		element.src = avatarURL(entity, "size=120&crop=true")
+		element.src = avatarURL(entity, "size=100&crop=true")
+		element.width = element.height = 100
 	} else if (type=='content') {
 		var hidden = !hasPerm(entity.permissions, 0, 'r')
 		if (hidden) {
@@ -235,30 +238,30 @@ messageBlock: function(comment) {
 	div.appendChild(avatar(user))
 	// username
 	var name = document.createElement('span')
-	name.className += " username"
+	name.className += " username-label"
 	div.appendChild(name)
 	
 	var link = entityLink(user)
 	name.appendChild(link)
 	
 	var n = document.createElement('span')
-	n.className = "pre"
+	n.className = "pre username"
 	link.appendChild(n)
 	
-	if (comment.meta.b !== undefined)
-		n.textContent = comment.meta.b
-	else
+	// if nickname is set, render as "nickname (realname):"
+	if (user.nickname !== undefined) {
+		n.textContent = user.nickname
+		link.appendChild(document.createTextNode(": ("))
+		var n2 = document.createElement('span')
+		n2.className = "pre"
+		n2.textContent = user.realname
+		link.appendChild(n2)
+		link.appendChild(document.createTextNode(")"))
+	} else {
+		// otherwise render as "name:"
 		n.textContent = user.name
-	
-	if (comment.meta.b !== undefined) {
-		link.appendChild(document.createTextNode(" ("))
-		n = document.createElement('span')
-		n.className = "pre"
-		n.textContent = user.name
-		link.appendChild(n)
-		link.appendChild(document.createTextNode("):"))
-	} else
 		link.appendChild(document.createTextNode(":"))
+	}
 	
 	// contents
 	var contentBox = document.createElement('message-contents')
@@ -268,10 +271,7 @@ messageBlock: function(comment) {
 	return [div, contentBox]
 },
 mergeHash: function(comment) {
-	if (comment.meta.b)
-		return comment.createUserId + "," + comment.createUser.avatar + "," + comment.meta.b
-	else
-		return comment.createUserId + "," + comment.createUser.avatar
+	return comment.createUserId + "," + comment.createUser.avatar + "," + comment.createUser.name + " " + (comment.createUser.nickname || "")
 },
 // this needs to be improved
 searchComment: function(comment) {
@@ -375,13 +375,10 @@ pageInfo: function(page) {
 	return e
 },
 sidebarTabs: function(list, callback) {
-	var d = document.createElement('table')
-	d.className = "tabs"
-	var r = document.createElement('tr')
-	d.appendChild(r)
 	var btns = []
+	var r = document.createDocumentFragment();
 	var x = {
-		elem: d,
+		elem: r,
 		select: function(i) {
 			list.forEach(function(item, i2) {
 				btns[i2].setAttribute('aria-selected', i==i2)
@@ -394,14 +391,12 @@ sidebarTabs: function(list, callback) {
 		item.elem.setAttribute('aria-labelledby', "sidebar-tab-"+i)
 		item.elem.hidden = true
 		
-		var td = document.createElement('td')
 		var btn = document.createElement('button')
 		btn.setAttribute('role', "tab")
 		btn.setAttribute('aria-selected', "false")
 		btn.id = "sidebar-tab-"+i
 		btn.setAttribute('aria-controls', "sidebar-panel-"+i)
-		td.appendChild(btn)
-		r.appendChild(td)
+		r.appendChild(btn)
 		btn.appendChild(item.label)
 		btns[i] = btn
 		btn.onclick = function() {

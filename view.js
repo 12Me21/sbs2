@@ -158,7 +158,6 @@ updateMyUser: function(user) {
 		return //uh oh
 	Req.me = user //This probably shouldn't be handled by View...
 	var icon = Draw.icon(user)
-	icon.style.height = "100%" //hack
 	Sidebar.myAvatar.replaceChildren(icon)
 	//$loggedIn.replaceChildren(Draw.entityTitleLink(user, true))
 },
@@ -426,7 +425,7 @@ attachResize: function(element, tab, horiz, dir, save, callback) {
 	tab.addEventListener('touchstart', function(e) {
 		e.preventDefault()
 		down(e)
-	}) //todo: prevent scrolling on mobile
+	}, {passive:true}) //todo: prevent scrolling on mobile
 	document.addEventListener('touchend', up)
 	document.addEventListener('touchmove', move)
 	if (save) {

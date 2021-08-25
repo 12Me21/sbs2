@@ -1,0 +1,83 @@
+/*
+todo: look into https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#system_colors
+
+
+*/
+
+html {
+	/* text colors (black) */
+	--maintxtcolor: black;
+	--linkcolor: #045;
+	--link-hover-color: rgb(0,150,136);
+	--time-color: #333;
+	--border-color: gray;
+	--chat-dim-color: #666;
+	--image-border-color: silver;
+	/* background colors (white) */
+	--mainbgcolor: white;
+	--avatar-bg: white;
+	--button-hover-color: #59E;
+	--bar-bg: #EEE;
+	--button-bg: linear-gradient(#EEE, #CCC);
+	--button-active-bg: linear-gradient(#DDD, #EEE);
+	--button-selected-bg: linear-gradient(#888, #AAA);
+	--error-bg: pink;
+	--bgred: #FCC;
+	--bgorange: #FEA;
+	--bgyellow: #FF8;
+	--bggreen: #CFC;
+	--bgblue: #CEF;
+	--bgpurple: #ECF;
+	--bggray: #DDD;
+	--edit-textarea-bg: #FFFF80;
+	--normal-shadow: 0 2px 3px rgba(0,0,0,0.3);
+	/* inverted text colors (white) */
+	--databartxtcolor: white;
+	--link-invert-color: #DEF;
+	--link-invert-hover-color: #EFF;
+	/* inverted bg colors (black) */
+	--databarbgcolor: #222;
+	--light-invert-bg: #333;
+	--loading-invert-bg: #225450;
+	--error-invert-bg: #800;
+}
+
+html[data-theme="dark"], html.f-dark:not([data-theme]) {
+	color-scheme: dark;
+	--maintxtcolor: white;
+	--linkcolor: #9CE;
+	--link-hover-color: #5CE;
+	--time-color: #EEE;
+	--border-color: black;
+	--chat-dim-color: #666;
+	--image-border-color: gray;
+	
+	--mainbgcolor: #292929;
+	--avatar-bg: gray;
+	--button-hover-color: #59E;
+	--bar-bg: #555;
+	--button-bg: linear-gradient(#048, #035);
+	--button-active-bg: linear-gradient(#047, #047);
+	--button-selected-bg: linear-gradient(#048, #07A);
+	--error-bg: maroon;
+	--bgred: rgba(255,50,50,0.3);
+	--bgblue: rgba(50,150,255,0.3);
+	--bggreen: rgba(50,255,50,0.3);
+	--bgyellow: rgba(255,255,50,0.3);
+	--bgorange: rgba(255,150,50,0.3);
+	--bggray: rgba(128,128,128,0.1);
+	--bgpurple: rgba(200,50,255,0.3);
+	--edit-textarea-bg: #750;
+	--normal-shadow: 0 2px 3px rgba(0,0,0,0.3);
+	/* in dark theme, the inverted colors are just normal dark */
+	--databartxtcolor: var(--maintxtcolor);
+	--link-invert-color: var(--linkcolor);
+	--link-invert-hover-color: var(--link-hover-color);
+	
+	--databarbgcolor: #000;
+	--light-invert-bg: #111;
+	--loading-invert-bg: #225450;
+	--error-invert-bg: #800;
+	
+	
+}

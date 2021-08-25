@@ -4,12 +4,12 @@
 <title>SmileBASIC Source 2</title>
 
 <meta name=viewport content="width=device-width, initial-scale=1, height=device-height">
-<link rel=icon sizes=16x16 data-favicon href='resource/icon16.ico'> <!-- compatibility -->
-<link rel="shortcut icon" sizes=16x16 data-favicon href="resource/icon16.png"> <!-- firefox -->
-<link rel=icon sizes=32x32 data-favicon href="resource/icon32.png"> <!-- chrome -->
-<link rel=icon sizes=192x192 data-favicon href="resource/iconbig.png"> <!-- large -->
-<link rel=apple-touch-icon href="resource/iconbig.png"> <!-- large 2 -->
-<link rel=image_src href="resource/iconbig.png"> <!-- large 3 -->
+<link rel=icon sizes=16x16 data-favicon href=resource/icon16.ico> <!-- compatibility -->
+<link rel="shortcut icon" sizes=16x16 data-favicon href=resource/icon16.png> <!-- firefox -->
+<link rel=icon sizes=32x32 data-favicon href=resource/icon32.png> <!-- chrome -->
+<link rel=icon sizes=192x192 data-favicon href=resource/iconbig.png> <!-- large -->
+<link rel=apple-touch-icon href=resource/iconbig.png> <!-- large 2 -->
+<link rel=image_src href=resource/iconbig.png> <!-- large 3 -->
 
 <script>
 	window.onerror = function(message, source, line, col, error) {
@@ -30,6 +30,7 @@
 
 <!--START-->
 <!-- this part will be replaced by the build script -->
+<link rel=stylesheet href=theme.css>
 <link rel=stylesheet href=resource/fonts.css>
 <link rel=stylesheet href=style.css>
 <link rel=stylesheet href=markup.css>
@@ -40,9 +41,9 @@
 <script src=activity.js></script>
 <script src=request.js></script>
 
-<script src="markup/highlight.js"></script>
-<script src="markup/parse.js"></script>
-<script src="markup/render.js"></script>
+<script src=markup/highlight.js></script>
+<script src=markup/parse.js></script>
+<script src=markup/render.js></script>
 
 <script src=draw.js></script>
 
@@ -178,7 +179,7 @@
 		
 		<v-b data-view-membersMode class="nav bar rem1-7" id=$memberNav></v-b>
 		
-		<v-b data-view-chatlogs>
+		<v-b data-view-chatlogs class="nav">
 			<input id=$chatlogSearchText placeholder="text">
 			<input type=number id=$chatlogSearchRoom placeholder="room id">
 			<input type=number id=$chatlogSearchUser placeholder="user id">
@@ -298,13 +299,13 @@
 		<button class="closeSidebar" id=$closeSidebar>Close Sidebar</button>
 		<div class="userlist bar rem1-5"><span id=$sidebarUserList></span><button id=$hideGlobalStatusButton class="item rightAlign loggedIn">Hide</button></div>
 		<!--<span id=$longPollStatus></span>-->
-		<div id=$sidebarTabs role="tablist" aria-label="sidebar tab"></div>
+		<tab-list id=$sidebarTabs role="tablist" aria-label="sidebar tab"></tab-list>
 		<div id=$sidebarTop class="flex-sized">
 			<sidebar-panel id=$sidebarActivityPanel>
-				<scroll-outer><scroll-inner id="$sidebarActivity" class="border-list-2"></scroll-inner></scroll-outer>
+				<scroll-outer><scroll-inner id=$sidebarActivity class="border-list-2"></scroll-inner></scroll-outer>
 			</sidebar-panel>
 			<sidebar-panel id=$sidebarWatchPanel>
-				<scroll-outer><scroll-inner id="$sidebarWatch" class="border-list-2"></scroll-inner></scroll-outer>
+				<scroll-outer><scroll-inner id=$sidebarWatch class="border-list-2"></scroll-inner></scroll-outer>
 			</sidebar-panel>
 			<sidebar-panel id=$sidebarNavPanel>
 				<div class="bar rem1-5"><input id=$searchInput class="item"><button id=$searchButton class="item">Search</button></div>
