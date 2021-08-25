@@ -53,6 +53,7 @@ onLoad: function() {
 					if ($fileUploadName.value) {
 						$fileUploadNameOut.textContent = "(setting metadata...)"
 						file.name = $fileUploadName.value
+						file.bucket = $fileBucketName.value
 						console.log(file)
 						Req.putFile(file, function(e, resp) {
 							$fileUploadNameOut.textContent = resp.name
@@ -171,6 +172,7 @@ cleanUp: function() {
 	selectedFile = null
 	$fileView.src = ""
 	$fileUploadName.value = ""
+	// don't reset bucket name
 },
 
 fileUploaded: function(file) {
@@ -179,6 +181,7 @@ fileUploaded: function(file) {
 	$fileView.src = ""
 	$fileView.src = URL.createObjectURL(file)
 	$fileUploadName.value = file.name || ""
+	$fileBucketName.value = file.bucket || ""
 	selectedFile = file
 	selectTab(3) //hack HACK
 	//fillFileFields(file)
