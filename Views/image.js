@@ -86,7 +86,7 @@ function readFields(data) {
 	data.permissions = JSON.safeParse($filePermissions.value)
 	data.values = JSON.safeParse($fileValues.value)
 	data.name = $fileName.value
-	data.bucket = $fileBucketName.value
+	data.bucket = $fileBucket.value
 }
 
 function selectFile(file) {
