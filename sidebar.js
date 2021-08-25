@@ -53,7 +53,7 @@ onLoad: function() {
 					if ($fileUploadName.value) {
 						$fileUploadNameOut.textContent = "(setting metadata...)"
 						file.name = $fileUploadName.value
-						file.bucket = $fileBucketName.value
+						file.bucket = $fileUploadBucket.value
 						console.log(file)
 						Req.putFile(file, function(e, resp) {
 							$fileUploadNameOut.textContent = resp.name
