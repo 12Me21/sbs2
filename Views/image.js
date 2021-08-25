@@ -7,6 +7,10 @@ with (View) (function($) { "use strict" //*/
 addView('image', {
 	init: function() {
 		var nav = $fileNav
+		$fileSearchBucket.onchange = function() {
+			currentQuery.bucket = $fileSearchBucket.value
+			Nav.go("image"+Req.queryString(currentQuery))
+		}
 		navButtons = Draw.navButtons()
 		nav.appendChild(navButtons.element)
 		navButtons.onchange = function(pageNum) {
@@ -50,6 +54,7 @@ addView('image', {
 			skip: (page-1)*20,
 			reverse: true,
 		}
+		query.bucket && (search.bucket = query.bucket)
 		return Req.read([
 			{file: search},
 			"user.0createUserId"
@@ -81,6 +86,7 @@ function readFields(data) {
 	data.permissions = JSON.safeParse($filePermissions.value)
 	data.values = JSON.safeParse($fileValues.value)
 	data.name = $fileName.value
+	data.bucket = $fileBucketName.value
 }
 
 function selectFile(file) {
