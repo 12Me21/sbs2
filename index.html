@@ -54,7 +54,7 @@
 <script src=settings.js></script>
 <script src=Views/settings.js></script>
 <script src=Views/page.js></script>
-<script src=Views/image.js></script>
+<script src=Views/images.js></script>
 <script src=Views/editpage.js></script>
 <script src=Views/category.js></script>
 <script src=Views/user.js></script>
@@ -169,8 +169,8 @@
 						<td><input id=$fileValues></td>
 					</tr>
 					<tr>
-						<th><label for=$fileBucketName>Bucket:</label></th>
-						<td><input id=$fileBucketName></td>
+						<th><label for=$fileBucket>Bucket:</label></th>
+						<td><input id=$fileBucket></td>
 					</tr>
 				</table>
 				<button id=$fileUpdateButton class="fileUpdateButton canEdit loggedIn">Save Settings</button>
@@ -326,7 +326,7 @@
 				<label class="sidebarUploadingFile bar">bucket:<input id=$fileUploadBucket class="item"></label>
 
 				<div class="image-box grow"><img id=$fileView></div>
-				<a data-static-path=image>Uploaded Images</a>
+				<a data-static-path=images>Uploaded Images</a>
 			</sidebar-panel>
 			<sidebar-panel id=$sidebarUserPanel>
 				<button onclick="window.location+=''">Reload Page</button>
@@ -375,7 +375,7 @@
 						<button id=$logOut>Log out</button><br>
 					</div>
 					<div class="registerBox">
-						<a data-static-path=image>Change your avatar here</a>
+						<a data-static-path=images>Change your avatar here</a>
 					</div>
 					<div class="registerBox">
 						<a data-static-path=users>User list</a>
