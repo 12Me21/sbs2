@@ -4,12 +4,12 @@
 <!--/* trick indenter
 with (View) (function($) { "use strict" //*/
 
-addView('image', {
+addView('images', {
 	init: function() {
 		var nav = $fileNav
 		$fileSearchBucket.onchange = function() {
-			currentQuery.bucket = $fileSearchBucket.value
-			Nav.go("image"+Req.queryString(currentQuery))
+			currentQuery.bucket = $fileSearchBucket.value || undefined
+			Nav.go("images"+Req.queryString(currentQuery))
 		}
 		navButtons = Draw.navButtons()
 		nav.appendChild(navButtons.element)
@@ -17,7 +17,7 @@ addView('image', {
 			/*if (currentCategory == null)
 			  return*/
 			currentQuery.page = pageNum
-			Nav.go("image"+Req.queryString(currentQuery))
+			Nav.go("images"+Req.queryString(currentQuery))
 		}
 		
 		$setAvatarButton.onclick = function() {
