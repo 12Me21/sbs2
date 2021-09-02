@@ -23,6 +23,14 @@ fields: {
 			eval(value)
 		},
 	},
+	sitecss: {
+		name: "Custom CSS",
+		type: 'textarea',
+		autosave: false,
+		update: function(value) {
+			$customCSS.textContent = value
+		},
+	},
 	nickname: {
 		name: "Chat Nickname",
 		type: 'textarea',
