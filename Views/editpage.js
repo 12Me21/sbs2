@@ -129,7 +129,7 @@ function resetFields(page) {
 		categoryInput.set(page.parent.id)
 	else
 		categoryInput.set(-1)
-	permissionInput.set({'0':"r"},{})
+	permissionInput.set({'0':"rc"},{})
 }
 
 function readFields(page) {
