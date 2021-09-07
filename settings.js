@@ -12,6 +12,14 @@ fields: {
 			ChatRoom.markup = value
 		},
 	},
+	html: {
+		name: "allow html injection",
+		type: 'select',
+		options: ['hell yeah'],
+		update: function(value) {
+			
+		},
+	},
 	theme: {
 		name: "Theme",
 		type: 'select',
