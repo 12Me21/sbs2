@@ -218,7 +218,7 @@ function readInput(old, edit) {
 
 function writeInput(data) {
 	$chatTextarea.value = data.content || ""
-	$chatMarkupSelect.checked = data.meta.m == "12y"
+	$chatMarkupSelect.checked = data.meta.m==ChatRoom.markup
 }
 
 var preEdit = null
