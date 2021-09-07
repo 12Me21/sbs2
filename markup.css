@@ -297,4 +297,5 @@ markup-root .youtube {
 	margin: 0;
 	max-height: 50vh;
 	border: none;
+	height: 0;
 }
