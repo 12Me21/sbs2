@@ -291,3 +291,10 @@ markup-root .youtube {
 .markup-root a.customLink {
 	background-color: rgba(0,0,255,0.1);
 }
+
+.markup-root > iframe {
+	width: 100%;
+	margin: 0;
+	max-height: 50vh;
+	border: none;
+}
