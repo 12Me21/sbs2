@@ -4,6 +4,14 @@ with (Settings) (function($) { "use strict"
 Object.assign(Settings, { //*/
 
 fields: {
+	chat_markup: {
+		name: "Chat Markup Language",
+		type: 'select',
+		options: ['12y','bbcode','html'],
+		update: function(value) {
+			ChatRoom.markup = value
+		},
+	},
 	theme: {
 		name: "Theme",
 		type: 'select',

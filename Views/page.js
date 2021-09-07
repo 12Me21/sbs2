@@ -203,7 +203,7 @@ function readInput(old, edit) {
 	}
 	
 	if ($chatMarkupSelect.checked)
-		data.meta.m = "12y"
+		data.meta.m = ChatRoom.markup
 	else
 		data.meta.m = "plaintext"
 	if (!edit) {

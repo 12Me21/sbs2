@@ -5,6 +5,7 @@ function ChatRoom(id, page) {
 	var old = ChatRoom.rooms[id]
 	if (old)
 		return old
+	this.markup = "12y"
 	
 	this.id = id
 	this.status = "active"
