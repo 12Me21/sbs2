@@ -88,6 +88,10 @@
 	margin: 0.25em 0;
 }
 
+.markup-root ruby {
+	white-space: normal;
+}
+
 .markup-root ol {
 	margin-left: 2em;
 	padding-left: 0;
