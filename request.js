@@ -431,7 +431,7 @@ getComment: function(id, callback) {
 		{comment: {ids: [id]}}//todo: maybe also get page permissions?
 	], {}, function(e, resp) {
 		if (!e)			
-			callback(ChatRoom.filterComments(resp.comment[0]))
+			callback(resp.comment[0])
 		else
 			callback(null)
 	})

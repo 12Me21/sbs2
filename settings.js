@@ -67,12 +67,23 @@ fields: {
 				ChatRoom.ignoredUserIds = value.split(',').map(x => parseInt(x)) || []
 				// hide all "message-block"s that have the user inside of them
 				let msg = document.querySelectorAll('message-block')
-				Array
+				let [ignoredMsgs, unignoredMsgs] = Array
 					.from(msg)
-					.filter(x => ChatRoom
+					.partition(x => ChatRoom
 										.ignoredUserIds
 										.includes(parseInt(x.getAttribute('data-uid'))))
-					.map(x => x.remove())
+				ignoredMsgs.map(x => x.remove())
+				// cleanup all messages afterwards
+				for (let i = 0; i < unignoredMsgs.length - 1; ++i) {
+						if (unignoredMsgs[i].getAttribute('data-uid')
+								=== unignoredMsgs[i+1].getAttribute('data-uid')) {
+								let contents = unignoredMsgs[i].querySelector('message-contents')
+								Array.from(unignoredMsgs[i+1].querySelectorAll('message-part'))
+										.map(x => contents.appendChild(x))
+								unignoredMsgs[i+1].remove()
+								unignoredMsgs[i+1] = unignoredMsgs[i]
+						}
+				}
 				let avatar = document.querySelectorAll('a.avatar-link')
 				let [ignoredAvs, unignoredAvs] =Array
 						.from(avatar)

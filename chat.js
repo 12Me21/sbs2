@@ -167,7 +167,7 @@ ChatRoom.filters = []
 ChatRoom.filterComments = function(comments) {
 		return comments.filter(x =>
 				!ChatRoom.ignoredUserIds.includes(x.createUserId) &&
-		    (ChatRoom.filters.find(y => x.content.match(y)) === undefined))
+		    (ChatRoom.filters.find(y => x.content.replace(/[\u200B-\u200D\uFEFF]/g, '').match(y)) === undefined))
 }
 
 ChatRoom.prototype.loadOlder = function(num, callback) {
