@@ -27,6 +27,7 @@ Req.onLogin = function() {
 	// display user info etc.
 	// start long poller
 	Req.onMessages = function(comments, contents) {
+		comments = ChatRoom.filterComments(comments)
 		ChatRoom.displayMessages(comments)
 		Act.newComments(comments, Entity.makePageMap(contents))
 		Sidebar.onAggregateChange(Act.items)

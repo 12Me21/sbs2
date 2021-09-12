@@ -54,6 +54,45 @@ fields: {
 			ChatRoom.nickname = value.substr(0, 50).replace(/\n/g, "  ");
 		},
 	},
+	chatIgnored: {
+			name: "Ignored Users",
+			autosave: false,
+			type: 'textarea',
+			update: function(value) {
+				Array.prototype.partition = function(isValid) {
+					return this.reduce(([pass, fail], elem) => {
+						return isValid(elem) ? [[...pass, elem], fail] : [pass, [...fail, elem]];
+					}, [[], []]);
+				}
+				ChatRoom.ignoredUserIds = value.split(',').map(x => parseInt(x)) || []
+				// hide all "message-block"s that have the user inside of them
+				let msg = document.querySelectorAll('message-block')
+				Array
+					.from(msg)
+					.filter(x => ChatRoom
+										.ignoredUserIds
+										.includes(parseInt(x.getAttribute('data-uid'))))
+					.map(x => x.remove())
+				let avatar = document.querySelectorAll('a.avatar-link')
+				let [ignoredAvs, unignoredAvs] =Array
+						.from(avatar)
+						.partition(x => ChatRoom
+											 .ignoredUserIds
+											 .includes(parseInt(x.getAttribute('data-uid'))))
+				ignoredAvs.map(x => x.classList.add('status-ignored'))
+				unignoredAvs.map(x => x.classList.remove('status-ignored'))
+			},
+	},
+	chatFilters: {
+			name: "Comment Filters",
+			autosave: false,
+			type: 'textarea',
+			update: function(value) {
+					ChatRoom.filters = value.split(/\r?\n/)
+							.filter(x => x !== '')
+							.map(x => new RegExp(x, 'g'))
+			}
+	}
 },
 
 change: function(name, value) {

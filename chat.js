@@ -161,6 +161,14 @@ ChatRoom.generateListeners = function(old) {
 }
 
 ChatRoom.markup = "12y"
+ChatRoom.ignoredUserIds = []
+ChatRoom.filters = []
+
+ChatRoom.filterComments = function(comments) {
+		return comments.filter(x =>
+				!ChatRoom.ignoredUserIds.includes(x.createUserId) &&
+		    (ChatRoom.filters.find(y => x.content.match(y)) === undefined))
+}
 
 ChatRoom.prototype.loadOlder = function(num, callback) {
 	var $=this
@@ -420,6 +428,8 @@ ChatRoom.prototype.shouldScroll = function() {
 }
 
 ChatRoom.prototype.displayMessage = function(comment, autoscroll) {
+	if (ChatRoom.ignoredUserIds.includes(comment.createUserId))
+			return
 	var $=this
 	this.scroller.handlePrint(function() {
 		var old = $.messageElements[comment.id]

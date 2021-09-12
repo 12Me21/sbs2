@@ -253,6 +253,7 @@ read: function(requests, filters, callback, needCategories) {
 			if (needCategories)
 				gotCategoryTree = true
 		}
+		resp.comment = ChatRoom.filterComments(resp.comment)
 		callback(e, resp)
 	})
 },
@@ -405,6 +406,8 @@ getRecentActivity: function(callback) {
 		content: "name,id,permissions,type"
 	}, function(e, resp) {
 		console.log(resp)
+		// filter out all of the comments that have ignored users in them
+		resp.comment = ChatRoom.filterComments(resp.comment)
 		if (!e)
 			callback(resp.activity, resp.commentaggregate, resp.Awatching, resp.CAwatching, resp.content, resp.comment.reverse())
 		else
@@ -427,8 +430,8 @@ getComment: function(id, callback) {
 	return read([
 		{comment: {ids: [id]}}//todo: maybe also get page permissions?
 	], {}, function(e, resp) {
-		if (!e)
-			callback(resp.comment[0])
+		if (!e)			
+			callback(ChatRoom.filterComments(resp.comment[0]))
 		else
 			callback(null)
 	})

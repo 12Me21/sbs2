@@ -114,8 +114,12 @@ userList: function() {
 
 userListAvatar: function(status) {
 	var a = linkAvatar(status.user)
+	if (ChatRoom.ignoredUserIds.includes(status.user.id))
+			a.className += " status-ignored"
 	if (status.status == "idle")
 		a.className += " status-idle"
+	a.setAttribute('data-uid', status.user.id)
+	a.classList.add('avatar-link')
 	return a
 },
 
