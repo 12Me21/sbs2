@@ -211,6 +211,8 @@ function readInput(old, edit) {
 			data.meta.a = Req.me.avatar
 		if (ChatRoom.nickname)
 			data.meta.n = ChatRoom.nickname
+		if (ChatRoom.big_avatar=='on' && ChatRoom.big_avatar_id)
+			data.meta.big = ChatRoom.big_avatar_id
 	}
 	
 	return data

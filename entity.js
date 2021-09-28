@@ -133,7 +133,8 @@ processItem: {
 			var av = +data.meta.a
 			if (av)
 				data.createUser = Object.create(data.createUser, {
-					avatar: {value: av}
+					avatar: {value: av},
+					bigAvatar: {value: +data.meta.big}
 				})
 			// nicknames
 			var nick = undefined

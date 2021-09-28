@@ -235,7 +235,14 @@ messageBlock: function(comment) {
 	timeStamp.textContent = timeString(date)
 	div.appendChild(timeStamp)
 	// avatar
-	div.appendChild(avatar(user))
+	if (user.bigAvatar) {
+		var d = document.createElement('div')
+		d.style.backgroundImage = "url("+Req.fileURL(user.bigAvatar, "size=500")+")"
+		d.className += " bigAvatar"
+		div.appendChild(d)
+	} else {
+		div.appendChild(avatar(user))
+	}
 	// username
 	var name = document.createElement('span')
 	name.className += " username-label"
@@ -271,7 +278,7 @@ messageBlock: function(comment) {
 	return [div, contentBox]
 },
 mergeHash: function(comment) {
-	return comment.createUserId + "," + comment.createUser.avatar + "," + comment.createUser.name + " " + (comment.createUser.nickname || "")
+	return comment.createUserId + "," + comment.createUser.avatar+","+(comment.createUser.bigAvatar||"") + "," + comment.createUser.name + " " + (comment.createUser.nickname || "")
 },
 // this needs to be improved
 searchComment: function(comment) {
