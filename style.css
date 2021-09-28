@@ -1252,3 +1252,16 @@ html.f-editorPreview .editorNotPreview {
 .inputPane > * {
 	height: 100%;
 }
+
+.bigAvatar {
+	width: 4.5rem;
+	height: 100%;
+	position: absolute;
+	background-size: cover;
+	background-position-x: center;
+	background-position-y: top;
+	background-repeat: no-repeat;
+	left: 0;
+	top: 0;
+	z-index: -10;
+}

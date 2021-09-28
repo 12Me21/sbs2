@@ -9,7 +9,23 @@ fields: {
 		type: 'select',
 		options: ['12y','bbcode','html'],
 		update: function(value) {
+			console.log('update chat markup', value)
 			ChatRoom.markup = value
+		},
+	},
+	big_avatar: {
+		name: "Big Avatar",
+		type: 'select',
+		options: ['off', 'on'],
+		update: function(value) {
+			ChatRoom.big_avatar = value
+		},
+	},
+	big_avatar_id: {
+		name: "Big Avatar Id",
+		type: 'textarea',
+		update: function(value) {
+			ChatRoom.big_avatar_id = Number(value)
 		},
 	},
 	html: {
@@ -51,7 +67,7 @@ fields: {
 		name: "Chat Nickname",
 		type: 'textarea',
 		update: function(value) {
-			ChatRoom.nickname = value.substr(0, 50).replace(/\n/g, "  ");
+			ChatRoom.nickname = value.substr(0, 50).replace(/\n/g, "  ")
 		},
 	},
 },
