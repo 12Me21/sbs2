@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<link rel=stylesheet href=chatdraw.css>
+<style>
+	* {
+		margin: 0;
+	}
+	#sendpane {
+		display: block;
+		width: 100%;
+		height: 100vh;
+	}
+</style>
+<script src=randomous.js></script>
+<script src=randomousCanvas.js></script>
+<script src=chatdraw.js></script>
+<script src='sbs2/fill.js'></script>
+<script src='sbs2/entity.js'></script>
+<script src='sbs2/request.js'></script>
+<div id=sendpane>Auth code:<input id=$auth><textarea hidden></textarea></div>
+<button hidden id=$sendDrawing>SEND</button>
+<script>
+	Req.onLogin = function() {
+	}
+	$sendDrawing.onclick = function() {
+		Req.gotAuth($auth.value)
+		Req.uploadImage(LocalChatDraw.getAnimateFrames().GetFrame().canvas, function(e){
+			console.log("A OK!", e)
+			alert("success "+ Req.fileURL(e.id))
+		})
+	}
+</script>
+
