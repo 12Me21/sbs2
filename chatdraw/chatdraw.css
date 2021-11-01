@@ -1,0 +1,310 @@
+#sendpane
+{
+   position: relative;
+}
+
+#chatdraw
+{
+   display: block;
+   z-index: 10;
+   position: absolute;
+   background-color: rgba(245,245,245,0.80);
+   bottom: 2px;
+   right: -webkit-calc(3.25rem + 2px);
+   right: calc(3.25rem + 2px);
+}
+
+#chatdraw[data-fixedsize] 
+{
+   font-size: 0;
+   height: 80vh;
+   box-sizing: border-box;
+   border: 1px solid #BBB;
+   width: -webkit-calc(100% - 3.25rem - 3.25rem);
+   width: calc(100% - 3.25rem - 3.25rem);
+}
+
+#chatdraw[data-docked]
+{
+   position: fixed;
+   right: 0;
+   bottom: 0;
+   width: 75%;
+}
+
+#chatdraw[data-fixedsize] iframe
+{
+   border:none;
+   margin: 0;
+   padding: 0;
+   width: 100%;
+   height: -webkit-calc(100% - 50px);
+   height: calc(100% - 50px);
+}
+
+#chatdraw *:focus, #chatdraw:focus
+{
+   outline:none;
+}
+
+#chatdraw canvas, #messagepane canvas
+{
+   display: inline-block;
+   margin: 0.0rem;
+   padding: 0;
+   vertical-align: bottom;
+   image-rendering: -moz-crisp-edges;
+   image-rendering: crisp-edges;
+   image-rendering: optimizespeed;
+   image-rendering: pixelated;
+   border: 1px solid #BBB;
+}
+
+#chatdraw canvas.lightbox
+{
+   pointer-events:none;
+   position: absolute;
+   left: 0;
+   top: 0;
+}
+
+#chatdraw .overlay
+{
+   position: absolute;
+   left: 0;
+   top: 0;
+}
+
+#chatdraw canvas
+{
+   cursor: crosshair;
+}
+
+#chatdraw[data-hidden]
+{
+   width: unset;
+   height: unset;
+}
+#chatdraw[data-hidden] :not([data-keep])
+{
+   display: none !important;
+}
+
+#chatdraw button-area
+{
+   display: block;
+   font-size: 0;
+   background-color: #e9e9e6;
+}
+
+#chatdraw > button-area
+{
+}
+
+#chatdraw:not([data-hidden]) > button-area 
+{
+   text-align: right;
+   border-left: 1px solid #BBB;
+   border-right: 1px solid #BBB;
+}
+
+#chatdraw button-area button
+{
+   display: inline-block;
+   border: none;
+   border-radius: unset;
+   /*height: 1.6rem;
+   width: 1.6rem;*/
+   height: 25px;
+   width: 25px;
+   font-size: 14px;
+   outline: none;
+   /*background-color: rgba(235,235,235,0.80);*/
+}
+
+#chatdraw button-area button:hover
+{
+   background-color: rgba(41,41,41,.1);
+}
+
+#chatdraw button-area button:active
+{
+   transform: none !important;
+}
+
+#chatdraw button-area button:disabled
+{
+   color: #666;
+   background-color: rgba(41,41,41,.1);
+}
+
+#chatdraw button-area button[data-selected]
+{
+   background-color: #666; /*#666;*/
+   color: #e9e9e6;
+}
+
+chatdraw-controlcontainer
+{
+   width: 1.1rem;
+   display: inline-block;
+}
+
+/*.chatdrawdownload, .chatdrawcopy*/
+chatdraw-controlcontainer > a
+{
+   padding: 0 0.2em;
+   text-decoration: none !important;
+   display: inline-block;
+   font-size: 0.8rem;
+   cursor: pointer;
+}
+
+chatdraw-controlcontainer .chatdrawplay
+{
+   font-size: 1.0rem;
+}
+
+#chatdraw animate-area
+{
+   position: absolute;
+   left: -201px; /* WARN: THIS ASSUMES 1px BORDER! */
+   top: 0;
+   width: 200px;
+   height: 150px;
+   display: block;
+   background-color: rgba(245,245,245,0.80);
+   border-left: 1px solid #BBB;
+   border-top: 1px solid #BBB;
+   border-bottom: 1px solid #BBB;
+}
+
+#chatdraw animate-area > *
+{
+   width: 100%;
+}
+
+#chatdraw animate-area animate-scroller
+{
+   display: block;
+   height: -webkit-calc(100% - 50px);
+   height: calc(100% - 50px);
+   overflow-y: scroll;
+}
+
+#chatdraw animate-area animate-frames
+{
+   display: block;
+}
+
+#chatdraw animate-area animate-frame
+{
+   display: block;
+   position: relative;
+   padding: 2px 7px;
+   margin: 0;
+}
+
+#chatdraw animate-area animate-frame[data-selected]
+{
+   background-color: #666; /*#666;*/
+}
+
+#chatdraw animate-area animate-frames canvas
+{
+   width: 100% !important;
+   box-sizing: border-box !important;
+   cursor: pointer;
+}
+
+#chatdraw animate-area animate-frame frame-controls
+{
+   position: absolute;
+   left: 9px;
+   bottom: 4px;
+   display: block;
+   width: -webkit-calc(100% - 18px);
+   width: calc(100% - 18px);
+   vertical-align: bottom;
+   /*font-size: 8px;*/
+}
+
+#chatdraw animate-area animate-frame frame-controls > *
+{
+   height: 11px;
+   font-size: 9px;
+   padding: 0;
+   margin: 0;
+   border-radius: 0;
+}
+
+#chatdraw animate-area animate-frame frame-controls button
+{
+   border: none;
+   background-color: transparent;
+   margin: 0;
+   padding: 0;
+   float: right;
+   margin-left: 2px;
+}
+
+#chatdraw animate-area animate-frame frame-controls input
+{
+   width: 30px;
+   box-sizing: border-box;
+   border: 1px solid #BBB;
+   background-color: #e9e9e6;
+}
+
+#chatdraw animate-area animate-frame frame-controls .left
+{
+   float: left;
+   margin-left: 0px;
+   margin-right: 2px;
+}
+
+#chatdraw animate-area button-area input
+{
+   height: 25px;
+   box-sizing: border-box;
+   border-radius: 0;
+   border: 1px solid #BBB;
+   background-color: #e9e9e6;
+}
+
+#chatdraw animate-area button-area input[type="number"]
+{
+   width: 50px;
+}
+
+#chatdraw animate-area button-area input[name="name"]
+{
+   width: 125px;
+}
+
+#chatdraw[data-scale="2"] canvas { width: 400px; }
+#chatdraw[data-scale="2"] animate-area { height: 300px; }
+#chatdraw[data-scale="2"]:not([data-hidden]) > button-area button { height: 50px; width: 50px; font-size: 28px; }
+#chatdraw[data-scale="3"] canvas { width: 600px; }
+#chatdraw[data-scale="3"] animate-area { height: 450px; }
+#chatdraw[data-scale="3"]:not([data-hidden]) > button-area button { height: 75px; width: 75px; font-size: 42px; }
+#chatdraw[data-scale="4"] canvas { width: 800px; }
+#chatdraw[data-scale="4"] animate-area { height: 600px; }
+#chatdraw[data-scale="4"]:not([data-hidden]) > button-area button { height: 100px; width: 100px; font-size: 56px; }
+#chatdraw[data-scale="5"] canvas { width: 1000px; }
+#chatdraw[data-scale="5"] animate-area { height: 750px; }
+#chatdraw[data-scale="5"]:not([data-hidden]) > button-area button { height: 125px; width: 125px; font-size: 70px; }
+
+/*@media(min-width: 700px)
+{
+   #chatdraw canvas
+   {
+      width: 400px;
+   }
+   #chatdraw:not([data-hidden]) button-area button
+   {
+      height: 50px;
+      width: 50px;
+      font-size: 28px;
+   }
+}*/
