@@ -200,6 +200,13 @@ authenticate: function(username, password, callback) {
 	}, {username: username, password: password})
 },
 
+// -haloopdy- You MUST be logged in for this to work!
+websocketAuthenticate : function(callback) {
+	return request("Read/wsauth", 'GET', function(e, resp) {
+		callback(e, resp) //resp will be the raw temporary key!
+	})
+},
+
 // try to load cached auth token from localstorage
 // triggers onLogin and returns true if successful
 // (doesn't check if auth is expired though)
