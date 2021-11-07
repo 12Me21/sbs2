@@ -282,95 +282,127 @@ listen: function(requests, filters, callback) {
 	})
 },
 
-//call update
-//return current websocket if there is one (even if it's not ready)
-//send update data immediately OR queue it up if it's not ready to accept yet.
-//Furthermore, don't accept updates that are the same as cached responses.
-
-// -haloopdy- A system for mimicking the "listen" function
+// -haloopdy- A system for mimicking the "listen" function with websockets
 listenMimic: {
-	operatingId: 0, 
+	nextId: 1, 
 	currentWs: null,
-	//runningWs: [],
-	//isRunning: function(rqId) { 
-	//	rqId = rqId || listenMimic.operatingId
-	//	return listenMimic.runningWs[rqId] && 
-	//		listenMimic.runningWs[rqId].readyState === WebSocket.OPEN
-	//},
-	////Stop processing AND clean up the given request
-	//close: function(rqId) {
-	//	rqId = rqId || listenMimic.operatingId
-	//	if(listenMimic.isRunning(rqId)) {
-	//		console.log(`Closing websocket ${rqId} early!`)
-	//		//Use our fancy "abort" method to disable the onmessage/etc stuff
-	//		listenMimic.runningWs[rqId].abort()
-	//	}
-	//	if(listenMimic.runningWs[rqId]) {
-	//		//I use delete to remove the property without reindexing the array. 
-	//		//There are other ways to do this, feel free to change it
-	//		delete listenMimic.runningWs[rqId]
-	//	}
-	//},
 	//A "sort of" recursive function which will keep building up data
-	update: function(request, callback) { 
-		//rqId = rqId || ++listenMimic.operatingId;
-		//if(rqId < listenMimic.operatingId)
-		//{
-		//	console.log(`Another update request (${listenMimic.operatingId}) overrode our own (${rqId}), stopping`)
-		//	listenMimic.close(rqId)
-		//	return
-		//}
-
-		//Oh, there's literally nothing. Let's create the websocket at least!
-		//This WILL open the connection immediately...
-		if(!listenMimic.runningWs[rqId])
+	update: function(request, callback) 
+	{ 
+		if(request == null)
 		{
-			listenMimic.runningWs[rqId] = listenMimic.createNewWebsocket()
-			listenMimic.runningWs[rqId].currentRequest = request
+			console.log("SENT NULL REQUEST TO WEBSOCKET UPDATE!")
+			return
+		}
+		var newWebsocket = false
+
+		//No currently 'running' websocket. A 'running' websocket is a websocket
+		//that has not been closed yet, which includes 'trying to connect' websockets
+		if(!listenMimic.currentWs) {
+			listenMimic.currentWs = listenMimic.createNewWebsocket(function(ws) { ws.sendRequest(request, callback) })
+			newWebsocket = true
 		}
 
-		//Oh there's no cached, key, can't do anything without that!
-		if(!listenMimic.runningWs[rqId].cachedToken)
+		//Since the user gave us a callback, update the websocket events
+		listenMimic.updateWebsocketEvents(listenMimic.currentWs, callback, function() {
+			listenMimic.currentWs = null
+		})
+
+		if(!newWebsocket)
 		{
-			Req.websocketAuthenticate((e, k) =>
-			{
-				// ANY successful token read, might as well update the cached token!
-				if(!e) { 
-					listenMimic.runningWs[rqId].cachedToken = k 
-					update(request, callback, rqId)
-				} else {
-					console.log("Failed to retrieve token, retrying: ", e);
-					setTimeout(function() { update(request, callback, rqId) }, 3000)
-				}
-			});
-		}
-		//Finally, at this point we know we have a somewhat-ready websocket. We
-		//can simply send out the updated request object IF it's not the same.
-		//If it IS the same, then just ignore it.
-		else
-		{
-			if(JSON.stringify(request) == JSON.stringify(listenMimic.runningWs[rqId].currentRequest)) {
+			if(JSON.stringify(request) == JSON.stringify(listenMimic.currentWs.lastRequest)) {
 				//TODO: This needs to be removed!!
 				console.log(`Ignoring ws update (${rqId}), the current request is the same`)
 			}
 			else {
 				//TODO: This needs to be removed!!
 				console.log(`Updating websocket ${rqId} with new request`)
+				listenMimic.currentWs.sendRequest(request, callback)
 			}
-			listenMimic.runningWs[rqId]
 		}
+
+		return listenMimic.currentWebsocket
 	},
-	createNewWebsocket: function() { //Create websocket that "looks like" XHR
-		var ws = new WebSocket(server+"/Read/wslisten")
+	createNewWebsocket: function(onopen) { //Create websocket that "looks like" XHR
+		var ws = new WebSocket(server.replace("https:", "wss:")+"/read/wslisten")
+		ws.wsId = listenMimic.nextId++
 		ws.abort = function() { 
+			console.log(`ABORTING WEBSOCKET ${ws.wsId}`)
 			ws.onmessage = null
 			ws.onclose = null
 			ws.onerror = null
 			ws.onopen = null
 			ws.close() 
 		}
+		var getAuth = function(onopen)
+		{
+			Req.websocketAuthenticate((e, k) =>
+			{
+				if(!e) { 
+					ws.currentToken = k 
+					if(onopen) onopen(ws)
+				} else {
+					console.log("Failed to retrieve token, retrying: ", e);
+					setTimeout(getAuth, 3000)
+				}
+			})
+		}
+		ws.onopen = function()
+		{
+			console.log(`Websocket ${ws.wsId} opened!`)
+			getAuth(onopen)
+		}
+		ws.sendRequest = function(request, callback) {
+			if(ws.readyState === WebSocket.CLOSED) {
+				console.log(`Tried to send websocket(${ws.wsId}) update request to closed websocket!`)
+				callback('error', null)
+			}
+			else if(!ws.currentToken) {
+				console.log(`Tried to send websocket(${ws.wsId}) update request before websocket was ready, trying again later`)
+				setTimeout(function() { ws.sendRequest(request, callback) }, 500)
+			}
+			else
+			{
+				ws.lastRequest = {}
+				Object.assign(ws.lastRequest, request)
+				var req = {} //need a NEW request so we don't accidentally modify something
+				Object.assign(req, request)
+				req.auth = ws.currentToken
+				ws.send(JSON.stringify(req))
+			}
+		}
+		
+		return ws
+	},
+	updateWebsocketEvents: function(ws, callback, onclose) {
+		ws.onerror = function(e) {
+			console.log(`WEBSOCKET ${ws.wsId} ERROR: `, e)
+			//callback('error', null)
+		}
+		ws.onclose = function(e) {
+			console.log(`WEBSOCKET ${ws.wsId} CLOSE: `, e)
+			if(onclose) onclose()
+			callback('error', ws.lastRequest) //will this cause problems???
+		}
+		ws.onmessage = function(e)
+		{
+         if(e.data)
+         {
+            if(e.data.indexOf("accepted:") == 0) {
+               //The server is just acknowledging the receipt
+               console.log(`Successfully updated configuration for websocket ${ws.myId}`)
+            }
+            else {
+               var data = JSON.parse(e.data);
+					if(data.lastid) ws.lastRequest.actions.lastId = data.lastId
+               if(data.listeners) ws.lastRequest.listen.lastListeners = data.listeners
+					handle(data.chains)
+					callback(null, data)
+            }
+         }
+		}
 	}
-}
+},
 
 // -haloopdy- Mimics the "listen" function, but uses a persistent websocket
 // (whenever possible) instead.
@@ -387,7 +419,7 @@ websocketListen: function(requests, filters, callback) {
 		}
 	})
 	return listenMimic.update(wsRequest, callback)
-}
+},
 
 handle: function(resp) {
 	Entity.process(resp)
@@ -693,16 +725,16 @@ lpLoop: function(noCancel) {
 			console.log("OH HECK, request called callback after being cancelled?")
 			return
 		}
-		// try/catch here so the long poller won't fail when there's an error in the callbacks
-		try {
-			lpLastId = resp.lastId
-			if (resp.listeners)
-				lpLastListeners = resp.listeners
-			lpProcess(resp)
-		} catch (e) {
-			console.error(e)
-		}
 		if (!e) {
+			// try/catch here so the long poller won't fail when there's an error in the callbacks
+			try {
+				lpLastId = resp.lastId
+				if (resp.listeners)
+					lpLastListeners = resp.listeners
+				lpProcess(resp)
+			} catch (e) {
+				console.error(e)
+			}
 			// I'm not sure this is needed. might be able to just call lpLoop diretcly?
 			var t = setTimeout(function() {
 				if (cancelled) // should never happen?
