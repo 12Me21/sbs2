@@ -312,11 +312,12 @@ listenMimic: {
 		{
 			if(JSON.stringify(request) == JSON.stringify(listenMimic.currentWs.lastRequest)) {
 				//TODO: This needs to be removed!!
-				console.log(`Ignoring ws update (${rqId}), the current request is the same`)
+				console.log(`Ignoring ws update (${listenMimic.currentWs.wsId}), the current request is the same`)
 			}
 			else {
 				//TODO: This needs to be removed!!
-				console.log(`Updating websocket ${rqId} with new request`)
+				console.log(`Updating websocket ${listenMimic.currentWs.wsId} with new request`, request,
+					listenMimic.currentWs.lastRequest)
 				listenMimic.currentWs.sendRequest(request, callback)
 			}
 		}
@@ -368,6 +369,7 @@ listenMimic: {
 				var req = {} //need a NEW request so we don't accidentally modify something
 				Object.assign(req, request)
 				req.auth = ws.currentToken
+				console.log(`SENDING TO WEBSOCKET ${ws.wsId}: `, req)
 				ws.send(JSON.stringify(req))
 			}
 		}
@@ -377,12 +379,14 @@ listenMimic: {
 	updateWebsocketEvents: function(ws, callback, onclose) {
 		ws.onerror = function(e) {
 			console.log(`WEBSOCKET ${ws.wsId} ERROR: `, e)
-			//callback('error', null)
+			callback('error', null)
 		}
 		ws.onclose = function(e) {
 			console.log(`WEBSOCKET ${ws.wsId} CLOSE: `, e)
 			if(onclose) onclose()
-			callback('error', ws.lastRequest) //will this cause problems???
+			var fake = { lastId : ws.lastRequest.lastId }
+			//handle(fake)
+			callback(null, fake) //will this cause problems???
 		}
 		ws.onmessage = function(e)
 		{
@@ -390,11 +394,14 @@ listenMimic: {
          {
             if(e.data.indexOf("accepted:") == 0) {
                //The server is just acknowledging the receipt
-               console.log(`Successfully updated configuration for websocket ${ws.myId}`)
+               console.log(`Successfully updated configuration for websocket ${ws.wsId}`)
             }
             else {
                var data = JSON.parse(e.data);
-					if(data.lastid) ws.lastRequest.actions.lastId = data.lastId
+					if(data.lastId) {
+						ws.lastRequest.actions.lastId = data.lastId
+						console.log("UPDATED LASTID TO " + data.lastId)
+					}
                if(data.listeners) ws.lastRequest.listen.lastListeners = data.listeners
 					handle(data.chains)
 					callback(null, data)
@@ -408,9 +415,10 @@ listenMimic: {
 // (whenever possible) instead.
 websocketListen: function(requests, filters, callback) {
 	//Set up "websocket" version of object
-	var wsRequest = {
-		fields: filters
-	};
+	var wsRequest = { fields : { } };
+	for(var k in filters) {
+		wsRequest.fields[k] = filters[k].split(",")
+	}
 	//Why was it done like this? Maybe because of my API...
 	requests.forEach(function(req) {
 		for (var type in req) { // var type = first key in req
