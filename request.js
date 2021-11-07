@@ -282,6 +282,113 @@ listen: function(requests, filters, callback) {
 	})
 },
 
+//call update
+//return current websocket if there is one (even if it's not ready)
+//send update data immediately OR queue it up if it's not ready to accept yet.
+//Furthermore, don't accept updates that are the same as cached responses.
+
+// -haloopdy- A system for mimicking the "listen" function
+listenMimic: {
+	operatingId: 0, 
+	currentWs: null,
+	//runningWs: [],
+	//isRunning: function(rqId) { 
+	//	rqId = rqId || listenMimic.operatingId
+	//	return listenMimic.runningWs[rqId] && 
+	//		listenMimic.runningWs[rqId].readyState === WebSocket.OPEN
+	//},
+	////Stop processing AND clean up the given request
+	//close: function(rqId) {
+	//	rqId = rqId || listenMimic.operatingId
+	//	if(listenMimic.isRunning(rqId)) {
+	//		console.log(`Closing websocket ${rqId} early!`)
+	//		//Use our fancy "abort" method to disable the onmessage/etc stuff
+	//		listenMimic.runningWs[rqId].abort()
+	//	}
+	//	if(listenMimic.runningWs[rqId]) {
+	//		//I use delete to remove the property without reindexing the array. 
+	//		//There are other ways to do this, feel free to change it
+	//		delete listenMimic.runningWs[rqId]
+	//	}
+	//},
+	//A "sort of" recursive function which will keep building up data
+	update: function(request, callback) { 
+		//rqId = rqId || ++listenMimic.operatingId;
+		//if(rqId < listenMimic.operatingId)
+		//{
+		//	console.log(`Another update request (${listenMimic.operatingId}) overrode our own (${rqId}), stopping`)
+		//	listenMimic.close(rqId)
+		//	return
+		//}
+
+		//Oh, there's literally nothing. Let's create the websocket at least!
+		//This WILL open the connection immediately...
+		if(!listenMimic.runningWs[rqId])
+		{
+			listenMimic.runningWs[rqId] = listenMimic.createNewWebsocket()
+			listenMimic.runningWs[rqId].currentRequest = request
+		}
+
+		//Oh there's no cached, key, can't do anything without that!
+		if(!listenMimic.runningWs[rqId].cachedToken)
+		{
+			Req.websocketAuthenticate((e, k) =>
+			{
+				// ANY successful token read, might as well update the cached token!
+				if(!e) { 
+					listenMimic.runningWs[rqId].cachedToken = k 
+					update(request, callback, rqId)
+				} else {
+					console.log("Failed to retrieve token, retrying: ", e);
+					setTimeout(function() { update(request, callback, rqId) }, 3000)
+				}
+			});
+		}
+		//Finally, at this point we know we have a somewhat-ready websocket. We
+		//can simply send out the updated request object IF it's not the same.
+		//If it IS the same, then just ignore it.
+		else
+		{
+			if(JSON.stringify(request) == JSON.stringify(listenMimic.runningWs[rqId].currentRequest)) {
+				//TODO: This needs to be removed!!
+				console.log(`Ignoring ws update (${rqId}), the current request is the same`)
+			}
+			else {
+				//TODO: This needs to be removed!!
+				console.log(`Updating websocket ${rqId} with new request`)
+			}
+			listenMimic.runningWs[rqId]
+		}
+	},
+	createNewWebsocket: function() { //Create websocket that "looks like" XHR
+		var ws = new WebSocket(server+"/Read/wslisten")
+		ws.abort = function() { 
+			ws.onmessage = null
+			ws.onclose = null
+			ws.onerror = null
+			ws.onopen = null
+			ws.close() 
+		}
+	}
+}
+
+// -haloopdy- Mimics the "listen" function, but uses a persistent websocket
+// (whenever possible) instead.
+websocketListen: function(requests, filters, callback) {
+	//Set up "websocket" version of object
+	var wsRequest = {
+		fields: filters
+	};
+	//Why was it done like this? Maybe because of my API...
+	requests.forEach(function(req) {
+		for (var type in req) { // var type = first key in req
+			wsRequest[type] = req[type]
+			break
+		}
+	})
+	return listenMimic.update(wsRequest, callback)
+}
+
 handle: function(resp) {
 	Entity.process(resp)
 },
