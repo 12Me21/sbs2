@@ -291,9 +291,10 @@ listenMimic: {
 	{ 
 		if(request == null)
 		{
-			console.log("SENT NULL REQUEST TO WEBSOCKET UPDATE!")
+			console.error("SENT NULL REQUEST TO WEBSOCKET UPDATE!")
 			return
 		}
+
 		var newWebsocket = false
 
 		//No currently 'running' websocket. A 'running' websocket is a websocket
@@ -303,37 +304,43 @@ listenMimic: {
 			newWebsocket = true
 		}
 
-		//Since the user gave us a callback, update the websocket events
+		var thisWs = listenMimic.currentWs
+
+		//Since the user gave us a callback, update the websocket events with new callback
 		listenMimic.updateWebsocketEvents(listenMimic.currentWs, callback, function() {
-			listenMimic.currentWs = null
+			listenMimic.currentWs = null //remove currentWs as soon as we close!
 		})
 
+		//If we didn't just create a new websocket (which is a special request
+		//that wraps up the first send), then we need to determine if a further
+		//send is necessary! We don't want to unnecessarily send!
 		if(!newWebsocket)
 		{
 			if(JSON.stringify(request) == JSON.stringify(listenMimic.currentWs.lastRequest)) {
-				//TODO: This needs to be removed!!
-				console.log(`Ignoring ws update (${listenMimic.currentWs.wsId}), the current request is the same`)
+				console.debug(`Ignoring ws update (${listenMimic.currentWs.wsId}), the current request is the same`)
 			}
 			else {
-				//TODO: This needs to be removed!!
-				console.log(`Updating websocket ${listenMimic.currentWs.wsId} with new request`, request,
-					listenMimic.currentWs.lastRequest)
+				console.log(`Updating websocket ${listenMimic.currentWs.wsId} with new request`)
 				listenMimic.currentWs.sendRequest(request, callback)
 			}
 		}
 
-		return listenMimic.currentWebsocket
+		return thisWs
 	},
 	createNewWebsocket: function(onopen) { //Create websocket that "looks like" XHR
+		//NOTE: because of nginx, "read" MUST be lowercased for websocket!
 		var ws = new WebSocket(server.replace("https:", "wss:")+"/read/wslisten")
 		ws.wsId = listenMimic.nextId++
+		//Make a wrapper "abort" function so 12's frontend can 'abort'
+		//the old longpoller and start a new one.
 		ws.abort = function() { 
-			console.log(`ABORTING WEBSOCKET ${ws.wsId}`)
-			ws.onmessage = null
-			ws.onclose = null
-			ws.onerror = null
-			ws.onopen = null
-			ws.close() 
+			console.debug(`IGNORING ABORT FOR WEBSOCKET ${ws.wsId}`)
+			//console.warn(`ABORTING WEBSOCKET ${ws.wsId}`)
+			//ws.onmessage = null
+			//ws.onclose = null
+			//ws.onerror = null
+			//ws.onopen = null
+			//ws.close() 
 		}
 		var getAuth = function(onopen)
 		{
@@ -351,15 +358,16 @@ listenMimic: {
 		ws.onopen = function()
 		{
 			console.log(`Websocket ${ws.wsId} opened!`)
+			//The websocket isn't technically "ready" until the authorization happens
 			getAuth(onopen)
 		}
 		ws.sendRequest = function(request, callback) {
 			if(ws.readyState === WebSocket.CLOSED) {
-				console.log(`Tried to send websocket(${ws.wsId}) update request to closed websocket!`)
+				console.error(`Tried to send websocket(${ws.wsId}) update request to closed websocket!`)
 				callback('error', null)
 			}
 			else if(!ws.currentToken) {
-				console.log(`Tried to send websocket(${ws.wsId}) update request before websocket was ready, trying again later`)
+				console.warn(`Tried to send websocket(${ws.wsId}) update request before websocket was ready, trying again later`)
 				setTimeout(function() { ws.sendRequest(request, callback) }, 500)
 			}
 			else
@@ -369,7 +377,7 @@ listenMimic: {
 				var req = {} //need a NEW request so we don't accidentally modify something
 				Object.assign(req, request)
 				req.auth = ws.currentToken
-				console.log(`SENDING TO WEBSOCKET ${ws.wsId}: `, req)
+				//console.log(`SENDING TO WEBSOCKET ${ws.wsId}: `, req)
 				ws.send(JSON.stringify(req))
 			}
 		}
@@ -378,14 +386,13 @@ listenMimic: {
 	},
 	updateWebsocketEvents: function(ws, callback, onclose) {
 		ws.onerror = function(e) {
-			console.log(`WEBSOCKET ${ws.wsId} ERROR: `, e)
+			console.error(`WEBSOCKET ${ws.wsId} ERROR: `, e)
 			callback('error', null)
 		}
 		ws.onclose = function(e) {
-			console.log(`WEBSOCKET ${ws.wsId} CLOSE: `, e)
+			console.debug(`WEBSOCKET ${ws.wsId} CLOSE: `, e)
 			if(onclose) onclose()
 			var fake = { lastId : ws.lastRequest.lastId }
-			//handle(fake)
 			callback(null, fake) //will this cause problems???
 		}
 		ws.onmessage = function(e)
@@ -394,15 +401,15 @@ listenMimic: {
          {
             if(e.data.indexOf("accepted:") == 0) {
                //The server is just acknowledging the receipt
-               console.log(`Successfully updated configuration for websocket ${ws.wsId}`)
+               console.debug(`Successfully updated configuration for websocket ${ws.wsId}`)
             }
             else {
                var data = JSON.parse(e.data);
-					if(data.lastId) {
-						ws.lastRequest.actions.lastId = data.lastId
-						console.log("UPDATED LASTID TO " + data.lastId)
+					if(ws.lastRequest)
+					{
+						if(data.lastId && ws.lastRequest.actions) ws.lastRequest.actions.lastId = data.lastId
+						if(data.listeners && ws.lastRequest.listen) ws.lastRequest.listen.lastListeners = data.listeners
 					}
-               if(data.listeners) ws.lastRequest.listen.lastListeners = data.listeners
 					handle(data.chains)
 					callback(null, data)
             }
