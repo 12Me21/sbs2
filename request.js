@@ -284,17 +284,22 @@ listen: function(requests, filters, callback) {
 
 // -haloopdy- A system for mimicking the "listen" function with websockets
 listenMimic: {
-	nextId: 1, 
-	currentWs: null,
-	//A "sort of" recursive function which will keep building up data
+	nextId: 1,  	  //Assign ids to ws for tracking, useful for glitches that let multiple ws stay open
+	currentWs: null, //The currently active websocket, only unavailable on close
+	//Update the websocket configuration in a manner similar to long polling,
+	//but which is able to handle the independent lifetime of the websocket. You
+	//will ALWAYS get a websocket object from this function, but with some
+	//functions to mimic an XHR object as far as 12's frontend is concerned... maybe
 	update: function(request, callback) 
 	{ 
-		if(request == null)
-		{
+		//I really can't handle null requests, but they don't seem to happen.
+		//This is a safety check just in case
+		if(request == null) {
 			console.error("SENT NULL REQUEST TO WEBSOCKET UPDATE!")
 			return
 		}
 
+		//We do different things if the websocket was newly created in THIS call
 		var newWebsocket = false
 
 		//No currently 'running' websocket. A 'running' websocket is a websocket
@@ -304,6 +309,10 @@ listenMimic: {
 			newWebsocket = true
 		}
 
+		//Some silly timing glitch can cause the currentWs field to become null
+		//before the end of this call somehow? or maybe javascript is return by
+		//reference??? I don't know how javascript works, but THIS works, so we
+		//return the "thisWs" rather than the actual field in this object
 		var thisWs = listenMimic.currentWs
 
 		//Since the user gave us a callback, update the websocket events with new callback
@@ -316,6 +325,11 @@ listenMimic: {
 		//send is necessary! We don't want to unnecessarily send!
 		if(!newWebsocket)
 		{
+			//As part of a network optimization, ignore requests which are the
+			//same as the one we're currently tracking. The websocket internally
+			//tracks simple updates, such as continually updating the lastId and
+			//listener list. As such, many of the calls to this "update" function
+			//from the longpoller can be ignored, since it just doesn't understand
 			if(JSON.stringify(request) == JSON.stringify(listenMimic.currentWs.lastRequest)) {
 				console.debug(`Ignoring ws update (${listenMimic.currentWs.wsId}), the current request is the same`)
 			}
@@ -331,17 +345,16 @@ listenMimic: {
 		//NOTE: because of nginx, "read" MUST be lowercased for websocket!
 		var ws = new WebSocket(server.replace("https:", "wss:")+"/read/wslisten")
 		ws.wsId = listenMimic.nextId++
-		//Make a wrapper "abort" function so 12's frontend can 'abort'
-		//the old longpoller and start a new one.
+		//I was ORIGINALLY allowing the websocket to be actually aborted so it
+		//mimics how the longpoller works, and because 12 is worried about
+		//receiving data after the call, but it seems to work just fine and this
+		//way is significantly cleaner and more performant
 		ws.abort = function() { 
 			console.debug(`IGNORING ABORT FOR WEBSOCKET ${ws.wsId}`)
-			//console.warn(`ABORTING WEBSOCKET ${ws.wsId}`)
-			//ws.onmessage = null
-			//ws.onclose = null
-			//ws.onerror = null
-			//ws.onopen = null
-			//ws.close() 
 		}
+		//The "retry until you get it" websocket authorization function. It calls
+		//an "onopen" function so we can optimize the "first time websocket"
+		//connection and immediately send out the request data.
 		var getAuth = function(onopen)
 		{
 			Req.websocketAuthenticate((e, k) =>
@@ -358,9 +371,12 @@ listenMimic: {
 		ws.onopen = function()
 		{
 			console.log(`Websocket ${ws.wsId} opened!`)
-			//The websocket isn't technically "ready" until the authorization happens
-			getAuth(onopen)
+			getAuth(onopen) //The websocket isn't technically "ready" until the authorization happens
 		}
+		//A special function which will defer a websocket update (a listener
+		//request) if the websocket isn't ready to accept those updates.
+		//Furthermore, it calls your callback function just like the longpoller
+		//if you're trying to send to a closed websocket
 		ws.sendRequest = function(request, callback) {
 			if(ws.readyState === WebSocket.CLOSED) {
 				console.error(`Tried to send websocket(${ws.wsId}) update request to closed websocket!`)
@@ -372,18 +388,22 @@ listenMimic: {
 			}
 			else
 			{
+				//We want to track the requests so we can optimize the network
+				//traffic. The longpoller doesn't understand that the websocket
+				//endpoint already tracks simple updates
 				ws.lastRequest = {}
 				Object.assign(ws.lastRequest, request)
 				var req = {} //need a NEW request so we don't accidentally modify something
 				Object.assign(req, request)
 				req.auth = ws.currentToken
-				//console.log(`SENDING TO WEBSOCKET ${ws.wsId}: `, req)
 				ws.send(JSON.stringify(req))
 			}
 		}
 		
 		return ws
 	},
+	//A function to reassign all the pertinent websocket events with a new
+	//callback. Although... it might not be necessary?
 	updateWebsocketEvents: function(ws, callback, onclose) {
 		ws.onerror = function(e) {
 			console.error(`WEBSOCKET ${ws.wsId} ERROR: `, e)
@@ -407,6 +427,9 @@ listenMimic: {
                var data = JSON.parse(e.data);
 					if(ws.lastRequest)
 					{
+						//TODO: bug: when userlist updates, it seems to produce
+						//websocket updates. I mean it's just a send to the server,
+						//but that means the websocket isn't quite as efficient... 
 						if(data.lastId && ws.lastRequest.actions) ws.lastRequest.actions.lastId = data.lastId
 						if(data.listeners && ws.lastRequest.listen) ws.lastRequest.listen.lastListeners = data.listeners
 					}
