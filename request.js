@@ -200,6 +200,13 @@ authenticate: function(username, password, callback) {
 	}, {username: username, password: password})
 },
 
+// -haloopdy- You MUST be logged in for this to work!
+websocketAuthenticate : function(callback) {
+	return request("Read/wsauth", 'GET', function(e, resp) {
+		callback(e, resp) //resp will be the raw temporary key!
+	})
+},
+
 // try to load cached auth token from localstorage
 // triggers onLogin and returns true if successful
 // (doesn't check if auth is expired though)
@@ -273,6 +280,183 @@ listen: function(requests, filters, callback) {
 			handle(resp.chains)
 		callback(e, resp)
 	})
+},
+
+// -haloopdy- A system for mimicking the "listen" function with websockets
+listenMimic: {
+	nextId: 1,  	  //Assign ids to ws for tracking, useful for glitches that let multiple ws stay open
+	currentWs: null, //The currently active websocket, only unavailable on close
+	//Update the websocket configuration in a manner similar to long polling,
+	//but which is able to handle the independent lifetime of the websocket. You
+	//will ALWAYS get a websocket object from this function, but with some
+	//functions to mimic an XHR object as far as 12's frontend is concerned... maybe
+	update: function(request, callback) 
+	{ 
+		//I really can't handle null requests, but they don't seem to happen.
+		//This is a safety check just in case
+		if(request == null) {
+			console.error("SENT NULL REQUEST TO WEBSOCKET UPDATE!")
+			return
+		}
+
+		//We do different things if the websocket was newly created in THIS call
+		var newWebsocket = false
+
+		//No currently 'running' websocket. A 'running' websocket is a websocket
+		//that has not been closed yet, which includes 'trying to connect' websockets
+		if(!listenMimic.currentWs) {
+			listenMimic.currentWs = listenMimic.createNewWebsocket(function(ws) { ws.sendRequest(request, callback) })
+			newWebsocket = true
+		}
+
+		//Some silly timing glitch can cause the currentWs field to become null
+		//before the end of this call somehow? or maybe javascript is return by
+		//reference??? I don't know how javascript works, but THIS works, so we
+		//return the "thisWs" rather than the actual field in this object
+		var thisWs = listenMimic.currentWs
+
+		//Since the user gave us a callback, update the websocket events with new callback
+		listenMimic.updateWebsocketEvents(listenMimic.currentWs, callback, function() {
+			listenMimic.currentWs = null //remove currentWs as soon as we close!
+		})
+
+		//If we didn't just create a new websocket (which is a special request
+		//that wraps up the first send), then we need to determine if a further
+		//send is necessary! We don't want to unnecessarily send!
+		if(!newWebsocket)
+		{
+			//As part of a network optimization, ignore requests which are the
+			//same as the one we're currently tracking. The websocket internally
+			//tracks simple updates, such as continually updating the lastId and
+			//listener list. As such, many of the calls to this "update" function
+			//from the longpoller can be ignored, since it just doesn't understand
+			if(JSON.stringify(request) == JSON.stringify(listenMimic.currentWs.lastRequest)) {
+				console.debug(`Ignoring ws update (${listenMimic.currentWs.wsId}), the current request is the same`)
+			}
+			else {
+				console.log(`Updating websocket ${listenMimic.currentWs.wsId} with new request`)
+				listenMimic.currentWs.sendRequest(request, callback)
+			}
+		}
+
+		return thisWs
+	},
+	createNewWebsocket: function(onopen) { //Create websocket that "looks like" XHR
+		//NOTE: because of nginx, "read" MUST be lowercased for websocket!
+		var ws = new WebSocket(server.replace("https:", "wss:")+"/read/wslisten")
+		ws.wsId = listenMimic.nextId++
+		//I was ORIGINALLY allowing the websocket to be actually aborted so it
+		//mimics how the longpoller works, and because 12 is worried about
+		//receiving data after the call, but it seems to work just fine and this
+		//way is significantly cleaner and more performant
+		ws.abort = function() { 
+			console.debug(`IGNORING ABORT FOR WEBSOCKET ${ws.wsId}`)
+		}
+		//The "retry until you get it" websocket authorization function. It calls
+		//an "onopen" function so we can optimize the "first time websocket"
+		//connection and immediately send out the request data.
+		var getAuth = function(onopen)
+		{
+			Req.websocketAuthenticate((e, k) =>
+			{
+				if(!e) { 
+					ws.currentToken = k 
+					if(onopen) onopen(ws)
+				} else {
+					console.log("Failed to retrieve token, retrying: ", e);
+					setTimeout(getAuth, 3000)
+				}
+			})
+		}
+		ws.onopen = function()
+		{
+			console.log(`Websocket ${ws.wsId} opened!`)
+			getAuth(onopen) //The websocket isn't technically "ready" until the authorization happens
+		}
+		//A special function which will defer a websocket update (a listener
+		//request) if the websocket isn't ready to accept those updates.
+		//Furthermore, it calls your callback function just like the longpoller
+		//if you're trying to send to a closed websocket
+		ws.sendRequest = function(request, callback) {
+			if(ws.readyState === WebSocket.CLOSED) {
+				console.error(`Tried to send websocket(${ws.wsId}) update request to closed websocket!`)
+				callback('error', null)
+			}
+			else if(!ws.currentToken) {
+				console.warn(`Tried to send websocket(${ws.wsId}) update request before websocket was ready, trying again later`)
+				setTimeout(function() { ws.sendRequest(request, callback) }, 500)
+			}
+			else
+			{
+				//We want to track the requests so we can optimize the network
+				//traffic. The longpoller doesn't understand that the websocket
+				//endpoint already tracks simple updates
+				ws.lastRequest = {}
+				Object.assign(ws.lastRequest, request)
+				var req = {} //need a NEW request so we don't accidentally modify something
+				Object.assign(req, request)
+				req.auth = ws.currentToken
+				ws.send(JSON.stringify(req))
+			}
+		}
+		
+		return ws
+	},
+	//A function to reassign all the pertinent websocket events with a new
+	//callback. Although... it might not be necessary?
+	updateWebsocketEvents: function(ws, callback, onclose) {
+		ws.onerror = function(e) {
+			console.error(`WEBSOCKET ${ws.wsId} ERROR: `, e)
+			callback('error', null)
+		}
+		ws.onclose = function(e) {
+			console.debug(`WEBSOCKET ${ws.wsId} CLOSE: `, e)
+			if(onclose) onclose()
+			var fake = { lastId : ws.lastRequest.lastId }
+			callback(null, fake) //will this cause problems???
+		}
+		ws.onmessage = function(e)
+		{
+         if(e.data)
+         {
+            if(e.data.indexOf("accepted:") == 0) {
+               //The server is just acknowledging the receipt
+               console.debug(`Successfully updated configuration for websocket ${ws.wsId}`)
+            }
+            else {
+               var data = JSON.parse(e.data);
+					if(ws.lastRequest)
+					{
+						//TODO: bug: when userlist updates, it seems to produce
+						//websocket updates. I mean it's just a send to the server,
+						//but that means the websocket isn't quite as efficient... 
+						if(data.lastId && ws.lastRequest.actions) ws.lastRequest.actions.lastId = data.lastId
+						if(data.listeners && ws.lastRequest.listen) ws.lastRequest.listen.lastListeners = data.listeners
+					}
+					handle(data.chains)
+					callback(null, data)
+            }
+         }
+		}
+	}
+},
+
+// -haloopdy- Mimics the "listen" function, but uses a persistent websocket
+// (whenever possible) instead.
+websocketListen: function(requests, filters, callback) {
+	//Set up "websocket" version of object
+	var wsRequest = { fields : { } };
+	for(var k in filters) {
+		wsRequest.fields[k] = filters[k].split(",")
+	}
+	//Why was it done like this? Maybe because of my API...
+	requests.forEach(function(req) {
+		for (var type in req) { // var type = first key in req
+			wsRequest[type] = req[type]
+			break
+		}
+	})
+	return listenMimic.update(wsRequest, callback)
 },
 
 handle: function(resp) {
@@ -579,16 +763,16 @@ lpLoop: function(noCancel) {
 			console.log("OH HECK, request called callback after being cancelled?")
 			return
 		}
-		// try/catch here so the long poller won't fail when there's an error in the callbacks
-		try {
-			lpLastId = resp.lastId
-			if (resp.listeners)
-				lpLastListeners = resp.listeners
-			lpProcess(resp)
-		} catch (e) {
-			console.error(e)
-		}
 		if (!e) {
+			// try/catch here so the long poller won't fail when there's an error in the callbacks
+			try {
+				lpLastId = resp.lastId
+				if (resp.listeners)
+					lpLastListeners = resp.listeners
+				lpProcess(resp)
+			} catch (e) {
+				console.error(e)
+			}
 			// I'm not sure this is needed. might be able to just call lpLoop diretcly?
 			var t = setTimeout(function() {
 				if (cancelled) // should never happen?
