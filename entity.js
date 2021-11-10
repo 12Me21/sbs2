@@ -234,7 +234,7 @@ rebuildCategoryTree: function() {
 parseDate: function(str) {
 	if (!str)
 		return new $.Date(0)
-	var data = str.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:.\d+)?)/)
+	var data = str.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d+)?)/)
 	if (!data)
 		return new $.Date(0)
 	var sec = $.Math.floor(+data[6])
