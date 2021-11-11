@@ -411,31 +411,37 @@ listenMimic: {
 		}
 		ws.onclose = function(e) {
 			console.debug(`WEBSOCKET ${ws.wsId} CLOSE: `, e)
-			if(onclose) onclose()
+			if (onclose) onclose()
 			var fake = { lastId : ws.lastRequest.lastId }
 			callback(null, fake) //will this cause problems???
 		}
-		ws.onmessage = function(e)
-		{
-         if(e.data)
-         {
-            if(e.data.indexOf("accepted:") == 0) {
-               //The server is just acknowledging the receipt
-               console.debug(`Successfully updated configuration for websocket ${ws.wsId}`)
-            }
-            else {
-               var data = JSON.parse(e.data);
-					if(ws.lastRequest)
-					{
+		ws.onmessage = function(e) {
+         if (e.data) {
+				let match = String(e.data).match(/^(\w+):/)
+				if (!match) {
+					try {
+						var data = JSON.parse(e.data)
+					} catch (e) {
+						print ("mystery websocket message:"+e.data)
+						return;
+					}
+					if (ws.lastRequest) {
 						//TODO: bug: when userlist updates, it seems to produce
 						//websocket updates. I mean it's just a send to the server,
 						//but that means the websocket isn't quite as efficient... 
-						if(data.lastId && ws.lastRequest.actions) ws.lastRequest.actions.lastId = data.lastId
-						if(data.listeners && ws.lastRequest.listen) ws.lastRequest.listen.lastListeners = data.listeners
+						if(data.lastId && ws.lastRequest.actions)
+							ws.lastRequest.actions.lastId = data.lastId
+						if(data.listeners && ws.lastRequest.listen)
+							ws.lastRequest.listen.lastListeners = data.listeners
 					}
 					handle(data.chains)
 					callback(null, data)
-            }
+            } else if (match[1]=="accepted") {
+				} else if (match[1]=="error") {
+					print("websocket error: "+e.data)
+				} else {
+					print("websocket unknown message: "+e.data)
+				}
          }
 		}
 	}
