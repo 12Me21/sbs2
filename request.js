@@ -511,7 +511,16 @@ uploadImage: function(thing, callback) {
 uploadFile: function(file, callback) {
 	var form = new FormData()
 	form.append('file', file)
-	request("File", 'POST', function(e, resp) {
+	var params = new URLSearchParams();
+	if (file.bucket)
+		params.set("bucket", file.bucket)
+	if (file.quantize)
+		params.set("quantize", file.quantize)
+	if (file.name)
+		params.set("name", file.filename)
+	params.set("tryresize", true) //debug option
+	
+	request("File?" + params.toString(), 'POST', function(e, resp) {
 		if (e)
 			callback(null)
 		else {
