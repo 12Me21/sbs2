@@ -7,13 +7,11 @@ Object.assign(Req, { //*/
 */
 storageKey: "auth",
 
-protocol: "https:",
-
 auth: null,
 onLogin: null,
 onLogout: null,
 
-server: null,
+server: "smilebasicsource.com/api",
 
 uid: null,
 
@@ -159,7 +157,7 @@ queryString: function(obj) {
 },
 
 request: function(url, method, callback, data) {
-	return rawRequest(server+"/"+url, method, function(e, resp) {
+	return rawRequest("https://"+server+"/"+url, method, function(e, resp) {
 		if (e == 'auth')
 			logOut()
 		else
@@ -343,7 +341,7 @@ listenMimic: {
 	},
 	createNewWebsocket: function(onopen) { //Create websocket that "looks like" XHR
 		//NOTE: because of nginx, "read" MUST be lowercased for websocket!
-		var ws = new WebSocket(server.replace("https:", "wss:")+"/read/wslisten")
+		var ws = new WebSocket("wss://"+server+"/read/wslisten")
 		ws.wsId = listenMimic.nextId++
 		//I was ORIGINALLY allowing the websocket to be actually aborted so it
 		//mimics how the longpoller works, and because 12 is worried about
@@ -355,21 +353,20 @@ listenMimic: {
 		//The "retry until you get it" websocket authorization function. It calls
 		//an "onopen" function so we can optimize the "first time websocket"
 		//connection and immediately send out the request data.
-		var getAuth = function(onopen)
-		{
-			Req.websocketAuthenticate((e, k) =>
-			{
-				if(!e) { 
+		var getAuth = function(onopen) {
+			websocketAuthenticate(function(e, k) {
+				if (!e) { 
 					ws.currentToken = k 
-					if(onopen) onopen(ws)
+					if (onopen)
+						onopen(ws)
 				} else {
 					console.log("Failed to retrieve token, retrying: ", e);
+					// 12: this is bad but i dont think it ever happens?
 					setTimeout(getAuth, 3000)
 				}
 			})
 		}
-		ws.onopen = function()
-		{
+		ws.onopen = function() {
 			console.log(`Websocket ${ws.wsId} opened!`)
 			getAuth(onopen) //The websocket isn't technically "ready" until the authorization happens
 		}
@@ -378,16 +375,13 @@ listenMimic: {
 		//Furthermore, it calls your callback function just like the longpoller
 		//if you're trying to send to a closed websocket
 		ws.sendRequest = function(request, callback) {
-			if(ws.readyState === WebSocket.CLOSED) {
+			if (ws.readyState === WebSocket.CLOSED) {
 				console.error(`Tried to send websocket(${ws.wsId}) update request to closed websocket!`)
 				callback('error', null)
-			}
-			else if(!ws.currentToken) {
+			} else if (!ws.currentToken) {
 				console.warn(`Tried to send websocket(${ws.wsId}) update request before websocket was ready, trying again later`)
 				setTimeout(function() { ws.sendRequest(request, callback) }, 500)
-			}
-			else
-			{
+			} else {
 				//We want to track the requests so we can optimize the network
 				//traffic. The longpoller doesn't understand that the websocket
 				//endpoint already tracks simple updates
@@ -411,8 +405,9 @@ listenMimic: {
 		}
 		ws.onclose = function(e) {
 			console.debug(`WEBSOCKET ${ws.wsId} CLOSE: `, e)
-			if (onclose) onclose()
-			var fake = { lastId : ws.lastRequest.lastId }
+			if (onclose)
+				onclose()
+			var fake = {lastId: ws.lastRequest.lastId}
 			callback(null, fake) //will this cause problems???
 		}
 		ws.onmessage = function(e) {
@@ -822,8 +817,8 @@ lpSetListening: function(ids) {
 
 fileURL: function(id, query) {
 	if (query)
-		return server+"/File/raw/"+id+"?"+query
-	return server+"/File/raw/"+id
+		return "https://"+server+"/File/raw/"+id+"?"+query
+	return "https://"+server+"/File/raw/"+id
 },
 
 lpSetStatus: function(statuses) {
@@ -862,13 +857,9 @@ function arrayToggle(array, value) {
 	return false
 }
 
-//if ($.location.protocol=="http:")
-//	protocol = "http:"
-//else
-//	protocol = "https:"
 //this is to trick a script
+if (0)
 server = protocol+"//newdev.smilebasicsource.com/api"
-server = protocol+"//smilebasicsource.com/api"
 
 <!--/*
 }(window)) //*/
