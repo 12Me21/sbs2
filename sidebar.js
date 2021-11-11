@@ -46,15 +46,21 @@ onLoad: function() {
 	$fileUpload.onclick = function() {
 		if (selectedFile) {
 			$fileUpload.disabled = true
+			if ($fileUploadBucket.value)
+				selectedFile.bucket = $fileUploadBucket.value
+			if ($fileQuantizeColors.value)
+				selectedFile.quantize = $fileQuantizeColors.value
+			if ($fileUploadName.value)
+				selectedFile.filename = $fileUploadName.value
 			Req.uploadFile(selectedFile, function(file) {
 				$fileUpload.disabled = false
 				if (file) {
 					// setting the filename takes a second request
+					// not anymore!!
+					// get rid of this and just use the query param!!
 					if ($fileUploadName.value) {
 						$fileUploadNameOut.textContent = "(setting metadata...)"
 						file.name = $fileUploadName.value
-						if ($fileUploadBucket.value)
-							file.bucket = $fileUploadBucket.value
 						console.log(file)
 						Req.putFile(file, function(e, resp) {
 							$fileUploadNameOut.textContent = resp.name
