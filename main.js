@@ -54,6 +54,7 @@ Req.onLogin = function() {
 		print("got initial lp response!")
 		if (!e) {
 			var me = resp.chains.Ume
+			console.log("me", resp, me)
 			if (me && me[0])
 				View.updateMyUser(me[0]) //also sets Req.me...
 		} else {

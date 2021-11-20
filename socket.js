@@ -21,7 +21,10 @@ gotMessages: [],
 use_websocket: false,
 first_websocket: true,
 
-ws_message: {}, // debug
+// debug
+ws_message: {}, 
+websocket: null,
+/////
 
 // call this after setting the parameters
 lpRefresh: function() {
@@ -39,7 +42,7 @@ start: function(callback) {
 	if (!running) {
 		if (use_websocket) {
 			print('starting lp: websocket')
-			wsRefresh()
+			wsRefresh(true)
 		} else {
 			print('starting lp: long poller')
 			lpLoop(onStart)
@@ -260,7 +263,6 @@ function lpProcess(resp) {
 }
 //
 
-var websocket = null
 var ws_token = null
 
 function websocket_flush() {
@@ -280,7 +282,20 @@ function websocket_flush() {
 
 // todo: we need to be 100% sure that the initial websocket config is NEVER changed until the ws returns initially, I think
 
+var last_open = 0
+
 function open_websocket() {
+	if (websocket && websocket.readyState<2) {
+		print('multiple websocket tried to open!')
+		return;
+	}
+	var now = Date.now()
+	if (now-last_open < 4000) {
+		print('websocket loop too fast! delaying 5 seconds.\nThis is probably caused by an invalid websocket token. please report this')
+		window.setTimeout(open_websocket, 5000);
+		return;
+	}
+	last_open = now
 	ws_token = null
 	websocket = new WebSocket("wss://"+Req.server+"/read/wslisten")
 	// todo: we don't know whether the websocket will open before or after the auth token is gotten.
@@ -320,13 +335,14 @@ function open_websocket() {
 				if (resp.listeners)
 					lastListeners = resp.listeners
 				
+				Req.handle(resp.chains)
+				
 				if (first_websocket) { //very bad hack
 					print("first!!!")
 					first_websocket = false
 					onStart(null, resp)
 					lpInit = false
 				} else {
-					Req.handle(resp.chains)
 					lpProcess(resp)
 				}
 			} catch (e) {
