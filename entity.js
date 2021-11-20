@@ -234,6 +234,8 @@ rebuildCategoryTree: function() {
 parseDate: function(str) {
 	if (!str)
 		return new $.Date(0)
+	if (typeof str != 'string')
+		console.log("got weird date:", str)
 	var data = str.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d+)?)/)
 	if (!data)
 		return new $.Date(0)

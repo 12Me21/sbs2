@@ -3,6 +3,8 @@ var Settings = Object.create(null)
 with (Settings) (function($) { "use strict"
 Object.assign(Settings, { //*/
 
+values: {},
+
 fields: {
 	chat_markup: {
 		name: "Chat Markup Language",
@@ -17,23 +19,22 @@ fields: {
 		name: "Big Avatar",
 		type: 'select',
 		options: ['off', 'on'],
-		update: function(value) {
-			ChatRoom.big_avatar = value
-		},
+		//update: function(value) {
+		//	ChatRoom.big_avatar = value
+		//},
 	},
 	big_avatar_id: {
 		name: "Big Avatar Id",
 		type: 'textarea',
-		update: function(value) {
-			ChatRoom.big_avatar_id = Number(value)
-		},
+		//update: function(value) {
+		//	ChatRoom.big_avatar_id = Number(value)
+		//},
 	},
 	html: {
 		name: "allow html injection",
 		type: 'select',
 		options: ['hell yeah'],
 		update: function(value) {
-			
 		},
 	},
 	theme: {
@@ -66,14 +67,27 @@ fields: {
 	nickname: {
 		name: "Chat Nickname",
 		type: 'textarea',
-		update: function(value) {
-			ChatRoom.nickname = value.substr(0, 50).replace(/\n/g, "  ")
-		},
+		//update: function(value) {
+		//	ChatRoom.nickname = value.substr(0, 50).replace(/\n/g, "  ")
+		//},
 	},
+	/*
+this doesn't work because settings are not loaded soon enough
+changing that is too much work
+websocket: {
+		name: "Use Websocket",
+		type: 'select',
+		options: ['long polling', 'websocket'],
+		autosave: false,
+	}*/
 },
+// todo:
+// - add support for validation functions
+// - read settings immediately and add support for deferred onchange functions
 
 change: function(name, value) {
 	var field = fields[name]
+	values[name] = value
 	if (!field) return
 	field.update && field.update(value)
 }

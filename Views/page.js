@@ -203,16 +203,16 @@ function readInput(old, edit) {
 	}
 	
 	if ($chatMarkupSelect.checked)
-		data.meta.m = ChatRoom.markup
+		data.meta.m = Settings.values.chat_markup
 	else
 		data.meta.m = "plaintext"
 	if (!edit) {
 		if (Req.me)
 			data.meta.a = Req.me.avatar
-		if (ChatRoom.nickname)
-			data.meta.n = ChatRoom.nickname
-		if (ChatRoom.big_avatar=='on' && ChatRoom.big_avatar_id)
-			data.meta.big = ChatRoom.big_avatar_id
+		if (Settings.values.nickname)
+			data.meta.n = String(Settings.values.nickname).substr(0, 50).replace(/\n/g, "  ")
+		if (Settings.values.big_avatar=='on' && Settings.values.big_avatar_id)
+			data.meta.big = Settings.values.big_avatar_id
 	}
 	
 	return data
@@ -220,7 +220,7 @@ function readInput(old, edit) {
 
 function writeInput(data) {
 	$chatTextarea.value = data.content || ""
-	$chatMarkupSelect.checked = data.meta.m==ChatRoom.markup
+	$chatMarkupSelect.checked = data.meta.m == Settings.values.chat_markup
 }
 
 var preEdit = null

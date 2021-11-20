@@ -630,12 +630,18 @@ permissionInput: function() {
 		element: elem,
 		set: function(newPerms, users) {
 			body.replaceChildren()
+			var d = false
 			newPerms.forEach(function(p, id) {
 				id = +id
 				body.appendChild(permissionRow(users[id] || {Type:'user', id:id}, p))
+				if (id==0)
+					d=true
 				//ok we really need to fix the problem with null users
 				// one solution is to have a user map lookup function which returns a placeholder object if the user is not found, to store the 2 important (and known) properties, Type and id, just to avoid losing that information.
 			})
+			if (!d) {
+				body.appendChild(permissionRow(users[0] || {Type:'user', id:0}, ""))
+			}
 		},
 		get: function() {
 			var ret = {}
@@ -823,6 +829,7 @@ settings: function(settings, onchange) {
 		} else if (type=='textarea') {
 			elem = document.createElement('textarea')
 		} else {
+			console.error("settings field '"+name+"' has invalid selection type '"+type+"'", data)
 			return // invalid setting field type
 		}
 		get[name] = function() {

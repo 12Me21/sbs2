@@ -16,39 +16,23 @@ redraw: function() {
 
 pullRecent: function() {
 	// bad arguments :(
-	Req.getRecentActivity(function(a, c, wa, wc, p, com) {
-		p = Entity.makePageMap(p)
-		newActivity(a, p)
-		newCommentAggregate(c, p)
-		newActivity(wa, p, true)
-		newCommentAggregate(wc, p, true)
-		Sidebar.onAggregateChange(items)
-		Sidebar.displayMessages(com, true)
+	Req.getRecentActivity(function(e, resp) {
+		print("got recent activity")
+		if (!e) {
+			var p = Entity.makePageMap(resp.content)
+			newActivity(resp.activity, p)
+			newComments(resp.Mall, p)
+			newActivity(resp.Awatching, p, true)
+			//newCommentAggregate(wc, p, true)
+			Sidebar.onAggregateChange(items)
+			Sidebar.displayMessages(resp.comment.reverse(), true)
+		}
 	})
 },
 
 // ew
-// this system merges Activity, Comment, and CommentAggregate
-// so we need these 3 awful functions to handle them slightly differently
-
-// CommentAggregate is the worst because users are sorted by id
-// instead of what we want, which is by most recent comment. oh well
-newCommentAggregate: function(ca, pageMap, watch) {
-	ca.forEach(function(a) {
-		var item = getItem(a.id, pageMap, a.firstDate)
-		if (watch)
-			item.watching = true
-		a.users.forEach(function(user) {
-			// this is bad, because we don't have lastDate per user
-			userUpdate(item, user, 0)
-		})
-		item.count += a.count
-		if (a.firstDate < item.firstDate)
-			item.firstDate = a.firstDate
-		if (a.lastDate > item.lastDate)
-			item.lastDate = a.lastDate
-	})
-},
+// this system merges Activity, Comment, ~and CommentAggregate~
+// so we need these ~3~ 2 awful functions to handle them slightly differently
 
 newComments: function(comments, pageMap, watch) {
 	comments.forEach(function(c) {

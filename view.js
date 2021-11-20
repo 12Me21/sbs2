@@ -280,9 +280,9 @@ handleView: function(type, id, query, callback) {
 		View.flag('viewReady', true)
 		View.flag('mobileSidebar', false) //bad (should be function on Sidebar)
 		
-		Req.lpLastListeners = ChatRoom.generateListeners(Req.lpLastListeners)
-		Req.lpStatuses = ChatRoom.generateStatus()
-		Req.lpRefresh()
+		Lp.lastListeners = ChatRoom.generateListeners(Lp.lastListeners)
+		Lp.statuses = ChatRoom.generateStatus()
+		Lp.lpRefresh()
 		
 		callback && callback()
 		// todo: scroll to fragment element
