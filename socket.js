@@ -332,17 +332,22 @@ function open_websocket() {
 			}
 			try {
 				lastId = resp.lastId
-				if (resp.listeners)
-					lastListeners = resp.listeners
 				
 				Req.handle(resp.chains)
 				
 				if (first_websocket) { //very bad hack
 					print("first!!!")
 					first_websocket = false
-					onStart(null, resp)
 					lpInit = false
+					onStart(null, resp)
+					// this is a hack for in case
+					// the initial response takes too long idk etc.
+					wsRefresh(); // not always necessary, depends on timing
 				} else {
+					// unlike long poller, we DON'T keep this data on the initial response, due to bugs and idk..
+					if (resp.listeners)
+						lastListeners = resp.listeners
+					//
 					lpProcess(resp)
 				}
 			} catch (e) {
