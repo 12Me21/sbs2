@@ -50,8 +50,8 @@ Req.onLogin = function() {
 	// need a more consistent way to update lastlisteners PLEASE
 	if (Store.get('websocket'))
 		Lp.use_websocket = true
-	Lp.start(function(e, resp) {
-		print("got me!")
+	Lp.onStart = function(e, resp) {
+		print("got initial lp response!")
 		if (!e) {
 			var me = resp.chains.Ume
 			if (me && me[0])
@@ -59,7 +59,8 @@ Req.onLogin = function() {
 		} else {
 			alert("INITIAL LONG POLL FAILED!")
 		}
-	})
+	}
+	Lp.start()
 	
 	Act.pullRecent()
 	
