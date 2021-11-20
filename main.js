@@ -26,16 +26,16 @@ Req.onLogin = function() {
 	
 	// display user info etc.
 	// start long poller
-	Req.onMessages = function(comments, contents) {
+	Lp.onMessages = function(comments, contents) {
 		ChatRoom.displayMessages(comments)
 		Act.newComments(comments, Entity.makePageMap(contents))
 		Sidebar.onAggregateChange(Act.items)
 		Sidebar.displayMessages(comments)
 	}
-	Req.onListeners = function(a) {
+	Lp.onListeners = function(a) {
 		ChatRoom.updateUserLists(a)
 	}
-	Req.onActivity = function(a, p) { //todo: properly link activity with contents?
+	Lp.onActivity = function(a, p) { //todo: properly link activity with contents?
 		a.forEach(function(a) {
 			if (a.type == 'user')
 				View.updateUserAvatar(a.content) //todo: also update your avatar in sidebar
@@ -48,7 +48,10 @@ Req.onLogin = function() {
 	// it's very important that the first long poll request finishes instantly
 	// we normally ensure this by having lpLastListeners always have at least one room set but this can be accidentally broken very easily and it's a mess
 	// need a more consistent way to update lastlisteners PLEASE
-	Req.lpStart(function(e, resp) {
+	if (Store.get('websocket'))
+		Lp.use_websocket = true
+	Lp.start(function(e, resp) {
+		print("got me!")
 		if (!e) {
 			var me = resp.chains.Ume
 			if (me && me[0])

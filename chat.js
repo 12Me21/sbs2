@@ -133,9 +133,10 @@ function ChatRoom(id, page) {
 	this.showChat = page.type == "@page.discussion"
 	
 	this.visible = false
+	this.pinned = true
 	this.scroller = new Scroller(this.messagePane, this.messageList)
 	this.updatePage(page)
-	var l = Req.lpProcessedListeners[id] //should this be done with id -1? // what?
+	var l = Lp.processedListeners[id] //should this be done with id -1? // what?
 	l && this.updateUserList(l)
 	ChatRoom.addRoom(this)
 	
@@ -254,7 +255,7 @@ ChatRoom.generateStatus = function() {
 }
 
 ChatRoom.updateStatus = function() {
-	Req.lpSetStatus(ChatRoom.generateStatus())
+	Lp.lpSetStatus(ChatRoom.generateStatus())
 }
 
 ChatRoom.rooms = {}
@@ -314,8 +315,8 @@ ChatRoom.removeRoom = function(room) {
 }
 
 ChatRoom.setViewing = function(ids) {
-	Req.lpSetListening(ids)
-	Req.lpRefresh()
+	Lp.lpSetListening(ids)
+	Lp.lpRefresh()
 }
 
 ChatRoom.updateUserLists = function(a) {
