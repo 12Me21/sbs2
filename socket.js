@@ -14,11 +14,14 @@ processedListeners: {},
 onListeners: null,
 onMessages: null,
 onActivity: null,
+onStart: null,
 
 gotMessages: [],
 
 use_websocket: false,
 first_websocket: true,
+
+ws_message: {}, // debug
 
 // call this after setting the parameters
 lpRefresh: function() {
@@ -36,10 +39,10 @@ start: function(callback) {
 	if (!running) {
 		if (use_websocket) {
 			print('starting lp: websocket')
-			open_websocket(callback)
+			wsRefresh()
 		} else {
 			print('starting lp: long poller')
-			lpLoop(callback)
+			lpLoop(onStart)
 		}
 	}
 },
@@ -98,9 +101,8 @@ function wsRefresh(me) {
 	running = true
 	var req = make_listen(lastId, statuses, lastListeners, me)
 	
-	req.auth = ws_token
-	//print('ws send')
-	websocket.send(JSON.stringify(req))
+	ws_message = req
+	websocket_flush()
 }
 
 var lpCancel = function(){}
@@ -261,26 +263,48 @@ function lpProcess(resp) {
 var websocket = null
 var ws_token = null
 
-function open_websocket(callback) {
+function websocket_flush() {
+	if (websocket && websocket.readyState == 0)
+		return;
+	else if (websocket && websocket.readyState == 1) {
+		if (ws_token) {
+			if (ws_message.listeners) {
+				ws_message.auth = ws_token
+				websocket.send(JSON.stringify(ws_message))
+			}
+		}
+	} else {
+		open_websocket()
+	}
+}
+
+// todo: we need to be 100% sure that the initial websocket config is NEVER changed until the ws returns initially, I think
+
+function open_websocket() {
+	ws_token = null
 	websocket = new WebSocket("wss://"+Req.server+"/read/wslisten")
+	// todo: we don't know whether the websocket will open before or after the auth token is gotten.
+	// make sure we don't flush twice.
 	Req.request("Read/wsauth", 'GET', function(e, resp) {
 		if (!e) {
 			ws_token = resp
 			print("got ws token!")
-			wsRefresh(callback)
+			websocket_flush()
+			//wsRefresh(callback)
 		} else {
 			print('websocket auth failed:'+e)
 		}
 	})
 	websocket.onopen = function(e) {
 		print("websocket open!")
+		websocket_flush()
 	}
 	websocket.onerror = function(e) {
 		print("websocket error!"+e)
-		open_websocket()
 	}
 	websocket.onclose = function(e) {
-		print("websocket close!"+e)
+		print("websocket close!")
+		open_websocket()
 	}
 	websocket.onmessage = function(e) {
 		let match = String(e.data).match(/^(\w+):/)
@@ -298,12 +322,12 @@ function open_websocket(callback) {
 				
 				if (first_websocket) { //very bad hack
 					print("first!!!")
-					callback(null, resp)
-					lpInit = false
 					first_websocket = false
+					onStart(null, resp)
+					lpInit = false
 				} else {
 					Req.handle(resp.chains)
-					lpProcess(resp)	
+					lpProcess(resp)
 				}
 			} catch (e) {
 				console.error(e)
