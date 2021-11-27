@@ -133,7 +133,7 @@ function ChatRoom(id, page) {
 	this.showChat = page.type == "@page.discussion"
 	
 	this.visible = false
-	this.pinned = true
+	this.pinned = false
 	this.scroller = new Scroller(this.messagePane, this.messageList)
 	this.updatePage(page)
 	var l = Lp.processedListeners[id] //should this be done with id -1? // what?
