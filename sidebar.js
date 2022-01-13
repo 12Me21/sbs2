@@ -162,13 +162,16 @@ print: function() {
 	for (var i=0; i<arguments.length; i++) {
 		var str = arguments[i]
 		try {
-			str = String(str)
-		} catch(e) {
 			try {
-				str = "<"+str.constructor.name+">"
+				str = String(str)
 			} catch(e) {
-				str = "<???>"
+				//if (str.constructor == Object)
+				//	;
+				//else
+				str = "<"+str.constructor.name+">"
 			}
+		} catch(e) {
+			str = "<???>"
 		}
 		text.push(str)
 	}

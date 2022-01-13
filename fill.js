@@ -4,7 +4,7 @@ delete Array.prototype.toString
 delete Object.prototype.toString
 
 if (!window.devicePixelRatio)
-window.devicePixelRatio = 1
+	window.devicePixelRatio = 1
 
 if (!Array.prototype.includes)
 	Array.prototype.includes = function(item) {
