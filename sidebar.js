@@ -157,7 +157,22 @@ redrawCategoryTree: function(cats) {
 	$sidebarCategories.replaceChildren(Draw.navCategory(cats[0]))
 },
 
-print: function(text) {
+print: function() {
+	var text = []
+	for (var i=0; i<arguments.length; i++) {
+		var str = arguments[i]
+		try {
+			str = String(str)
+		} catch(e) {
+			try {
+				str = "<"+str.constructor.name+">"
+			} catch(e) {
+				str = "<???>"
+			}
+		}
+		text.push(str)
+	}
+	text=text.join("\n")
 	if (scroller)
 		scroller.handlePrint(function() {
 			displayedMessages++

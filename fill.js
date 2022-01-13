@@ -1,3 +1,8 @@
+// this file runs first (probably lol)
+
+delete Array.prototype.toString
+delete Object.prototype.toString
+
 if (!window.devicePixelRatio)
 window.devicePixelRatio = 1
 
