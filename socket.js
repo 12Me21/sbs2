@@ -60,7 +60,7 @@ lpStop: function() {
 },
 
 lpSetListening: function(ids) {
-	console.log("setting listeners")
+	//console.log("setting listeners")
 	var newListeners = {"-1": lastListeners[-1]}
 	ids.forEach(function(id) {
 		newListeners[id] = lastListeners[id] || {"0":""}
@@ -249,7 +249,7 @@ function handleOnListeners(listeners, users) {
 
 function lpProcess(resp) {
 	if (resp.listeners) {
-		console.log("lp process", resp)
+		//console.log("lp process", resp)
 		handleOnListeners(resp.listeners, resp.chains.userMap)
 	}
 	if (resp.chains) {
