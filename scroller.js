@@ -216,6 +216,11 @@ Scroller.prototype.autoScrollAnimation = function(time) {
 	this.atBottom = true
 	this.ignoreScroll = true
 	
+	// if we are more than 1 page up, just start scrolling at half a page
+	if (this.scrollBottom > this.outer.clientHeight) {
+		this.scrollBottom = this.outer.clientHeight
+	}
+	
 	if (this.scrollBottom == this.oldScrollBottom) {
 		this.animationId = null
 		return
