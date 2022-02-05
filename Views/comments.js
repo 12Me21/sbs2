@@ -22,6 +22,7 @@ addView('comments', {
 		var search = build_search(query)
 		if (!search) {
 			quick(function(){
+				setTitle("Comments")
 				write_inputs(query)
 				$chatlogSearchResults.replaceChildren()
 			})
@@ -38,6 +39,7 @@ addView('comments', {
 	},
 	className: 'comments',
 	render: function(comments, query, pages) {
+		setTitle("Comments")
 		var map = Entity.makePageMap(pages)
 		write_inputs(query)
 		$commentSearchResults.replaceChildren()
