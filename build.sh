@@ -14,7 +14,7 @@ echo 'creating _build.css' >&2
 cat theme.css resource/fonts.css style.css markup.css code.css > resource/_build.css
 
 echo 'creating _build.js' >&2
-printf 'window.commit = "%q";\n\n' "`git log -1 --format='%h [%ad] %s'`" | cat - fill.js entity.js activity.js socket.js request.js markup/_build.js draw.js view.js scroller.js sidebar.js chat.js settings.js Views/settings.js Views/page.js Views/images.js Views/editpage.js Views/category.js Views/user.js Views/home.js Views/chatlogs.js navigate.js main.js > resource/_build.js
+printf 'window.commit = "%q";\n\n' "`git log -1 --format='%h [%ad] %s'`" | cat - fill.js entity.js activity.js socket.js request.js markup/_build.js draw.js view.js scroller.js sidebar.js chat.js settings.js Views/settings.js Views/page.js Views/images.js Views/editpage.js Views/category.js Views/user.js Views/home.js Views/chatlogs.js Views/comments.js navigate.js main.js > resource/_build.js
 
 
 # nocache filename -> filename?1234567 (uses date modified)
