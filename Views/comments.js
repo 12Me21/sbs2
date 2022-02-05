@@ -4,6 +4,7 @@ with (View) (function($) { "use strict" //*/
 addView('comments', {
 	init: function() {
 		$commentSearchButton.onclick = function() {
+			console.log("going!")
 			var query = read_inputs()
 			// if searching a single page, we use "comments/<pid>", otherwise we use "comments" and set the "pid" query parameter.
 			var name = "comments"

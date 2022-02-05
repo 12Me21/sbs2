@@ -696,18 +696,13 @@ userSelector: function() {
 	input.oninput = function() {
 		reset()
 	}
-	input.onkeypress = function(e) {
-		if (e.keyCode == 13) {
-			e.preventDefault()
-			dropdown.focus()
-		}
-	}
-	dropdown.onkeypress = function(e) {
-		if (e.keyCode == 13 && dropdown.value) {
-			e.preventDefault()
+	View.bind_enter(input, function(){
+		dropdown.focus()
+	})
+	View.bind_enter(dropdown, function(){
+		if (dropdown.value)
 			submit.click()
-		}
-	}
+	})
 	dropdown.onfocus = function() {
 		if (input.value == x.searchText)
 			return
