@@ -23,7 +23,7 @@ Get-Content "theme.css","resource/fonts.css","style.css","markup.css","code.css"
 
 Write-Host "creating _build.js"
 $jsfiles =
-"fill.js","entity.js","activity.js","request.js","markup/_build.js","draw.js","view.js","scroller.js","sidebar.js","chat.js","settings.js","Views/settings.js","Views/page.js","Views/images.js","Views/editpage.js","Views/category.js","Views/user.js","Views/home.js","Views/chatlogs.js","navigate.js","main.js"
+"fill.js","entity.js","activity.js","request.js","markup/_build.js","draw.js","view.js","scroller.js","sidebar.js","chat.js","settings.js","Views/settings.js","Views/page.js","Views/images.js","Views/editpage.js","Views/category.js","Views/user.js","Views/home.js","Views/chatlogs.js","Views/comments.js","navigate.js","main.js"
 Get-Content $jsfiles | Set-Content resource/_build.js
 
 function unixtime($t) {

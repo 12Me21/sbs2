@@ -61,6 +61,7 @@
 <script src=Views/user.js></script>
 <script src=Views/home.js></script>
 <script src=Views/chatlogs.js></script>
+<script src=Views/comments.js></script>
 
 <script src=navigate.js></script>
 
@@ -228,6 +229,19 @@
 			</v-b>
 			
 			<v-b data-view-chatlogs id=$chatlogSearchResults></v-b>
+			
+			<v-b data-view-comments>
+				<div id=$commentSearch class='nav'>
+					<input id=$commentSearchText placeholder="text">
+					<input id=$commentSearchRoom placeholder="page ids">
+					<input id=$commentSearchUser placeholder="user ids"><br>
+					<input id=$commentSearchStart placeholder="start date">-<input id=$commentSearchEnd placeholder="end date"><br>
+					<input id=$commentSearchRange placeholder="ids (start-end)"><br>
+					<!--<label><input type=checkbox id=$commentSearchReverse>Reverse</label>-->
+					<button id=$commentSearchButton>Search</button>
+				</div>
+				<div id=$commentSearchResults></div>
+			</v-b>
 			
 			<v-b data-view-home class="border-list">
 				<div>

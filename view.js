@@ -457,6 +457,15 @@ titleNotification: function(text, icon) {
 	changeFavicon(icon || false)
 },
 
+bind_enter: function(block, action) {
+	block.addEventListener('keypress', function(e) {
+		if (!e.shiftKey && e.keyCode == 13) {
+			e.preventDefault()
+			action()
+		}
+	})
+},
+
 changeFavicon: function(src) {
 	if (!faviconElement) {
 		if (src == false)
