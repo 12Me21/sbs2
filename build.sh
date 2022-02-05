@@ -5,16 +5,20 @@ then
 (Press Enter)" >&2
 fi
 
-cd "$(dirname "$0")"
+cd "${BASH_SOURCE[0]}"
 
 echo 'Building markup system' >&2
 ./markup/build.sh
 
 echo 'creating _build.css' >&2
-cat theme.css resource/fonts.css style.css markup.css code.css > resource/_build.css
+css=($(grep -Po '<link rel=stylesheet href=\K.*(?=>)' index.html))
+echo ${css[@]}
+cat ${css[@]} > resource/_build.css
 
 echo 'creating _build.js' >&2
-printf 'window.commit = "%q";\n\n' "`git log -1 --format='%h [%ad] %s'`" | cat - fill.js entity.js activity.js socket.js request.js markup/_build.js draw.js view.js scroller.js sidebar.js chat.js settings.js Views/settings.js Views/page.js Views/images.js Views/editpage.js Views/category.js Views/user.js Views/home.js Views/chatlogs.js Views/comments.js navigate.js main.js > resource/_build.js
+js=($(grep -Po '<script src=\K.*(?=></script>)' index.html))
+echo ${js[@]}
+printf 'window.commit = "%q";\n\n' "`git log -1 --format='%h [%ad] %s'`" | cat - ${js[@]} > resource/_build.js
 
 
 # nocache filename -> filename?1234567 (uses date modified)
