@@ -22,6 +22,7 @@ addView('comments', {
 		var search = build_search(query)
 		if (!search) {
 			quick(function(){
+				write_inputs(query)
 				$chatlogSearchResults.replaceChildren()
 			})
 			return;
@@ -80,7 +81,7 @@ function write_inputs(query) {
 
 function build_search(query) {
 	var search = {limit: 200, reverse: true}
-	if (!(query.s || query.pid || query.uid || query.ids || query.start || query.end))
+	if (!(query.s || query.uid || query.ids || query.start || query.end))
 		return null
 	if (query.s)
 		search.contentLike = "%\n%"+query.s+"%"
