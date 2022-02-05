@@ -124,12 +124,7 @@ onLoad: function() {
 			})
 		})
 	}
-	$searchInput.onkeypress = function(e) {
-		if (!e.shiftKey && e.keyCode == 13) {
-			e.preventDefault()
-			$searchButton.onclick()
-		}
-	}
+	View.bind_enter($searchInput, $searchButton.onclick)
 },
 
 // this needs to be optimized
