@@ -4,7 +4,6 @@ with (View) (function($) { "use strict" //*/
 addView('comments', {
 	init: function() {
 		$commentSearchButton.onclick = function() {
-			console.log("going!")
 			var query = read_inputs()
 			// if searching a single page, we use "comments/<pid>", otherwise we use "comments" and set the "pid" query parameter.
 			var name = "comments"
@@ -12,13 +11,14 @@ addView('comments', {
 				name += "/"+query.pid
 				delete query.pid
 			}
-			Nav.go(name+Req.queryString(query))
+			Nav.go(name+query_string(query))
 		}
 		bind_enter($commentSearch, $commentSearchButton.onclick)
 	},
 	start: function(id, query, render, quick) {
 		if (id)
 			query.pid = String(id)
+		console.log(query)
 		var search = build_search(query)
 		if (!search) {
 			quick(function(){
@@ -61,13 +61,20 @@ var fields = [
 	['ids', '$commentSearchRange'],
 	['start', '$commentSearchStart'],
 	['end', '$commentSearchEnd'],
+	['r', '$commentSearchReverse'],
 ]
 
 function read_inputs() {
 	var query = {}
 	fields.forEach(function(x) {
-		if ($[x[1]].value != "")
-			query[x[0]] = $[x[1]].value
+		var elem = $[x[1]]
+		if (elem.type=='checkbox') {
+			if (elem.checked)
+				 query[x[0]] = true
+		} else {
+			if (elem.value != "")
+				query[x[0]] = elem.value
+		}
 	})
 	return query
 }
@@ -75,14 +82,20 @@ function read_inputs() {
 function write_inputs(query) {
 	fields.forEach(function(x) {
 		var val = query[x[0]]
-		$[x[1]].value = val || ""
+		var elem = $[x[1]]
+		if (elem.type=='checkbox')
+			elem.checked = val
+		else
+			elem.value = val || ""
 	})
 }
 
 function build_search(query) {
-	var search = {limit: 200, reverse: true}
+	var search = {limit: 200}
 	if (!(query.s || query.uid || query.ids || query.start || query.end))
 		return null
+	if (query.r)
+		search.reverse = true
 	if (query.s)
 		search.contentLike = "%\n%"+query.s+"%"
 	if (query.pid)
@@ -92,7 +105,6 @@ function build_search(query) {
 	if (query.ids) {
 		// either: 123-456
 		// or      123-
-		console.log('query ids', query.ids)
 		var match = query.ids.match(/^(\d+)(?:(-)(\d*))?$/)
 		if (match) {
 			var min = match[1]
@@ -109,8 +121,26 @@ function build_search(query) {
 		search.createStart = query.start
 	if (query.end)
 		search.createStart = query.start
-	console.log(search)
 	return search
+}
+
+function query_string(obj) {
+	if (!obj)
+		return ""
+	var items = []
+	for (var key in obj) {
+		var val = obj[key]
+		if (typeof val == 'undefined')
+			continue
+		var item = $.encodeURIComponent(key)
+		if (val === true)
+			items.push(item)
+		else
+			items.push(item+"="+$.encodeURIComponent(val))
+	}
+	if (!items.length)
+		return ""
+	return "?"+items.join("&")
 }
 
 <!--/*
