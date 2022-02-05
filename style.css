@@ -66,34 +66,34 @@ html {
 /***********
  ** Links **
  ***********/
-a {
+a[href] {
 	text-decoration: none;
 }
-a, a:visited {
+a[href], a[href]:visited {
 	color: var(--linkcolor);
 }
-a:hover {
+a[href]:hover {
 	color: var(--link-hover-color);
 	/*text-decoration: underline;*/
 }
-a:hover .entity-title,
-a.entity-title:hover,
-a[data-static-path]:hover {
+a[href]:hover .entity-title,
+a[href].entity-title:hover,
+a[href][data-static-path]:hover {
 	text-decoration: underline;
 }
 /* todo: make a special link bar class for links that contain other elements and a class for which of those should be underlined */
 /* and make sure normal links are styled correctly too */
-a[data-static-path],
+a[href][data-static-path],
 .entity-title {
 	font-weight: 500;
 }
 
 /* todo: make class for dark bg elements */
-.titlePane a {
+.titlePane a[href] {
 	color: var(--link-invert-color);
 	font-weight: normal;
 }
-.titlePane a:hover {
+.titlePane a[href]:hover {
 	color: var(--link-invert-hover-color);
 }
 
@@ -317,7 +317,7 @@ button {
 	border-radius: 0px;*/
 }
 
-.buttonContainer > a {
+.buttonContainer > a[href] {
 	width: 100%;
 	height: 100%;
 	display: inline-block;
@@ -1061,7 +1061,7 @@ body.pageMode main-scrollable {
 	width: 100%;
 }
 
-.wideCell > a {
+.wideCell > a[href] {
 	display: block;
 }
 
