@@ -5,7 +5,7 @@ then
 (Press Enter)" >&2
 fi
 
-cd "${BASH_SOURCE[0]}"
+cd "$(dirname "${BASH_SOURCE[0]}")"
 
 echo 'Building markup system' >&2
 ./markup/build.sh

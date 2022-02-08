@@ -47,6 +47,7 @@
 <script src=markup/render.js></script>
 
 <script src=src/draw.js></script>
+<script src=src/input.js></script>
 
 <script src=src/view.js></script>
 <script src=src/scroller.js></script>
@@ -235,12 +236,7 @@
 			
 			<v-b data-view-comments>
 				<div id=$commentSearch class='nav'>
-					<input id=$commentSearchText placeholder="text">
-					<input id=$commentSearchRoom placeholder="page ids">
-					<input id=$commentSearchUser placeholder="user ids"><br>
-					<input id=$commentSearchStart placeholder="start date">-<input id=$commentSearchEnd placeholder="end date"><br>
-					<input id=$commentSearchRange placeholder="ids (start-end)"><br>
-					<label>Newest First<input type=checkbox id=$commentSearchReverse></label>
+					<br id=$commentSearchForm>
 					<button id=$commentSearchButton>Search</button>
 				</div>
 				<div id=$commentSearchResults></div>

@@ -1,29 +1,40 @@
-<!--/* trick indenter
-with (View) (function($) { "use strict" //*/
+var comment_form
 
-addView('comments', {
+View.addView('comments', {
 	init: function() {
+		comment_form = new Form({
+			fields: [
+				{name: 'search', input: new INPUTS.text({label: "Search"}), convert: CONVERT.string, param: 's'},
+				{name: 'pages', input: new INPUTS.number_list({label: "Page Ids"}), convert: CONVERT.number_list, param: 'pid'},
+				{name: 'users', input: new INPUTS.number_list({label: "User Ids"}), convert: CONVERT.number_list, param: 'uid'},
+				{name: 'start', input: new INPUTS.date({label: "Start Date"}), convert: CONVERT.date, param: 'start'},
+				{name: 'end', input: new INPUTS.date({label: "End Date"}), convert: CONVERT.date, param: 'end'},
+				{name: 'range', input: new INPUTS.range({label: "Id Range"}), convert: CONVERT.range, param: 'ids'},
+				{name: 'reverse', input: new INPUTS.checkbox({label: "Newest First"}), convert: CONVERT.flag, param: 'r'},
+			]
+		})
+		$commentSearchForm.replaceWith(comment_form.elem)
 		$commentSearchButton.onclick = function() {
-			var query = read_inputs()
-			// if searching a single page, we use "comments/<pid>", otherwise we use "comments" and set the "pid" query parameter.
+			let data = comment_form.get()
 			var name = "comments"
-			if (query.pid && query.pid.split(",").length==1) {
-				name += "/"+query.pid
-				delete query.pid
+			if (data.pages && data.pages.length==1) {
+				name += "/"+data.pages[0]
+				delete data.pages
 			}
-			Nav.go(name+query_string(query))
+			var query = comment_form.to_query(data)
+			Nav.go(name+query)
 		}
-		bind_enter($commentSearch, $commentSearchButton.onclick)
+		View.bind_enter($commentSearch, $commentSearchButton.onclick)
 	},
 	start: function(id, query, render, quick) {
+		let data = comment_form.from_query(query)
 		if (id)
-			query.pid = String(id)
-		console.log(query)
-		var search = build_search(query)
+			data.pages = [id]
+		var search = build_search(data)
 		if (!search) {
 			quick(function(){
-				setTitle("Comments")
-				write_inputs(query)
+				View.setTitle("Comments")
+				comment_form.set(data)
 				$chatlogSearchResults.replaceChildren()
 			})
 			return;
@@ -34,14 +45,15 @@ addView('comments', {
 			"user.0createUserId",
 		], {}, function(e, resp){
 			if (e) return render(null)
-			render(resp.comment, query, resp.content)
+			render(resp.comment, query, resp.content, data)
 		})
 	},
 	className: 'comments',
-	render: function(comments, query, pages) {
-		setTitle("Comments")
+	render: function(comments, query, pages, data) {
+		View.setTitle("Comments")
+		comment_form.set(data)
+		
 		var map = Entity.makePageMap(pages)
-		write_inputs(query)
 		$commentSearchResults.replaceChildren()
 		comments.forEach(function(c) {
 			c.parent = map[c.parentId]
@@ -56,94 +68,33 @@ addView('comments', {
 	},
 })
 
-var fields = [
-	['s', '$commentSearchText'],
-	['pid', '$commentSearchRoom'],
-	['uid', '$commentSearchUser'],
-	['ids', '$commentSearchRange'],
-	['start', '$commentSearchStart'],
-	['end', '$commentSearchEnd'],
-	['r', '$commentSearchReverse'],
-]
-
-function read_inputs() {
-	var query = {}
-	fields.forEach(function(x) {
-		var elem = $[x[1]]
-		if (elem.type=='checkbox') {
-			if (elem.checked)
-				 query[x[0]] = true
-		} else {
-			if (elem.value != "")
-				query[x[0]] = elem.value
-		}
-	})
-	return query
-}
-
-function write_inputs(query) {
-	fields.forEach(function(x) {
-		var val = query[x[0]]
-		var elem = $[x[1]]
-		if (elem.type=='checkbox')
-			elem.checked = val
-		else
-			elem.value = val || ""
-	})
-}
-
-function build_search(query) {
+function build_search(data) {
 	var search = {limit: 200}
-	if (!(query.s || query.uid || query.ids || query.start || query.end))
+	console.log("search data", data)
+	if (!data.search && !(data.users && data.users.length) && !data.range && !data.start && !data.end)
 		return null
-	if (query.r)
+	if (data.reverse)
 		search.reverse = true
-	if (query.s)
-		search.contentLike = "%\n%"+query.s+"%"
-	if (query.pid)
-		search.parentIds = query.pid.split(",").map(Number) //whatever
-	if (query.uid)
-		search.userIds = query.uid.split(",").map(Number)
-	if (query.ids) {
+	if (data.search)
+		search.contentLike = "%\n%"+data.search+"%"
+	if (data.pages)
+		search.parentIds = data.pages
+	if (data.users)
+		search.userIds = data.users
+	let range = data.range
+	if (range) {
+		if (typeof range == 'number')
+			range = [number, number]
 		// either: 123-456
 		// or      123-
-		var match = query.ids.match(/^(\d+)(?:(-)(\d*))?$/)
-		if (match) {
-			var min = match[1]
-			var dash = match[2]
-			var max = match[3]
-			search.minId = (+min)-1;
-			if (max)
-				search.maxId = (+max)+1;
-			if (!dash)
-				search.maxId = (+min)+1;
-		}
+		if (range[0] !== undefined)
+			search.minId = range[0]
+		if (range[1] !== undefined)
+			search.maxId = range[1]+1
 	}
-	if (query.start)
-		search.createStart = query.start
-	if (query.end)
-		search.createStart = query.start
+	if (data.start)
+		search.createStart = data.start.toISOString()
+	if (data.end)
+		search.createEnd = data.end.toISOString()
 	return search
 }
-
-function query_string(obj) {
-	if (!obj)
-		return ""
-	var items = []
-	for (var key in obj) {
-		var val = obj[key]
-		if (typeof val == 'undefined')
-			continue
-		var item = $.encodeURIComponent(key)
-		if (val === true)
-			items.push(item)
-		else
-			items.push(item+"="+$.encodeURIComponent(val))
-	}
-	if (!items.length)
-		return ""
-	return "?"+items.join("&")
-}
-
-<!--/*
-}(window)) //*/
