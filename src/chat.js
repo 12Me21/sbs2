@@ -353,8 +353,13 @@ class ChatRoom {
 	// should maybe take id instead of element?
 	showControls(elem) {
 		if (elem) {
-			elem.parentNode.insertBefore(this.controls, elem)
-			this.controlId = +elem.dataset.id
+			// why does this fail sometimes?
+			if (!elem.parentNode) {
+				console.error("oops, elem was removed?")
+			} else {
+				elem.parentNode.insertBefore(this.controls, elem)
+				this.controlId = +elem.dataset.id
+			}
 		} else {
 			this.controls.remove()
 			this.controlId = null
