@@ -1,83 +1,82 @@
 // HTML RENDERING
-
-<!--/* trick indenter
 var Draw = Object.create(null)
 with (Draw) (function($) { "use strict"
 Object.assign(Draw, { //*/
 
-avatarURL: function(user, params) {
+avatarURL: (user, params)=>{
 	if (!user || !user.avatar)
 		return "resource/avatar.png"
 	return Req.fileURL(user.avatar, params)
 },
 
-largeIcon: function(entity) {
-	var element = document.createElement('img')
+largeIcon: (entity)=>{
+	let element = document.createElement('img')
 	if (entity.Type == 'user') {
 		element.src = avatarURL(entity, "size=400&crop=true")
 		element.width = element.height = 400
 	} else
 		element.src = "resource/unknown.png"
-	return entity
+	return element
 },
 
 // icon + name
-iconTitle: function(entity, reverse) {
-	var element = document.createDocumentFragment()
+iconTitle: (entity, reverse)=>{
+	let element = document.createDocumentFragment()
 	if (reverse) {
-		element.appendChild(title(entity))
+		element.append(title(entity))
 		//element.appendChild(document.createTextNode(" "))
-		element.appendChild(icon(entity))
+		element.append(icon(entity))
 	} else {
-		element.appendChild(icon(entity))
+		element.append(icon(entity))
 		//element.appendChild(document.createTextNode(" "))
-		element.appendChild(title(entity))
+		element.append(title(entity))
 	}
 	return element
 },
 
-entityLink: function(entity) {
-	var path = Nav.entityPath(entity)
+entityLink: (entity)=>{
+	let path = Nav.entityPath(entity)
+	let element
 	if (path)
-		var element = Nav.link(path)
+		element = Nav.link(path)
 	else
 		element = document.createElement('span')
 	return element
 },
 
 // page (or category) wiht user
-pageBar: function(page) {
-	var bar = entityTitleLink(page)
+pageBar: (page)=>{
+	let bar = entityTitleLink(page)
 	if (page.createUser) {
-		var usr = entityTitleLink(page.createUser, true)
+		let usr = entityTitleLink(page.createUser, true)
 		usr.className += " rightAlign"
-		bar.appendChild(usr)
+		bar.append(usr)
 	}
 	return bar
 },
 
-entityTitleLink: function(entity, reverse) {
-	var element = entityLink(entity)
-	var icon = iconTitle(entity, reverse)
-	element.appendChild(icon)
+entityTitleLink: (entity, reverse)=>{
+	let element = entityLink(entity)
+	let icon = iconTitle(entity, reverse)
+	element.append(icon)
 	return element
 },
 
-title: function(entity) {
-	var element = document.createElement('span')
+title: (entity)=>{
+	let element = document.createElement('span')
 	element.textContent = entity ? entity.name : "MISSINGNO."
 	element.className = 'textItem pre entity-title'
 	return element
 },
 
-textItem: function(text) {
-	var element = document.createElement('span')
+textItem: (text)=>{
+	let element = document.createElement('span')
 	element.textContent = text
 	element.className = 'textItem pre'
 	return element
 },
 
-iconURL: function(entity) {
+iconURL: (entity)=>{
 	if (entity.Type == 'user') {
 		return 
 	} else if (entity.Type == 'category')
@@ -91,98 +90,98 @@ iconURL: function(entity) {
 	return "resource/unknown.png"
 },
 
-chatMessagePane: function() {
-	var outer = document.createElement('scroll-outer')
+chatMessagePane: ()=>{
+	let outer = document.createElement('scroll-outer')
 	outer.className = "grow chatScroller"
-	outer.hiddden = true
-	var inner = document.createElement('scroll-inner')
-	outer.appendChild(inner)
+	outer.hidden = true
+	let inner = document.createElement('scroll-inner')
+	outer.append(inner)
 	return [outer, inner]
 },
 
 userList: function() {
-	var outer = document.createElement('div')
+	let outer = document.createElement('div')
 	outer.className = "bar rem2-3 userlist"
-	var inner = document.createElement('span')
-	outer.appendChild(inner)
-	var b = button()
+	let inner = document.createElement('span')
+	outer.append(inner)
+	let b = button()
 	b[1].textContent = "Hide"
 	b[0].className += " rightAlign item loggedIn"
-	outer.appendChild(b[0])
+	outer.append(b[0])
 	return [outer, inner, b[1]]
 },
 
-userListAvatar: function(status) {
-	var a = linkAvatar(status.user)
+userListAvatar: (status)=>{
+	let a = linkAvatar(status.user)
 	if (status.status == "idle")
 		a.className += " status-idle"
 	return a
 },
 
-sidebarDebug: function(text) {
-	var x = document.createElement('div')
+sidebarDebug: (text)=>{
+	let x = document.createElement('div')
 	x.className = 'debugMessage pre'
 	x.textContent = text
 	return x
 },
 
-linkAvatar: function(user) {
-	var a = entityLink(user)
-	a.appendChild(avatar(user))
+linkAvatar: (user)=>{
+	let a = entityLink(user)
+	a.append(avatar(user))
 	a.title = user.username
 	return a
 },
 
-avatar: function(user) {
-	var element = document.createElement('img')
+avatar: (user)=>{
+	let element = document.createElement('img')
 	element.className += "item avatar"
 	element.src = avatarURL(user, "size=100&crop=true")
 	element.width = element.height = 100
 	return element
 },
 
-fileThumbnail: function(file, onclick) {
-	var div = document.createElement('div')
+fileThumbnail: (file, onclick)=>{
+	let div = document.createElement('div')
 	div.className = "fileThumbnail item"
 	/*div.onclick = function() {
 	  selectFile(file)
 	  }*/
-	div.setAttribute('data-id', file.id)
-	var img = document.createElement('img')
+	div.dataset.id = file.id
+	let img = document.createElement('img')
 	img.src = Req.fileURL(file.id, "size=50")
 	img.alt = file.name
 	img.title = file.name
-	div.appendChild(img)
+	div.append(img)
 	if (onclick) {
-		div.onclick = function(e) {
+		div.onclick = (e)=>{
 			onclick(file, e)
 		}
 	}
 	return div
 },
 
-bgIcon: function(url) {
-	var element = document.createElement('span')
+bgIcon: (url)=>{
+	let element = document.createElement('span')
 	element.setAttribute('role', 'img')
 	element.className = "item icon iconBg"
 	element.style.backgroundImage = 'url("'+url+'")'
 	return element
 },
 
-icon: function(entity) {
-	var element
-	var type = entity && entity.Type
+icon: (entity)=>{
+	let element
+	let type = entity && entity.Type
 	if (type == 'user') {
 		element = document.createElement('img')
 		element.className += "item icon avatar"
 		element.src = avatarURL(entity, "size=100&crop=true")
 		element.width = element.height = 100
 	} else if (type=='content') {
-		var hidden = !hasPerm(entity.permissions, 0, 'r')
+		let hidden = !hasPerm(entity.permissions, 0, 'r')
 		if (hidden) {
 			element = bgIcon('resource/hiddenpage.png')
 		} else { //TODO: make this better!
-			var pageType = entity.type
+			let pageType = entity.type
 			if (Entity.CONTENT_TYPES.includes(pageType)) {
 				element = bgIcon('resource/page-'+pageType+'.png')
 			} else {
@@ -197,183 +196,188 @@ icon: function(entity) {
 	return element
 },
 
-markup: function(page) {
+markup: (page)=>{
+	let lang = null
 	if (page.values)
-		var lang = page.values.markupLang
+		lang = page.values.markupLang
 	return Parse.parseLang(page.content, lang, true)
 },
 
-titlePath: function(path) {
-	var element = document.createDocumentFragment()
+titlePath: (path)=>{
+	let element = document.createDocumentFragment()
 	if (!path)
 		return element
-	path.forEach(function(item, i, path) {
+	path.forEach((item, i, path)=>{
 		if (item) { //todo: use entities here instead
-			var link = Nav.link(item[0])
+			let link = Nav.link(item[0])
 			link.textContent = item[1]
 			link.className = "textItem pre entity-title"
-			element.appendChild(link)
+			element.append(link)
 		}
 		
 		if (i < path.length-1) {
-			var slash = document.createElement('span')
+			let slash = document.createElement('span')
 			slash.textContent = "/"
 			slash.className = "pathSeparator textItem"
-			element.appendChild(slash)
+			element.append(slash)
 		}
 	})
 	return element
 },
-messageBlock: function(comment) {
-	var user = comment.createUser
-	var date = comment.createDate
+messageBlock: (comment)=>{
+	let user = comment.createUser
+	let date = comment.createDate
 	
-	var div = document.createElement('message-block')
+	let div = document.createElement('message-block')
 	// time
-	var timeStamp = document.createElement('time')
+	let timeStamp = document.createElement('time')
 	timeStamp.setAttribute("datetime", date+"")
 	timeStamp.textContent = timeString(date)
-	div.appendChild(timeStamp)
+	div.append(timeStamp)
 	// avatar
 	if (user.bigAvatar) {
-		var d = document.createElement('div')
+		let d = document.createElement('div')
 		d.style.backgroundImage = "url("+Req.fileURL(user.bigAvatar, "size=500")+")"
 		d.className += " bigAvatar"
-		div.appendChild(d)
+		div.append(d)
 	} else {
-		div.appendChild(avatar(user))
+		div.append(avatar(user))
 	}
 	// username
-	var name = document.createElement('span')
+	let name = document.createElement('span')
 	name.className += " username-label"
-	div.appendChild(name)
+	div.append(name)
+	let link = entityLink(user)
+	name.append(link)
 	
-	var link = entityLink(user)
-	name.appendChild(link)
-	
-	var n = document.createElement('span')
+	let n = document.createElement('span')
 	n.className = "pre username"
-	link.appendChild(n)
+	link.append(n)
 	
 	// if nickname is set, render as "nickname (realname):"
-	if (user.nickname !== undefined) {
+	if (user.nickname !== undefined) { // why !== here?
 		n.textContent = user.nickname
-		link.appendChild(document.createTextNode(": ("))
-		var n2 = document.createElement('span')
+		link.append(document.createTextNode(": ("))
+		let n2 = document.createElement('span')
 		n2.className = "pre"
 		n2.textContent = user.realname
-		link.appendChild(n2)
-		link.appendChild(document.createTextNode(")"))
+		link.append(n2)
+		link.append(document.createTextNode(")"))
 	} else {
 		// otherwise render as "name:"
 		n.textContent = user.name
-		link.appendChild(document.createTextNode(":"))
+		link.append(document.createTextNode(":"))
 	}
 	
 	// contents
-	var contentBox = document.createElement('message-contents')
-	div.appendChild(contentBox)
-	div.setAttribute('data-uid', comment.createUserId)
-	div.setAttribute('data-merge', mergeHash(comment))
+	let contentBox = document.createElement('message-contents')
+	div.append(contentBox)
+	div.dataset.uid = comment.createUserId
+	div.dataset.merge = mergeHash(comment)
 	return [div, contentBox]
 },
-mergeHash: function(comment) {
+mergeHash: (comment)=>{
 	return comment.createUserId + "," + comment.createUser.avatar+","+(comment.createUser.bigAvatar||"") + "," + comment.createUser.name + " " + (comment.createUser.nickname || "")
 },
 // this needs to be improved
-searchComment: function(comment) {
-	var outer = document.createElement('div')
+searchComment: (comment)=>{
+	let outer = document.createElement('div')
 	outer.className += " bottomBorder"
-	var pg = entityTitleLink(comment.parent)
+	let pg = entityTitleLink(comment.parent)
 	pg.className += " bar rem1-5 linkBar"
-	outer.appendChild(pg)
+	outer.append(pg)
 	
-	var firstId = comment.id
-	var lastId = comment.id
-	var firstElem
-	var lastElem
+	let firstId = comment.id
+	let lastId = comment.id
+	let firstElem
+	let lastElem
 	
-	var b = button()
-	b[1].textContent = "Load Older"
-	outer.appendChild(b[0])
-	b[1].onclick = function() {
-		Req.getCommentsBefore(comment.parentId, firstId, 10, function(comments) {
-			if (!comments) return
-			comments.forEach(function(c) {
-				firstId = c.id
-				var d = messageBlock(c)
-				d[1].appendChild(messagePart(c))
-				outer.insertBefore(d[0], firstElem)
-				firstElem = d[0]
+	{
+		let b = button()
+		b[1].textContent = "Load Older"
+		outer.append(b[0])
+		b[1].onclick = function() {
+			Req.getCommentsBefore(comment.parentId, firstId, 10, (comments)=>{
+				if (!comments) return
+				comments.forEach((c)=>{
+					firstId = c.id
+					let d = messageBlock(c)
+					d[1].append(messagePart(c))
+					outer.insertBefore(d[0], firstElem)
+					firstElem = d[0]
+				})
 			})
-		})
+		}
 	}
 	
-	var d = messageBlock(comment)
-	d[1].appendChild(messagePart(comment))
-	outer.appendChild(d[0])
+	let d = messageBlock(comment)
+	d[1].append(messagePart(comment))
+	outer.append(d[0])
 	firstElem = lastElem = d[0]
 	
-	var b = button()
-	b[1].textContent = "Load Newer"
-	outer.appendChild(b[0])
-	b[1].onclick = function() {
-		Req.getCommentsAfter(comment.parentId, lastId, 10, function(comments) {
-			if (!comments) return
-			comments.forEach(function(c) {
-				lastId = c.id
-				var d = messageBlock(c)
-				d[1].appendChild(messagePart(c))
-				outer.insertBefore(d[0], b[0]) // yes
+	{
+		let b = button()
+		b[1].textContent = "Load Newer"
+		outer.appendChild(b[0])
+		b[1].onclick = ()=>{
+			Req.getCommentsAfter(comment.parentId, lastId, 10, (comments)=>{
+				if (!comments) return
+				comments.forEach((c)=>{
+					lastId = c.id
+					let d = messageBlock(c)
+					d[1].append(messagePart(c))
+					outer.insertBefore(d[0], b[0]) // yes
+				})
 			})
-		})
+		}
 	}
 	
 	return outer
 },
-messagePart: function(comment) {
-	var element = document.createElement('message-part')
+messagePart: (comment)=>{
+	let element = document.createElement('message-part')
 	element.className = "markup-root"
-	element.setAttribute('data-id', comment.id)
+	element.dataset.id = comment.id
 	element.setAttribute('tabindex', "0")
 	
-	var contents = Parse.parseLang(comment.content, comment.meta.m, false)
+	let contents = Parse.parseLang(comment.content, comment.meta.m, false)
 	if (comment.createDate.getTime() != comment.editDate.getTime())
 		element.className += " edited"
-	element.appendChild(contents)
+	element.append(contents)
 	return element
 },
-timeString: function(date) {
+timeString: (date)=>{
+	let options
 	if (new Date()-date > 1000*60*60*12) {
-		var options = {year:'numeric',month:'long',day:'numeric',hour:'2-digit', minute:'2-digit'}
+		options = {year:'numeric',month:'long',day:'numeric',hour:'2-digit', minute:'2-digit'}
 	} else {
 		options = {hour:'2-digit', minute:'2-digit'}
 	}
 	return date.toLocaleString([], options)
 },
 
-button: function() {
-	var container = document.createElement("div")
+button: ()=>{
+	let container = document.createElement("div")
 	container.className = "buttonContainer"
-	var button = document.createElement("button")
-	container.appendChild(button)
+	let button = document.createElement("button")
+	container.append(button)
 	return [container, button]
 }, // BAD ↕
-linkButton: function() {
-	var container = document.createElement("div")
+linkButton: ()=>{
+	let container = document.createElement("div")
 	container.className = "buttonContainer"
-	var a = document.createElement('a')
-	container.appendChild(a)
-	var button = document.createElement("button")
-	a.appendChild(button)
+	let a = document.createElement('a')
+	container.append(a)
+	let button = document.createElement("button")
+	a.append(button)
 	return [container, button]
 },
-pageInfo: function(page) {
-	var e = document.createElement('div')
+pageInfo: (page)=>{
+	let e = document.createElement('div')
 	e.className = "pageInfoPane rem2-3 bar"
 	//with(e){
-	e.appendChild(authorBox(page))
-	e.appendChild(voteBox(page))
+	e.append(authorBox(page))
+	e.append(voteBox(page))
 	/*var b = linkButton()
 	  b[1].textContent = "Edit Page"
 	  Nav.link("editpage/"+page.id, b[1].parentNode)
@@ -381,146 +385,145 @@ pageInfo: function(page) {
 	  e.appendChild(b[0])*/
 	return e
 },
-sidebarTabs: function(list, callback) {
-	var btns = []
-	var r = document.createDocumentFragment();
-	var x = {
+sidebarTabs: (list, callback)=>{
+	let btns = []
+	let r = document.createDocumentFragment();
+	let x = {
 		elem: r,
-		select: function(i) {
-			list.forEach(function(item, i2) {
+		select: (i)=>{
+			list.forEach((item, i2)=>{
 				btns[i2].setAttribute('aria-selected', i==i2)
 				item.elem.hidden = i!=i2
 			})
 		},
 	}
-	list.forEach(function(item, i) {
+	list.forEach((item, i)=>{
 		item.elem.setAttribute('role', "tabpanel")
 		item.elem.setAttribute('aria-labelledby', "sidebar-tab-"+i)
 		item.elem.hidden = true
 		
-		var btn = document.createElement('button')
+		let btn = document.createElement('button')
 		btn.setAttribute('role', "tab")
 		btn.setAttribute('aria-selected', "false")
 		btn.id = "sidebar-tab-"+i
 		btn.setAttribute('aria-controls', "sidebar-panel-"+i)
-		r.appendChild(btn)
-		btn.appendChild(item.label)
+		r.append(btn)
+		btn.append(item.label)
 		btns[i] = btn
-		btn.onclick = function() {
+		btn.onclick = ()=>{
 			x.select(i)
 		}
 	})
 	return x
 },
-setBgImage: function(element, url) {
+setBgImage: (element, url)=>{
 	element.style.backgroundImage = ""
 	if (url)
 		element.style.backgroundImage = "url(\""+url+"\")" //todo: escape chars in url!
-	
 },
-activityItem: function(item) {
-	var outer = entityLink(item.content)
+activityItem: (item)=>{
+	let outer = entityLink(item.content)
 	outer.className += " linkBar"
 	
-	var bar = document.createElement('div')
+	let bar = document.createElement('div')
 	bar.className += " ellipsis bar rem1-5"
-	bar.appendChild(iconTitle(item.content))
+	bar.append(iconTitle(item.content))
 	
-	var bar2 = document.createElement('div')
+	let bar2 = document.createElement('div')
 	bar2.className += " bar rem1-5"
-	outer.appendChild(bar)
-	outer.appendChild(bar2)
+	outer.append(bar)
+	outer.append(bar2)
 	
-	var userContainer = bar2.createChild('activity-users')
+	let userContainer = bar2.createChild('activity-users')
 	userContainer.className = "rightAlign"
 	
-	var time = timeAgo(item.lastDate)
+	let time = timeAgo(item.lastDate)
 	time.className += " textItem"
-	userContainer.appendChild(time)
-	userContainer.appendChild(document.createTextNode(" "))
+	userContainer.append(time)
+	userContainer.append(document.createTextNode(" "))
 	
-	item.users.forEach(function(u) {
+	item.users.forEach((u)=>{
 		if (u && u.user) {
-			var l = entityLink(u.user)
-			l.appendChild(icon(u.user))
-			userContainer.appendChild(l)
+			let l = entityLink(u.user)
+			l.append(icon(u.user))
+			userContainer.append(l)
 		}
 	})
 	return outer
 },
-navButtons: function(callback) {
-	var prev = button()
+navButtons(callback) {
+	let prev = button()
 	prev[0].className += " item"
-	var next = button()
+	let next = button()
 	next[0].className += " item"
-	var page = textItem()
+	let page = textItem()
 	prev[1].textContent = "<"
 	next[1].textContent = ">"
 	page.textContent = 1
-	var e = document.createDocumentFragment()
-	e.appendChild(prev[0])
-	e.appendChild(next[0])
-	e.appendChild(page)
-	var x = {
+	let e = document.createDocumentFragment()
+	e.append(prev[0])
+	e.append(next[0])
+	e.append(page)
+	let x = {
 		value: 1,
 		element: e,
-		onchange: function(){},
-		set: function(p) {
+		onchange: ()=>{},
+		set: (p)=>{
 			x.value = p
 			page.textContent = p
 		}
 	}
-	prev[1].onclick = function(){
-		change(-1)
-	}
-	next[1].onclick = function(){
-		change(1)
-	}
-	function change(d) {
+	let change = (d)=>{
 		if (x.value+d < 1)
 			return
 		x.value += d
 		x.onchange(x.value)
 	}
+	prev[1].onclick = ()=>{
+		change(-1)
+	}
+	next[1].onclick = ()=>{
+		change(1)
+	}
 	return x
 },
 
-authorBox: function(page) {
-	var element = document.createDocumentFragment()
+authorBox: (page)=>{
+	let element = document.createDocumentFragment()
 	if (!page)
 		return element
-	element.appendChild(pageEditedTime("Author:", page.createDate))
-	element.appendChild(document.createTextNode(" "))
-	element.appendChild(entityTitleLink(page.createUser, true))
+	element.append(pageEditedTime("Author:", page.createDate))
+	element.append(document.createTextNode(" "))
+	element.append(entityTitleLink(page.createUser, true))
 	if (page.editUserId != page.createUserId) {
-		element.appendChild(document.createTextNode(" "))
-		element.appendChild(pageEditedTime("Edited by:", page.editDate))
-		element.appendChild(document.createTextNode(" "))
-		element.appendChild(entityTitleLink(page.editUser, true))
+		element.append(document.createTextNode(" "))
+		element.append(pageEditedTime("Edited by:", page.editDate))
+		element.append(document.createTextNode(" "))
+		element.append(entityTitleLink(page.editUser, true))
 	} else if (page.createDate != page.editDate) { //edited by same user
-		element.appendChild(document.createTextNode(" "))
-		element.appendChild(pageEditedTime("Edited", page.editDate))
+		element.append(document.createTextNode(" "))
+		element.append(pageEditedTime("Edited", page.editDate))
 	}
 	return element
 },
 
-pageEditedTime: function(label, time) {
-	var b = document.createElement('span')
+pageEditedTime: (label, time)=>{
+	let b = document.createElement('span')
 	b.className = "item"
 	
-	var a = document.createElement('div')
+	let a = document.createElement('div')
 	a.className = "half half-label"
 	a.textContent = label
-	b.appendChild(a)
+	b.append(a)
 	
 	a = timeAgo(time)
 	a.className += " half"
-	b.appendChild(a)
+	b.append(a)
 	return b
 },
 
-timeAgo: function(time) {
-	var t = document.createElement('time')
+timeAgo: (time)=>{
+	let t = document.createElement('time')
 	t.className += " time-ago"
 	t.setAttribute('datetime', time.toISOString())
 	t.textContent = timeAgoString(time)
@@ -528,9 +531,9 @@ timeAgo: function(time) {
 	return t
 },
 
-timeAgoString: function(date) {
-	var seconds = Math.floor((Date.now() - date.getTime()) / 1000)
-	var interval = Math.floor(seconds / 31536000)
+timeAgoString: (date)=>{
+	let seconds = Math.floor((Date.now() - date.getTime()) / 1000)
+	let interval = Math.floor(seconds / 31536000)
 	if (interval >= 1) return interval + " years ago"
 	interval = Math.round(seconds / 2592000)
 	if (interval >= 1) return interval + " months ago"
@@ -546,171 +549,166 @@ timeAgoString: function(date) {
 	  return Math.round(seconds) + " seconds ago"*/
 },
 
-categoryInput: function() {
-	var elem = document.createElement('select')
-	var x = {
-		element: elem,
-		set: function(id) {
-			elem.value = id
-		},
-		get: function() {
-			return +elem.value
-		},
-		update: function() {
-			elem.replaceChildren()
-			var list = []
-			categoryList(Entity.categoryMap[0], list)
-			list.forEach(function(item) {
-				var x = document.createElement('option')
-				x.textContent = item[0]
-				x.value = item[1]
-				elem.appendChild(x)
-			})
-		}
-	}
-	function categoryList(node, ret, depth) {
+categoryInput: ()=>{
+	let elem = document.createElement('select')
+	let categoryList = (node, ret, depth)=>{
 		depth = depth || 0
 		ret.push([">".repeat(depth)+" "+node.name, node.id])
-		node.children && node.children.forEach(function(node) {
+		node.children && node.children.forEach((node)=>{
 			categoryList(node, ret, depth+1)
 		})
+	}
+	let x = {
+		element: elem,
+		set: (id)=>{ elem.value = id },
+		get: ()=>{ return +elem.value },
+		update: ()=>{
+			elem.replaceChildren()
+			let list = []
+			categoryList(Entity.categoryMap[0], list)
+			list.forEach((item)=>{
+				let x = document.createElement('option')
+				x.textContent = item[0]
+				x.value = item[1]
+				elem.append(x)
+			})
+		}
 	}
 	return x
 },
 
-permissionRow: function(user, perms) {
-	var id = user ? user.id : -1
-	var row = document.createElement('tr')
+permissionRow: (user, perms)=>{
+	let id = user ? user.id : -1
+	let row = document.createElement('tr')
+	let name
 	if (!id) {
-		var name = textItem("Default")
+		name = textItem("Default")
 	} else
-		var name = entityTitleLink(user, true)
+		name = entityTitleLink(user, true)
 	name.className += " bar rem1-5"
 	if (id) {
-		var b = button()
+		let b = button()
 		b[1].textContent = "remove"
-		b[1].onclick = function() {
-			row.remove()
-		}
-		row.createChild('td').appendChild(b[0])
+		b[1].onclick = ()=>{ row.remove() }
+		row.createChild('td').append(b[0])
 	} else
-		row.createChild('td')
-	row.createChild('th').appendChild(name)
-	;['r','c','u','d'].forEach(function(p) {
-		var inp = row.createChild('td').createChild('input')
+		row.create('td')
+	row.create('th').append(name)
+	;['r','c','u','d'].forEach((p)=>{
+		let inp = row.create('td').createChild('input')
 		inp.type = 'checkbox'
 		inp.checked = perms.indexOf(p)>=0
 		inp.value = p
 	})
-	row.setAttribute('data-id', id)
+	row.dataset.id = id
 	return row
 },
 
-permissionInput: function() {
-	var elem = document.createElement('div')
+permissionInput: ()=>{
+	let elem = document.createElement('div')
 	
-	var input = Draw.userSelector()
+	let input = Draw.userSelector()
 	
 	
-	var table = elem.createChild('table')
+	let table = elem.createChild('table')
 	table.className += " permission-table"
-	var header = table.createChild('thead').createChild('tr')
+	let header = table.createChild('thead').createChild('tr')
 	header.createChild('th')
 	header.createChild('th')
 	header.createChild('th').textContent = "View"
 	header.createChild('th').textContent = "Reply"
 	header.createChild('th').textContent = "Edit"
 	header.createChild('th').textContent = "Delete"
-	var body = table.createChild('tbody')
+	let body = table.createChild('tbody')
 	body.className += " permission-users"
 	
-	elem.appendChild(input.elem)
+	elem.append(input.elem)
 	
-	var x = {
+	let x = {
 		element: elem,
-		set: function(newPerms, users) {
+		set: (newPerms, users)=>{
 			body.replaceChildren()
-			var d = false
-			newPerms.forEach(function(p, id) {
+			let d = false
+			newPerms.forEach((p, id)=>{
 				id = +id
-				body.appendChild(permissionRow(users[id] || {Type:'user', id:id}, p))
+				body.append(permissionRow(users[id] || {Type:'user', id:id}, p))
 				if (id==0)
 					d=true
 				//ok we really need to fix the problem with null users
 				// one solution is to have a user map lookup function which returns a placeholder object if the user is not found, to store the 2 important (and known) properties, Type and id, just to avoid losing that information.
 			})
 			if (!d) {
-				body.appendChild(permissionRow(users[0] || {Type:'user', id:0}, ""))
+				body.append(permissionRow(users[0] || {Type:'user', id:0}, ""))
 			}
 		},
 		get: function() {
-			var ret = {}
-			body.childNodes.forEach(function(row) {
-				var perm = ""
-				row.querySelectorAll('input').forEach(function(check) {
+			let ret = {}
+			body.childNodes.forEach((row)=>{
+				let perm = ""
+				row.querySelectorAll('input').forEach((check)=>{
 					if (check.checked)
 						perm += check.value
 				})
-				ret[row.getAttribute('data-id')] = perm
+				ret[+row.dataset.id] = perm
 			})
 			return ret
 		}
 	}
 	
-	input.onchange = function(user) {
-		body.appendChild(permissionRow(user, "cr"))
+	input.onchange = (user)=>{
+		body.append(permissionRow(user, "cr"))
 	}
 	
 	return x
 },
 
-userSelector: function() {
-	var elem = document.createElement('user-select')
+userSelector: ()=>{
+	let elem = document.createElement('user-select')
 	elem.className = "bar rem1-5"
-	var input = document.createElement('input')
+	let input = document.createElement('input')
 	input.placeholder = "Search Username"
 	input.className = "item"
-	var dropdown = document.createElement('select')
+	let dropdown = document.createElement('select')
 	dropdown.className = "item"
-	var placeholder = document.createElement('option')
+	let placeholder = document.createElement('option')
 	placeholder.textContent = "select user..."
 	placeholder.disabled = true
 	placeholder.hidden = true
 	
-	var placeholder2 = document.createElement('option')
+	let placeholder2 = document.createElement('option')
 	placeholder2.textContent = "loading..."
 	placeholder2.disabled = true
 	placeholder2.hidden = true
 	
-	var submit = document.createElement('button')
+	let submit = document.createElement('button')
 	submit.textContent = "select"
 	submit.disabled = true
 	submit.className = "item"
 	
-	var results = null
+	let results = null
 	
-	var x = {
+	let x = {
 		elem: elem,
 		searchText: null,
 	}
-	input.oninput = function() {
+	input.oninput = ()=>{
 		reset()
 	}
-	View.bind_enter(input, function(){
+	View.bind_enter(input, ()=>{
 		dropdown.focus()
 	})
-	View.bind_enter(dropdown, function(){
+	View.bind_enter(dropdown, ()=>{
 		if (dropdown.value)
 			submit.click()
 	})
-	dropdown.onfocus = function() {
+	dropdown.onfocus = ()=>{
 		if (input.value == x.searchText)
 			return
 		x.searchText = input.value
 		dropdown.replaceChildren(placeholder2)
 		placeholder2.selected = true
 		results = true
-		Req.searchUsers(x.searchText, function(users) {
+		Req.searchUsers(x.searchText, (users)=>{
 			dropdown.replaceChildren()
 			if (!users) {
 				x.searchText = null //error
@@ -718,35 +716,26 @@ userSelector: function() {
 			}
 			results = users
 			submit.disabled = false
-			var found = false
-			users.forEach(function(user) {
-				var option = document.createElement('option')
+			let found = false
+			users.forEach((user)=>{
+				let option = document.createElement('option')
 				option.value = user.id
 				option.textContent = user.username
-				dropdown.appendChild(option)
+				dropdown.append(option)
 				found = true
 			})
 			if (!found) {
-				var option = document.createElement('option')
+				let option = document.createElement('option')
 				option.value = "0"
 				option.textContent = "(no results)"
 				option.disabled = true
-				dropdown.appendChild(option)
+				dropdown.append(option)
 				dropdown.value = "0"
 				input.focus()
 			}
 		})
 	}
-	submit.onclick = function() {
-		var uid = dropdown.value
-		if (uid) {
-			x.onchange(results[uid])
-			input.focus()
-			input.value=""
-			reset()
-		}
-	}
-	function reset() {
+	let reset = ()=>{
 		if (results) {
 			submit.disabled = true
 			dropdown.replaceChildren(placeholder)
@@ -755,16 +744,24 @@ userSelector: function() {
 			x.searchText = null
 		}
 	}
-	
-	elem.appendChild(input)
-	elem.appendChild(dropdown)
-	elem.appendChild(submit)
+	submit.onclick = ()=>{
+		let uid = dropdown.value
+		if (uid) {
+			x.onchange(results[uid])
+			input.focus()
+			input.value=""
+			reset()
+		}
+	}
+	elem.append(input)
+	elem.append(dropdown)
+	elem.append(submit)
 	results = true
 	reset()
 	return x
 },
 
-messageControls: function() {
+messageControls: ()=>{
 	var elem = document.createElement('message-controls')
 	var x = {
 		elem: elem
@@ -1000,12 +997,10 @@ navCategory: function(cat) {
 	return elem
 }
 
-<!--/* 
 }) //*/
 
 function hasPerm(perms, id, perm) {
 	return perms && perms[id] && perms[id].indexOf(perm) != -1
 }
 
-<!--/*
 }(window)) //*/
