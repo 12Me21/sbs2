@@ -170,7 +170,7 @@ function doListen(lastId, statuses, lastListeners, getMe, callback) {
 	
 	return Req.request("Read/listen"+Req.queryString(query), 'GET', function(e, resp) {
 		if (!e)
-			Req.handle(resp.chains)
+			Entity.process(resp.chains)
 		callback(e, resp)
 	})
 }
@@ -333,7 +333,7 @@ function open_websocket() {
 			try {
 				lastId = resp.lastId
 				
-				Req.handle(resp.chains)
+				Entity.process(resp.chains)
 				
 				if (first_websocket) { //very bad hack
 					print("first!!!")
