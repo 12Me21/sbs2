@@ -4,9 +4,7 @@ function registerActivity(e) {
 }
 // 3: on a ~1 minute interval timer, check if last activity time was > 3 minutes or whatever, and go inactive 
 
-;['wheel','keydown','mousedown','mousemove','touchstart'].forEach(function(event) {
-	document.addEventListener(event, registerActivity)
-})
+;['wheel','keydown','mousedown','mousemove','touchstart'].forEach(event => document.addEventListener(event, registerActivity))
 window.addEventListener('focus', registerActivity)
 
 let track_resize_2 = new ResizeTracker('width')
@@ -15,7 +13,7 @@ let track_resize_2 = new ResizeTracker('width')
 with (View) (function($) { "use strict" //*/
 
 var room
-var renderPage = function(page) {
+var renderPage = (page)=>{
 	setEntityTitle(page)
 	setEntityPath(page.parent)
 	flag('canEdit', /u/.test(page.myPerms))
@@ -33,12 +31,12 @@ addView('page', {
 	// the function passed to quick will act like a simple view
 	// with no `start` method (is called immediately)
 	// DO NOT CALL BOTH FUNCTIONS!
-	start: function(id, query, render, quick) {
+	start: (id, query, render, quick)=>{
 		var room = ChatRoom.rooms[id]
 		if (room) {
 			var z = room.pinned
 			room.pinned = true
-			quick(function() {
+			quick(()=>{
 				var page = room.page
 				//ChatRoom.setViewing([page.id])
 				room.show()
@@ -57,7 +55,7 @@ addView('page', {
 				"user.0createUserId.0editUserId.1createUserId.1editUserId.2createUserId.2editUserId",
 			], {
 				//content: "name,parentId,type,createUserId,editUserId,createDate,editDate,permissions,id"
-			}, function(e, resp) {
+			}, (e, resp)=>{
 				// todo: ok so we have 2 levels of error here
 				// either the request fails somehow (e is set)
 				// or, the page/whatever we're trying to access doesn't exist
@@ -74,7 +72,7 @@ addView('page', {
 	},
 	className: 'page',
 	splitView: true,
-	render: function(page, comments, pinned) {
+	render: (page, comments, pinned)=>{
 		Act.newPageComments(page, comments)
 		Act.redraw()
 		//ChatRoom.setViewing([page.id])
@@ -84,28 +82,28 @@ addView('page', {
 		
 		renderPage(page)
 	},
-	cleanUp: function(type) {
+	cleanUp: (type)=>{
 		//$messageList.replaceChildren()
 		if (room)
 			room.hide() //so it's fucking possible for cleanup to get called TWICE if there's an error, sometimes.
 		room = null
 		flag('canEdit', false)
 	},
-	init: function() {
+	init: ()=>{
 		function sendMessage() {
 			var data = readInput(editingComment, !!editingComment)
 			var room = ChatRoom.currentRoom
 			if (room && data.content) {
 				
 				if (editingComment) {
-					Req.editMessage(editingComment.id, editingComment.parentId, data.content, data.meta, function(e) {
+					Req.editMessage(editingComment.id, editingComment.parentId, data.content, data.meta, (e)=>{
 						if (e)
 							alert("Editing comment failed")
 					})
 					cancelEdit()
 				} else {
 					var old = data
-					Req.sendMessage(room.id, data.content, data.meta, function(e, resp) {
+					Req.sendMessage(room.id, data.content, data.meta, (e, resp)=>{
 						if (e) {
 							//error sending message
 							writeInput(old)
@@ -119,7 +117,7 @@ addView('page', {
 			} else if (editingComment) {
 				var resp = confirm("Are you sure you want to delete this message?\n"+editingComment.content)
 				if (resp) {
-					Req.deleteMessage(editingComment.id, function(e, resp) {
+					Req.deleteMessage(editingComment.id, (e, resp) => {
 						//
 					})
 					$chatTextarea.focus() //need more of this
@@ -128,17 +126,16 @@ addView('page', {
 			}
 		}
 		
-		$chatTextarea.onkeydown = function(e) {
+		$chatTextarea.onkeydown = (e)=>{
 			if (e.keyCode==38 && $chatTextarea.value=="") { // up arrow
 				if (lastSent)
-					editComment(lastSent);
+					editComment(lastSent)
 			}
 		}
-		$chatTextarea.onkeypress = function(e) {
+		$chatTextarea.onkeypress = (e)=>{
 			if (!e.shiftKey && e.keyCode == 13) { // enter
 				e.preventDefault()
 				sendMessage()
-				return
 			}
 		}
 		// TODO: make sure this is ready when the long poller starts!
@@ -146,34 +143,34 @@ addView('page', {
 		// the long poller could technically start before onload
 		ChatRoom.global = new ChatRoom(-1)
 		
-		$hideGlobalStatusButton.onclick = function() {
+		$hideGlobalStatusButton.onclick = (e)=>{
 			if ($hideGlobalStatusButton.disabled)
 				return
 			$hideGlobalStatusButton.disabled = true
-			ChatRoom.global.toggleHiding(function() {
+			ChatRoom.global.toggleHiding(()=>{
 				$hideGlobalStatusButton.disabled = false
 			})
 		}
 		
-		$chatCancelEdit.onclick = function() {
+		$chatCancelEdit.onclick = ()=>{
 			cancelEdit()
 		}
-		document.addEventListener('keydown', function(e) {
+		// todo: global escape handler?
+		document.addEventListener('keydown', (e)=>{
 			if (e.keyCode == 27) {
 				cancelEditMode()
 				cancelEdit()
 			}
 		})
-		document.addEventListener('click', function(e) {
+		document.addEventListener('click', (e)=>{
 			if (View.flags.chatEdit) {
 				View.flag('chatEdit', false)
 				var element = e.target
 				while (element && element instanceof HTMLElement) {
 					if (element.tagName == 'MESSAGE-PART') {
-						var id = element.getAttribute('data-id')
-						if (id) {
+						var id = element.dataset.id
+						if (id)
 							editComment(+id, element)
-						}
 						break
 					}
 					element = element.parentNode
@@ -181,9 +178,7 @@ addView('page', {
 			}
 		}, true)
 		
-		updateChatTextareaSize()
-		$chatTextarea.addEventListener('input', updateChatTextareaSize)
-		function updateChatTextareaSize() {
+		let updateChatTextareaSize = ()=>{
 			$chatTextarea.style.height = ''
 			if (ChatRoom.currentRoom) {
 				var oldBottom = ChatRoom.currentRoom.scroller.scrollBottom
@@ -195,12 +190,14 @@ addView('page', {
 				ChatRoom.currentRoom.scroller.scrollBottom = oldBottom
 			}
 		}
+		updateChatTextareaSize()
+		$chatTextarea.addEventListener('input', updateChatTextareaSize)
 		track_resize_2.add($chatTextarea, updateChatTextareaSize)
 	}
 })
 
 function readInput(old, edit) {
-	var data = {
+	let data = {
 		meta: old ? old.meta : {},
 		content: $chatTextarea.value,
 	}
@@ -208,7 +205,7 @@ function readInput(old, edit) {
 	if ($chatMarkupSelect.checked)
 		data.meta.m = Settings.values.chat_markup
 	else
-		data.meta.m = "plaintext"
+		data.meta.m = 'plaintext'
 	if (!edit) {
 		if (Req.me)
 			data.meta.a = Req.me.avatar
@@ -233,9 +230,8 @@ $.editComment = editComment //HACK
 function editComment(id) {
 	if (editingComment)
 		cancelEdit()
-	Req.getComment(id, function(comment) {
-		if (!comment)
-			return
+	Req.getComment(id, (comment)=>{
+		if (!comment) return
 		if (editingComment)
 			cancelEdit()
 		cancelEditMode()
