@@ -64,9 +64,9 @@ class Form {
 		let params = []
 		for (let field of this.fields) {
 			let value = p[field.name]
-			if (field.convert)
+			if (value != null && field.convert)
 				value = field.convert.encode(value)
-			if (value != undefined) {
+			if (value != null) {
 				let key = encodeUrlComponent(field.param)
 				if (value === true)
 					params.push(key)
@@ -86,7 +86,7 @@ class Form {
 			if (field.convert)
 				value = field.convert.decode(value)
 			//console.log("got from query", field.param, query[field.param], value)
-			if (value!==undefined)
+			if (value != null)
 				p[field.name] = value
 		}
 		return p
@@ -94,42 +94,40 @@ class Form {
 }
 
 // for converting between query parameters and DATA
-// remember query params can be strings or `true`, or undefined
-// `decode` MUST return the correct type for DATA, or undefined
+// remember query params can be strings or `true`, or null
+// `decode` MUST return the correct type for DATA, or null
 const CONVERT = {
 	flag: {
-		encode: x => x ? true : undefined,
-		decode: x => x !== undefined,
+		encode: x => x ? true : null,
+		decode: x => x != null,
 	},
 	number_list: {
-		encode: x => x ? x.join(",") : undefined,
-		decode: x => typeof x == 'string' ? x.split(",").map(x=>Number(x)) : undefined, // todo: filter if values aren't valid numbers
+		encode: x => x ? x.join(",") : null,
+		decode: x => typeof x == 'string' ? x.split(",").map(x=>Number(x)) : null, // todo: filter if values aren't valid numbers
 	},
 	number: {
-		encode: x => x !== undefined ? String(x) : undefined,
-		decode: x => typeof x == 'string' ? Number(x) : undefined,
+		encode: x => x != null ? String(x) : null,
+		decode: x => typeof x == 'string' ? Number(x) : null,
 	},
 	string: {
-		encode: x => x !== undefined ? x : undefined,
-		decode: x => typeof x == 'string' ? x : undefined,
+		encode: x => x != null ? x : null,
+		decode: x => typeof x == 'string' ? x : null,
 	},
 	date: {
-		encode: x => {
-			return x !== undefined ? x.toISOString() : undefined
-		},
-		decode: x => typeof x == 'string' ? new Date(x) : undefined, // todo: validate the date (how?)
+		encode: x => x != null ? x.toISOString() : null,
+		decode: x => typeof x == 'string' ? new Date(x) : null, // todo: validate the date (how?)
 	},
 	range: {
 		encode: x => {
-			if (x === undefined)
-				return undefined
+			if (x == null)
+				return null
 			if (typeof x == 'number')
 				return String(x)
 			let min = x[0]
-			if (min === undefined)
+			if (min == null)
 				min = "0"
 			let max = x[1]
-			if (max === undefined)
+			if (max == null)
 				max = ""
 			return min+"-"+max
 		},
@@ -140,9 +138,9 @@ const CONVERT = {
 					var min = match[1]
 					var dash = match[2]
 					var max = match[3]
-					if (min !== undefined)
+					if (min != null)
 						min = +min
-					if (max !== undefined)
+					if (max != null)
 						max = +max
 					if (!dash) {
 						return min
@@ -161,7 +159,7 @@ const INPUTS = (()=>{
 	}
 	
 	function label(x, text) {
-		if (text === undefined)
+		if (text == undefined)
 			return x
 		let e = elem('label')
 		e.append(x)
@@ -216,11 +214,11 @@ const INPUTS = (()=>{
 				super()
 				this.input = elem('input')
 				this.elem = label(this.input, p.label)
-				if (p.placeholder !== undefined)
+				if (p.placeholder != undefined)
 					this.input.placeholder = p.placeholder
 			}
 			get() {
-				return this.input.value || undefined
+				return this.input.value || null
 			}
 			set(v) {
 				this.input.value = v || ""
@@ -232,16 +230,16 @@ const INPUTS = (()=>{
 				super()
 				this.input = elem('input')
 				this.elem = label(this.input, p.label)
-				if (p.placeholder !== undefined)
+				if (p.placeholder != undefined)
 					this.input.placeholder = p.placeholder
 			}
 			get() {
 				if (this.input.value == "")
-					return undefined
+					return null
 				return CONVERT.range.decode(this.input.value)
 			}
 			set(v) {
-				this.input.value = v==undefined ? "" : CONVERT.range.encode(v)
+				this.input.value = v==null ? "" : CONVERT.range.encode(v)
 			}
 		},
 		number: class extends GenericInput {
@@ -251,15 +249,15 @@ const INPUTS = (()=>{
 				this.input = elem('input')
 				this.elem = label(this.input, p.label)
 				this.input.type = number
-				if (p.placeholder !== undefined)
+				if (p.placeholder != undefined)
 					this.input.placeholder = p.placeholder
 			}
 			get() {
 				let v = this.input.value
-				return v=="" ? undefined : Number(v) // and of course, this can also return NaN
+				return v=="" ? null : Number(v) // and of course, this can also return NaN
 			}
 			set(v) {
-				this.input.value = v==undefined ? "" : String(v)
+				this.input.value = v==null ? "" : String(v)
 			}
 		},
 		number_list: class extends GenericInput {
@@ -268,16 +266,16 @@ const INPUTS = (()=>{
 				super()
 				this.input = elem('input')
 				this.elem = label(this.input, p.label)
-				if (p.placeholder !== undefined)
+				if (p.placeholder != undefined)
 					this.input.placeholder = p.placeholder
 			}
 			get() {
 				if (this.input.value=="")
-					return undefined
+					return null
 				return this.input.value.split(/[,\s]/g).filter(x=>x.length!=0).map(x=>Number(x))
 			}
 			set(v) {
-				if (v !== undefined)
+				if (v != null)
 					this.input.value = v.join(',')
 				else
 					this.input.value = ""
@@ -288,7 +286,7 @@ const INPUTS = (()=>{
 			constructor(p) {
 				super()
 				this.elem = label(elem('input'), p.label)
-				if (p.placeholder !== undefined)
+				if (p.placeholder != undefined)
 					this.elem.placeholder = p.placeholder
 			}
 			get() {
@@ -369,7 +367,7 @@ const INPUTS = (()=>{
 				date.setSeconds(Math.floor(seconds))
 				date.setMilliseconds(seconds % 1 * 1000)
 				if (!isFinite(date))
-					return undefined
+					return null
 				return date
 			}
 			set(v) {

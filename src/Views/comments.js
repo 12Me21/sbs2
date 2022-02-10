@@ -87,9 +87,9 @@ function build_search(data) {
 			range = [number, number]
 		// either: 123-456
 		// or      123-
-		if (range[0] !== undefined)
+		if (range[0] !== null)
 			search.minId = range[0]
-		if (range[1] !== undefined)
+		if (range[1] !== null)
 			search.maxId = range[1]+1
 	}
 	if (data.start)
@@ -98,3 +98,9 @@ function build_search(data) {
 		search.createEnd = data.end.toISOString()
 	return search
 }
+
+
+// ha
+
+// env+square wave for trumpets ?
+// c# c# b f# c#
