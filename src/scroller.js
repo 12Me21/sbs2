@@ -26,8 +26,9 @@ class ResizeTracker {
 	}
 	check_element(item, rect) {
 		if (!item) return
-		if (!rect.width) //ignore changes for hidden elements
+		if (!rect.width) return //ignore changes for hidden elements
 		if (rect[this.measure] == item.size) return //need to check if height changed in case of an ignored hide/show cycle
+		//console.log("resize observed")
 		item.callback()
 		item.size = rect[this.measure]
 	}
