@@ -31,7 +31,7 @@ if (!Object.assign)
 //if (!HTMLElement.prototype.replaceChildren)
 HTMLElement.prototype.replaceChildren = function(...childs) {
 	this.textContent = ""
-	if (childs.length)
+	if (childs[0] != undefined)
 		this.append(...childs)
 }
 

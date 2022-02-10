@@ -9,6 +9,8 @@ function registerActivity(e) {
 })
 window.addEventListener('focus', registerActivity)
 
+let track_resize_2 = new ResizeTracker('width')
+
 <!--/* trick indenter
 with (View) (function($) { "use strict" //*/
 
@@ -193,7 +195,7 @@ addView('page', {
 				ChatRoom.currentRoom.scroller.scrollBottom = oldBottom
 			}
 		}
-		TrackResize2($chatTextarea, updateChatTextareaSize)
+		track_resize_2.add($chatTextarea, updateChatTextareaSize)
 	}
 })
 

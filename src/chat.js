@@ -246,12 +246,12 @@ class ChatRoom {
 	}
 	displayInitialMessages(comments, pinned) {
 		comments.forEach(comment => this.displayMessage(comment, false))
-		if (pinned && this.pinnedList) {
-			pinned.forEach((comment)=>{
+		if (pinned instanceof Array && this.pinnedList) {
+			this.pinnedList.append(...pinned.map((comment)=>{
 				let b = Draw.messageBlock(comment)
-				this.pinnedList.append(b[0])
 				b[1].append(Draw.messagePart(comment))
-			})
+				return b[0]
+			}))
 		}
 		// ugh why do we need this?
 		window.setTimeout(()=>{this.scroller.scrollInstant()}, 0)
