@@ -8,23 +8,23 @@ function arrayToggle(array, value) {
 	return false
 }
 
-Req = new class Req {
+const Req = {
 	//storageKey = "devauth"
-	storageKey = "auth"
+	storageKey: "auth",
 	
-	auth = null
-	onLogin = null
-	onLogout = null
-	onGuestLoad = null
+	auth: null,
+	onLogin: null,
+	onLogout: null,
+	onGuestLoad: null,
 	
-	server = "smilebasicsource.com/api"
+	server: "smilebasicsource.com/api",
 	
-	uid = null
+	uid: null,
 	
-	categoryTree = null
-	gotCategoryTree = false
+	categoryTree: null,
+	gotCategoryTree: false,
 	
-	me = null
+	me: null,
 	
 	rawRequest(url, method, callback, data, auth) {
 		let x = new XMLHttpRequest()
@@ -113,15 +113,15 @@ Req = new class Req {
 			x.send(data)
 		
 		return x
-	}
+	},
 	
 	sendResetEmail(email, callback) {
 		return this.request("User/passwordreset/sendemail", "POST", callback, {email: email})
-	}
+	},
 	
 	resetPassword(key, password, callback) {
 		return this.request("User/passwordreset", "POST", callback, {resetKey: key, password: password})
-	}
+	},
 	
 	queryString(obj) {
 		if (!obj)
@@ -143,7 +143,7 @@ Req = new class Req {
 		if (!params.length)
 			return ""
 		return "?"+params.join("&")
-	}
+	},
 	// idk having all brackets bold + dimgray was kinda nice...
 	request(url, method, callback, data) {
 		return this.rawRequest("https://"+this.server+"/"+url, method, (e, resp)=>{
@@ -152,14 +152,14 @@ Req = new class Req {
 			else
 				callback(e, resp)
 		}, data, this.auth)
-	}
+	},
 	// logs the user out and clears the cached token
 	logOut() {
 		Store.remove(this.storageKey)
 		Lp.lpStop()
 		this.auth = null
 		this.onLogout()
-	}
+	},
 	// call to set the current auth token
 	// should only be called once (triggers login event)
 	gotAuth(newAuth) {
@@ -174,7 +174,7 @@ Req = new class Req {
 		this.uid = newUid
 		this.onLogin()
 		return true
-	}
+	},
 	
 	authenticate(username, password, callback) {
 		return this.request("User/authenticate", 'POST', (e, resp)=>{
@@ -184,7 +184,7 @@ Req = new class Req {
 			}
 			callback(e, resp)
 		}, {username: username, password: password})
-	}
+	},
 	
 	// try to load cached auth token from localstorage
 	// triggers onLogin and returns true if successful
@@ -197,11 +197,11 @@ Req = new class Req {
 		if (!ok)
 			this.onGuestLoad()
 		return ok
-	}
+	},
 	
 	putFile(file, callback) {
 		return this.request("File/"+file.id, 'PUT', callback, file)
-	}
+	},
 	
 	register(username, password, email, callback) {
 		return this.request("User/register", 'POST', callback, {
@@ -209,17 +209,17 @@ Req = new class Req {
 			password: password,
 			email: email
 		})
-	}
+	},
 	
 	confirmRegister(key, callback) {
 		return this.request("User/register/confirm", 'POST', callback, {
 			confirmationKey: key
 		})
-	}
+	},
 	
 	sendEmail(email, callback) {
 		return this.request("User/register/sendemail", 'POST', callback, {email: email})
-	}
+	},
 	
 	read(requests, filters, callback, needCategories) {
 		let query = {}
@@ -245,7 +245,7 @@ Req = new class Req {
 			}
 			callback(e, resp)
 		})
-	}
+	},
 	
 	getMe(callback) {
 		return this.request("User/me", 'GET', (e, resp)=>{
@@ -256,7 +256,7 @@ Req = new class Req {
 			} else
 				callback(null)
 		})
-	}
+	},
 	
 	setBasic(data, callback) {
 		return this.request("User/basic", 'PUT', (e, resp)=>{
@@ -267,11 +267,11 @@ Req = new class Req {
 			} else
 				callback(null)
 		}, data)
-	}
+	},
 	
 	setSensitive(data, callback) {
 		return this,request("User/sensitive", 'POST', callback, data)
-	}
+	},
 	
 	// this should accept as many types as possible
 	uploadImage(thing, callback) {
@@ -290,7 +290,7 @@ Req = new class Req {
 		} else {
 			this.callback(null)
 		}
-	}
+	},
 	
 	uploadFile(file, callback) {
 		let form = new FormData()
@@ -311,7 +311,7 @@ Req = new class Req {
 				callback(l[0])
 			}
 		}, form)
-	}
+	},
 	
 	toggleHiding(id, callback) {
 		return this.getMe((me)=>{
@@ -328,11 +328,11 @@ Req = new class Req {
 			} else
 				callback(null)
 		})
-	}
+	},
 	
 	getCategories(callback) {
 		return this.read([], {}, callback, true)
-	}
+	},
 	
 	searchUsers(text, callback) {
 		let like = text.replace(/%/g,"_") //the best we can do...
@@ -345,7 +345,7 @@ Req = new class Req {
 			else
 				callback(null)
 		})
-	}
+	},
 	
 	search1(text, callback) {
 		let like = text.replace(/%/g,"_") //the best we can do...
@@ -365,7 +365,7 @@ Req = new class Req {
 			else
 				callback(null)
 		})
-	}
+	},
 	
 	getRecentActivity(callback) {
 		let day = 1000*60*60*24
@@ -382,18 +382,18 @@ Req = new class Req {
 			content: "name,id,permissions,type",
 			Mall: "parentId,editUserId,editDate"
 		}, callback)
-	}
+	},
 	
 	setVote(id, state, callback) {
 		return this.request("Vote/"+id+"/"+(state||"delete"), 'POST', callback)
-	}
+	},
 	
 	editPage(page, callback) {
 		if (page.id)
 			this.request("Content/"+page.id, 'PUT', callback, page)
 		else
 			this.request("Content", 'POST', callback, page)
-	}
+	},
 	
 	getComment(id, callback) {
 		return this.read([
@@ -404,7 +404,7 @@ Req = new class Req {
 			else
 				callback(null)
 		})
-	}
+	},
 	
 	getCommentsBefore(id, firstId, count, callback) {
 		let fi = {reverse: true, limit: count, parentIds: [id]}
@@ -419,7 +419,7 @@ Req = new class Req {
 			else
 				callback(null)
 		})
-	}
+	},
 	
 	getCommentsAfter(id, lastId, count, callback) {
 		let fi = {limit: count, parentIds: [id]}
@@ -434,33 +434,25 @@ Req = new class Req {
 			else
 				callback(null)
 		})
-	}
+	},
 	
 	sendMessage(room, message, meta, callback) {
 		return this.request("Comment", 'POST', callback, {parentId: room, content: JSON.stringify(meta)+"\n"+message})
-	}
+	},
 	
 	editMessage(id, room, message, meta, callback) {
 		return this.request("Comment/"+id, 'PUT', callback, {parentId: room, content: JSON.stringify(meta)+"\n"+message})
-	}
+	},
 	
 	deleteMessage(id, callback) {
 		return this.request("Comment/"+id+"/delete", 'POST', callback)
-	}
+	},
 	
 	fileURL(id, query) {
 		if (query)
 			return "https://"+this.server+"/File/raw/"+id+"?"+query
 		return "https://"+this.server+"/File/raw/"+id
-	}
-	
-	
-
-
-
-	
-
-	
+	},
 }
 
 if (0)
