@@ -27,13 +27,12 @@ if (!Object.assign)
 		return dest
 	}
 
-// note: only supports 1 child element, which must be a node (not a string)
 // update: we need to replace this ALWAYS because ios safari implemented it wrong (fails when 0 arguments are passed)
 //if (!HTMLElement.prototype.replaceChildren)
-HTMLElement.prototype.replaceChildren = function(child) {
+HTMLElement.prototype.replaceChildren = function(...childs) {
 	this.textContent = ""
-	if (child)
-		this.appendChild(child)
+	if (childs.length)
+		this.append(...childs)
 }
 
 Node.prototype.prependChild = function(child) {
