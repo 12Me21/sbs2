@@ -389,6 +389,8 @@ const Req = {
 	},
 	
 	editPage(page, callback) {
+		console.log("edited page:", page)
+		//return
 		if (page.id)
 			this.request("Content/"+page.id, 'PUT', callback, page)
 		else

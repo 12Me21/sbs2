@@ -23,8 +23,8 @@ addView('editpage', {
 		}
 		categoryInput = Draw.categoryInput()
 		permissionInput = Draw.permissionInput()
-		$editPageCategory.replaceChildren(categoryInput.element)
-		$editPagePermissions.replaceChildren(permissionInput.element)
+		$editPageCategory.replaceChildren(categoryInput.elem)
+		$editPagePermissions.replaceChildren(permissionInput.elem)
 		$toggleEditorMode.onclick = function() {
 			var e = View.flags.editorPreview
 			View.flag('editorPreview', !e)
@@ -72,7 +72,6 @@ addView('editpage', {
 	
 	className: 'editpage',
 	render: function(page) {
-		categoryInput.update()
 		if (page.id) {
 			setTitle("Editing Page")
 			fillFields(page)
@@ -125,11 +124,9 @@ function resetFields(page) {
 	} else
 		$editPageTypeOption.hidden = true
 	$editPageType.value = page.type || ""
-	if (page.parent)
-		categoryInput.set(page.parent.id)
-	else
-		categoryInput.set(-1)
-	permissionInput.set({'0':"rc"},{})
+	let id = page.parent ? page.parent.id : 0
+	categoryInput.set(id, Entity.categoryMap[0])
+	permissionInput.set({},{})
 }
 
 function readFields(page) {
@@ -177,7 +174,7 @@ function fillFields(page) {
 	} else
 		$editPageTypeOption.hidden = true
 	$editPageType.value = page.type
-	categoryInput.set(page.parentId)
+	categoryInput.set(page.parentId, Entity.categoryMap[0])
 	permissionInput.set(page.permissions, page.users)
 }
 

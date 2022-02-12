@@ -140,11 +140,11 @@ const CONVERT = {
 		},
 		decode: x => {
 			if (typeof x == 'string') {
-				var match = x.match(/^(\d+)(?:(-)(\d*))?$/)
+				let match = x.match(/^(\d+)(?:(-)(\d*))?$/)
 				if (match) {
-					var min = match[1]
-					var dash = match[2]
-					var max = match[3]
+					let min = match[1]
+					let dash = match[2]
+					let max = match[3]
 					if (min != null)
 						min = +min
 					if (max != null)
@@ -157,7 +157,7 @@ const CONVERT = {
 				}
 			}
 		}
-	}
+	},
 }
 
 const INPUTS = (()=>{
@@ -182,7 +182,6 @@ const INPUTS = (()=>{
 	
 	return {
 		select: class extends GenericInput {
-			static type = 'Select'
 			constructor(p) {
 				super()
 				this.elem = label(elem('select'), p.label)
@@ -201,7 +200,6 @@ const INPUTS = (()=>{
 			}
 		},
 		checkbox: class extends GenericInput {
-			static type = 'Checkbox'
 			constructor(p) {
 				super()
 				this.input = elem('input')
@@ -216,7 +214,6 @@ const INPUTS = (()=>{
 			}
 		},
 		text: class extends GenericInput {
-			static type = 'Text'
 			constructor(p) {
 				super()
 				this.input = elem('input')
@@ -232,7 +229,6 @@ const INPUTS = (()=>{
 			}
 		},
 		range: class extends GenericInput {
-			static type = 'Range'
 			constructor(p) {
 				super()
 				this.input = elem('input')
@@ -250,7 +246,6 @@ const INPUTS = (()=>{
 			}
 		},
 		number: class extends GenericInput {
-			static type = 'Number'
 			constructor(p) {
 				super()
 				this.input = elem('input')
@@ -268,7 +263,6 @@ const INPUTS = (()=>{
 			}
 		},
 		number_list: class extends GenericInput {
-			static type = 'NumberList'
 			constructor(p) {
 				super()
 				this.input = elem('input')
@@ -289,7 +283,6 @@ const INPUTS = (()=>{
 			}
 		},
 		word_list: class extends GenericInput {
-			static type = 'WordList'
 			constructor(p) {
 				super()
 				this.elem = label(elem('input'), p.label)
@@ -304,13 +297,13 @@ const INPUTS = (()=>{
 			}
 		},
 		permissions: class extends GenericInput {
-			static type = 'Permissions'
 			constructor() {
+				super()
 				this.elem = elem('div')
 				this.input = Draw.userSelector()
-				let t = elem('table')
-				t.className += " permission-table"
-				var header = table.createChild('thead').createChild('tr')
+				let table = elem('table')
+				table.className += " permission-table"
+				let header = table.createChild('thead').createChild('tr')
 				header.createChild('th')
 				header.createChild('th')
 				header.createChild('th').textContent = "View"
@@ -320,29 +313,33 @@ const INPUTS = (()=>{
 				this.body = table.createChild('tbody')
 				this.body.className += " permission-users"
 				
+				this.elem.append(table)
 				this.elem.append(this.input.elem)
+				
+				this.input.onchange = (user)=>{
+					this._add_row(user, "rc")
+				}
+			}
+			_add_row(user, perm) {
+				//ok we really need to fix the problem with null users
+				// one solution is to have a user map lookup function which returns a placeholder object if the user is not found, to store the 2 important (and known) properties, Type and id, just to avoid losing that information.
+				this.body.append(Draw.permissionRow(user, perm))
 			}
 			set(perms, users) {
 				this.body.replaceChildren()
 				let d = false
-				let add_row = (uid, perm) => {
-					let user = users[uid] || {Type:'user', id:uid}
-					//ok we really need to fix the problem with null users
-					// one solution is to have a user map lookup function which returns a placeholder object if the user is not found, to store the 2 important (and known) properties, Type and id, just to avoid losing that information.
-					this.body.append(Draw.permissionRow(user, perm))
-				}
 				perms.forEach((perm, uid) => {
 					uid = +uid
-					add_row(uid, perm)
+					this._add_row(users[uid] || {Type:'user', id:uid}, perm)
 					if (uid==0)
 						d = true
 				})
 				if (!d)
-					add_row(0, '')
+					this._add_row({Type:'user', id:0}, "rc")
 			}
 			get() {
 				let ret = {}
-				body.childNodes.forEach(row => {
+				this.body.childNodes.forEach(row => {
 					let perm = ''
 					row.querySelectorAll('input').forEach(check => {
 						if (check.checked)
@@ -385,6 +382,51 @@ const INPUTS = (()=>{
 					this.input.value = ""
 					this.seconds.value = ""
 				}
+			}
+		},
+		category: class extends GenericInput {
+			constructor(p) {
+				super()
+				this.elem = elem('select')
+				//this.update()
+			}
+			// hack idk
+			set(value, map) {
+				let option = (value, text)=>{
+					let x = elem('option')
+					x.textContent = text
+					x.value = value
+					return x
+				}
+				
+				this.elem.replaceChildren(option("", "-- Select Category --"))
+				if (!map) return // not ready yet :(
+				
+				// recursive function
+				// ⚠ if there are cycles in the data, this will freeze
+				let build_list = (node, ret, depth)=>{
+					ret.push({id: node.id, text: ">".repeat(depth)+" "+node.name})
+					node.children && node.children.forEach((node)=>{
+						build_list(node, ret, depth+1)
+					})
+				}
+				
+				let list = []
+				if (map)
+					build_list(map, list, 0)
+				if (value!=null) {
+					let selected = list.find(item=>item.id==value)
+					if (!selected) {
+						this.elem.append(option(value, "Unknown category: "+value))
+					}
+				}
+				this.elem.append(...list.map(item=>option(item.id, item.text)))
+				this.elem.value = value==null ? "" : value
+			}
+			get() {
+				if (this.elem.value=="")
+					return null
+				return +this.elem.value
 			}
 		}
 	}

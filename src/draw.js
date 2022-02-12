@@ -529,30 +529,8 @@ Object.assign(Draw, { //*/
 	},
 	
 	categoryInput() {
-		let elem = E`select`
-		let categoryList = (node, ret, depth)=>{
-			ret.push([">".repeat(depth)+" "+node.name, node.id])
-			node.children && node.children.forEach((node)=>{
-				categoryList(node, ret, depth+1)
-			})
-		}
-		let x = {
-			element: elem,
-			set: (id)=>{ elem.value = id },
-			get: ()=>{ return +elem.value },
-			update: ()=>{
-				elem.replaceChildren()
-				let list = []
-				categoryList(Entity.categoryMap[0], list, 0)
-				list.forEach((item)=>{
-					let x = E`option`
-					x.textContent = item[0]
-					x.value = item[1]
-					elem.append(x)
-				})
-			}
-		}
-		return x
+		let input = new INPUTS.category({})
+		return input
 	},
 	
 	permissionRow(user, perms) {
@@ -583,61 +561,8 @@ Object.assign(Draw, { //*/
 	},
 	
 	permissionInput() {
-		let elem = E`div`
-		
-		let input = Draw.userSelector()
-		
-		
-		let table = elem.child`table`
-		table.className += " permission-table"
-		let header = table.child`thead`.child`tr`
-		header.child`th`
-		header.child`th`
-		header.child`th`.textContent = "View"
-		header.child`th`.textContent = "Reply"
-		header.child`th`.textContent = "Edit"
-		header.child`th`.textContent = "Delete"
-		let body = table.child`tbody`
-		body.className += " permission-users"
-		
-		elem.append(input.elem)
-		
-		let x = {
-			element: elem,
-			set(newPerms, users) {
-				body.replaceChildren()
-				let d = false
-				newPerms.forEach((p, id)=>{
-					id = +id
-					body.append(permissionRow(users[id] || {Type:'user', id:id}, p))
-					if (id==0)
-						d=true
-					//ok we really need to fix the problem with null users
-					// one solution is to have a user map lookup function which returns a placeholder object if the user is not found, to store the 2 important (and known) properties, Type and id, just to avoid losing that information.
-				})
-				if (!d) {
-					body.append(permissionRow(users[0] || {Type:'user', id:0}, ""))
-				}
-			},
-			get() {
-				let ret = {}
-				body.childNodes.forEach((row)=>{
-					let perm = ""
-					row.querySelectorAll('input').forEach((check)=>{
-						if (check.checked)
-							perm += check.value
-					})
-					ret[+row.dataset.id] = perm
-				})
-				return ret
-			}
-		}
-		
-		input.onchange = (user)=>{
-			body.append(permissionRow(user, "cr"))
-		}
-		
-		return x
+		let input = new INPUTS.permissions({})
+		return input
 	},
 	
 	userSelector() {
