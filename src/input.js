@@ -45,6 +45,8 @@ function url_escape(s) {
 	return s.replace(/[^-\w\$\.+!*',;/\:@#%~]/g, escape).replace(/[,\.?!:]$/, escape)
 }
 
+// maybe instead of specifying the layout in Form, we just provide a list of locations of where to insert the fields. this is necessary for, ex: the page title input which is outside the main element
+
 class Form {
 	constructor(p) {
 		this.fields = p.fields
@@ -182,21 +184,33 @@ const INPUTS = (()=>{
 	
 	return {
 		select: class extends GenericInput {
+			// todo: option to reject setting invalid values?
+			// probably ALL of these inputs should have settings for
+			// whether to allow null and allow other invalid values
 			constructor(p) {
 				super()
-				this.elem = label(elem('select'), p.label)
-				this.elem.append(...p.options.map(opt => {
+				this.select = elem('select')
+				this.elem = label(this.select, p.label)
+				this.select.append(...p.options.map(opt => {
 					let o = elem('option')
-					o.value = opt.value
-					o.textContent = opt.label
+					o.value = opt[0]
+					o.append(opt[1])
 					return o
 				}))
+				this.extra = elem('option')
+				this.options = p.options.map(opt=>opt[0])
 			}
 			get() {
-				return this.elem.value
+				return this.select.value
 			}
 			set(v) {
-				this.elem.value = v
+				if (!this.options.includes(v)) {
+					this.extra.value = v==null ? "" : v
+					this.extra.textContent = "Unknown value: "+v
+					this.select.prepend(this.extra)
+				} else
+					this.extra.remove()
+				this.select.value = v
 			}
 		},
 		checkbox: class extends GenericInput {
@@ -250,7 +264,7 @@ const INPUTS = (()=>{
 				super()
 				this.input = elem('input')
 				this.elem = label(this.input, p.label)
-				this.input.type = number
+				this.input.type = 'number'
 				if (p.placeholder != undefined)
 					this.input.placeholder = p.placeholder
 			}
@@ -293,7 +307,7 @@ const INPUTS = (()=>{
 				return this.elem.value.split(/[\s]/g).filter(x=>x.length!=0)
 			}
 			set(v) {
-				this.elem.value = v.join(' ')
+				this.elem.value = v==null ? "" : v.join(' ')
 			}
 		},
 		permissions: class extends GenericInput {
@@ -325,7 +339,7 @@ const INPUTS = (()=>{
 				// one solution is to have a user map lookup function which returns a placeholder object if the user is not found, to store the 2 important (and known) properties, Type and id, just to avoid losing that information.
 				this.body.append(Draw.permissionRow(user, perm))
 			}
-			set(perms, users) {
+			set([perms, users]) {
 				this.body.replaceChildren()
 				let d = false
 				perms.forEach((perm, uid) => {
@@ -390,8 +404,10 @@ const INPUTS = (()=>{
 				this.elem = elem('select')
 				//this.update()
 			}
-			// hack idk
-			set(value, map) {
+			
+			// TODO: this is a hack. we need a way for fields to have extra data associated with them,
+			// such as the permission editor's user map and this category tree
+			set([value, tree]) {
 				let option = (value, text)=>{
 					let x = elem('option')
 					x.textContent = text
@@ -400,7 +416,7 @@ const INPUTS = (()=>{
 				}
 				
 				this.elem.replaceChildren(option("", "-- Select Category --"))
-				if (!map) return // not ready yet :(
+				if (!tree) return // not ready yet :(
 				
 				// recursive function
 				// ⚠ if there are cycles in the data, this will freeze
@@ -412,8 +428,8 @@ const INPUTS = (()=>{
 				}
 				
 				let list = []
-				if (map)
-					build_list(map, list, 0)
+				if (tree)
+					build_list(tree, list, 0)
 				if (value!=null) {
 					let selected = list.find(item=>item.id==value)
 					if (!selected) {

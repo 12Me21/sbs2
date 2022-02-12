@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html lang=en-2sbs>
 <head>
 <meta charset="utf-8">
 <title>SmileBASIC Source 2</title>
@@ -115,26 +116,7 @@
 			<button id=$toggleEditorMode>Toggle Preview</button>
 		</v-b>
 		<v-b data-view-editpage class="editorNotPreview">
-			<div class="registerBox">
-				<label>Keywords:<input placeholder="(space separated, optional)" id=$keywords></label><br>
-				<label>Type:<select id=$editPageType>
-					<option id=$editPageTypeOption disabled hidden></option>
-					<option value=resource>Resource</option>
-					<option value=chat>Chat</option>
-					<option value=program>Program</option>
-					<option value=tutorial>Tutorial</option>
-					<option value=documentation>Documentation</option>
-				</select></label>
-				<br>
-				<label>Thumbnail:<input id=$editPageThumbnail type=number></label><br>
-				<label>Photos:<input id=$editPagePhotos></label><br>
-				<label>Category:<span id=$editPageCategory></span></label><br>
-				<label>Pinned comments:<input id=$editPagePinned></label><br>
-			</div>
-			<div class="registerBox">
-				<h2>Permissions:</h2>
-				<div id=$editPagePermissions></div>
-			</div>
+			<div class="registerBox input-form" id=$editPageForm></div>
 			<label>Markup language:<select id=$markupSelect>
 				<option value="plaintext">plain text</option>
 				<option value="12y">12-y documentation markup format</option>
