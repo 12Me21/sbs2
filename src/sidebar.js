@@ -191,6 +191,7 @@ fileCancel: function() {
 cleanUp: function() {
 	selectedFile = null
 	$fileView.src = ""
+	$fileUploadSize.value = ""
 	$fileUploadName.value = ""
 	// don't reset bucket name
 },
@@ -200,6 +201,7 @@ fileUploaded: function(file) {
 	View.flag('sidebarFile', true)
 	$fileView.src = ""
 	$fileView.src = URL.createObjectURL(file)
+	$fileUploadSize.value = (file.size/1000)+" kB"
 	$fileUploadName.value = file.name || ""
 	$fileUploadBucket.value = file.bucket || ""
 	selectedFile = file

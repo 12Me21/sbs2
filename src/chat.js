@@ -135,7 +135,8 @@ class ChatRoom {
 	}
 	
 	loadOlder(num, callback) {
-		for (let firstId in this.messageElements)
+		let firstId
+		for (firstId in this.messageElements)
 			break
 		Req.getCommentsBefore(this.id, +firstId, num, (comments)=>{
 			comments && comments.forEach(c => this.displayOldMessage(c))

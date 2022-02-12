@@ -1,3 +1,10 @@
+// TODO:
+// lots of things
+// improve styling (esp element widths)
+// add onchange notifiers
+// allow inserting other things into rendered forms (separators, section labels, etc.)
+// output/readonly fields?
+
 /*class Template {
 	constructor(str) {
 		this.template = document.createElement('template')
