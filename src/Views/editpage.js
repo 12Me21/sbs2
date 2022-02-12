@@ -151,21 +151,13 @@ function fillFields(page) {
 	$editorTextarea.value = page.content
 	updatePreview()
 	
-	// I'm not sure how this should work exactly
-	// maybe just split on non-digits really
-	function parse_list(x) {
-		if (x==null || x=="")
-			return null
-		return x.split(/[, ]+/).filter(x=>/^\d+$/.test(x)).map(x=>+x)
-	}
-	
 	form.set({
 		keywords: page.keywords,
 		type: page.type,
 		thumbnail: page.values.thumbnail,
-		photos: (page.values.photos || "").split(/[, ]/), // I THINK this is how the server sees lists here
+		photos: Entity.parse_numbers(page.values.photos)
 		category: [page.parentId, Entity.categoryMap[0]],
-		pinned: (page.values.pinned || "").split(/[, ]/),
+		pinned: Entity.parse_numbers(page.values.pinned)
 		permissions: [page.permissions, page.users]
 	})
 }

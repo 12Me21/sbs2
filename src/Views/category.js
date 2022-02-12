@@ -2,24 +2,24 @@
 with (View) (function($) { "use strict" //*/
 
 addView('category', {
-	init: function() {
-		var nav = $categoryNav
+	init() {
+		let nav = $categoryNav
 		navButtons = Draw.navButtons()
-		nav.appendChild(navButtons.element)
-		navButtons.onchange = function(pageNum) {
+		nav.append(navButtons.element)
+		navButtons.onchange = (n)=>{
 			if (currentCategory == null)
 				return
-			currentQuery.page = pageNum
+			currentQuery.page = n
 			Nav.go("category/"+currentCategory+Req.queryString(currentQuery))
 		}
 	},
 	
-	start: function(id, query, render) {
+	start(id, query, render) {
 		currentQuery = query
-		var page = +query.page || 1
+		let page = +query.page || 1
 		navButtons.set(page)
 		
-		var search = {
+		let search = {
 			parentIds: [id],
 			limit: 30,
 			skip: 30*(page-1),
@@ -30,18 +30,15 @@ addView('category', {
 			{'category~Cmain': {ids: [id]}},
 			{content: search},
 			{category: {parentIds: [id]}},
-			"content.0values_pinned~Ppinned",
-			"user.1createUserId.3createUserId"
+			'content.0values_pinned~Ppinned',
+			'user.1createUserId.3createUserId'
 		], {
-			content: "id,name,parentId,createUserId,editDate,permissions",
+			content: 'id,name,parentId,createUserId,editDate,permissions',
 			/*category: "id,name,description,parentId,values",*/
-			user: "id,username,avatar"
-		}, function(e, resp) {
+			user: 'id,username,avatar'
+		}, (e, resp)=>{
 			if (!e) {
-				if (id == 0)
-					var category = Entity.categoryMap[0]
-				else
-					category = resp.Cmain[0]
+				let category = id==0 ? Entity.categoryMap[0] : resp.Cmain[0]
 				render(category, resp.category, resp.content, resp.Ppinned, page)
 			} else
 				render(null)
@@ -49,7 +46,7 @@ addView('category', {
 	},
 	
 	className: 'categoryMode',
-	render: function(category, cats, pages, pinned, pageNum) {
+	render(category, cats, pages, pinned, pageNum) {
 		currentCategory = category.id
 		navButtons.set(pageNum)
 		setEntityTitle(category)
@@ -58,27 +55,27 @@ addView('category', {
 		$categoryCategories.replaceChildren()
 		Nav.link("editpage?cid="+category.id, $createPage.parentNode)
 		Nav.link("editcategory/"+category.id, $editCategory.parentNode)
-		category.children.forEach(function(child) {
-			var bar = Draw.entityTitleLink(child)
+		category.children.forEach((child)=>{
+			let bar = Draw.entityTitleLink(child)
 			bar.className += " linkBar bar rem2-3"
-			$categoryCategories.appendChild(bar)
+			$categoryCategories.append(bar)
 		})
-		pinned.forEach(function(page) {
-			var bar = Draw.pageBar(page)
+		pinned.forEach((page)=>{
+			let bar = Draw.pageBar(page)
 			bar.className += " linkBar bar rem2-3"
-			$categoryCategories.appendChild(bar)
+			$categoryCategories.append(bar)
 		})
-		pages.forEach(function(page) {
-			var bar = Draw.pageBar(page)
+		pages.forEach((page)=>{
+			let bar = Draw.pageBar(page)
 			bar.className += " linkBar bar rem2-3"
-			$categoryPages.appendChild(bar)
+			$categoryPages.append(bar)
 		})
 		
 		//$.Nav.link("editpage?cid="+category.id, $createPage)
 		if (/u/.test(category.myPerms))
 			flag('canEdit', true)
 	},
-	cleanUp: function() {
+	cleanUp() {
 		$categoryCategories.replaceChildren()
 		$categoryPages.replaceChildren()
 		$categoryDescription.replaceChildren()

@@ -24,6 +24,15 @@ filterNickname: function(name) {
 	return name.substr(0,50).replace(/\n/g, "  ")
 },
 
+// should this return null?
+// I'm not sure how this should work exactly
+// maybe just split on non-digits really
+parse_numbers: function(x) {
+	if (x==null || x=="")
+		return null
+	return x.split(/[, ]+/).filter(x=>/^\d+$/.test(x)).map(x=>+x)
+},
+
 process: function(resp) {
 	// build user map first
 	var users = {}

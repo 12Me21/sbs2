@@ -34,6 +34,18 @@ HTMLElement.prototype.replaceChildren = function(...childs) {
 	if (childs[0] != undefined)
 		this.append(...childs)
 }
+Object.defineProperty(Node.prototype, 'childs', {
+	set(x) {
+		this.textContent = ""
+		if (x instanceof Node)
+			this.append(x)
+		else if (x instanceof Array)
+			this.append(...x)
+		else if (x!=null)
+			throw "invalid node childs"
+	}
+})
+
 
 Node.prototype.prependChild = function(child) {
 	this.insertBefore(child, this.firstChild)
