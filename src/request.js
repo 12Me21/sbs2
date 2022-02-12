@@ -26,6 +26,8 @@ const Req = {
 	
 	me: null,
 	
+	locked: true,
+	
 	rawRequest(url, method, callback, data, auth) {
 		let x = new XMLHttpRequest()
 		x.open(method, url)
@@ -389,8 +391,8 @@ const Req = {
 	},
 	
 	editPage(page, callback) {
-		console.log("edited page:", page)
-		//return
+		if (locked)
+			callback(null)
 		if (page.id)
 			this.request("Content/"+page.id, 'PUT', callback, page)
 		else

@@ -39,10 +39,10 @@
 
 // DATA must contain the correct type
 
-function encodeUrlComponent(s) {
+// nicer replacement for encodeURIComponent
+function url_escape(s) {
 	let escape = c => "%"+(c.charCodeAt(0)+0x100).toString(16).substr(1)
 	return s.replace(/[^-\w\$\.+!*',;/\:@#%~]/g, escape).replace(/[,\.?!:]$/, escape)
-	
 }
 
 class Form {
@@ -74,11 +74,11 @@ class Form {
 			if (value != null && field.convert)
 				value = field.convert.encode(value)
 			if (value != null) {
-				let key = encodeUrlComponent(field.param)
+				let key = url_escape(field.param)
 				if (value === true)
 					params.push(key)
 				else if (value !== false)
-					params.push(key+"="+encodeUrlComponent(value))
+					params.push(key+"="+url_escape(value))
 			}
 		}
 		if (params.length == 0)
