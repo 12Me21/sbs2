@@ -69,8 +69,7 @@ View.addView('comments', {
 })
 
 function build_search(data) {
-	var search = {limit: 200}
-	console.log("search data", data)
+	let search = {limit: 200}
 	if (!data.search && !(data.users && data.users.length) && !data.range && !data.start && !data.end)
 		return null
 	if (data.reverse)

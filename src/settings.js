@@ -11,7 +11,6 @@ fields: {
 		type: 'select',
 		options: ['12y','bbcode','html'],
 		update: function(value) {
-			console.log('update chat markup', value)
 			ChatRoom.markup = value
 		},
 	},

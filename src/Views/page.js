@@ -63,7 +63,6 @@ addView('page', {
 				// so it would be good to handle it consistently
 				if (!e && resp.content[0]) {
 					resp.comment.reverse()
-					//console.log(resp.Mpinned);
 					render(resp.content[0], resp.comment, resp.Mpinned)
 				} else
 					render(null)

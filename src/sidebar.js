@@ -61,7 +61,6 @@ onLoad: function() {
 					if ($fileUploadName.value) {
 						$fileUploadNameOut.textContent = "(setting metadata...)"
 						file.name = $fileUploadName.value
-						console.log(file)
 						Req.putFile(file, function(e, resp) {
 							$fileUploadNameOut.textContent = resp.name
 							// yea

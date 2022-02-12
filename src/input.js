@@ -65,7 +65,6 @@ class Form {
 	}
 	set(p) {
 		for (let field of this.fields) {
-			console.log('setting field ',field.name, p[field.name])
 			field.input.set(p[field.name])
 		}
 	}
@@ -89,12 +88,10 @@ class Form {
 	}
 	from_query(query) {
 		let p = {}
-		//console.log(query)
 		for (let field of this.fields) {
 			let value = query[field.param]
 			if (field.convert)
 				value = field.convert.decode(value)
-			//console.log("got from query", field.param, query[field.param], value)
 			if (value != null)
 				p[field.name] = value
 		}

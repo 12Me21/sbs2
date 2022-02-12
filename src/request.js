@@ -193,7 +193,6 @@ const Req = {
 	// (doesn't check if auth is expired though)
 	// return: Boolean
 	tryLoadCachedAuth() {
-		console.log('hello?')
 		let auth = Store.get(this.storageKey)
 		let ok = auth ? this.gotAuth(auth) : false
 		if (!ok)
@@ -320,7 +319,6 @@ const Req = {
 			if (me) {
 				let hiding = me.hidelist
 				let hidden = arrayToggle(hiding, id)
-				console.log(hiding)
 				this.setBasic({hidelist:hiding}, (e)=>{
 					if (e)
 						callback(null)

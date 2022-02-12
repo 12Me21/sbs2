@@ -25,7 +25,6 @@ addView('settings', {
 				return
 			}
 			Req.register(data.username, data.password, data.email, function(e, resp) {
-				console.log(resp)
 				if (!e) {
 					sendConfirmationEmail()
 				} else {

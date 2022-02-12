@@ -107,7 +107,6 @@ function submitEdit(callback) {
 	if (!editingPage)
 		return
 	readFields(editingPage)
-	//console.log(editingPage)
 	Req.editPage(editingPage, callback)
 }
 

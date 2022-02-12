@@ -37,7 +37,6 @@ addView('', {
 function updateGallery(page) {
 	$galleryTitle.replaceChildren(Draw.galleryLabel(page))
 	$galleryImage.src = ""
-	console.log(page.values)
 	var photos = page.values.photos.split(",")
 	$galleryImage.src = Req.fileURL(+photos[0])
 }

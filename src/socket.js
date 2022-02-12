@@ -246,7 +246,6 @@ let Lp = new class Lp {
 	
 	lpProcess(resp) {
 		if (resp.listeners) {
-			//console.log("lp process", resp)
 			this.handleOnListeners(resp.listeners, resp.chains.userMap)
 		}
 		if (resp.chains) {
