@@ -1,6 +1,8 @@
 <!--/* trick indenter
 with (View) (function($) { "use strict" //*/
 
+// this should be changed to a redirect to the new 'comments' page
+
 addView('chatlogs', {
 	init: function() {
 		//var sel = Draw.userSelector()

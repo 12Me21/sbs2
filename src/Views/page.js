@@ -1,19 +1,19 @@
-function registerActivity(e) {
+function register_activity(e) {
 	// 1: if currently inactive, switch to active
 	// 2: record time
 }
 // 3: on a ~1 minute interval timer, check if last activity time was > 3 minutes or whatever, and go inactive 
 
-;['wheel','keydown','mousedown','mousemove','touchstart'].forEach(event => document.addEventListener(event, registerActivity))
-window.addEventListener('focus', registerActivity)
+//;['wheel','keydown','mousedown','mousemove','touchstart'].forEach(event => document.addEventListener(event, registerActivity))
+//window.addEventListener('focus', registerActivity)
 
 let track_resize_2 = new ResizeTracker('width')
 
 <!--/* trick indenter
 with (View) (function($) { "use strict" //*/
 
-var room
-var renderPage = (page)=>{
+let room
+let render_page = (page)=>{
 	setEntityTitle(page)
 	setEntityPath(page.parent)
 	flag('canEdit', /u/.test(page.myPerms))
@@ -22,7 +22,7 @@ var renderPage = (page)=>{
 	Nav.link("comments/"+page.id, $pageCommentsLink)
 }
 
-var lastSent = null;
+let last_sent = null;
 
 addView('page', {
 	// in this case, we sometimes make a request, and sometimes
@@ -31,17 +31,17 @@ addView('page', {
 	// the function passed to quick will act like a simple view
 	// with no `start` method (is called immediately)
 	// DO NOT CALL BOTH FUNCTIONS!
-	start: (id, query, render, quick)=>{
-		var room = ChatRoom.rooms[id]
+	start(id, query, render, quick) {
+		let room = ChatRoom.rooms[id]
 		if (room) {
-			var z = room.pinned
+			let z = room.pinned
 			room.pinned = true
 			quick(()=>{
-				var page = room.page
+				let page = room.page
 				//ChatRoom.setViewing([page.id])
 				room.show()
 				room.pinned = z
-				renderPage(page)
+				render_page(page)
 			})
 		} else {
 			//todo: maybe we can request the user list early too?
@@ -51,8 +51,8 @@ addView('page', {
 			return Req.read([
 				{content: {ids: [id], IncludeAbout: ["votes","watches"]}},
 				{comment: {parentIds: [id], limit: 30, reverse: true}},
-				"comment.0values_pinned~Mpinned",//: {parentIds: [id]}},
-				"user.0createUserId.0editUserId.1createUserId.1editUserId.2createUserId.2editUserId",
+				'comment.0values_pinned~Mpinned',//: {parentIds: [id]}},
+				'user.0createUserId.0editUserId.1createUserId.1editUserId.2createUserId.2editUserId',
 			], {
 				//content: "name,parentId,type,createUserId,editUserId,createDate,editDate,permissions,id"
 			}, (e, resp)=>{
@@ -71,7 +71,7 @@ addView('page', {
 	},
 	className: 'page',
 	splitView: true,
-	render: (page, comments, pinned)=>{
+	render(page, comments, pinned) {
 		Act.newPageComments(page, comments)
 		Act.redraw()
 		//ChatRoom.setViewing([page.id])
@@ -79,62 +79,63 @@ addView('page', {
 		room.displayInitialMessages(comments, pinned) //todo: when page is edited, update pinned messages
 		room.show()
 		
-		renderPage(page)
+		render_page(page)
 	},
-	cleanUp: (type)=>{
+	cleanUp(type) {
 		//$messageList.replaceChildren()
 		if (room)
 			room.hide() //so it's fucking possible for cleanup to get called TWICE if there's an error, sometimes.
 		room = null
 		flag('canEdit', false)
 	},
-	init: ()=>{
-		function sendMessage() {
-			var data = readInput(editingComment, !!editingComment)
-			var room = ChatRoom.currentRoom
+	init() {
+		let send_message = ()=>{
+			let data = read_input(editing_comment, !!editing_comment)
+			let room = ChatRoom.currentRoom
 			if (room && data.content) {
-				
-				if (editingComment) {
-					Req.editMessage(editingComment.id, editingComment.parentId, data.content, data.meta, (e)=>{
+				if (editing_comment) {
+					Req.editMessage(editing_comment.id, editing_comment.parentId, data.content, data.meta, (e)=>{
 						if (e)
 							alert("Editing comment failed")
 					})
-					cancelEdit()
+					cancel_edit()
 				} else {
-					var old = data
+					let old = data
 					Req.sendMessage(room.id, data.content, data.meta, (e, resp)=>{
 						if (e) {
 							//error sending message
-							writeInput(old)
+							write_input(old)
 						} else {
-							lastSent = resp.id;
+							last_sent = resp.id;
 						}
 					})
 					$chatTextarea.value = "" //hack?
 					updateChatTextareaSize()
 				}
-			} else if (editingComment) {
-				var resp = confirm("Are you sure you want to delete this message?\n"+editingComment.content)
+			} else if (editing_comment) {
+				let resp = confirm("Are you sure you want to delete this message?\n"+editing_comment.content)
 				if (resp) {
-					Req.deleteMessage(editingComment.id, (e, resp) => {
+					Req.deleteMessage(editing_comment.id, (e, resp)=>{
 						//
 					})
 					$chatTextarea.focus() //need more of this
 				}
-				cancelEdit()
+				cancel_edit()
 			}
 		}
-		
+		// up arrow = edit last comment
+		// todo: keep track of the previous message more reliably
+		// either store it when displayed and only pull info from the server if necessary, or idk
 		$chatTextarea.onkeydown = (e)=>{
 			if (e.keyCode==38 && $chatTextarea.value=="") { // up arrow
-				if (lastSent)
-					editComment(lastSent)
+				if (last_sent)
+					edit_comment(last_sent)
 			}
 		}
 		$chatTextarea.onkeypress = (e)=>{
 			if (!e.shiftKey && e.keyCode == 13) { // enter
 				e.preventDefault()
-				sendMessage()
+				send_message()
 			}
 		}
 		// TODO: make sure this is ready when the long poller starts!
@@ -142,6 +143,9 @@ addView('page', {
 		// the long poller could technically start before onload
 		ChatRoom.global = new ChatRoom(-1)
 		
+		// TODO: this is a really common pattern for buttons
+		// (disable, then reenable when an action finishes)
+		// would be nice to have a system for that
 		$hideGlobalStatusButton.onclick = (e)=>{
 			if ($hideGlobalStatusButton.disabled)
 				return
@@ -152,24 +156,24 @@ addView('page', {
 		}
 		
 		$chatCancelEdit.onclick = ()=>{
-			cancelEdit()
+			cancel_edit()
 		}
 		// todo: global escape handler?
 		document.addEventListener('keydown', (e)=>{
 			if (e.keyCode == 27) {
-				cancelEditMode()
-				cancelEdit()
+				cancel_edit_mode()
+				cancel_edit()
 			}
 		})
 		document.addEventListener('click', (e)=>{
 			if (View.flags.chatEdit) {
 				View.flag('chatEdit', false)
-				var element = e.target
+				let element = e.target
 				while (element && element instanceof HTMLElement) {
 					if (element.tagName == 'MESSAGE-PART') {
-						var id = element.dataset.id
+						let id = element.dataset.id
 						if (id)
-							editComment(+id, element)
+							edit_comment(+id, element)
 						break
 					}
 					element = element.parentNode
@@ -177,25 +181,25 @@ addView('page', {
 			}
 		}, true)
 		
-		let updateChatTextareaSize = ()=>{
+		let textarea_resize = ()=>{
 			$chatTextarea.style.height = ''
-			if (ChatRoom.currentRoom) {
-				var oldBottom = ChatRoom.currentRoom.scroller.scrollBottom
-			}
-			var height = $chatTextarea.scrollHeight
+			let oldBottom
+			if (ChatRoom.currentRoom)
+				oldBottom = ChatRoom.currentRoom.scroller.scrollBottom
+			let height = $chatTextarea.scrollHeight
 			$chatTextarea.parentNode.style.height = $chatTextarea.style.height = height+1+"px"
 			if (ChatRoom.currentRoom) {
 				ChatRoom.currentRoom.scroller.ignoreScroll = true
 				ChatRoom.currentRoom.scroller.scrollBottom = oldBottom
 			}
 		}
-		updateChatTextareaSize()
-		$chatTextarea.addEventListener('input', updateChatTextareaSize)
-		track_resize_2.add($chatTextarea, updateChatTextareaSize)
+		textarea_resize()
+		$chatTextarea.addEventListener('input', textarea_resize)
+		track_resize_2.add($chatTextarea, textarea_resize)
 	}
 })
 
-function readInput(old, edit) {
+function read_input(old, edit) {
 	let data = {
 		meta: old ? old.meta : {},
 		content: $chatTextarea.value,
@@ -217,40 +221,41 @@ function readInput(old, edit) {
 	return data
 }
 
-function writeInput(data) {
+function write_input(data) {
 	$chatTextarea.value = data.content || ""
 	$chatMarkupSelect.checked = data.meta.m == Settings.values.chat_markup
 }
 
-var preEdit = null
-window.editingComment = null
+let pre_edit = null
+window.editing_comment = null
 
-$.editComment = editComment //HACK
-function editComment(id) {
-	if (editingComment)
-		cancelEdit()
+// todo: move this onto the ChatRoom object??
+$.editComment = edit_comment //HACK
+function edit_comment(id) {
+	if (editing_comment)
+		cancel_edit()
 	Req.getComment(id, (comment)=>{
 		if (!comment) return
-		if (editingComment)
-			cancelEdit()
-		cancelEditMode()
-		preEdit = readInput()
-		editingComment = comment
-		writeInput(comment)
+		if (editing_comment)
+			cancel_edit()
+		cancel_edit_mode()
+		pre_edit = read_input()
+		editing_comment = comment
+		write_input(comment)
 		View.flag('chatEditing', true)
 		$chatTextarea.focus()
 	})
 }
 
-function cancelEdit() {
-	if (editingComment) {
-		editingComment = null
+function cancel_edit() {
+	if (editing_comment) {
+		editing_comment = null
 		View.flag('chatEditing', false)
-		writeInput(preEdit)
+		write_input(pre_edit)
 	}
 }
 
-function cancelEditMode() {
+function cancel_edit_mode() {
 	View.flag('chatEdit', false)
 }
 

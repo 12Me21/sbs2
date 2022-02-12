@@ -4,38 +4,39 @@
 <!--/* trick indenter
 with (View) (function($) { "use strict" //*/
 
+// todo:
+// - page selector input type
+// - add a page for viewing info about a specific image (image/id? or images/id?), or otherwise some way to find a specific image by id here
+
 addView('images', {
-	init: function() {
-		var nav = $fileNav
-		$fileSearchBucket.onchange = function() {
+	init() {
+		let nav = $fileNav
+		$fileSearchBucket.onchange = ()=>{
 			currentQuery.bucket = $fileSearchBucket.value || undefined
 			Nav.go("images"+Req.queryString(currentQuery))
 		}
 		navButtons = Draw.navButtons()
-		nav.appendChild(navButtons.element)
-		navButtons.onchange = function(pageNum) {
-			/*if (currentCategory == null)
-			  return*/
-			currentQuery.page = pageNum
+		nav.append(navButtons.element)
+		navButtons.onchange = (n)=>{
+			currentQuery.page = n
 			Nav.go("images"+Req.queryString(currentQuery))
 		}
 		
-		$setAvatarButton.onclick = function() {
+		$setAvatarButton.onclick = ()=>{
 			if (!selectedFile)
 				return
-			Req.setBasic({avatar: selectedFile.id}, function(user) {
+			Req.setBasic({avatar: selectedFile.id}, (user)=>{
 				if (user) {
 					// have to do this because rannnnnnnnnnndommmmmmm broke user activityyy
 					updateMyUser(user)
 				}
 			})
 		}
-		$fileUpdateButton.onclick = function() {
+		$fileUpdateButton.onclick = ()=>{
 			if (!selectedFile)
 				return
 			readFields(selectedFile)
-			Req.putFile(selectedFile, function(e, resp) {
-				
+			Req.putFile(selectedFile, (e, resp)=>{
 				if (!e) {
 					resp.createUser = selectedFile.createUser //ehhhhh
 					selectFile(resp)
@@ -44,12 +45,12 @@ addView('images', {
 			})
 		}
 	},
-	start: function(id, query, render) {
+	start(id, query, render)=>{
 		currentQuery = query
-		var page = +query.page || 1
+		let page = +query.page || 1
 		navButtons.set(page)
 		
-		var search = {
+		let search = {
 			limit: 20,
 			skip: (page-1)*20,
 			reverse: true,
@@ -58,7 +59,7 @@ addView('images', {
 		return Req.read([
 			{file: search},
 			"user.0createUserId"
-		], {}, function(e, resp) {
+		], {}, (e, resp)=>{
 			if (!e)
 				render(resp.file)
 			else
@@ -66,14 +67,14 @@ addView('images', {
 		}, false) //mm
 	},
 	className: 'fileMode',
-	render: function(files) {
+	render(files) {
 		setTitle("Files")
 		fileList = files
-		files.forEach(function(file) {
-			$fileBox.appendChild(Draw.fileThumbnail(file, selectFile))
+		files.forEach((file)=>{
+			$fileBox.append(Draw.fileThumbnail(file, selectFile))
 		})
 	},
-	cleanUp: function() {
+	cleanUp() {
 		$fileBox.replaceChildren()
 		selectFile(null)
 		fileList = null

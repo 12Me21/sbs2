@@ -57,6 +57,9 @@ class Form {
 			this.elem.append(field.input.elem)
 		}
 	}
+	destroy() {
+		this.elem.replaceChildren()
+	}
 	get() {
 		return this.fields.reduce((a,field)=>{
 			a[field.name] = field.input.get()

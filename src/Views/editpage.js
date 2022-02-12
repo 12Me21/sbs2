@@ -96,12 +96,14 @@ addView('editpage', {
 	},
 	cleanUp: function() {
 		$editorPreview.replaceChildren()
+		form && form.destroy()
+		form = null
 		editingPage = null
 	},
 })
 
-var editingPage = null
-var form = null
+let editingPage = null
+let form = null
 
 function submitEdit(callback) {
 	if (!editingPage)
@@ -155,10 +157,10 @@ function fillFields(page) {
 		keywords: page.keywords,
 		type: page.type,
 		thumbnail: page.values.thumbnail,
-		photos: Entity.parse_numbers(page.values.photos)
+		photos: Entity.parse_numbers(page.values.photos),
 		category: [page.parentId, Entity.categoryMap[0]],
-		pinned: Entity.parse_numbers(page.values.pinned)
-		permissions: [page.permissions, page.users]
+		pinned: Entity.parse_numbers(page.values.pinned),
+		permissions: [page.permissions, page.users],
 	})
 }
 
