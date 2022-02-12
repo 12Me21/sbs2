@@ -155,6 +155,7 @@ const Req = {
 				callback(e, resp)
 		}, data, this.auth)
 	},
+	
 	// logs the user out and clears the cached token
 	logOut() {
 		Store.remove(this.storageKey)

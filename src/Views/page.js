@@ -109,8 +109,11 @@ addView('page', {
 							last_sent = resp.id;
 						}
 					})
-					$chatTextarea.value = "" //hack?
-					updateChatTextareaSize()
+					// going to try this hack to see if that fixes safari
+					window.setTimeout(()=>{
+						$chatTextarea.value = "" //hack?
+						textarea_resize()
+					}, 0)
 				}
 			} else if (editing_comment) {
 				let resp = confirm("Are you sure you want to delete this message?\n"+editing_comment.content)

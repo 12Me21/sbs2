@@ -45,7 +45,7 @@ addView('images', {
 			})
 		}
 	},
-	start(id, query, render)=>{
+	start(id, query, render) {
 		currentQuery = query
 		let page = +query.page || 1
 		navButtons.set(page)
