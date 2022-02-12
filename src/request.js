@@ -47,7 +47,7 @@ const Req = {
 				x.abort = ()=>{clearTimeout(id)}
 			} else {
 				console.log("retrying request", reason)
-				x.abort = rawRequest.apply(null, args).abort
+				x.abort = rawRequest.apply(this, args).abort
 			}
 		}
 		
@@ -148,7 +148,7 @@ const Req = {
 	},
 	// idk having all brackets bold + dimgray was kinda nice...
 	request(url, method, callback, data) {
-		return this.rawRequest("https://"+this.server+"/"+url, method, (e, resp)=>{
+		return this.rawRequest(`https://${this.server}/${url}`, method, (e, resp)=>{
 			if (e == 'auth')
 				this.logOut()
 			else
