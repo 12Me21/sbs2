@@ -4,7 +4,6 @@
 * {
 	margin: 0;
 	box-sizing: border-box;
-	-webkit-box-sizing: border-box;
 }
 
 html {
@@ -27,31 +26,23 @@ html {
  **********/
 .flex {
 	display: block;
-	display: -webkit-flex;
 	display: flex;
-	-webkit-flex-direction: column;
 	flex-direction: column;
 }
 .flex-row {
 	display: inline-block;
-	display: -webkit-flex;
 	display: flex;
 }
 .flex > *, .flex-row > * {
-	-webkit-flex-shrink: 0;
 	flex-shrink: 0;
 }
 .grow {
-	-webkit-flex-grow: 1;
 	flex-grow: 1;
-	-webkit-flex-shrink: 1;
 	flex-shrink: 1;
-	-webkit-flex-basis: 0;
 	flex-basis: 0;
 }
 
 .flex-sized {
-	webkit-flex-shrink: 1;
 	flex-shrink: 1;
 }
 
@@ -202,7 +193,6 @@ body {
 	display: block;
 	overflow: hidden;
 	box-sizing: content-box;
-	-webkit-box-sizing: content-box;
 	/* set min-height */
 }
 
@@ -422,8 +412,7 @@ html:not(.f-sidebarUploaded) .sidebarUploadedFile {
 	/*box-shadow: 0 2px 3px rgba(0,0,0,0.3);*/
 	z-index: 10;
 	padding: 1px;
-	/*-webkit-transition: background-color 0.1s ease;
-	transition: background-color 0.1s ease;*/
+	/*transition: background-color 0.1s ease;*/
 }
 
 
@@ -441,7 +430,6 @@ html.f-loading .loadBG {
 }
 
 .loadBG {
-	-webkit-transition: background-color 0.1s ease;
 	transition: background-color 0.1s ease;
 }
 
@@ -578,7 +566,6 @@ message-block {
 	clear: both;
 	overflow: auto;
 	display: block;
-	-webkit-box-sizing: content-box;
 	box-sizing: content-box;
 	min-height: 3.5rem;
 }
@@ -625,6 +612,7 @@ message-controls {
 	/*margin: 0.2rem 0;*/
 	width: 4rem;
 	overflow: hidden;
+	/* don't remove these prefixes */
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	user-select: none;
@@ -695,7 +683,6 @@ html:not(.f-chatEditing) .showWhenEdit {
  ** Editor Pane **
  *****************/
 .editorPane {
-	-webkit-flex-grow: 1;
 	flex-grow: 1;
 }
 
@@ -733,19 +720,16 @@ html:not(.f-chatEditing) .showWhenEdit {
 	width: 10rem;
 	height: 10rem;
 	display: inline-block;
-	-webkit-flex-shrink: 1;
 	flex-shrink: 1;
 	box-shadow: 2px 2px 5px gray;
 	margin-bottom: 5px;
 }
 
 .userPageBox .pageContents {
-	-webkit-flex-basis: 0;
 	flex-basis: 0;
 }
 
 .userPageContents {
-	-webkit-flex-grow: 1;
 	flex-grow: 1;
 }
 .userPageBox .pageContents {
@@ -758,13 +742,11 @@ html:not(.f-myUserPage) .myUserPage {
 
 @media (max-width: 700px) {
 	.userPageBox {
-		-webkit-flex-direction: column;
 		flex-direction: column;
 		max-height: none;
 	}
 	.userPageBox .userPageContents {
 		width: 100%;
-		-webkit-flex-basis: auto;
 		flex-basis: auto;
 	}
 }
@@ -848,7 +830,6 @@ button.voteButton[data-selected][data-vote="o"] {
 	max-width: 50px;
 	max-height: 50px;
 	border: 1px solid black;
-	-webkit-box-sizing: content-box;
 	box-sizing: content-box;
 	vertical-align: top; /* what the fuck */
 }
@@ -887,10 +868,9 @@ html:not(.f-fileUploading) .fileUploading {
  ************/
 .resize {
 	-webkit-touch-callout: none;
+	
 	-webkit-user-select: none;
-	-khtml-user-select: none;
 	-moz-user-select: none;
-	-ms-user-select: none;
 	user-select: none;
 	cursor: grab;
 	color: var(--databartxtcolor);
@@ -985,14 +965,12 @@ scroll-inner {
 	}
 	body:not(.pageMode) main-scrollable {
 		height: auto !important;
-		-webkit-flex-basis: auto;
 		flex-basis: auto;
 	}
 	html {
 		background-color: transparent;
 	}
 	.editorPreview {
-		-webkit-flex-basis: auto;
 		flex-basis: auto;
 	}
 	.userPageBox {
@@ -1106,14 +1084,12 @@ sidebar-panel {
 	/*padding: 1px;
 	background: black;
 	border: 5px solid white;*/
-	/*-webkit-transform: scale(1); //this should be the inverse of the max-width/height value (5% -> 20, etc.)
-	transform: scale(1);*/
+	/* transform: scale(1); //this should be the inverse of the max-width/height value (5% -> 20, etc.)*/
 }
 
 .image-box-large > img {
 	max-width: 1%;
 	max-height: 1%;
-	-webkit-transform: scale(100);
 	transform: scale(100);
 	border: none;
 }
