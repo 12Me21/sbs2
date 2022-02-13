@@ -172,6 +172,7 @@ handleView(type, id, query, callback) {
 		$main.scrollTop = 0
 	}
 	
+	let xhr
 	let cancelled = false
 	if (!view) {
 		whenPageLoaded(()=>{
@@ -181,8 +182,8 @@ handleView(type, id, query, callback) {
 	} else if (view.start) {
 		whenPageLoaded(loadStart)
 		try { // this catches errors in view.start, NOT the callbacks inside here
-			let xhr = view.start(id, query, function(ok) { // needed because arguments
-				let args = arguments
+			xhr = view.start(id, query, (...args)=>{ // needed because arguments
+				let ok = args[0]
 				whenPageLoaded(()=>{
 					if (cancelled)
 						return
@@ -193,7 +194,7 @@ handleView(type, id, query, callback) {
 					} else {
 						currentView = view
 						try {
-							view.render.apply(null, args)
+							view.render(...args)
 							after()
 						} catch(e) {
 							// cleanUp() maybe?
