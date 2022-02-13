@@ -516,8 +516,8 @@ Object.assign(Draw, { //*/
 			[2592000, 1, "month", "months"],
 			[86400, 1, "day", "days"],
 			[3600, 0, "hour", "hours"],
-			[60, 0, "minute", "minutes"],
-		].find(desc => seconds > desc[0]*0.9)
+			[60, 0, "min", "min"],
+		].find(desc => seconds > desc[0]*0.96)
 		if (!desc)
 			return "Just now"
 		let round = (seconds/desc[0]).toFixed(desc[1]).replace(/\.0$/,"") // only works with 0 or 1 digit of precision oops
