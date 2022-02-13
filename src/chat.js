@@ -77,6 +77,9 @@ class ChatRoom {
 		this.messagePane.dataset.id = page.id
 		$chatPane.append(this.messagePane)
 		
+		/////////////////////////////
+		// set up message controls //
+		/////////////////////////////
 		this.controlId = null
 		let controls = Draw.messageControls()
 		controls.onclick = ()=>{
@@ -86,35 +89,28 @@ class ChatRoom {
 		this.controls = controls.elem
 		
 		this.messageList.addEventListener('focusin', (e)=>{
-			let elem = e.target
-			while (elem != this.messageList && elem instanceof HTMLElement) {
-				if (elem.tagName == 'MESSAGE-PART') {
-					this.showControls(elem)
-					break
-				}
-				elem = elem.parentNode
-			}
+			let elem = e.target.closest("message-part, scroll-inner")
+			if (!elem)
+				this.showControls(null)
+			else if (elem.tagName=='MESSAGE-PART')
+				this.showControls(elem)
 		})
 		this.messageList.addEventListener('focusout', (e)=>{
 			this.showControls(null)
 		})
 		
 		this.messageList.onmouseover = (e)=>{
-			let elem = e.target
-			while (elem != this.messageList && elem instanceof HTMLElement) {
-				if (elem.tagName == 'MESSAGE-PART') {
-					this.showControls(elem)
-					return
-				}
-				if (elem.tagName == 'MESSAGE-CONTROLS')
-					return
-				elem = elem.parentNode
-			}
-			this.showControls(null)
+			let elem = e.target.closest("message-part, message-controls, scroll-inner")
+			if (!elem)
+				this.showControls(null)
+			else if (elem.tagName=='MESSAGE-PART')
+				this.showControls(elem)
+			// otherwise, the element is <message-controls> so we do nothing
 		}
 		this.messageList.onmouseleave = (e)=>{
 			this.showControls(null)
 		}
+		///////////
 		
 		this.showChat = page.type == "@page.discussion"
 		
@@ -141,48 +137,6 @@ class ChatRoom {
 		Req.getCommentsBefore(this.id, +firstId, num, (comments)=>{
 			comments && comments.forEach(c => this.displayOldMessage(c))
 			callback()
-		})
-	}
-	
-	// "should be called in reverse order etc. etc. you know
-	// times will be incorrect oh well"
-	displayOldMessage(comment) {
-		this.scroller.handlePrintTop(()=>{
-			let old = this.messageElements[comment.id]
-			if (comment.deleted) {
-				// deleted
-				if (old) {
-					let contents = old.parentNode
-					old.remove()
-					if (!contents.firstChild)
-						contents.parentNode.remove()
-				}
-			} else {
-				// `old` should never be set here, I think...
-				let firstUidBlock = this.messageList.firstChild
-				let firstHash, newHash
-				if (firstUidBlock) {
-					firstHash = firstUidBlock.dataset.merge
-					if (!firstHash)
-						firstUidBlock = null
-					else
-						newHash = Draw.mergeHash(comment)
-				}
-				let node = Draw.messagePart(comment)
-				let contents
-				if (firstUidBlock && newHash == firstHash) {
-					contents = firstUidBlock.getElementsByTagName('message-contents')[0]// not great...
-				} else {
-					let b = Draw.messageBlock(comment)
-					this.messageList.prepend(b[0])
-					contents = b[1]
-				}
-				contents.prepend(node)
-				if (!this.messageElements[comment.id])
-					this.totalMessages++
-				this.messageElements[comment.id] = node
-				this.limitMessages()
-			}
 		})
 	}
 	limitMessages() {
@@ -305,53 +259,65 @@ class ChatRoom {
 	shouldScroll() {
 		return this.scroller.atBottom
 	}
+	can_merge(block, comment, time) {
+		if (block) {
+			let hash = block.dataset.merge
+			return hash && hash==Draw.mergeHash(comment) && (!time || comment.createDate-time <= 1000*60*5)
+		}
+		return false
+	}
+	// 
+	insert_merge(part, comment, time, backwards) {
+		let block = this.messageList[backwards?'firstChild':'lastChild']
+		// todo: store time on block itself? but for this to insert in both directions it should store first/last time
+		// + with message deletion, really we have to store time per message part, which sucks...
+		let contents
+		if (this.can_merge(block, comment, time))
+			contents = block.getElementsByTagName('message-contents')[0]// not great...
+		if (!contents) {
+			let b = Draw.messageBlock(comment)
+			this.messageList[backwards?'prepend':'append'](b[0])
+			contents = b[1]
+		}
+		contents[backwards?'prepend':'append'](part)
+		this.totalMessages++
+		this.messageElements[comment.id] = part
+		this.limitMessages()
+	}
+	// "should be called in reverse order etc. etc. you know
+	// times will be incorrect oh well"
+	displayOldMessage(comment) {
+		this.scroller.handlePrintTop(()=>{
+			let old = this.messageElements[comment.id]
+			if (comment.deleted) {
+				this.removeMessage(comment.id)
+			} else {
+				// `old` should never be set here, I think...
+				let node = Draw.messagePart(comment)
+				this.insert_merge(node, comment, null, true)
+			}
+		})
+	}
 	displayMessage(comment, autoscroll) {
 		this.scroller.handlePrint(()=>{
 			let old = this.messageElements[comment.id]
 			if (comment.deleted) {
-				// deleted
-				if (old) {
-					let contents = old.parentNode
-					old.remove()
-					if (!contents.firstChild) // remove parent if empty
-						contents.parentNode.remove()
-				}
+				this.removeMessage(comment.id)
 			} else {
 				let part = Draw.messagePart(comment)
+				
 				if (old) { // edited
 					old.parentNode.replaceChild(part, old)
+					this.messageElements[comment.id] = part
 				} else { // new comment
-					let lastBlock = this.messageList.lastChild
-					let lastHash, newHash
-					if (lastBlock) {
-						lastHash = lastBlock.dataset.merge
-						if (!lastHash)
-							lastBlock = null
-						else
-							newHash = Draw.mergeHash(comment)
-					}
-					let contents
-					if (lastBlock && lastHash == newHash && comment.createDate-this.lastTime <= 1000*60*5) { // insert in current block
-						contents = lastBlock.getElementsByTagName('message-contents')[0]// not great...
-					} else { //create new block
-						let b = Draw.messageBlock(comment)
-						this.messageList.append(b[0])
-						contents = b[1]
-					}
-					contents.append(part)
-					
+					this.insert_merge(part, comment, this.lastTime, false)
 					this.lastTime = comment.createDate //todo: improve
-					
 					View.commentTitle(comment)
 				}
-				if (!this.messageElements[comment.id])
-					this.totalMessages++
-				this.messageElements[comment.id] = part
-				this.limitMessages()
 			}
 		}, autoscroll != false)
 	}
-	// should maybe take id instead of element?
+	
 	showControls(elem) {
 		if (elem) {
 			// why does this fail sometimes?
