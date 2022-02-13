@@ -230,22 +230,25 @@ Object.assign(Draw, { //*/
 		let name = E`span`
 		name.className += " username-label"
 		div.append(name)
-		let link = entityLink(user)
-		name.append(link)
+		//let link = entityLink(user)
+		//name.append(link)
+		let link = name
 		
 		let n = E`span`
 		n.className = "pre username"
 		link.append(n)
-		
 		// if nickname is set, render as "nickname (realname):"
 		if (user.nickname !== undefined) { // why !== here?
 			n.textContent = user.nickname
-			link.append(": (")
-			let n2 = E`span`
-			n2.className = "pre"
-			n2.textContent = user.realname
-			link.append(n2)
-			link.append(")")
+			link.append(":")
+			let ns = link.createChild('span')
+			ns.className = "real-name-label"
+			ns.append(" (")
+			let real = E`span`
+			real.className = "pre"
+			real.textContent = user.realname
+			ns.append(real)
+			ns.append(")")
 		} else {
 			// otherwise render as "name:"
 			n.textContent = user.name
@@ -671,10 +674,16 @@ Object.assign(Draw, { //*/
 		}
 		let btn = button()
 		elem.append(btn[0])
+		//btn[1].onclick = ()=>{x.onclick()}
+		btn[1].tabIndex = "-1"
+		btn[1].textContent = "⚙"
+		
+		btn = button()
+		elem.append(btn[0])
 		btn[1].onclick = ()=>{x.onclick()}
 		btn[1].tabIndex = "-1"
-		btn[1].textContent = "edit"
-		btn[0].className += " rightAlign loggedIn"
+		btn[1].textContent = "✏"
+		/*btn[0].className += " rightAlign loggedIn"*/
 		return x
 	},
 	
