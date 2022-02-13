@@ -1,7 +1,7 @@
-var comment_form
+let comment_form
 
 View.addView('comments', {
-	init: function() {
+	init() {
 		comment_form = new Form({
 			fields: [
 				{name: 'search', input: new INPUTS.text({label: "Search"}), convert: CONVERT.string, param: 's'},
@@ -14,25 +14,25 @@ View.addView('comments', {
 			]
 		})
 		$commentSearchForm.replaceWith(comment_form.elem)
-		$commentSearchButton.onclick = function() {
+		$commentSearchButton.onclick = ()=>{
 			let data = comment_form.get()
-			var name = "comments"
+			let name = "comments"
 			if (data.pages && data.pages.length==1) {
 				name += "/"+data.pages[0]
 				delete data.pages
 			}
-			var query = comment_form.to_query(data)
+			let query = comment_form.to_query(data)
 			Nav.go(name+query)
 		}
 		View.bind_enter($commentSearch, $commentSearchButton.onclick)
 	},
-	start: function(id, query, render, quick) {
+	start(id, query, render, quick) {
 		let data = comment_form.from_query(query)
 		if (id)
 			data.pages = [id]
-		var search = build_search(data)
+		let search = build_search(data)
 		if (!search) {
-			quick(function(){
+			quick(()=>{
 				View.setTitle("Comments")
 				comment_form.set(data)
 				$chatlogSearchResults.replaceChildren()
@@ -43,27 +43,27 @@ View.addView('comments', {
 			{comment: search},
 			"content.0parentId",
 			"user.0createUserId",
-		], {}, function(e, resp){
+		], {}, (e, resp)=>{
 			if (e) return render(null)
 			render(resp.comment, query, resp.content, data)
 		})
 	},
 	className: 'comments',
-	render: function(comments, query, pages, data) {
+	render(comments, query, pages, data) {
 		View.setTitle("Comments")
 		comment_form.set(data)
 		
-		var map = Entity.makePageMap(pages)
+		let map = Entity.makePageMap(pages)
 		$commentSearchResults.replaceChildren()
-		comments.forEach(function(c) {
+		comments.forEach((c)=>{
 			c.parent = map[c.parentId]
-			$commentSearchResults.appendChild(Draw.searchComment(c))
+			$commentSearchResults.append(Draw.searchComment(c))
 		})
 		if (!comments.length) {
 			$commentSearchResults.textContent = "(no result)"
 		}
 	},
-	cleanUp: function() {
+	cleanUp() {
 		$commentSearchResults.replaceChildren()
 	},
 })

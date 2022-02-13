@@ -1,7 +1,7 @@
 <!--/* trick indenter
 var View = Object.create(null)
-with (View) (function($) { "use strict"
-Object.assign(View, { //*/
+with (View) (function($) { "use strict"//*/
+Object.assign(View, { 
 
 cancelRequest: null,
 // this will always be the currently rendered view
@@ -17,12 +17,12 @@ faviconElement: null,
 // create public variables here
 views: {
 	test: {
-		init: function() {
-			$testButton.onclick = function() {
-				var c = $testTextarea.value
+		init() {
+			$testButton.onclick = ()=>{
+				let c = $testTextarea.value
 				$testOut.textContent="Starting..."
 				try {
-					var res = eval(c)
+					let res = eval(c)
 					$testOut.textContent="Finished:\n"+res
 				} catch(e) {
 					$testOut.textContent="Error:\n"+e
@@ -30,7 +30,7 @@ views: {
 			}
 		},
 		className: 'testMode',
-		render: function() {
+		render() {
 			setTitle("Testing")
 		},
 	},
@@ -40,29 +40,28 @@ views: {
 	// .render will be called IF everything succeeds
 	// the first parameter will always exist.
 	users: {
-		start: function(id, query, render) {
+		start(id, query, render) {
 			return Req.read([
 				"user",
-			], {}, function(e, resp) {
+			], {}, (e, resp)=>{
 				if (!e)
 					render(resp.user)
 			}, true)
 		},
 		className: 'membersMode',
-		render: function(users) {
+		render(users) {
 			setTitle("Users")
-			users.forEach(function(user) {
-				var bar = Draw.entityTitleLink(user)
+			$memberList.childs = users.map((user)=>{
+				let bar = Draw.entityTitleLink(user)
 				bar.className += " linkBar bar rem2-3"
-				$memberList.appendChild(bar)
+				return bar
 			})
 		},
-		cleanUp: function() {
-			$memberList.replaceChildren()
+		cleanUp() {
+			$memberList.childs = null
 		},
-		init: function() {
-			var nav = $memberNav
-			nav.appendChild(Draw.navButtons().element)
+		init() {
+			$memberNav.append(Draw.navButtons().element)
 		}
 	},
 	pages: {
@@ -71,50 +70,44 @@ views: {
 },
 errorView: {
 	className: 'errorMode',
-	render: function(message, error) {
+	render(message, error) {
 		setTitle(message)
-		if (error)
-			$errorMessage.textContent = error+"\n"+error.stack
-		else
-			$errorMessage.textContent = ""
+		$errorMessage.textContent = error ? error+"\n"+error.stack : ""
 	},
-	cleanUp: function() {
-		$errorMessage.replaceChildren()
+	cleanUp() {
+		$errorMessage.textContent = ""
 	}
 },
-getView: function(name) {
-	var view = views[name]
+getView(name) {
+	let view = views[name]
 	while (view && view.redirect) //danger!
 		view = views[view.redirect]
 	return view
 },
 
-setEntityTitle: function(entity) {
-	$pageTitle.replaceChildren(Draw.iconTitle(entity))
-	$.document.title = entity.name
+setEntityTitle(entity) {
+	$pageTitle.childs = Draw.iconTitle(entity)
+	document.title = entity.name
 	realTitle = entity.name
 	changeFavicon(false)
 },
-setTitle: function(text) {
+setTitle(text) {
 	$pageTitle.textContent = text
-	$.document.title = text
+	document.title = text
 	realTitle = text
 	changeFavicon(false)
 },
 
-setPath: function(path) {
-	$path.replaceChildren(Draw.titlePath(path))
+setPath(path) {
+	$path.childs = Draw.titlePath(path)
 },
-setEntityPath: function(page) {
+setEntityPath(page) {
 	if (!page) {
 		setPath([])
 		return
 	}
-	if (page.Type == 'category')
-		var node = page
-	else
-		node = page.parent
-	var path = []
+	let node = page.Type=='category' ? page : page.parent
+	let path = []
 	while (node) {
 		path.unshift([Nav.entityPath(node), node.name])
 		node = node.parent
@@ -126,48 +119,45 @@ setEntityPath: function(page) {
 	setPath(path)
 },
 
-loadStart: function() {
+loadStart() {
 	flag('loading', true)
 },
-loadEnd: function() {
+loadEnd() {
 	flag('loading', false)
 },
 
 flags: {},
-flag: function(flag, state) {
+flag(flag, state) {
 	if (!flags[flag] != !state) {
 		if (state)
 			flags[flag] = true
 		else
 			delete flags[flag]
-		var cls = ""
-		for (flag in flags)
-			cls += " f-"+flag
-		$.document.documentElement.className = cls
+		document.documentElement.classList[state?'add':'remove']("f-"+flag)
 	}
 },
 
-updateUserAvatar: function(user) {
+updateUserAvatar(user) {
 	ChatRoom.updateUserAvatar(user) //todo: don't hardcode this
 	if (user.id == Req.uid)
 		updateMyUser(user)
 },
 
-updateMyUser: function(user) {
+updateMyUser(user) {
 	if (user.id != Req.uid)
 		return //uh oh
 	Req.me = user //This probably shouldn't be handled by View...
-	var icon = Draw.icon(user)
-	Sidebar.myAvatar.replaceChildren(icon)
+	let icon = Draw.icon(user)
+	Sidebar.myAvatar.childs = icon
 	//$loggedIn.replaceChildren(Draw.entityTitleLink(user, true))
 },
 
-handleView: function(type, id, query, callback) {
+handleView(type, id, query, callback) {
 	if (cancelRequest) {
 		cancelRequest()
 		cancelRequest = null
 	}
-	var view = getView(type)
+	let view = getView(type)
 	
 	function cleanUp() {
 		if (currentView && currentView.cleanUp) {
@@ -182,28 +172,23 @@ handleView: function(type, id, query, callback) {
 		$main.scrollTop = 0
 	}
 	
-	var cancelled = false
+	let cancelled = false
 	if (!view) {
-		whenPageLoaded(function() {
+		whenPageLoaded(()=>{
 			cleanUp()
 			errorRender("Unknown page type: \""+type+"\"")
 		})
 	} else if (view.start) {
-		whenPageLoaded(function() {
-			loadStart()
-		})
+		whenPageLoaded(loadStart)
 		try { // this catches errors in view.start, NOT the callbacks inside here
-			var xhr = view.start(id, query, function(ok) {
-				var args = arguments
-				whenPageLoaded(function() {
+			let xhr = view.start(id, query, function(ok) { // needed because arguments
+				let args = arguments
+				whenPageLoaded(()=>{
 					if (cancelled)
 						return
 					cleanUp()
 					if (!ok) {
-						if (ok == false)
-							var msg = "error 1"
-						else
-							var msg = "content not found?"
+						let msg = ok==false ? "error 1" : "content not found?"
 						errorRender(msg)
 					} else {
 						currentView = view
@@ -217,17 +202,15 @@ handleView: function(type, id, query, callback) {
 					}
 					loadEnd()
 				})
-			}, function(e) {
-				whenPageLoaded(function() {
-					quick(e)
-				})
+			}, (e)=>{
+				whenPageLoaded(()=>{quick(e)})
 			})
 		} catch(e) {
 			errorRender("render failed 1", e)
 			loadEnd()
 		}
 	} else {
-		whenPageLoaded(function() {
+		whenPageLoaded(()=>{
 			loadStart()
 			quick(view.render)
 		})
@@ -263,17 +246,15 @@ handleView: function(type, id, query, callback) {
 		after()
 	}
 	
-	cancelRequest = function() {
+	cancelRequest = ()=>{
 		loadEnd()
-		if (xhr && xhr.abort) {
-			xhr.abort()
-		}
+		xhr && xhr.abort && xhr.abort()
 		cancelled = true
 	}
 	
 	function after() {
 		//$.document.body.className = view.className
-		document.querySelectorAll("v-b").forEach(function(e) {
+		document.querySelectorAll("v-b").forEach((e)=>{
 			e.hidden = !e.hasAttribute("data-view-"+view.className)
 		})
 		View.flag('splitView', view.splitView==true)
@@ -289,26 +270,26 @@ handleView: function(type, id, query, callback) {
 	}
 },
 
-onLoad: function() {
-	document.querySelectorAll("a[data-static-path]").forEach(function(elem) {
-		Nav.link(elem.getAttribute('data-static-path'), elem)
+onLoad() {
+	document.querySelectorAll("a[data-static-path]").forEach((elem)=>{
+		Nav.link(elem.dataset.staticPath, elem)
 	})
-	document.querySelectorAll("button:not([data-noreplace])").forEach(function(button) {
-		var container = document.createElement("div")
+	document.querySelectorAll("button:not([data-noreplace])").forEach((button)=>{
+		let container = document.createElement("div")
 		container.className = "buttonContainer"
-		button.parentNode.replaceChild(container, button)
+		button.replaceWith(container)
 		container.className += " "+button.className
 		button.className = ""
 		if (button.hasAttribute('data-static-link')) {
 			button.setAttribute('tabindex', "-1")
-			var a = document.createElement('a')
-			container.appendChild(a)
+			let a = document.createElement('a')
+			container.append(a)
 			container = a
 		}
-		container.appendChild(button)
+		container.append(button)
 	})
 	
-	for (var n in views) {
+	for (let n in views) {
 		views[n].name = n
 		if (views[n].init)
 			views[n].init()
@@ -316,25 +297,25 @@ onLoad: function() {
 		// though none of them should really take a significant amount of time, so whatver
 	}
 	initDone = true
-	runOnLoad.forEach(function(f) {
-		f()
-	})
+	runOnLoad.forEach((f)=>f())
 	runOnLoad = null
 	
 	// video player does not fire 'click' events so instead
 	// need to detect when the video is played
 	// using a custom event
-	document.addEventListener('videoclicked', function(e) {
+	document.addEventListener('videoclicked', (e)=>{
 		imageFocusClickHandler(e.target, true)
 	})
-	document.onmousedown = function(e) {
+	document.onmousedown = (e)=>{
 		if (!e.button && e.target) // 0 or none (prevent right click etc.)
 			imageFocusClickHandler(e.target)
 	}
+	
+	let embiggenedImage
 	// clicking outside an image shrinks it
 	// maybe could block this if the click is on a link/button?
-	document.onclick = function(e) {
-		var element = e.target
+	document.onclick = (e)=>{
+		let element = e.target
 		if (!(element instanceof HTMLTextAreaElement)) {
 			if (embiggenedImage && element != embiggenedImage) {
 				embiggenedImage.removeAttribute('bigImage')
@@ -342,7 +323,6 @@ onLoad: function() {
 			}
 		}
 	}
-	var embiggenedImage
 	
 	function imageFocusClickHandler(element, growOnly) {
 		if (element.hasAttribute('shrink')) {
@@ -363,25 +343,26 @@ onLoad: function() {
 	Sidebar.onLoad()
 },
 
-addView: function(name, data) {
+addView(name, data) {
 	data.name = name
 	views[name] = data
 	initDone && data.init && data.init()
 },
 
-attachPaste: function(callback) {
-	document.addEventListener('paste', function(event) {
-		var data = event.clipboardData
+attachPaste(callback) {
+	document.addEventListener('paste', (event)=>{
+		let data = event.clipboardData
 		if (data && data.files) {
-			var file = data.files[0]
+			let file = data.files[0]
 			if (file && (/^image\//).test(file.type))
 				callback(file)
 		}
 	})
 },
-
-attachResize: function(element, tab, horiz, dir, save, callback) {
-	var startX,startY,held,startW,startH,size = null
+	
+	// should be a class
+attachResize(element, tab, horiz, dir, save, callback) {
+	let startX,startY,held,startW,startH,size = null
 	function getPos(e) {
 		if (e.touches)
 			return {x:e.touches[0].pageX, y:e.touches[0].pageY}
@@ -390,7 +371,7 @@ attachResize: function(element, tab, horiz, dir, save, callback) {
 	}
 	function down(e) {
 		tab.setAttribute('dragging',"")
-		var pos = getPos(e)
+		let pos = getPos(e)
 		startX = pos.x
 		startY = pos.y
 		startW = element.offsetWidth
@@ -403,26 +384,28 @@ attachResize: function(element, tab, horiz, dir, save, callback) {
 		if (save && size != null)
 			Store.set(save, size)
 	}
+	function update_size(px) {
+		element.style[horiz ? 'width' : 'height'] = px+"px"
+	}
 	function move(e) {
 		if (!held)
 			return
-		var pos = getPos(e)
+		let pos = getPos(e)
 		if (horiz) {
-			var vx = (pos.x - startX) * dir
+			let vx = (pos.x - startX) * dir
 			size = Math.max(0, startW+vx)
-			element.style.width = size+"px"
 		} else {
-			var vy = (pos.y - startY) * dir
+			let vy = (pos.y - startY) * dir
 			size = Math.max(0, startH+vy)
-			element.style.height = size+"px"
 		}
-		if (callback) callback(size)
-	}	
+		update_size(size)
+		callback && callback(size)
+	}
 	tab.addEventListener('mousedown', down)
 	document.addEventListener('mouseup', up)
 	document.addEventListener('mousemove', move)
 	
-	tab.addEventListener('touchstart', function(e) {
+	tab.addEventListener('touchstart', (e)=>{
 		e.preventDefault()
 		down(e)
 	}, {passive:true}) //todo: prevent scrolling on mobile
@@ -432,33 +415,31 @@ attachResize: function(element, tab, horiz, dir, save, callback) {
 		size = Store.get(save)
 		if (size) {
 			size = Math.max(0, +size)
-			if (horiz)
-				element.style.width = size+"px"
-			else
-				element.style.height = size+"px"
+			update_size(size)
 			if (callback) callback(size)
 		}
 	}
 },
 
-commentTitle: function(comment) {
+commentTitle(comment) {
 	titleNotification(comment.content, Draw.avatarURL(comment.createUser, "size=120&crop=true"))
 },
 
-titleNotification: function(text, icon) {
+titleNotification(text, icon) {
 	if (!Req.me)
 		return;
 	if (text == false) {
-		$.document.title = realTitle
+		document.title = realTitle
 		changeFavicon(false)
-		return
+	} else {
+		document.title = text
+		changeFavicon(icon || false)
 	}
-	$.document.title = text
-	changeFavicon(icon || false)
 },
 
-bind_enter: function(block, action) {
-	block.addEventListener('keypress', function(e) {
+// this shouldnt be here i think
+bind_enter(block, action) {
+	block.addEventListener('keypress', (e)=>{
 		if (!e.shiftKey && e.keyCode == 13) {
 			e.preventDefault()
 			action()
@@ -466,16 +447,14 @@ bind_enter: function(block, action) {
 	})
 },
 
-changeFavicon: function(src) {
+changeFavicon(src) {
 	if (!faviconElement) {
 		if (src == false)
 			return
-		document.head.querySelectorAll("link[data-favicon]").forEach(function(e) {
-			e.remove()
-		})
+		document.head.querySelectorAll("link[data-favicon]").forEach(e=>e.remove())
 		faviconElement = document.createElement('link')
 		faviconElement.rel = "icon"
-		document.head.appendChild(faviconElement)
+		document.head.append(faviconElement)
 	} else if (faviconElement.href == src)
 		return
 	if (src == false)

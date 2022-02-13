@@ -37,7 +37,7 @@ Object.defineProperty(Node.prototype, 'childs', {
 // custom
 Node.prototype.createChild = function(type) {
 	let elem = this.ownerDocument.createElement(type)
-	this.appendChild(elem)
+	this.append(elem)
 	return elem
 }
 Node.prototype.child = function(t) {
