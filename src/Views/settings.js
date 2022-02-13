@@ -1,3 +1,6 @@
+// this stuff is in the sidebar currently
+// the actual settings page is blank, what the heck?
+
 <!--/* trick indenter
 with (View) (function($) { "use strict" //*/
 
@@ -13,7 +16,7 @@ addView('settings', {
 			})
 		}
 		$logOut.onclick = function(e) {
-			Req.logOut()
+			Req.log_out()
 		}
 		
 		$registerForm.onsubmit = function(e) {

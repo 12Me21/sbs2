@@ -39,7 +39,7 @@ addView('editpage', {
 					render(false)
 			}, true)
 		} else { //create new page
-			if (Req.gotCategoryTree) {
+			if (Req.got_categories) {
 				done()
 				return {abort: ()=>{}}
 			} else { //need to request category tree for page editor

@@ -9,26 +9,25 @@ function arrayToggle(array, value) {
 }
 
 const Req = {
-	//storageKey = "devauth"
-	storageKey: "auth",
+	//storage_key = "devauth"
+	storage_key: "auth",
 	
 	auth: null,
-	onLogin: null,
-	onLogout: null,
-	onGuestLoad: null,
+	on_login: null,
+	on_logout: null,
+	on_guest_load: null,
 	
 	server: "smilebasicsource.com/api", // no you can't add "https://" to this string, because we need to use wss:// in another place
 	
 	uid: null,
 	
-	categoryTree: null,
-	gotCategoryTree: false,
+	got_categories: false,
 	
 	me: null,
 	
 	locked: true,
 	
-	rawRequest(url, method, callback, data, auth) {
+	raw_request(url, method, callback, data, auth) {
 		let x = new XMLHttpRequest()
 		x.open(method, url)
 		let args = arguments
@@ -47,7 +46,7 @@ const Req = {
 				x.abort = ()=>{clearTimeout(id)}
 			} else {
 				console.log("retrying request", reason)
-				x.abort = this.rawRequest.apply(this, args).abort
+				x.abort = this.raw_request.apply(this, args).abort
 			}
 		}
 		
@@ -148,20 +147,20 @@ const Req = {
 	},
 	// idk having all brackets bold + dimgray was kinda nice...
 	request(url, method, callback, data) {
-		return this.rawRequest(`https://${this.server}/${url}`, method, (e, resp)=>{
+		return this.raw_request(`https://${this.server}/${url}`, method, (e, resp)=>{
 			if (e == 'auth')
-				this.logOut()
+				this.log_out()
 			else
 				callback(e, resp)
 		}, data, this.auth)
 	},
 	
 	// logs the user out and clears the cached token
-	logOut() {
-		Store.remove(this.storageKey)
+	log_out() {
+		Store.remove(this.storage_key)
 		Lp.stop()
 		this.auth = null
-		this.onLogout()
+		this.on_logout()
 	},
 	// call to set the current auth token
 	// should only be called once (triggers login event)
@@ -170,12 +169,12 @@ const Req = {
 		try {
 			newUid = Number(JSON.parse(window.atob(newAuth.split(".")[1])).uid) //yeah
 		} catch(e) {
-			this.logOut()
+			this.log_out()
 			return false
 		}
 		this.auth = newAuth
 		this.uid = newUid
-		this.onLogin()
+		this.on_login()
 		return true
 	},
 	
@@ -183,21 +182,21 @@ const Req = {
 		return this.request("User/authenticate", 'POST', (e, resp)=>{
 			if (!e) {
 				this.gotAuth(resp)
-				Store.set(this.storageKey, resp, true)
+				Store.set(this.storage_key, resp, true)
 			}
 			callback(e, resp)
 		}, {username: username, password: password})
 	},
 	
 	// try to load cached auth token from localstorage
-	// triggers onLogin and returns true if successful
+	// triggers on_login and returns true if successful
 	// (doesn't check if auth is expired though)
 	// return: Boolean
 	tryLoadCachedAuth() {
-		let auth = Store.get(this.storageKey)
+		let auth = Store.get(this.storage_key)
 		let ok = auth ? this.gotAuth(auth) : false
 		if (!ok)
-			this.onGuestLoad()
+			this.on_guest_load()
 		return ok
 	},
 	
@@ -236,14 +235,14 @@ const Req = {
 					return type+"-"+JSON.stringify(req[type])
 		})
 		Object.assign(query, filters)
-		needCategories = needCategories && !this.gotCategoryTree
+		needCategories = needCategories && !this.got_categories
 		if (needCategories)
 			query.requests.push('category~Ctree')
 		return this.request("Read/chain"+this.queryString(query), 'GET', (e, resp)=>{
 			if (!e) {
 				Entity.process(resp)
 				if (needCategories)
-					this.gotCategoryTree = true
+					this.got_categories = true
 			}
 			callback(e, resp)
 		})

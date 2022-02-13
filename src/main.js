@@ -22,7 +22,7 @@ dark.onchange(dark)
 Sidebar.print("hi!\ncommit: "+window.commit)
 delete window.sidebar // obsolete firefox global variable
 
-Req.onLogin = ()=>{
+Req.on_login = function() {
 	console.log("login")
 	View.flag('loggedIn', true)
 	
@@ -75,11 +75,11 @@ Entity.onCategoryUpdate = (cats)=>{
 	Sidebar.redrawCategoryTree(cats)
 }
 
-Req.onGuestLoad = ()=>{
+Req.on_guest_load = function(){
 	Act.pullRecent()
 }
 
-Req.onLogout = ()=>{
+Req.on_logout = function() {
 	View.flag('loggedIn', false)
 	//this is all messy
 	window.location.reload()
