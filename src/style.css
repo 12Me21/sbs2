@@ -115,7 +115,7 @@ sub {vertical-align: sub;}
 
 .avatar {
 	height: 1rem; /*default*/
-	border: 1px solid var(--image-border-color);
+	/*border: 1px solid var(--image-border-color);*/
 	border-radius: 3px;
 	background: var(--avatar-bg);
 }
@@ -164,7 +164,7 @@ input {
 
 html {
 	background-color: #FEE;
-	font-family: roboto, fontello, sans-serif;
+	font-family: roboto, sans-serif;
 	position: fixed;
 	color: var(--maintxtcolor);
 }
@@ -616,6 +616,7 @@ message-controls {
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	user-select: none;
+	display: flex;
 }
 
 message-controls:hover + message-part {
@@ -1244,4 +1245,8 @@ html.f-editorPreview .editorNotPreview {
 
 .input-form > * > * {
 	display: block;
+}
+
+.real-name-label {
+	color: gray
 }
