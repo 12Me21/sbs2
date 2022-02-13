@@ -17,7 +17,7 @@ const Req = {
 	onLogout: null,
 	onGuestLoad: null,
 	
-	server: "smilebasicsource.com/api",
+	server: "smilebasicsource.com/api", // no you can't add "https://" to this string, because we need to use wss:// in another place
 	
 	uid: null,
 	
@@ -47,7 +47,7 @@ const Req = {
 				x.abort = ()=>{clearTimeout(id)}
 			} else {
 				console.log("retrying request", reason)
-				x.abort = rawRequest.apply(this, args).abort
+				x.abort = this.rawRequest.apply(this, args).abort
 			}
 		}
 		
