@@ -1,151 +1,100 @@
-<!--/* trick indenter
-var Nav = Object.create(null)
-with (Nav) void function($) { "use strict"
-Object.assign(Nav, { //*/
-
-currentPath: null,
-
-initialPop: false,
-canonicalLink: null,
-init: false,
-
-entityPath: function(entity) {
-	if (!entity)
-		return
-	if (entity.Type == 'user')
-		return "user/"+entity.id
-	if (entity.Type == 'content')
-		return "page/"+entity.id
-	if (entity.Type == 'category')
-		return "category/"+entity.id
-	return "unknown/"+entity.id
-},
-
-link: function(path, element) {
-	path = String(path)
-	element = element || $.document.createElement('a')
-	element.href = "?"+path
-	element.onclick = function(e) {
-		e.preventDefault()
-		e.stopPropagation()
-		go(path)
-	}
-	// a few notes about this
-	// first, we need to use onclick because removing event listeners is a MASSIVE pain, especially here. we need to keep a list of old function references, and somehow attach that to the node? idk. WeakMap maybe but that's too new
-	// this way, adding a new event will override the old one automatically
-	// however, I also use some nested link elements (sorry...)
-	// so, this assumes the event will be called on the inner element first
-	// which is the default in most browsers, but some old browsers... idk
-	return element
-},
-
-go: function(path) {
-	currentPath = path
-	$.history.pushState(null, "", "?"+path)
-	// todo: maybe try to update page only after page loads
-	render(path)
-},
-
-// called when site loads to load the initial page
-// should read window.location and
-// eventually call `render`
-initial: function() {
-	// bad browsers will trigger popstate event
-	// whenever the page loads
-	// (not just from back/forward buttons)
-	// this SHOULD happen before DOMContentLoaded,
-	// and if it does, cancel the initial loader
-	// if it happens AFTER DOMContentLoaded then you're basically fucked though
-	if (init || initialPop)
-		return
-	initialPop = true
-	init = true
-	canonicalLink = document.createElement('link')
-	canonicalLink.rel = "canonical"
-	updateFromLocation()
-},
-
-updateFromLocation: function() {
-	var path = $.location.search.substr(1)
-	currentPath = path
-	render(path)
-},
-
-parsePath: function(path) {
-	var a = path.split1("#")
-	var b = a[0].split1("?")
-	var base = b[0]
-	var fragment = a[1]
-	var query = b[1]
-	var queryVars = {}
-	if (query) {
-		query.split("&").forEach(function(item) {
-			item = item.split1("=")
-			var name = decodeURIComponent(item[0].trim())
-			if (item[1] == null)
-				queryVars[name] = true
-			else
-				queryVars[name] = decodeURIComponent(item[1].trim())
+const Nav = {
+	current_path: null,
+	initial_pop: false,
+	init: false,
+	
+	entityPath(entity) {
+		if (!entity)
+			return
+		let type = {
+			user: 'user',
+			content: 'page',
+			category: 'category',
+		}[entity.Type] || 'unknown'
+		
+		return type+"/"+entity.id
+	},
+	
+	link(path, element) {
+		path = String(path)
+		element = element || document.createElement('a')
+		element.href = "?"+path
+		element.onclick = (e)=>{
+			e.preventDefault()
+			e.stopPropagation()
+			Nav.go(path)
+		}
+		// a few notes about this
+		// first, we need to use onclick because removing event listeners is a MASSIVE pain, especially here. we need to keep a list of old function references, and somehow attach that to the node? idk. WeakMap maybe but that's too new
+		// this way, adding a new event will override the old one automatically
+		// however, I also use some nested link elements (sorry...)
+		// so, this assumes the event will be called on the inner element first
+		// which is the default in most browsers, but some old browsers... idk
+		return element
+	},
+	
+	go(path) {
+		window.history.pushState(null, "", "?"+path)
+		// todo: maybe try to update page only after page loads
+		Nav.render(path)
+	},
+	
+	// called when site loads to load the initial page
+	// should read window.location and
+	// eventually call `render`
+	initial() {
+		// bad browsers will trigger popstate event
+		// whenever the page loads
+		// (not just from back/forward buttons)
+		// this SHOULD happen before DOMContentLoaded,
+		// and if it does, cancel the initial loader
+		// if it happens AFTER DOMContentLoaded then you're basically fucked though
+		if (Nav.init || Nav.initial_pop)
+			return
+		Nav.initial_pop = true
+		Nav.init = true
+		Nav.update_from_location()
+	},
+	
+	update_from_location() {
+		let path = window.location.search.substr(1)
+		Nav.render(path)
+	},
+	
+	// all paths are in the form
+	// name[/id][?query][#fragment]
+	decodePath(url) {
+		let [main, fragment] = url.split1("#")
+		let [path, query] = main.split1("?")
+		let vars = {}
+		query && query.split("&").forEach((item)=>{
+			let [key, value] = item.split1("=")
+			key = decodeURIComponent(key.trim())
+			vars[key] = value==null ? true : decodeURIComponent(value.trim())
 		})
-	}
-	return {
-		path: base.split("/"),
-		query: queryVars,
-		fragment: fragment
-	}
-},
-
-// all paths are in the form
-// name[/id][?query][#fragment]
-decodePath: function(path) {
-	path = parsePath(path)
-	var type = path.path[0] || ""
-	var id = path.path[1]
-	if (id != undefined) {
-		if (/^-?\d+$/.test(id))
+		
+		path = path.split("/")
+		let type = path[0] || ""
+		let id = path[1]
+		if (id != undefined && /^-?\d+$/.test(id))
 			id = +id
-	}
-	path.id = id
-	path.type = type
-	return path
-},
-
-haloopdyLink: function(path) {
-	var url = "https://smilebasicsource.com/"
-	if (path.type) {
-		url += "?p="+path.type
-		if (path.id !== undefined)
-			url += "-"+path.id
-	}
-	return url
-},
-
-render: function(path, after) {
-	path = String(path)
+		return {path, query: vars, fragment, type, id}
+	},
 	
-	var path = decodePath(path)
-	try {
-		document.head.removeChild(canonicalLink);
-	} catch(e) {};
-	canonicalLink.href = haloopdyLink(path);
-	document.head.appendChild(canonicalLink);
+	render(path, callback) {
+		Nav.current_path = path
+		path = Nav.decodePath(String(path))
+		// todo: update url when view is redirected
+		View.handleView(path.type, path.id, path.query, callback)
+	},
 	
-	// todo: update url when view is redirected
-	$.View.handleView(path.type, path.id, path.query, after)
-},
-
-reload: function() {
-	$.location += ""
-},
-
-<!--/* 
-}) //*/
-
-$.onpopstate = function() {
-	init = true
-	initialPop = true
-	updateFromLocation()
+	reload() {
+		window.location += ""
+	},
 }
 
-<!--/*
-}(window) //*/
+window.onpopstate = ()=>{
+	Nav.init = true
+	Nav.initial_pop = true
+	Nav.update_from_location()
+}
