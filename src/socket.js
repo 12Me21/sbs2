@@ -1,81 +1,83 @@
-let Lp = new class Lp {
-	statuses = {"-1":"online"}
-	lastListeners = {"-1":{"0":""}}
-	// this is used in displaying the userlist
-	processedListeners = {}
-	
+let Lp = {
 	// events, set externally
-	onListeners = null
-	onMessages = null
-	onActivity = null
-	onStart = null
+	onListeners: null,
+	onMessages: null,
+	onActivity: null,
+	onStart: null,
 	
-	gotMessages = []
+	statuses: {'-1':"online"},
+	lastListeners: {'-1':{'0':""}},
+	// this is used in displaying the userlist
+	processed_listeners: {},
 	
-	use_websocket = false
-	first_websocket = true
+	gotMessages: [],
+	
+	use_websocket: false,
+	first_websocket: true,
 	
 	// debug
-	ws_message = {} 
-	websocket = null
+	ws_message: {},
+	websocket: null,
 	
 	///////////////////////
 	// PRIVATE variables //
 	///////////////////////
-	lastId = 0
-	lpInit = true
-	running = false
-	lpCancel = ()=>{}
-	ws_token = null
-	last_open = 0
+	lastId: 0,
+	init: true,
+	running: false,
+	lp_cancel: ()=>{},
+	ws_token: null,
+	last_open: 0,
 	
 	////////////////////
 	// public methods //
 	////////////////////
 	
 	// call this after setting the parameters
-	lpRefresh() {
-		if (this.running && !this.lpInit) {
+	refresh() {
+		if (this.running && !this.init) {
 			if (this.use_websocket) {
-				this.wsRefresh()
+				this.ws_refresh()
 			} else {
-				this.lpCancel()
-				this.lpLoop()
+				this.lp_cancel()
+				this.lp_loop()
 			}
 		}
-	}
+	},
 	
 	start(callback) {
 		if (!this.running) {
 			if (this.use_websocket) {
 				print('starting lp: websocket')
-				this.wsRefresh(true)
+				this.ws_refresh(true)
 			} else {
 				print('starting lp: long poller')
-				this.lpLoop(this.onStart)
+				this.lp_loop(this.onStart)
 			}
 		}
-	}
+	},
 	
-	lpStop() {
+	stop() {
 		if (this.websocket) {
 			this.websocket.close()
 		} else {
-			this.lpCancel()
+			this.lp_cancel()
 		}
 		this.running = false
-	}
+	},
 	
-	lpSetListening(ids) {
-		let newListeners = {"-1": this.lastListeners[-1]}
-		ids.forEach((id)=>newListeners[id] = this.lastListeners[id] || {"0":""})
-		this.lastListeners = newListeners
-	}
+	set_listening(ids) {
+		let new_listeners = {"-1": this.lastListeners[-1]}
+		ids.forEach((id)=>{
+			new_listeners[id] = this.lastListeners[id] || {'0':""}
+		})
+		this.lastListeners = new_listeners
+	},
 	
-	lpSetStatus(statuses) {
+	set_status(statuses) {
 		for (let id in statuses) {
 			let status = statuses[id]
-			statuses[id] = status
+			this.statuses[id] = status
 			// set status in lastListeners, so we won't cause the long poller to complete instantly
 			if (!this.lastListeners[id])
 				this.lastListeners[id] = {}
@@ -87,24 +89,24 @@ let Lp = new class Lp {
 			// of the 2 options, this one is better in general, I think
 			// it reduces lp completions
 			// wait, but... does it really?
-			if (!this.processedListeners[id])
-				this.processedListeners[id] = {}
-			this.processedListeners[id][Req.uid] = {user: Req.uid, status: status}
+			if (!this.processed_listeners[id])
+				this.processed_listeners[id] = {}
+			this.processed_listeners[id][Req.uid] = {user: Req.uid, status: status}
 		}
-		this.onListeners(this.processedListeners)
-		this.lpRefresh()
-	}
+		this.onListeners(this.processed_listeners)
+		this.refresh()
+	},
 	
 	/////////////////////////
 	// "private" functions //
 	/////////////////////////
 	
-	wsRefresh(me) {
+	ws_refresh(me) {
 		this.running = true
 		let req = this.make_listen(this.lastId, this.statuses, this.lastListeners, me)
 		this.ws_message = req
 		this.websocket_flush()
-	}
+	},
 	
 	make_listen(lastId, statuses, lastListeners, getMe) {
 		let requests = this.make_request(lastId, statuses, lastListeners, getMe)
@@ -128,7 +130,7 @@ let Lp = new class Lp {
 			Object.assign(query, {content: "id,createUserId,name,permissions,type"})
 		}
 		return query
-	}
+	},
 	
 	make_request(lastId, statuses, lastListeners, getMe) {
 		let actions = {
@@ -160,25 +162,24 @@ let Lp = new class Lp {
 			{actions: actions},
 			{listeners: listeners}
 		]
-	}
+	},
 	
-	doListen(lastId, statuses, lastListeners, getMe, callback) {
+	do_listen(lastId, statuses, lastListeners, getMe, callback) {
 		let query = this.make_listen(lastId, statuses, lastListeners, getMe)
-		
 		return Req.request("Read/listen"+Req.queryString(query), 'GET', (e, resp)=>{
 			if (!e)
 				Entity.process(resp.chains)
 			callback(e, resp)
 		})
-	}
+	},
 	
-	lpLoop(noCancel) {
+	lp_loop(noCancel) {
 		this.running = true
 		//make sure only one instance of this is running
 		let cancelled
-		let x = this.doListen(this.lastId, this.statuses, this.lastListeners, noCancel, (e, resp)=>{
+		let x = this.do_listen(this.lastId, this.statuses, this.lastListeners, noCancel, (e, resp)=>{
 			if (noCancel) {
-				this.lpInit = false
+				this.init = false
 				noCancel(e, resp)
 			}
 			if (cancelled) { // should never happen (but I think it does sometimes..)
@@ -189,6 +190,7 @@ let Lp = new class Lp {
 				// try/catch here so the long poller won't fail when there's an error in the callbacks
 				try {
 					this.lastId = resp.lastId
+					// debug
 					if (resp.chains) {
 						if (resp.chains.comment) {
 							if (resp.chains.comment instanceof Array) {
@@ -201,19 +203,20 @@ let Lp = new class Lp {
 							}
 						}
 					}
+					
 					if (resp.listeners)
 						this.lastListeners = resp.listeners
-					this.lpProcess(resp)
+					this.lp_process(resp)
 				} catch (e) {
 					console.error(e)
 				}
-				// I'm not sure this is needed. might be able to just call lpLoop diretcly?
+				// I'm not sure this is needed. might be able to just call lp_loop diretcly?
 				let t = setTimeout(()=>{
 					if (cancelled) // should never happen?
 						return
-					this.lpLoop()
+					this.lp_loop()
 				}, 0)
-				this.lpCancel = ()=>{
+				this.lp_cancel = ()=>{
 					this.cancelled = true
 					this.running = false
 					clearTimeout(t)
@@ -223,16 +226,17 @@ let Lp = new class Lp {
 				console.log("LONG POLLER FAILED", e, resp)
 			}
 		})
-		this.lpCancel = ()=>{
+		this.lp_cancel = ()=>{
 			this.cancelled = true
 			this.running = false
 			x.abort()
 		}
-	}
+	},
 	
 	handleOnListeners(listeners, users) {
 		let out = {}
 		// process listeners (convert uids to user objetcs)
+		// shouldn't this be handled by Entity?
 		for (let id in listeners) {
 			let list = listeners[id]
 			let list2 = {}
@@ -240,14 +244,13 @@ let Lp = new class Lp {
 				list2[uid] = {user: users[uid], status: list[uid]}
 			out[id] = list2
 		}
-		this.processedListeners = out
+		this.processed_listeners = out
 		this.onListeners(out)
-	}
+	},
 	
-	lpProcess(resp) {
-		if (resp.listeners) {
+	lp_process(resp) {
+		if (resp.listeners)
 			this.handleOnListeners(resp.listeners, resp.chains.userMap)
-		}
 		if (resp.chains) {
 			if (resp.chains.comment)
 				this.onMessages(resp.chains.comment, resp.chains.content)
@@ -256,7 +259,7 @@ let Lp = new class Lp {
 			if (resp.chains.activity)
 				this.onActivity(resp.chains.activity, resp.chains.content)
 		}
-	}
+	},
 	
 	websocket_flush() {
 		if (this.websocket && this.websocket.readyState == 0)
@@ -271,7 +274,7 @@ let Lp = new class Lp {
 		} else {
 			this.open_websocket()
 		}
-	}
+	},
 	
 	// todo: we need to be 100% sure that the initial websocket config is NEVER changed until the ws returns initially, I think
 	open_websocket() {
@@ -295,7 +298,7 @@ let Lp = new class Lp {
 				this.ws_token = resp
 				print("got ws token!")
 				this.websocket_flush()
-				//this.wsRefresh(callback)
+				//this.ws_refresh(callback)
 			} else {
 				print('websocket auth failed:'+e)
 			}
@@ -329,17 +332,17 @@ let Lp = new class Lp {
 					if (this.first_websocket) { //very bad hack
 						print("first!!!")
 						this.first_websocket = false
-						this.lpInit = false
+						this.init = false
 						this.onStart(null, resp)
 						// this is a hack for in case
 						// the initial response takes too long idk etc.
-						this.wsRefresh(); // not always necessary, depends on timing
+						this.ws_refresh(); // not always necessary, depends on timing
 					} else {
 						// unlike long poller, we DON'T keep this data on the initial response, due to bugs and idk..
 						if (resp.listeners)
 							this.lastListeners = resp.listeners
 						//
-						this.lpProcess(resp)
+						this.lp_process(resp)
 					}
 				} catch (e) {
 					console.error(e)
@@ -352,5 +355,5 @@ let Lp = new class Lp {
 				print("websocket unknown message: "+e.data)
 			}
 		}
-	}
+	},
 }

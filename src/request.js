@@ -159,7 +159,7 @@ const Req = {
 	// logs the user out and clears the cached token
 	logOut() {
 		Store.remove(this.storageKey)
-		Lp.lpStop()
+		Lp.stop()
 		this.auth = null
 		this.onLogout()
 	},

@@ -263,7 +263,7 @@ handleView(type, id, query, callback) {
 		
 		Lp.lastListeners = ChatRoom.generateListeners(Lp.lastListeners)
 		Lp.statuses = ChatRoom.generateStatus()
-		Lp.lpRefresh()
+		Lp.refresh()
 		
 		callback && callback()
 		// todo: scroll to fragment element

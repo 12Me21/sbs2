@@ -752,12 +752,6 @@ Object.assign(Draw, { //*/
 		let icon = iconTitle(entity)
 		element.append(icon)
 		
-		/*var author = entityTitleLink(entity.createUser, true)
-		  var b = E`div`
-		  b.appendChild(author)
-		  b.className += " rightAlign"
-		  element.appendChild(b)*/
-		
 		return element
 	},
 	
@@ -816,9 +810,7 @@ Object.assign(Draw, { //*/
 		if (!page)
 			return element
 		
-		let buttonStates = [
-			['-', 'b'], ['~', 'o'], ['+', 'g']
-		]
+		let buttonStates = [['-', 'b'], ['~', 'o'], ['+', 'g']]
 		let buttons = buttonStates.map(x => voteButton(x[0], x[1], page))
 		
 		buttons.forEach((x)=>{

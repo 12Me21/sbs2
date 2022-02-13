@@ -122,7 +122,7 @@ class ChatRoom {
 		this.pinned = false
 		this.scroller = new Scroller(this.messagePane, this.messageList)
 		this.updatePage(page)
-		let l = Lp.processedListeners[id] //should this be done with id -1? // what?
+		let l = Lp.processed_listeners[id] //should this be done with id -1? // what?
 		l && this.updateUserList(l)
 		this.constructor.addRoom(this)
 		
@@ -395,7 +395,7 @@ ChatRoom.generateStatus = function() {
 }
 
 ChatRoom.updateStatus = function() {
-	Lp.lpSetStatus(this.generateStatus())
+	Lp.set_status(this.generateStatus())
 }
 
 ChatRoom.rooms = {}
@@ -419,8 +419,8 @@ ChatRoom.removeRoom = function(room) {
 }
 
 ChatRoom.setViewing = function(ids) {
-	Lp.lpSetListening(ids)
-	Lp.lpRefresh()
+	Lp.set_listening(ids)
+	Lp.refresh()
 }
 
 ChatRoom.updateUserLists = function(a) {
