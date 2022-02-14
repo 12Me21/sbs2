@@ -324,13 +324,14 @@ Object.assign(Draw, { //*/
 	messagePart(comment) {
 		let element = E`message-part`
 		element.className = "markup-root"
-		element.dataset.id = comment.id
 		element.setAttribute('tabindex', "0")
 		
-		let contents = Parse.parseLang(comment.content, comment.meta.m, false)
 		if (comment.createDate.getTime() != comment.editDate.getTime())
 			element.className += " edited"
-		element.append(contents)
+		
+		element.x_data = comment // mm  was going to use dataset but this is more efficent, and the attribute was taking up tons of space in the html inspector lol
+		element.dataset.id = comment.id
+		element.append(Parse.parseLang(comment.content, comment.meta.m, false))
 		return element
 	},
 	timeString(date) {

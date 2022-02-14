@@ -90,23 +90,42 @@ addView('page', {
 	},
 	init() {
 		let send_message = ()=>{
-			let data = read_input(editing_comment, !!editing_comment)
 			let room = ChatRoom.currentRoom
-			if (room && data.content) {
-				if (editing_comment) {
-					Req.editMessage(editing_comment.id, editing_comment.parentId, data.content, data.meta, (e)=>{
-						if (e)
+			if (!room)
+				return;
+			
+			let data = read_input(editing_comment, !!editing_comment)
+			
+			if (editing_comment) { // editing comment
+				let last_edit = editing_comment
+				cancel_edit()
+				$chatTextarea.focus()
+				
+				if (data.content) { // input not blank
+					Req.editMessage(last_edit.id, last_edit.parentId, data.content, data.meta, (e)=>{
+						if (e) {
 							alert("Editing comment failed")
+						}
 					})
-					cancel_edit()
-				} else {
+				} else { // input is blank
+					let resp = confirm("Are you sure you want to delete this message?\n"+last_edit.content)
+					if (resp) {
+						Req.deleteMessage(last_edit.id, (e, resp)=>{
+							if (e) {
+								alert("Deleting comment failed")
+							}
+						})
+					}
+				}
+			} else { // posting new comment
+				if (data.content) { // input is not blank
 					let old = data
 					Req.sendMessage(room.id, data.content, data.meta, (e, resp)=>{
 						if (e) {
 							//error sending message
 							write_input(old)
 						} else {
-							last_sent = resp.id;
+							last_sent = resp;
 						}
 					})
 					// going to try this hack to see if that fixes safari
@@ -115,15 +134,6 @@ addView('page', {
 						textarea_resize()
 					}, 0)
 				}
-			} else if (editing_comment) {
-				let resp = confirm("Are you sure you want to delete this message?\n"+editing_comment.content)
-				if (resp) {
-					Req.deleteMessage(editing_comment.id, (e, resp)=>{
-						//
-					})
-					$chatTextarea.focus() //need more of this
-				}
-				cancel_edit()
 			}
 		}
 		// up arrow = edit last comment
@@ -164,25 +174,9 @@ addView('page', {
 		// todo: global escape handler?
 		document.addEventListener('keydown', (e)=>{
 			if (e.keyCode == 27) {
-				cancel_edit_mode()
 				cancel_edit()
 			}
 		})
-		document.addEventListener('click', (e)=>{
-			if (View.flags.chatEdit) {
-				View.flag('chatEdit', false)
-				let element = e.target
-				while (element && element instanceof HTMLElement) {
-					if (element.tagName == 'MESSAGE-PART') {
-						let id = element.dataset.id
-						if (id)
-							edit_comment(+id, element)
-						break
-					}
-					element = element.parentNode
-				}
-			}
-		}, true)
 		
 		let textarea_resize = ()=>{
 			$chatTextarea.style.height = ''
@@ -230,24 +224,20 @@ function write_input(data) {
 }
 
 let pre_edit = null
-window.editing_comment = null
+let editing_comment = null
 
 // todo: move this onto the ChatRoom object??
 $.editComment = edit_comment //HACK
-function edit_comment(id) {
+function edit_comment(comment) {
 	if (editing_comment)
 		cancel_edit()
-	Req.getComment(id, (comment)=>{
-		if (!comment) return
-		if (editing_comment)
-			cancel_edit()
-		cancel_edit_mode()
-		pre_edit = read_input()
-		editing_comment = comment
-		write_input(comment)
-		View.flag('chatEditing', true)
-		$chatTextarea.focus()
-	})
+	if (!comment)
+		return
+	pre_edit = read_input()
+	editing_comment = comment
+	write_input(comment)
+	View.flag('chatEditing', true)
+	$chatTextarea.focus()
 }
 
 function cancel_edit() {
@@ -256,10 +246,6 @@ function cancel_edit() {
 		View.flag('chatEditing', false)
 		write_input(pre_edit)
 	}
-}
-
-function cancel_edit_mode() {
-	View.flag('chatEdit', false)
 }
 
 <!--/*

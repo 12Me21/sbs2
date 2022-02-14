@@ -80,11 +80,11 @@ class ChatRoom {
 		/////////////////////////////
 		// set up message controls //
 		/////////////////////////////
-		this.controlId = null
+		this.controls_message = null
 		let controls = Draw.messageControls()
 		controls.onclick = ()=>{
-			if (this.controlId)
-				window.editComment(this.controlId)
+			if (this.controls_message)
+				window.editComment(this.controls_message.x_data)
 		}
 		this.controls = controls.elem
 		
@@ -325,11 +325,11 @@ class ChatRoom {
 				console.error("oops, elem was removed?")
 			} else {
 				elem.parentNode.insertBefore(this.controls, elem)
-				this.controlId = +elem.dataset.id
+				this.controls_message = elem
 			}
 		} else {
 			this.controls.remove()
-			this.controlId = null
+			this.controls_message = null
 		}
 	}
 	
