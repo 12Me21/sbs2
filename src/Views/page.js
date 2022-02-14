@@ -120,11 +120,11 @@ addView('page', {
 				if (data.content) { // input is not blank
 					let old = data
 					Req.sendMessage(room.id, data.content, data.meta, (e, resp)=>{
+						console.log(resp)
 						if (e) {
 							//error sending message
 							write_input(old)
 						} else {
-							last_sent = resp;
 						}
 					})
 					// going to try this hack to see if that fixes safari
@@ -140,8 +140,10 @@ addView('page', {
 		// either store it when displayed and only pull info from the server if necessary, or idk
 		$chatTextarea.onkeydown = (e)=>{
 			if (e.keyCode==38 && $chatTextarea.value=="") { // up arrow
-				if (last_sent)
-					edit_comment(last_sent)
+				let room = ChatRoom.currentRoom
+				let msg = room && room.my_last_message()
+				if (msg && msg.x_data)
+					edit_comment(msg.x_data)
 			}
 		}
 		$chatTextarea.onkeypress = (e)=>{
@@ -236,7 +238,11 @@ function edit_comment(comment) {
 	editing_comment = comment
 	write_input(comment)
 	View.flag('chatEditing', true)
-	$chatTextarea.focus()
+	// todo: maybe also save/restore cursor etc.
+	window.setTimeout(x=>{
+		$chatTextarea.setSelectionRange(99999,99999)
+		$chatTextarea.focus()
+	},0)
 }
 
 function cancel_edit() {

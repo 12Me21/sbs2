@@ -298,6 +298,11 @@ class ChatRoom {
 			}
 		})
 	}
+	my_last_message() {
+		return Object.values(this.messageElements).findLast((msg)=>{
+			return msg && msg.x_data.createUserId == Req.uid
+		})
+	}
 	displayMessage(comment, autoscroll) {
 		this.scroller.handlePrint(()=>{
 			let old = this.messageElements[comment.id]
