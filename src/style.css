@@ -1136,8 +1136,10 @@ textarea-container > textarea {
 }
 
 textarea-container > textarea:focus {
-	outline-offset: 4px;
-	outline: 2px solid black;
+/*	outline-offset: 4px;
+	outline: 2px solid black;*/
+	outline-offset: 3px;
+	outline: 2px inset gray;
 }
 
 textarea-container, textarea-container > textarea {
