@@ -605,18 +605,22 @@ message-block > .avatar {
 message-contents {
 	position: relative;
 	margin-top: 0.2rem;
+	min-height: 1.5rem; /* this is so the message controls always have somewhere to be shown */
+	overflow-y: hidden;
+	overflow-y: clip;
 }
 
 message-controls {
 	position: absolute;
-	/*margin: 0.2rem 0;*/
 	width: 4rem;
-	overflow: hidden;
+	z-index: 9;
+/*(	overflow: hidden;*/
 	/* don't remove these prefixes */
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	user-select: none;
-	display: flex;
+	display: inline-flex;
+	height: 1.3rem;
 }
 
 message-controls:hover + message-part {
@@ -633,7 +637,8 @@ message-part:not(.whatever) {
 	display: block;
 	/*margin: 0.2rem 0;*/
 	padding-left: 4.2rem;
-	padding-bottom: 0.2rem
+	padding-bottom: 0.2rem;
+	min-height: 1rem;
 }
 message-part.edited {
 	/* todo: fix this */
@@ -1105,7 +1110,7 @@ textarea-container {
 	box-sizing: content-box;
 	border: 2px solid #00C8B4;
 	padding: 5px;
-	overflow: hidden;
+	/* overflow: hidden; this was needed only because of the vertical-align bug */
 	background: var(--mainbgcolor);
 }
 
@@ -1126,6 +1131,8 @@ textarea-container > textarea {
 	margin: 0;
 	border-radius: 0;
 	box-shadow: none;
+	
+	overflow-y: scroll;
 }
 
 textarea-container > textarea:focus {

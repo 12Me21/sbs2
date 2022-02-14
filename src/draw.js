@@ -673,17 +673,17 @@ Object.assign(Draw, { //*/
 		let x = {
 			elem: elem
 		}
-		let btn = button()
-		elem.append(btn[0])
+		let btn = E`button`
+		elem.append(btn)
 		//btn[1].onclick = ()=>{x.onclick()}
-		btn[1].tabIndex = "-1"
-		btn[1].textContent = "⚙"
+		btn.tabIndex = "-1"
+		btn.textContent = "⚙"
 		
-		btn = button()
-		elem.append(btn[0])
-		btn[1].onclick = ()=>{x.onclick()}
-		btn[1].tabIndex = "-1"
-		btn[1].textContent = "✏"
+		btn = E`button`
+		elem.append(btn)
+		btn.onclick = ()=>{x.onclick()}
+		btn.tabIndex = "-1"
+		btn.textContent = "✏"
 		/*btn[0].className += " rightAlign loggedIn"*/
 		return x
 	},

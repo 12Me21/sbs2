@@ -95,7 +95,6 @@ addView('page', {
 				return;
 			
 			let data = read_input(editing_comment, !!editing_comment)
-			
 			if (editing_comment) { // editing comment
 				let last_edit = editing_comment
 				cancel_edit()

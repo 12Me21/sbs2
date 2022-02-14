@@ -325,7 +325,7 @@ class ChatRoom {
 				console.error("oops, elem was removed?")
 			} else {
 				elem.parentNode.insertBefore(this.controls, elem)
-				this.controls_message = elem
+				this.controls_message = elem // this must be the element where .x_data is set
 			}
 		} else {
 			this.controls.remove()
