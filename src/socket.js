@@ -100,8 +100,7 @@ let Lp = {
 	},
 	
 	set_status(statuses) {
-		for (let id in statuses) {
-			let status = statuses[id]
+		Object.for(statuses, (status, id)=>{
 			this.statuses[id] = status
 			// set status in lastListeners, so we won't cause the long poller to complete instantly
 			if (!this.lastListeners[id])
@@ -116,8 +115,8 @@ let Lp = {
 			// wait, but... does it really?
 			if (!this.processed_listeners[id])
 				this.processed_listeners[id] = {}
-			this.processed_listeners[id][Req.uid] = {user: Req.uid, status: status}
-		}
+			this.processed_listeners[id][Req.uid] = {user: Req.uid, status: status}			
+		})
 		this.onListeners(this.processed_listeners)
 		this.refresh()
 	},

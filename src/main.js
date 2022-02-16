@@ -20,7 +20,6 @@ dark.onchange = (query)=>{
 dark.onchange(dark)
 
 Sidebar.print("hi!\ncommit: "+window.commit)
-delete window.sidebar // obsolete firefox global variable
 
 Req.on_login = function() {
 	console.log("login")

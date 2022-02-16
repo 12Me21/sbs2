@@ -9,6 +9,8 @@ Object.freeze(Object.prototype)
 if (!window.devicePixelRatio)
 	window.devicePixelRatio = 1
 
+delete window.sidebar // obsolete firefox global variable
+
 String.prototype.split1 = function(sep) {
 	let n = this.indexOf(sep)
 	if (n == -1)
