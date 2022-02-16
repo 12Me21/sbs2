@@ -34,7 +34,8 @@ addView('chatlogs', {
 			"content.0parentId",
 			"user.0createUserId",
 		], {}, function(e, resp){
-			if (e) return render(null)
+			if (e)
+				return render(null)
 			render(resp.comment, query, resp.content)
 		})
 	},

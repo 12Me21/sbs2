@@ -26,10 +26,7 @@ addView('images', {
 			if (!selectedFile)
 				return
 			Req.setBasic({avatar: selectedFile.id}, (user)=>{
-				if (user) {
-					// have to do this because rannnnnnnnnnndommmmmmm broke user activityyy
-					updateMyUser(user)
-				}
+				user && updateMyUser(user) // have to do this because rannnnnnnnnnndommmmmmm broke user activityyy
 			})
 		}
 		$fileUpdateButton.onclick = ()=>{

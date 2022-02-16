@@ -452,8 +452,7 @@ const INPUTS = (()=>{
 				}
 				
 				let list = []
-				if (tree)
-					build_list(tree, list, 0)
+				tree && build_list(tree, list, 0)
 				if (value!=null) {
 					let selected = list.find(item=>item.id==value)
 					if (!selected) {

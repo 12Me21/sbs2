@@ -334,8 +334,7 @@ onLoad() {
 					embiggenedImage = null
 				}
 			} else if (element != embiggenedImage) { // if click on new iamge
-				if (embiggenedImage)
-					embiggenedImage.removeAttribute('bigImage')
+				embiggenedImage && embiggenedImage.removeAttribute('bigImage')
 				element.setAttribute('bigImage', "")
 				embiggenedImage = element
 			}

@@ -49,26 +49,25 @@ with (Sidebar) (function($) { "use strict"; Object.assign(Sidebar, {
 					selectedFile.filename = $fileUploadName.value
 				Req.uploadFile(selectedFile, (file)=>{
 					$fileUpload.disabled = false
-					if (file) {
-						// setting the filename takes a second request
-						// not anymore!!
-						// get rid of this and just use the query param!!
-						if ($fileUploadName.value) {
-							$fileUploadNameOut.textContent = "(setting metadata...)"
-							file.name = $fileUploadName.value
-							Req.putFile(file, (e, resp)=>{
-								$fileUploadNameOut.textContent = resp.name
-								// yea
-							})
-						} else {
-							$fileUploadNameOut.textContent = ""
-						}
-						View.flag('sidebarUploaded', true)
-						$fileView.src = ""
-						$fileView.src = Req.fileURL(file.id)
-						$fileURL.value = Req.fileURL(file.id)
+					if (!file)
+						return
+					// setting the filename takes a second request
+					// not anymore!!
+					// get rid of this and just use the query param!!
+					if ($fileUploadName.value) {
+						$fileUploadNameOut.textContent = "(setting metadata...)"
+						file.name = $fileUploadName.value
+						Req.putFile(file, (e, resp)=>{
+							$fileUploadNameOut.textContent = resp.name
+							// yea
+						})
 					} else {
+						$fileUploadNameOut.textContent = ""
 					}
+					View.flag('sidebarUploaded', true)
+					$fileView.src = ""
+					$fileView.src = Req.fileURL(file.id)
+					$fileURL.value = Req.fileURL(file.id)
 				})
 			}
 		}

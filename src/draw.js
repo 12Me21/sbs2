@@ -22,11 +22,10 @@ Object.assign(Draw, { //*/
 	// icon + name
 	iconTitle(entity, reverse) {
 		let elem = F()
-		if (reverse) {
+		if (reverse)
 			elem.append(title(entity), icon(entity))
-		} else {
+		else
 			elem.append(icon(entity), title(entity))
-		}
 		return elem
 	},
 	
@@ -748,8 +747,7 @@ Object.assign(Draw, { //*/
 				}
 			}
 			
-			if (elem)
-				x.elem.append(elem)
+			elem && x.elem.append(elem)
 			x.elem.child`br`
 		})
 		return x

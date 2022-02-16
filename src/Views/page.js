@@ -83,8 +83,7 @@ addView('page', {
 	},
 	cleanUp(type) {
 		//$messageList.replaceChildren()
-		if (room)
-			room.hide() //so it's fucking possible for cleanup to get called TWICE if there's an error, sometimes.
+		room && room.hide() //so it's fucking possible for cleanup to get called TWICE if there's an error, sometimes.
 		room = null
 		flag('canEdit', false)
 	},
