@@ -395,21 +395,23 @@ attachResize(element, tab, horiz, dir, save, callback) {
 		callback && callback(size)
 	}
 	tab.addEventListener('mousedown', down)
-	document.addEventListener('mouseup', up)
-	document.addEventListener('mousemove', move)
-	
 	tab.addEventListener('touchstart', (e)=>{
 		e.preventDefault()
 		down(e)
 	}, {passive:true}) //todo: prevent scrolling on mobile
+	
+	document.addEventListener('mouseup', up)
 	document.addEventListener('touchend', up)
+	
+	document.addEventListener('mousemove', move)
 	document.addEventListener('touchmove', move)
+	
 	if (save) {
 		size = Store.get(save)
 		if (size) {
 			size = Math.max(0, +size)
 			update_size(size)
-			if (callback) callback(size)
+			callback && callback(size)
 		}
 	}
 },
