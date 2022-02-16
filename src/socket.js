@@ -66,6 +66,7 @@ let Lp = {
 		this.running = false
 	},
 	
+	// this is unused currently: it just sets .lastListeners directly instead
 	set_listening(ids) {
 		let new_listeners = {"-1": this.lastListeners[-1]}
 		ids.forEach((id)=>{
@@ -114,18 +115,14 @@ let Lp = {
 		let query = {}
 		if (this.use_websocket) {
 			requests.forEach((req)=>{
-				for (let type in req) { // var type = first key in req
-					query[type] = req[type]
-					break
-				}
+				let type = Object.first_key(req)
+				query[type] = req[type]
 			})
 			query.fields = {content:['id','createUserId','name','permissions','type']}
 		} else {
 			requests.forEach((req)=>{
-				for (let type in req) { // var type = first key in req
-					query[type] = JSON.stringify(req[type])
-					break
-				}
+				let type = Object.first_key(req)
+				query[type] = JSON.stringify(req[type])
 			})
 			Object.assign(query, {content: "id,createUserId,name,permissions,type"})
 		}

@@ -258,7 +258,7 @@ decodeComment: function(content) {
 		// try to parse the first line as JSON
 		var data = JSON.parse(newline>=0 ? content.substr(0, newline) : content)
 	} finally {
-		if (data && data.constructor == Object) { // new or legacy format
+		if (data && Object.getPrototypeOf(data)==Object.prototype) { // new or legacy format
 			if (newline >= 0)
 				data.t = content.substr(newline+1) // new format
 		} else // raw

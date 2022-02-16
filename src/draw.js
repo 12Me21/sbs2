@@ -710,7 +710,8 @@ Object.assign(Draw, { //*/
 				get.forEach((func, key)=>{change(key)})
 			}
 		}
-		settings.forEach((data, name)=>{
+		for (let name in settings) {
+			let data = settings[name]
 			let type = data.type
 			let label = E`label`
 			label.textContent = data.name+": "
@@ -751,7 +752,7 @@ Object.assign(Draw, { //*/
 			if (elem)
 				x.elem.append(elem)
 			x.elem.child`br`
-		})
+		}
 		return x
 	},
 	

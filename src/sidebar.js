@@ -121,10 +121,10 @@ with (Sidebar) (function($) { "use strict"; Object.assign(Sidebar, {
 	// it redraws the entire list of pages in activity + watching, EVERY time they update
 	onAggregateChange(aggregate) {
 		let items = []
-		aggregate.forEach(a=>{
+		for (let a in aggregate) {
 			if (a.content) //HACK
 				items.push(a)
-		})
+		}
 		items.sort((a, b)=> -(a.lastDate - b.lastDate))
 		$sidebarActivity.replaceChildren()
 		$sidebarWatch.replaceChildren()
@@ -147,7 +147,7 @@ with (Sidebar) (function($) { "use strict"; Object.assign(Sidebar, {
 				try {
 					return String(str)
 				} catch(e) {
-					return "<"+str.constructor.name+">"
+					return "<"+str.constructor.name+">" // todo: breaks on {} with no constructor now
 				}
 			} catch(e) {
 				return "<???>"

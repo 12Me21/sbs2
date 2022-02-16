@@ -364,7 +364,7 @@ const INPUTS = (()=>{
 			set([perms, users]) {
 				this.body.replaceChildren()
 				let d = false
-				perms.forEach((perm, uid) => {
+				Object.for(perms, (perm, uid) => {
 					uid = +uid
 					this._add_row(users[uid] || {Type:'user', id:uid}, perm)
 					if (uid==0)

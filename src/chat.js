@@ -372,7 +372,7 @@ ChatRoom.updateStatus = function() {
 ChatRoom.rooms = {}
 
 ChatRoom.updateUserAvatar = function(user) {
-	this.rooms.forEach(room => room.updateUserAvatar(user))
+	Object.for(this.rooms, room => room.updateUserAvatar(user))
 	this.global && this.global.updateUserAvatar(user)
 }
 

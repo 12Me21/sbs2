@@ -2,6 +2,9 @@
 
 delete Array.prototype.toString
 delete Object.prototype.toString
+for (let key of Object.getOwnPropertyNames(Object.prototype))
+	delete Object.prototype[key]
+Object.freeze(Object.prototype)
 
 if (!window.devicePixelRatio)
 	window.devicePixelRatio = 1
@@ -77,15 +80,16 @@ let Store = {
 	}
 }
 
-// DANGEROUS
-// allows object.forEach (but this will break if the .forEach key exists!!)
-Object.defineProperty(Object.prototype, 'forEach', {
-	enumerable: false, // EXTREMELY IMPORTANT
-	configurable: true,
-	value(callback) {
-		for (let key in this)
-			callback(this[key], key, this)
-	}
-})
+Object.for = (obj, callback)=>{
+	for (let key in obj)
+		callback(obj[key], key, obj)
+}
+
+// do we use this,, ehh
+Object.first_key = function(obj) {
+	for (let key in obj)
+		return key
+}
+
 
 //talking excitedly about javasscript getters and setters for an hour and then crying

@@ -105,13 +105,16 @@ const Req = {
 		x.setRequestHeader('Pragma', "no-cache") // for internet explorer
 		auth && x.setRequestHeader('Authorization', "Bearer "+auth)
 		
+		// no data
 		if (data == undefined)
 			x.send()
-		else if (data.constructor == Object) { //plain object. we do need to support sending strings etc. as json later though...
+		// data is Object (convert to json)
+		else if (Object.getPrototypeOf(data)==Object.prototype) { //plain object. we do need to support sending strings etc. as json later though...
 			x.setRequestHeader('Content-Type', "application/json;charset=UTF-8")
 			x.send(JSON.stringify(data))
+		// otherwise, send raw (ex: string, FormData)
 		} else
-			x.send(data)
+			x.send(Object.toString(data))
 		
 		return x
 	},
