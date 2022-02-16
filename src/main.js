@@ -28,23 +28,6 @@ Req.on_login = function() {
 	
 	// display user info etc.
 	// start long poller
-	Lp.onMessages = (comments, contents)=>{
-		ChatRoom.displayMessages(comments)
-		Act.newComments(comments, Entity.makePageMap(contents))
-		Act.redraw()
-		Sidebar.displayMessages(comments)
-	}
-	Lp.onListeners = (a)=>{
-		ChatRoom.updateUserLists(a)
-	}
-	Lp.onActivity = (a, p)=>{ //todo: properly link activity with contents?
-		a.forEach(a=>{
-			if (a.type == 'user')
-				View.updateUserAvatar(a.content) //todo: also update your avatar in sidebar
-		})
-		Act.newActivity(a, Entity.makePageMap(p))
-		Act.redraw()  //this might update unnecessarily often
-	}
 	
 	console.log("staring long poller")
 	// it's very important that the first long poll request finishes instantly
@@ -52,17 +35,6 @@ Req.on_login = function() {
 	// need a more consistent way to update lastlisteners PLEASE
 	if (Store.get('websocket'))
 		Lp.use_websocket = true
-	Lp.onStart = (e, resp)=>{
-		print("got initial lp response!")
-		if (!e) {
-			let me = resp.chains.Ume
-			console.log("me", resp, me)
-			if (me && me[0])
-				View.updateMyUser(me[0]) //also sets Req.me...
-		} else {
-			alert("INITIAL LONG POLL FAILED!")
-		}
-	}
 	Lp.start()
 	
 	Act.pullRecent()

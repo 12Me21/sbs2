@@ -1,9 +1,33 @@
 let Lp = {
-	// events, set externally
-	onListeners: null,
-	onMessages: null,
-	onActivity: null,
-	onStart: null,
+	// events
+	onListeners(a) {
+		ChatRoom.updateUserLists(a)
+	},
+	onMessages(comments, contents) {
+		ChatRoom.displayMessages(comments)
+		Act.newComments(comments, Entity.makePageMap(contents))
+		Act.redraw()
+		Sidebar.displayMessages(comments)
+	},
+	onActivity(a, p) { //todo: properly link activity with contents?
+		a.forEach((a)=>{
+			if (a.type == 'user')
+				View.updateUserAvatar(a.content) //todo: also update your avatar in sidebar
+		})
+		Act.newActivity(a, Entity.makePageMap(p))
+		Act.redraw()  //this might update unnecessarily often
+	},
+	onStart(e, resp) {
+		print("got initial lp response!")
+		if (!e) {
+			let me = resp.chains.Ume
+			console.log("me", resp, me)
+			if (me && me[0])
+				View.updateMyUser(me[0]) //also sets Req.me...
+		} else {
+			alert("INITIAL LONG POLL FAILED!")
+		}
+	},
 	
 	statuses: {'-1':"online"},
 	lastListeners: {'-1':{'0':""}},
