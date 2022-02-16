@@ -361,44 +361,36 @@ attachPaste(callback) {
 	})
 },
 	
-	// should be a class
+// should be a class (actually nevermind the syntax is gross)
 attachResize(element, tab, horiz, dir, save, callback) {
-	let startX,startY,held,startW,startH,size = null
-	function getPos(e) {
+	let start, start_size, held
+	let size = null
+	function event_pos(e) {
 		if (e.touches)
-			return {x:e.touches[0].pageX, y:e.touches[0].pageY}
+			return e.touches[0][horiz?'pageX':'pageY']
 		else
-			return {x:e.clientX, y:e.clientY}
+			return e[horiz?'clientX':'clientY']
 	}
 	function down(e) {
 		tab.setAttribute('dragging',"")
-		let pos = getPos(e)
-		startX = pos.x
-		startY = pos.y
-		startW = element.offsetWidth
-		startH = element.offsetHeight
+		start = event_pos(e)
+		start_size = element[horiz?'offsetWidth':'offsetHeight']
 		held = true
 	}
-	function up() {
+	function up(e) {
 		held = false
 		tab.removeAttribute('dragging')
 		if (save && size != null)
 			Store.set(save, size)
 	}
 	function update_size(px) {
-		element.style[horiz ? 'width' : 'height'] = px+"px"
+		element.style[horiz?'width':'height'] = px+"px"
 	}
 	function move(e) {
 		if (!held)
 			return
-		let pos = getPos(e)
-		if (horiz) {
-			let vx = (pos.x - startX) * dir
-			size = Math.max(0, startW+vx)
-		} else {
-			let vy = (pos.y - startY) * dir
-			size = Math.max(0, startH+vy)
-		}
+		let v = (event_pos(e) - start) * dir
+		size = Math.max(start_size + v, 0)
 		update_size(size)
 		callback && callback(size)
 	}
