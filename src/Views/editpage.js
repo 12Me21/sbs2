@@ -69,15 +69,15 @@ addView('editpage', {
 	render(page) {
 		form = new Form({
 			fields: [
-				{name: 'keywords', input: new INPUTS.word_list({label: "Keywords"})},
-				{name: 'type', input: new INPUTS.select({label: "Type", options: [
-					['resource',"Resource"],['chat',"Chat"],['program',"Program"],['tutorial',"Tutorial"],['documentation',"Documentation"]
-				]})},
-				{name: 'thumbnail', input: new INPUTS.number({label: "Thumbnail"})},
-				{name: 'photos', input: new INPUTS.number_list({label: "Photos"})},
-				{name: 'category', input: new INPUTS.category({label: "Category"})},
-				{name: 'pinned', input: new INPUTS.number_list({label: "Pinned comments"})},
-				{name: 'permissions', input: new INPUTS.permissions({label: "Permissions"})},
+				{name: 'keywords', type: 'word_list', input: {label: "Keywords"}},
+				{name: 'type', type: 'select', input: {
+					label: "Type", options: [['resource',"Resource"],['chat',"Chat"],['program',"Program"],['tutorial',"Tutorial"],['documentation',"Documentation"]]
+				}},
+				{name: 'thumbnail', type: 'number', input: {label: "Thumbnail"}},
+				{name: 'photos', type: 'number_list', input: {label: "Photos"}},
+				{name: 'category', type: 'category', input: {label: "Category"}},
+				{name: 'pinned', type: 'number_list', input: {label: "Pinned comments"}},
+				{name: 'permissions', type: 'permissions', input: {label: "Permissions"}},
 			]
 		})
 		$editPageForm.replaceChildren(form.elem)

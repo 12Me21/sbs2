@@ -49,26 +49,30 @@ function url_escape(s) {
 
 class Form {
 	constructor(p) {
-		this.fields = p.fields
-		this.map = {}
-		this.elem = document.createElement('div')
+		this.fields = p.fields // list of fields
+		this.map = {} // map of name -> item in this.fields
+		this.elem = document.createElement('table')
+		this.inputs = {} // map of name -> INPUT instances
+		
 		for (let field of this.fields) {
 			this.map[field.name] = field
-			this.elem.append(field.input.elem)
+			let input = new (INPUTS[field.type])(field.input)
+			this.inputs[field.name] = input
+			this.elem.append(input.elem)
 		}
 	}
 	destroy() {
 		this.elem.replaceChildren()
 	}
 	get() {
-		return this.fields.reduce((a,field)=>{
-			a[field.name] = field.input.get()
+		return this.fields.reduce((a, field)=>{
+			a[field.name] = this.inputs[field.name].get()
 			return a
 		}, {})
 	}
 	set(p) {
 		for (let field of this.fields) {
-			field.input.set(p[field.name])
+			this.inputs[field.name].set(p[field.name])
 		}
 	}
 	to_query(p) {
@@ -177,9 +181,18 @@ const INPUTS = (()=>{
 	}
 	
 	class GenericInput {
+		constructor () {
+			this.html_id = unique_id()
+		}
 		toString() {
 			return `Input.${this.type}()`
 		}
+	}
+	
+	let x = 0
+	function unique_id() {
+		x++
+		return "input-"+x
 	}
 	
 	return {
@@ -189,9 +202,9 @@ const INPUTS = (()=>{
 			// whether to allow null and allow other invalid values
 			constructor(p) {
 				super()
-				this.select = elem('select')
-				this.elem = label(this.select, p.label)
-				this.select.append(...p.options.map(opt => {
+				this.input = elem('select')
+				this.input.id = this.html_id
+				this.input.append(...p.options.map(opt => {
 					let o = elem('option')
 					o.value = opt[0]
 					o.append(opt[1])
@@ -199,26 +212,28 @@ const INPUTS = (()=>{
 				}))
 				this.extra = elem('option')
 				this.options = p.options.map(opt=>opt[0])
+				this.elem = this.input
 			}
 			get() {
-				return this.select.value
+				return this.input.value
 			}
 			set(v) {
 				if (!this.options.includes(v)) {
 					this.extra.value = v==null ? "" : v
 					this.extra.textContent = "Unknown value: "+v
-					this.select.prepend(this.extra)
+					this.input.prepend(this.extra)
 				} else
 					this.extra.remove()
-				this.select.value = v
+				this.input.value = v
 			}
 		},
 		checkbox: class extends GenericInput {
 			constructor(p) {
 				super()
 				this.input = elem('input')
+				this.input.id = this.html_id
 				this.input.type = 'checkbox'
-				this.elem = label(this.input, p.label)
+				this.elem = this.input
 			}
 			get() {
 				return this.input.checked
@@ -231,9 +246,10 @@ const INPUTS = (()=>{
 			constructor(p) {
 				super()
 				this.input = elem('input')
-				this.elem = label(this.input, p.label)
+				this.input.id = this.html_id
 				if (p.placeholder != undefined)
 					this.input.placeholder = p.placeholder
+				this.elem = this.input
 			}
 			get() {
 				return this.input.value || null
@@ -246,9 +262,10 @@ const INPUTS = (()=>{
 			constructor(p) {
 				super()
 				this.input = elem('input')
-				this.elem = label(this.input, p.label)
+				this.input.id = this.html_id
 				if (p.placeholder != undefined)
 					this.input.placeholder = p.placeholder
+				this.elem = this.input
 			}
 			get() {
 				if (this.input.value == "")
@@ -263,6 +280,7 @@ const INPUTS = (()=>{
 			constructor(p) {
 				super()
 				this.input = elem('input')
+				this.input.id = this.html_id
 				this.elem = label(this.input, p.label)
 				this.input.type = 'number'
 				if (p.placeholder != undefined)
@@ -280,6 +298,7 @@ const INPUTS = (()=>{
 			constructor(p) {
 				super()
 				this.input = elem('input')
+				this.input.id = this.html_id
 				this.elem = label(this.input, p.label)
 				if (p.placeholder != undefined)
 					this.input.placeholder = p.placeholder
@@ -299,21 +318,24 @@ const INPUTS = (()=>{
 		word_list: class extends GenericInput {
 			constructor(p) {
 				super()
-				this.elem = label(elem('input'), p.label)
+				this.input = elem('input')
+				this.input.id = this.html_id
 				if (p.placeholder != undefined)
-					this.elem.placeholder = p.placeholder
+					this.input.placeholder = p.placeholder
+				this.elem = label(this.input, p.label)
 			}
 			get() {
-				return this.elem.value.split(/[\s]/g).filter(x=>x.length!=0)
+				return this.input.value.split(/[\s]/g).filter(x=>x.length!=0)
 			}
 			set(v) {
-				this.elem.value = v==null ? "" : v.join(' ')
+				this.input.value = v==null ? "" : v.join(' ')
 			}
 		},
 		permissions: class extends GenericInput {
 			constructor() {
 				super()
 				this.elem = elem('div')
+				this.elem.id = this.html_id //todo: put a hidden <input> element or something?
 				this.input = Draw.userSelector()
 				let table = elem('table')
 				table.className += " permission-table"
@@ -370,6 +392,7 @@ const INPUTS = (()=>{
 				this.elem = elem('div')
 				
 				this.input = elem('input')
+				this.input.id = this.html_id
 				this.input.type = 'datetime-local'
 				
 				this.seconds = elem('input')
@@ -401,7 +424,8 @@ const INPUTS = (()=>{
 		category: class extends GenericInput {
 			constructor(p) {
 				super()
-				this.elem = elem('select')
+				this.input = elem('select')
+				this.input.id = this.html_id
 				//this.update()
 			}
 			
@@ -415,7 +439,7 @@ const INPUTS = (()=>{
 					return x
 				}
 				
-				this.elem.replaceChildren(option("", "-- Select Category --"))
+				this.input.replaceChildren(option("", "-- Select Category --"))
 				if (!tree) return // not ready yet :(
 				
 				// recursive function
@@ -433,16 +457,16 @@ const INPUTS = (()=>{
 				if (value!=null) {
 					let selected = list.find(item=>item.id==value)
 					if (!selected) {
-						this.elem.append(option(value, "Unknown category: "+value))
+						this.input.append(option(value, "Unknown category: "+value))
 					}
 				}
-				this.elem.append(...list.map(item=>option(item.id, item.text)))
-				this.elem.value = value==null ? "" : value
+				this.input.append(...list.map(item=>option(item.id, item.text)))
+				this.input.value = value==null ? "" : value
 			}
 			get() {
-				if (this.elem.value=="")
+				if (this.input.value=="")
 					return null
-				return +this.elem.value
+				return +this.input.value
 			}
 		}
 	}
