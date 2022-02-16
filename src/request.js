@@ -233,9 +233,10 @@ const Req = {
 			// object: {type: value}
 			if (typeof req == 'string')
 				return req
-			else
-				for (let type in req) //get first key
-					return type+"-"+JSON.stringify(req[type])
+			else {
+				let type = Object.first_key(req)
+				return type+"-"+JSON.stringify(req[type])
+			}
 		})
 		Object.assign(query, filters)
 		needCategories = needCategories && !this.got_categories

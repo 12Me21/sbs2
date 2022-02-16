@@ -121,11 +121,10 @@ with (Sidebar) (function($) { "use strict"; Object.assign(Sidebar, {
 	// it redraws the entire list of pages in activity + watching, EVERY time they update
 	onAggregateChange(aggregate) {
 		let items = []
-		for (let id in aggregate) {
-			let a = aggregate[id]
+		Object.for(aggregate, (a)=>{
 			if (a.content) //HACK
 				items.push(a)
-		}
+		})
 		items.sort((a, b)=> -(a.lastDate - b.lastDate))
 		$sidebarActivity.replaceChildren()
 		$sidebarWatch.replaceChildren()

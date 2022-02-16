@@ -106,7 +106,8 @@ let Act = {
 				break
 			}
 		// insert new user
-		for (let i=0; i<item.users.length; i++)
+		let i
+		for (i=0; i<item.users.length; i++)
 			if (date >= item.users[i].date)
 				break
 		item.users.splice(i, 0, {user:user, date:date})

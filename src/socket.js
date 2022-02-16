@@ -257,13 +257,12 @@ let Lp = {
 		let out = {}
 		// process listeners (convert uids to user objetcs)
 		// shouldn't this be handled by Entity?
-		for (let id in listeners) {
-			let list = listeners[id]
-			let list2 = {}
-			for (let uid in list)
-				list2[uid] = {user: users[uid], status: list[uid]}
-			out[id] = list2
-		}
+		Object.for(listeners, (list, id)=>{
+			out[id] = {}
+			Object.for(list, (status, uid)=>{
+				out[id][uid] = {user: users[uid], status: status}
+			})
+		})
 		this.processed_listeners = out
 		this.onListeners(out)
 	},

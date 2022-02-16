@@ -87,6 +87,13 @@ Object.for = (obj, callback)=>{
 		callback(obj[key], key, obj)
 }
 
+Object.map = (obj, callback)=>{
+	let ret = {}
+	for (let key in obj)
+		ret[key] = callback(obj[key], key, obj)
+	return ret
+}
+
 // do we use this,, ehh
 Object.first_key = function(obj) {
 	for (let key in obj)

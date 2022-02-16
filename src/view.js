@@ -290,13 +290,13 @@ onLoad() {
 		container.append(button)
 	})
 	
-	for (let n in views) {
-		views[n].name = n
-		if (views[n].init)
-			views[n].init()
+	Object.for(views, (view)=>{
+		view.name = name
+		view.init && view.init()
 		// maybe we can just call these the first time the view is visited instead of right away,
 		// though none of them should really take a significant amount of time, so whatver
-	}
+	})
+	
 	initDone = true
 	runOnLoad.forEach((f)=>f())
 	runOnLoad = null

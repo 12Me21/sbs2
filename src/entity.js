@@ -38,21 +38,22 @@ let Entity = {
 	process(resp) {
 		// build user map first
 		let users = {}
-		for (let key in resp) {
+		Object.for(resp, (data, key)=>{
 			let type = this.key_type(key)
 			if (type == 'user') {
-				this.processList(type, resp[key], users)
-				resp[key].forEach((user) => users[user.id] = user )
+				this.processList(type, data, users)
+				data.forEach((user) => users[user.id] = user )
 			}
-		}
-		if (resp.Ctree) {
+		})
+		
+		if (resp.Ctree)
 			this.processList('category', resp.Ctree, users)
-		}
-		for (let key in resp) {
+		
+		Object.for(resp, (data, key)=>{
 			let type = this.key_type(key)
-			if (type != 'user' && key != 'Ctree')
-				this.processList(type, resp[key], users)
-		}
+			if (type!='user' && key!='Ctree')
+				this.processList(type, data, users)
+		})
 		resp.userMap = users
 		
 		if (this.gotNewCategory) {
