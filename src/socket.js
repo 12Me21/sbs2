@@ -285,7 +285,7 @@ let Lp = {
 		let now = Date.now()
 		if (now-this.last_open < 4000) {
 			print('websocket loop too fast! delaying 5 seconds.\nThis is probably caused by an invalid websocket token. please report this')
-			setTimeout(this.open_websocket, 5000);
+			setTimeout(this.open_websocket.bind(this), 5000);
 			return;
 		}
 		this.last_open = now
