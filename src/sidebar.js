@@ -234,6 +234,8 @@ with (Sidebar) (function($) { "use strict"; Object.assign(Sidebar, {
 				}
 			})
 		}, !initial)
+		if (initial)
+			scroller.scrollInstant()
 	},
 	
 limitMessages() {
