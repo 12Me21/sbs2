@@ -201,6 +201,11 @@ const INPUTS = (()=>{
 		toString() {
 			return `Input.${this.type}()`
 		}
+		_onchange() {
+			if (this.onchange) {
+				this.onchange(this.get())
+			}
+		}
 	}
 	
 	let x = 0
@@ -227,6 +232,7 @@ const INPUTS = (()=>{
 				this.extra = elem('option')
 				this.options = p.options.map(opt=>opt[0])
 				this.elem = this.input
+				this.input.onchange = this._onchange.bind(this)
 			}
 			get() {
 				return this.input.value
@@ -248,6 +254,7 @@ const INPUTS = (()=>{
 				this.input.id = this.html_id
 				this.input.type = 'checkbox'
 				this.elem = this.input
+				this.input.onchange = this._onchange.bind(this)
 			}
 			get() {
 				return this.input.checked
@@ -264,6 +271,7 @@ const INPUTS = (()=>{
 				if (p.placeholder != undefined)
 					this.input.placeholder = p.placeholder
 				this.elem = this.input
+				this.input.onchange = this._onchange.bind(this)
 			}
 			get() {
 				return this.input.value || null
@@ -280,6 +288,7 @@ const INPUTS = (()=>{
 				if (p.placeholder != undefined)
 					this.input.placeholder = p.placeholder
 				this.elem = this.input
+				this.input.onchange = this._onchange.bind(this)
 			}
 			get() {
 				if (this.input.value == "")
@@ -299,6 +308,7 @@ const INPUTS = (()=>{
 				this.input.type = 'number'
 				if (p.placeholder != undefined)
 					this.input.placeholder = p.placeholder
+				this.input.onchange = this._onchange.bind(this)
 			}
 			get() {
 				let v = this.input.value
@@ -313,9 +323,11 @@ const INPUTS = (()=>{
 				super()
 				this.input = elem('input')
 				this.input.id = this.html_id
+				this.input.pattern = " *(\\d+( *[, ] *\\d+)*)? *"
 				this.elem = this.input
 				if (p.placeholder != undefined)
 					this.input.placeholder = p.placeholder
+				this.input.onchange = this._onchange.bind(this)
 			}
 			get() {
 				if (this.input.value=="")
@@ -337,6 +349,7 @@ const INPUTS = (()=>{
 				if (p.placeholder != undefined)
 					this.input.placeholder = p.placeholder
 				this.elem = this.input
+				this.input.onchange = this._onchange.bind(this)
 			}
 			get() {
 				return this.input.value.split(/[\s]/g).filter(x=>x.length!=0)
@@ -369,6 +382,7 @@ const INPUTS = (()=>{
 				this.input.onchange = (user)=>{
 					this._add_row(user, "rc")
 				}
+				// todo: fire the input onchange event
 			}
 			_add_row(user, perm) {
 				//ok we really need to fix the problem with null users
@@ -385,7 +399,7 @@ const INPUTS = (()=>{
 						d = true
 				})
 				if (!d)
-					this._add_row({Type:'user', id:0}, "rc")
+					this._add_row({Type:'user', id:0}, "")
 			}
 			get() {
 				let ret = {}
@@ -401,37 +415,39 @@ const INPUTS = (()=>{
 			}
 		},
 		date: class extends GenericInput {
-			constructor() {
+			constructor(p) {
 				super()
 				this.elem = elem('div')
 				
 				this.input = elem('input')
 				this.input.id = this.html_id
 				this.input.type = 'datetime-local'
+				this.input.step = "0.001"
 				
-				this.seconds = elem('input')
+				/*this.seconds = elem('input')
 				this.seconds.type = 'number'
 				this.seconds.min = 0
-				this.seconds.max = 60
+				this.seconds.max = 60*/
+				this.elem.append(this.input)
 				
-				this.elem.append(this.input, this.seconds)
+				this.input.onchange = this._onchange.bind(this)
 			}
 			get() {
 				let date = new Date(this.input.value)
-				let seconds = +this.seconds.value
+				/*let seconds = +this.seconds.value
 				date.setSeconds(Math.floor(seconds))
-				date.setMilliseconds(seconds % 1 * 1000)
-				if (!isFinite(date))
+				date.setMilliseconds(seconds % 1 * 1000)*/
+				if (isNaN(date))
 					return null
 				return date
 			}
 			set(v) {
 				if (v) {
 					this.input.value = v.toISOString().replace(/Z$/,"")
-					this.seconds.value = v.getSeconds() + v.getMilliseconds()/1000
+					//this.seconds.value = v.getSeconds() + v.getMilliseconds()/1000
 				} else {
 					this.input.value = ""
-					this.seconds.value = ""
+					//this.seconds.value = ""
 				}
 			}
 		},
@@ -441,6 +457,7 @@ const INPUTS = (()=>{
 				this.input = elem('select')
 				this.input.id = this.html_id
 				this.elem = this.input
+				this.input.onchange = this._onchange.bind(this)
 				//this.update()
 			}
 			

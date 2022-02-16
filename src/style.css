@@ -162,6 +162,10 @@ input {
 	font-size: 0.8em;
 }
 
+input:invalid {
+	background: var(--error-bg);
+}
+
 html {
 	background-color: #FEE;
 	font-family: roboto, sans-serif;
