@@ -114,7 +114,7 @@ const Req = {
 			x.send(JSON.stringify(data))
 		// otherwise, send raw (ex: string, FormData)
 		} else
-			x.send(Object.toString(data))
+			x.send(data)
 		
 		return x
 	},
@@ -445,12 +445,12 @@ const Req = {
 		})
 	},
 	
-	sendMessage(room, message, meta, callback) {
-		return this.request("Comment", 'POST', callback, {parentId: room, content: Entity.encode_comment(meta, message)})
+	sendMessage(room, text, meta, callback) {
+		return this.request("Comment", 'POST', callback, {parentId: room, content: Entity.encode_comment(text, meta)})
 	},
 	
-	editMessage(id, room, message, meta, callback) {
-		return this.request("Comment/"+id, 'PUT', callback, {parentId: room, content: Entity.encode_comment(meta, message)})
+	editMessage(id, room, text, meta, callback) {
+		return this.request("Comment/"+id, 'PUT', callback, {parentId: room, content: Entity.encode_comment(text, meta)})
 	},
 	
 	deleteMessage(id, callback) {
