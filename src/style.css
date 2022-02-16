@@ -765,17 +765,19 @@ table.form {
 	border-collapse: collapse;
 }
 
-table.form td {
+table.form > tbody > tr > td {
 	padding: 0;
+	padding-bottom: 2px;
 }
-table.form th {
+table.form > tbody > tr > th {
 	padding: 0;
+	padding-right: 0.5rem;
 	text-align:right;
 }
 
-table.form input {
+/*table.form input { // todo:fix this to select the right thing
 	width: 100%;
-}
+}*/
 
 /* what are these for? */
 table {
@@ -1150,6 +1152,10 @@ textarea-container, textarea-container > textarea {
 	user-select: none;
 }
 
+.permission-table thead th {
+	padding: 0 0.5rem
+}
+
 .permission-table td {
 	text-align: center;
 }
@@ -1252,9 +1258,9 @@ html.f-editorPreview .editorNotPreview {
 	z-index: -10;
 }
 
-.input-form > * > * {
-	display: block;
-}
+/*.input-form > * > * {
+	display: block; ???
+}*/
 
 .real-name-label {
 	color: gray

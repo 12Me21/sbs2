@@ -69,17 +69,20 @@ addView('editpage', {
 	render(page) {
 		form = new Form({
 			fields: [
-				{name: 'keywords', type: 'word_list', input: {label: "Keywords"}},
+				{name: 'category', type: 'category', input: {label: "Category"}},
 				{name: 'type', type: 'select', input: {
 					label: "Type", options: Entity.CONTENT_TYPES.map(type=>[type, type.replace(/\b./g, l=>l.toUpperCase())])
 				}},
+				{name: 'keywords', type: 'word_list', input: {label: "Keywords"}},
 				{name: 'thumbnail', type: 'number', input: {label: "Thumbnail"}},
 				{name: 'photos', type: 'number_list', input: {label: "Photos"}},
-				{name: 'category', type: 'category', input: {label: "Category"}},
 				{name: 'pinned', type: 'number_list', input: {label: "Pinned comments"}},
-				{name: 'permissions', type: 'permissions', input: {label: "Permissions"}},
+				{name: 'permissions', type: 'permissions', input: {label: "Permissions", span: true}},
 			]
 		})
+		// todo: display unknown/unhandled properties somewhere
+		// we already preserve them
+		
 		$editPageForm.replaceChildren(form.elem)
 		
 		if (page.id) {

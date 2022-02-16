@@ -393,8 +393,11 @@ const Req = {
 	},
 	
 	editPage(page, callback) {
-		if (locked)
-			callback(null)
+		if (this.locked) {
+			console.log("editing page:", page)
+			callback(true, null)
+			return
+		}
 		if (page.id)
 			this.request("Content/"+page.id, 'PUT', callback, page)
 		else

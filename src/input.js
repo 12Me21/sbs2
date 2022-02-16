@@ -44,6 +44,7 @@ function url_escape(s) {
 	let escape = c => "%"+(c.charCodeAt(0)+0x100).toString(16).substr(1)
 	return s.replace(/[^-\w\$\.+!*',;/\:@#%~]/g, escape).replace(/[,\.?!:]$/, escape)
 }
+// todo: also make a full query string encode function
 
 // maybe instead of specifying the layout in Form, we just provide a list of locations of where to insert the fields. this is necessary for, ex: the page title input which is outside the main element
 
@@ -53,12 +54,34 @@ class Form {
 		this.map = {} // map of name -> item in this.fields
 		this.elem = document.createElement('table')
 		this.inputs = {} // map of name -> INPUT instances
+		let tbody = this.elem.createChild('tbody')
+		this.elem.className += ' form fill'
 		
 		for (let field of this.fields) {
 			this.map[field.name] = field
 			let input = new (INPUTS[field.type])(field.input)
 			this.inputs[field.name] = input
-			this.elem.append(input.elem)
+			
+			let tr = tbody.createChild('tr')
+			
+			if (field.input.span) {
+				let t1 = tr.createChild('td')
+				t1.colSpan = 2
+				let label = t1.createChild('label')
+				label.for = input.html_id
+				let h3 = label.createChild('h3')
+				h3.textContent = field.input.label+": "
+				t1.append(input.elem)
+				//t1.className += ' input'
+			} else {
+				let t1 = tr.createChild('th')
+				let t2 = tr.createChild('td')
+				let label = t1.createChild('label')
+				label.for = input.html_id
+				label.textContent = field.input.label+": "
+				t2.append(input.elem)
+				//t2.className += ' input'
+			}
 		}
 	}
 	destroy() {
@@ -171,15 +194,6 @@ const INPUTS = (()=>{
 		return document.createElement(x)
 	}
 	
-	function label(x, text) {
-		if (text == undefined)
-			return x
-		let e = elem('label')
-		e.append(x)
-		e.append(String(text))
-		return e
-	}
-	
 	class GenericInput {
 		constructor () {
 			this.html_id = unique_id()
@@ -281,7 +295,7 @@ const INPUTS = (()=>{
 				super()
 				this.input = elem('input')
 				this.input.id = this.html_id
-				this.elem = label(this.input, p.label)
+				this.elem = this.input
 				this.input.type = 'number'
 				if (p.placeholder != undefined)
 					this.input.placeholder = p.placeholder
@@ -299,7 +313,7 @@ const INPUTS = (()=>{
 				super()
 				this.input = elem('input')
 				this.input.id = this.html_id
-				this.elem = label(this.input, p.label)
+				this.elem = this.input
 				if (p.placeholder != undefined)
 					this.input.placeholder = p.placeholder
 			}
@@ -322,7 +336,7 @@ const INPUTS = (()=>{
 				this.input.id = this.html_id
 				if (p.placeholder != undefined)
 					this.input.placeholder = p.placeholder
-				this.elem = label(this.input, p.label)
+				this.elem = this.input
 			}
 			get() {
 				return this.input.value.split(/[\s]/g).filter(x=>x.length!=0)
@@ -426,6 +440,7 @@ const INPUTS = (()=>{
 				super()
 				this.input = elem('select')
 				this.input.id = this.html_id
+				this.elem = this.input
 				//this.update()
 			}
 			

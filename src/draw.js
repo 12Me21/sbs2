@@ -614,16 +614,16 @@ Object.assign(Draw, { //*/
 			dropdown.replaceChildren(placeholder2)
 			placeholder2.selected = true
 			results = true
-			Req.searchUsers(x.searchText, (users)=>{
+			Req.searchUsers(x.searchText, (user_map)=>{
 				dropdown.replaceChildren()
-				if (!users) {
+				if (!user_map) {
 					x.searchText = null //error
 					return
 				}
-				results = users
+				results = user_map
 				submit.disabled = false
 				let found = false
-				users.forEach((user)=>{
+				Object.for(user_map, (user)=>{
 					let option = E`option`
 					option.value = user.id
 					option.textContent = user.username
