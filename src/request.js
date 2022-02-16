@@ -25,7 +25,7 @@ const Req = {
 	
 	me: null,
 	
-	locked: true,
+	locked: false, // for testing
 	
 	raw_request(url, method, callback, data, auth) {
 		let x = new XMLHttpRequest()
