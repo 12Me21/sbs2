@@ -442,11 +442,11 @@ const Req = {
 	},
 	
 	sendMessage(room, message, meta, callback) {
-		return this.request("Comment", 'POST', callback, {parentId: room, content: JSON.stringify(meta)+"\n"+message})
+		return this.request("Comment", 'POST', callback, {parentId: room, content: Entity.encode_comment(meta, message)})
 	},
 	
 	editMessage(id, room, message, meta, callback) {
-		return this.request("Comment/"+id, 'PUT', callback, {parentId: room, content: JSON.stringify(meta)+"\n"+message})
+		return this.request("Comment/"+id, 'PUT', callback, {parentId: room, content: Entity.encode_comment(meta, message)})
 	},
 	
 	deleteMessage(id, callback) {

@@ -91,5 +91,4 @@ Object.first_key = function(obj) {
 		return key
 }
 
-
 //talking excitedly about javasscript getters and setters for an hour and then crying

@@ -71,7 +71,7 @@ addView('editpage', {
 			fields: [
 				{name: 'keywords', type: 'word_list', input: {label: "Keywords"}},
 				{name: 'type', type: 'select', input: {
-					label: "Type", options: [['resource',"Resource"],['chat',"Chat"],['program',"Program"],['tutorial',"Tutorial"],['documentation',"Documentation"]]
+					label: "Type", options: Entity.CONTENT_TYPES.map(type=>[type, type.replace(/\b./g, l=>l.toUpperCase())])
 				}},
 				{name: 'thumbnail', type: 'number', input: {label: "Thumbnail"}},
 				{name: 'photos', type: 'number_list', input: {label: "Photos"}},
