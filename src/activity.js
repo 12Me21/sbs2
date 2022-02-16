@@ -20,7 +20,7 @@ let Act = {
 				this.newComments(resp.Mall, p)
 				this.newActivity(resp.Awatching, p, true)
 				//newCommentAggregate(wc, p, true)
-				Sidebar.onAggregateChange(this.items)
+				this.redraw()
 				Sidebar.displayMessages(resp.comment.reverse(), true)
 			}
 		})
@@ -106,8 +106,7 @@ let Act = {
 				break
 			}
 		// insert new user
-		let i
-		for (i=0; i<item.users.length; i++)
+		for (let i=0; i<item.users.length; i++)
 			if (date >= item.users[i].date)
 				break
 		item.users.splice(i, 0, {user:user, date:date})

@@ -31,7 +31,7 @@ Req.on_login = function() {
 	Lp.onMessages = (comments, contents)=>{
 		ChatRoom.displayMessages(comments)
 		Act.newComments(comments, Entity.makePageMap(contents))
-		Sidebar.onAggregateChange(Act.items)
+		Act.redraw()
 		Sidebar.displayMessages(comments)
 	}
 	Lp.onListeners = (a)=>{
@@ -43,7 +43,7 @@ Req.on_login = function() {
 				View.updateUserAvatar(a.content) //todo: also update your avatar in sidebar
 		})
 		Act.newActivity(a, Entity.makePageMap(p))
-		Sidebar.onAggregateChange(Act.items) //this might update unnecessarily often
+		Act.redraw()  //this might update unnecessarily often
 	}
 	
 	console.log("staring long poller")
