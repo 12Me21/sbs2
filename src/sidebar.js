@@ -31,7 +31,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 				['name', 'text', {label: "File Name"}],
 				['bucket', 'text', {label: "Bucket"}],
 				['quantize', 'select', {label: "Quantize", default: ""}, {
-					options: [["","no"], ["2","2"], ["4","2"], ["8","8"], ["16","16"], ["32","32"], ["64","64"], ["256","256"]]
+					options: [["","no"], ["2","2"], ["4","4"], ["8","8"], ["16","16"], ["32","32"], ["64","64"], ["256","256"]] //todo: check which quantization levels are actually allowed
 				}],// todo: maybe store js values in the dropdown, rather than strings?
 			]
 		})
