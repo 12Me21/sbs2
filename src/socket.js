@@ -125,13 +125,6 @@ let Lp = {
 	// "private" functions //
 	/////////////////////////
 	
-	ws_refresh(me) {
-		this.running = true
-		let req = this.make_request(this.lastId, this.statuses, this.lastListeners, me)
-		this.ws_message = req
-		this.websocket_flush()
-	},
-	
 	// output is in websocket format
 	make_request(lastId, statuses, lastListeners, getMe) {
 		let actions = {
@@ -146,26 +139,31 @@ let Lp = {
 				'category.2contentId' //todo: handle values returned by this
 			]
 		}
-		let listeners
-		if (getMe)
-			listeners = {
-				// TODO: make sure lastListeners is something that will never occur so you'll always get the update
-				lastListeners: lastListeners,
-				chains: [
-					'user.0listeners',
-					"user~Ume-"+JSON.stringify({ids:[Req.uid],limit:1}),
-				]
-			}
-		else
-			listeners = {
-				lastListeners: lastListeners,
-				chains: ['user.0listeners']
-			}
+		let listeners = {
+			lastListeners: lastListeners,
+			chains: [
+				'user.0listeners'
+			]
+		}
+		if (getMe) {
+			// TODO: make sure lastListeners is something that will never occur so you'll always get the update
+			listeners.chains.push(
+				"user~Ume-"+JSON.stringify({ids:[Req.uid],limit:1})
+			)
+		}
+		
 		return {
 			actions: actions,
 			listeners: listeners,
 			fields: {content:['id','createUserId','name','permissions','type']},
 		}
+	},	
+	
+	ws_refresh(me) {
+		this.running = true
+		let req = this.make_request(this.lastId, this.statuses, this.lastListeners, me)
+		this.ws_message = req
+		this.websocket_flush()
 	},
 	
 	lp_listen(lastId, statuses, lastListeners, getMe, callback) {
@@ -203,23 +201,11 @@ let Lp = {
 				// try/catch here so the long poller won't fail when there's an error in the callbacks
 				try {
 					this.lastId = resp.lastId
-					// debug
-					if (resp.chains) {
-						if (resp.chains.comment) {
-							if (resp.chains.comment instanceof Array) {
-								for (let c of resp.chains.comment) {
-									this.gotMessages.push(c.id)
-								}
-							} else {
-								print("weird chains comment")
-								window.hecked = resp 
-							}
-						}
-					}
+					// todo: <debug missing comments here>
 					
 					if (resp.listeners)
 						this.lastListeners = resp.listeners
-					this.lp_process(resp)
+					this.process(resp)
 				} catch (e) {
 					console.error(e)
 				}
@@ -260,17 +246,16 @@ let Lp = {
 		this.onListeners(out)
 	},
 	
-	lp_process(resp) {
+	process(resp) {
+		let c = resp.chains // this SHOULD always be set, yeah?
 		if (resp.listeners)
-			this.handleOnListeners(resp.listeners, resp.chains.userMap)
-		if (resp.chains) {
-			if (resp.chains.comment)
-				this.onMessages(resp.chains.comment, resp.chains.content)
-			if (resp.chains.commentdelete)
-				this.onMessages(resp.chains.commentdelete)
-			if (resp.chains.activity)
-				this.onActivity(resp.chains.activity, resp.chains.content)
-		}
+			this.handleOnListeners(resp.listeners, c.userMap)
+		if (c.comment)
+			this.onMessages(c.comment, c.content)
+		if (c.commentdelete)
+			this.onMessages(c.commentdelete)
+		if (c.activity)
+			this.onActivity(c.activity, c.content)
 	},
 	
 	websocket_flush() {
@@ -354,7 +339,7 @@ let Lp = {
 						if (resp.listeners)
 							this.lastListeners = resp.listeners
 						//
-						this.lp_process(resp)
+						this.process(resp)
 					}
 				} catch (e) {
 					console.error(e)
