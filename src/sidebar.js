@@ -29,7 +29,7 @@ with (Sidebar) (function($) { "use strict"; Object.assign(Sidebar, {
 		View.attachResize($sidebarTop, $sidebarResize, false, 1, "sidebarPinnedHeight")
 		View.flag('sidebar', true)
 		View.attachPaste((file)=>{ fileUploaded(file) })
-		$imageUpload.onchange = function(e) {
+		$imageUpload.onchange = function(e) { // must not be arrow func
 			let file = this.files[0]
 			try {
 				file && fileUploaded(file)
