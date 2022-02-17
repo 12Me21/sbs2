@@ -68,7 +68,7 @@ class Form {
 				let t1 = tr.createChild('td')
 				t1.colSpan = 2
 				let label = t1.createChild('label')
-				label.for = input.html_id
+				label.htmlFor = input.html_id
 				let h3 = label.createChild('h3')
 				h3.textContent = field.input.label+": "
 				t1.append(input.elem)
@@ -77,7 +77,7 @@ class Form {
 				let t1 = tr.createChild('th')
 				let t2 = tr.createChild('td')
 				let label = t1.createChild('label')
-				label.for = input.html_id
+				label.htmlFor = input.html_id
 				label.textContent = field.input.label+": "
 				t2.append(input.elem)
 				//t2.className += ' input'
@@ -268,8 +268,7 @@ const INPUTS = (()=>{
 				super()
 				this.input = elem('input')
 				this.input.id = this.html_id
-				if (p.placeholder != undefined)
-					this.input.placeholder = p.placeholder
+				this.input.placeholder = "text"
 				this.elem = this.input
 				this.input.onchange = this._onchange.bind(this)
 			}
@@ -285,8 +284,7 @@ const INPUTS = (()=>{
 				super()
 				this.input = elem('input')
 				this.input.id = this.html_id
-				if (p.placeholder != undefined)
-					this.input.placeholder = p.placeholder
+				this.input.placeholder = "min-max"
 				this.elem = this.input
 				this.input.onchange = this._onchange.bind(this)
 			}
@@ -306,8 +304,6 @@ const INPUTS = (()=>{
 				this.input.id = this.html_id
 				this.elem = this.input
 				this.input.type = 'number'
-				if (p.placeholder != undefined)
-					this.input.placeholder = p.placeholder
 				this.input.onchange = this._onchange.bind(this)
 			}
 			get() {
@@ -325,8 +321,7 @@ const INPUTS = (()=>{
 				this.input.id = this.html_id
 				this.input.pattern = " *(\\d+( *[, ] *\\d+)*)? *"
 				this.elem = this.input
-				if (p.placeholder != undefined)
-					this.input.placeholder = p.placeholder
+				this.input.placeholder = "list of numbers"
 				this.input.onchange = this._onchange.bind(this)
 			}
 			get() {
@@ -346,8 +341,7 @@ const INPUTS = (()=>{
 				super()
 				this.input = elem('input')
 				this.input.id = this.html_id
-				if (p.placeholder != undefined)
-					this.input.placeholder = p.placeholder
+				this.placeholder = "list of words"
 				this.elem = this.input
 				this.input.onchange = this._onchange.bind(this)
 			}
@@ -498,6 +492,24 @@ const INPUTS = (()=>{
 				if (this.input.value=="")
 					return null
 				return +this.input.value
+			}
+		},
+		file: class extends GenericInput {
+			constructor(p) {
+				this.input = elem('input')
+				this.input.type = 'file'
+				if (p.accept)
+					this.input.accept = p.accept
+				this.input.onchange = this._onchange.bind(this)
+			}
+			get() {
+				return this.input.files[0] || null
+			}
+			set(v) {
+				if (v==null)
+					this.input.value = ""
+				else
+					throw 'cant set file like that'
 			}
 		}
 	}

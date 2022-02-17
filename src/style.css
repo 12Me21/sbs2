@@ -771,12 +771,20 @@ table.form {
 
 table.form > tbody > tr > td {
 	padding: 0;
-	padding-bottom: 2px;
+	padding: 1px 0;
+	vertical-align: middle;
 }
 table.form > tbody > tr > th {
 	padding: 0;
 	padding-right: 0.5rem;
 	text-align:right;
+	vertical-align: middle;
+}
+
+input::placeholder {
+	font-style: italic;
+	color: rgba(128,128,128,0.6);
+	padding-left: 0.3rem;
 }
 
 /*table.form input { // todo:fix this to select the right thing
