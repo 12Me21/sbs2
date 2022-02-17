@@ -147,8 +147,11 @@ updateMyUser(user) {
 	if (user.id != Req.uid)
 		return //uh oh
 	Req.me = user //This probably shouldn't be handled by View...
-	let icon = Draw.icon(user)
-	Sidebar.myAvatar.childs = icon
+	// if this gets called too early, the sidebar isnt even rendered yet
+	if (Sidebar.myAvatar) {
+		let icon = Draw.icon(user)
+		Sidebar.myAvatar.childs = icon
+	}
 	//$loggedIn.replaceChildren(Draw.entityTitleLink(user, true))
 },
 
@@ -262,8 +265,8 @@ handleView(type, id, query, callback) {
 		View.flag('viewReady', true)
 		View.flag('mobileSidebar', false) //bad (should be function on Sidebar)
 		
-		Lp.lastListeners = ChatRoom.generateListeners(Lp.lastListeners)
-		Lp.statuses = ChatRoom.generateStatus()
+		Lp.set_listening(ChatRoom.listening_rooms())
+		Lp.set_statuses(ChatRoom.generateStatus())
 		Lp.refresh()
 		
 		callback && callback()

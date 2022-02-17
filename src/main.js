@@ -33,8 +33,9 @@ Req.on_login = function() {
 	// we normally ensure this by having lpLastListeners always have at least one room set but this can be accidentally broken very easily and it's a mess
 	// need a more consistent way to update lastlisteners PLEASE
 	if (Store.get('websocket'))
-		Lp.use_websocket = true
-	Lp.start()
+		Lp.start(false)
+	else
+		Lp.start(false)
 	
 	Act.pullRecent()
 	

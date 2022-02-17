@@ -1,7 +1,7 @@
 let Lp = {
 	// events
-	onListeners(a) {
-		ChatRoom.updateUserLists(a)
+	onListeners(map) {
+		ChatRoom.updateUserLists(map)
 	},
 	onMessages(comments, contents) {
 		ChatRoom.displayMessages(comments)
@@ -17,45 +17,85 @@ let Lp = {
 		Act.newActivity(a, Entity.makePageMap(p))
 		Act.redraw()  //this might update unnecessarily often
 	},
-	onStart(e, resp) {
-		print("got initial lp response!")
-		if (!e) {
-			let me = resp.chains.Ume
-			console.log("me", resp, me)
-			if (me && me[0])
-				View.updateMyUser(me[0]) //also sets Req.me...
-		} else {
-			alert("INITIAL LONG POLL FAILED!")
+	onStart(resp) {
+		let me = resp.chains.Ume
+		if (me && me[0])
+			View.updateMyUser(me[0]) //also sets Req.me...
+		else {
+			alert("lp sequence error!!!")
+			// what this means:
+			// the first websocket/longpoll response is ALWAYS supposed to contain your own user data
+			// if not, it means that something went very wrong
+			console.error("couldn't get your user in initial lp request")
 		}
 	},
 	
-	statuses: {'-1':"online"},
-	lastListeners: {'-1':{'0':""}},
-	// this is used in displaying the userlist
+	// this is used in the userlist
 	processed_listeners: {},
-	
-	gotMessages: [],
-	
-	use_websocket: false,
-	first_websocket: true,
 	
 	// debug
 	ws_message: {},
-	websocket: null,
+	//gotMessages: [],
 	
 	///////////////////////
 	// PRIVATE variables //
 	///////////////////////
+	
+	// stuff which is sent in requests
 	lastId: 0,
-	init: true,
+	statuses: {'-1':"online"},
+	lastListeners: {'-1':{'0':""}},
+	
+	listening: [-1], // lastListeners is set based on this
+	// status
 	running: false,
-	lp_cancel: ()=>{},
+	init: true, // waiting for initial response
+	// websocket exclusive
+	use_websocket: false,
+	websocket: null,
 	ws_token: null,
 	last_open: 0,
+	// long poller exclusive
+	lp_cancel: ()=>{},
 	
 	////////////////////
 	// public methods //
 	////////////////////
+	
+	start(use_websocket) {
+		if (!this.running) {
+			this.use_websocket = use_websocket
+			if (use_websocket) {
+				print('starting lp: websocket')
+				this.ws_refresh(true)
+			} else {
+				print('starting lp: long poller')
+				this.lp_loop(true)
+			}
+		}
+	},
+	
+	stop() {
+		if (this.use_websocket) {
+			this.websocket && this.websocket.close()
+		} else {
+			this.lp_cancel()
+		}
+		this.running = false
+	},
+	
+	// todo: this gets set after the first request is made
+	// meaning, our first response has listeners for -1, and immediately afterwards we get one with the real listeners
+	// ideally, we should know which page is being viewed before the first request
+	// ids: list of ids
+	set_listening(ids) {
+		this.listening = ids
+	},
+	
+	// statuses: map of page-id -> status string
+	set_statuses(statuses) {
+		this.statuses = statuses
+	},
 	
 	// call this after setting the parameters
 	refresh() {
@@ -69,67 +109,20 @@ let Lp = {
 		}
 	},
 	
-	start(callback) {
-		if (!this.running) {
-			if (this.use_websocket) {
-				print('starting lp: websocket')
-				this.ws_refresh(true)
-			} else {
-				print('starting lp: long poller')
-				this.lp_loop(this.onStart)
-			}
-		}
-	},
-	
-	stop() {
-		if (this.websocket) {
-			this.websocket.close()
-		} else {
-			this.lp_cancel()
-		}
-		this.running = false
-	},
-	
-	// this is unused currently: it just sets .lastListeners directly instead
-	set_listening(ids) {
-		let new_listeners = {"-1": this.lastListeners[-1]}
-		ids.forEach((id)=>{
-			new_listeners[id] = this.lastListeners[id] || {'0':""}
-		})
-		this.lastListeners = new_listeners
-	},
-	
-	set_status(statuses) {
-		Object.for(statuses, (status, id)=>{
-			this.statuses[id] = status
-			// set status in lastListeners, so we won't cause the long poller to complete instantly
-			if (!this.lastListeners[id])
-				this.lastListeners[id] = {}
-			this.lastListeners[id][Req.uid] = status
-			// but now, since the long poller won't complete (sometimes)
-			// we have to update the userlist visually with our changes
-			// if another client is setting your status and overrides this one
-			// your (local) status will flicker, unfortunately
-			// of the 2 options, this one is better in general, I think
-			// it reduces lp completions
-			// wait, but... does it really?
-			if (!this.processed_listeners[id])
-				this.processed_listeners[id] = {}
-			this.processed_listeners[id][Req.uid] = {user: Req.uid, status: status}			
-		})
-		this.onListeners(this.processed_listeners)
-		this.refresh()
-	},
-	
 	/////////////////////////
 	// "private" functions //
 	/////////////////////////
 	
 	// output is in websocket format
-	make_request(lastId, statuses, lastListeners, getMe) {
+	make_request(getMe) {
+		let new_listeners = {}
+		this.listening.forEach((id)=>{
+			new_listeners[id] = this.lastListeners[id] || {'0':""}
+		})
+		
 		let actions = {
-			lastId: lastId,
-			statuses: statuses,
+			lastId: this.lastId,
+			statuses: this.statuses,
 			chains: [
 				'comment.0id',
 				"activity.0id-"+JSON.stringify({includeAnonymous:true}),
@@ -140,7 +133,7 @@ let Lp = {
 			]
 		}
 		let listeners = {
-			lastListeners: lastListeners,
+			lastListeners: new_listeners,
 			chains: [
 				'user.0listeners'
 			]
@@ -161,13 +154,13 @@ let Lp = {
 	
 	ws_refresh(me) {
 		this.running = true
-		let req = this.make_request(this.lastId, this.statuses, this.lastListeners, me)
+		let req = this.make_request(me)
 		this.ws_message = req
 		this.websocket_flush()
 	},
 	
-	lp_listen(lastId, statuses, lastListeners, getMe, callback) {
-		let requests = this.make_request(lastId, statuses, lastListeners, getMe)
+	lp_listen(getMe, callback) {
+		let requests = this.make_request(getMe)
 		// convert make_request output to long poller format
 		let query = {
 			actions: JSON.stringify(requests.actions),
@@ -180,31 +173,18 @@ let Lp = {
 		return Req.request("Read/listen"+Req.queryString(query), 'GET', callback)
 	},
 	
-	lp_loop(noCancel) {
+	// if 
+	lp_loop(getMe) {
 		this.running = true
 		//make sure only one instance of this is running
 		let cancelled
-		let x = this.lp_listen(this.lastId, this.statuses, this.lastListeners, noCancel, (e, resp)=>{
-			if (noCancel) {
-				this.init = false
-				noCancel(e, resp)
-			}
+		let x = this.lp_listen(getMe, (e, resp)=>{
 			if (cancelled) { // should never happen (but I think it does sometimes..)
 				console.log("OH HECK, request called callback after being cancelled?")
-				return
+				//return //removing this for consistency since websocket doesn't have cancelling
 			}
+			this.process(e, resp)
 			if (!e) {
-				// try/catch here so the long poller won't fail when there's an error in the callbacks
-				try {
-					this.lastId = resp.lastId
-					
-					Entity.process(resp.chains)
-					// todo: <debug missing comments here>
-					
-					this.process(resp)
-				} catch (e) {
-					console.error(e)
-				}
 				// I'm not sure this is needed. might be able to just call lp_loop diretcly?
 				let t = setTimeout(()=>{
 					if (cancelled) // should never happen?
@@ -212,49 +192,68 @@ let Lp = {
 					this.lp_loop()
 				}, 0)
 				this.lp_cancel = ()=>{
-					this.cancelled = true
+					cancelled = true
 					this.running = false
 					clearTimeout(t)
 				}
-			} else {
-				alert("LONG POLLER FAILED:"+resp)
-				console.log("LONG POLLER FAILED", e, resp)
 			}
 		})
 		this.lp_cancel = ()=>{
-			this.cancelled = true
+			cancelled = true
 			this.running = false
 			x.abort()
 		}
 	},
 	
-	handleOnListeners(listeners, users) {
-		let out = {}
-		// process listeners (convert uids to user objetcs)
-		// shouldn't this be handled by Entity?
-		Object.for(listeners, (list, id)=>{
-			out[id] = {}
-			Object.for(list, (status, uid)=>{
-				out[id][uid] = {user: users[uid], status: status}
-			})
-		})
-		this.processed_listeners = out
-		this.onListeners(out)
-	},
-	
-	process(resp) {
-		if (resp.listeners)
-			this.lastListeners = resp.listeners
+	process(e, resp) {
+		if (e) {
+			alert("LONG POLLER FAILED:"+resp)
+			console.log("LONG POLLER FAILED", e, resp)
+			return
+		}
 		
-		let c = resp.chains // this SHOULD always be set, yeah?
-		if (resp.listeners)
-			this.handleOnListeners(resp.listeners, c.userMap)
-		if (c.comment)
-			this.onMessages(c.comment, c.content)
-		if (c.commentdelete)
-			this.onMessages(c.commentdelete)
-		if (c.activity)
-			this.onActivity(c.activity, c.content)
+		// try/catch here so the long poller won't fail when there's an error in the callbacks
+		try {
+			// most important stuff:
+			this.lastId = resp.lastId
+			if (resp.listeners)
+				this.lastListeners = resp.listeners
+			
+			let c = resp.chains // this SHOULD always be set, yeah?
+			Entity.process(c)
+			
+			if (this.init || c.Ume) {
+				print("got initial lp response!")
+				this.init = false
+				this.onStart(resp)
+				if (this.use_websocket)
+					this.ws_refresh(); // not always necessary, depends on timing (is this true?)
+			}
+			console.log('keeping data: ', resp)
+			
+			if (resp.listeners) {
+				let out = {}
+				// process listeners (convert uids to user objetcs) (also makes a copy)
+				// shouldn't this be handled by Entity?
+				Object.for(resp.listeners, (list, id)=>{
+					out[id] = {}
+					Object.for(list, (status, uid)=>{
+						out[id][uid] = {user: c.userMap[uid], status: status}
+					})
+				})
+				this.processed_listeners = out
+				this.onListeners(out)
+			}
+			// todo: <debug missing comments here>
+			if (c.comment)
+				this.onMessages(c.comment, c.content)
+			if (c.commentdelete)
+				this.onMessages(c.commentdelete)
+			if (c.activity)
+				this.onActivity(c.activity, c.content)
+		} catch (e) {
+			console.error("error processing lp/ws response: ", e)
+		}
 	},
 	
 	websocket_flush() {
@@ -320,26 +319,8 @@ let Lp = {
 					print("mystery websocket message:"+e.data)
 					return
 				}
-				try {
-					this.lastId = resp.lastId
-					
-					Entity.process(resp.chains)
-					
-					if (this.first_websocket) { //very bad hack
-						print("first!!!")
-						this.first_websocket = false
-						this.init = false
-						this.onStart(null, resp)
-						// this is a hack for in case
-						// the initial response takes too long idk etc.
-						this.ws_refresh(); // not always necessary, depends on timing
-					} else {
-						// unlike long poller, we DON'T keep this data on the initial response, due to bugs and idk..
-						this.process(resp)
-					}
-				} catch (e) {
-					console.error(e)
-				}
+				
+				this.process(null, resp)
 			} else if (match[1]=="accepted") {
 				//print("websocket accepted")
 			} else if (match[1]=="error") {

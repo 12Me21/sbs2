@@ -344,13 +344,11 @@ class ChatRoom {
 //- when rendering chat, we need to retrieve the listeners list from Req
 
 // this would be a `static` method but we aren't ready to use those yet
-ChatRoom.generateListeners = function(old) {
-	let listeners = {}
-	old = old || {}
+ChatRoom.listening_rooms = function() {
+	let list = [-1]
 	for (let id in this.rooms)
-		listeners[id] = old[id] || {'0':""}
-	listeners[-1] = old[-1] || {'0':""}
-	return listeners
+		list.push(id)
+	return list
 }
 
 ChatRoom.markup = "12y"
@@ -361,10 +359,6 @@ ChatRoom.generateStatus = function() {
 		status[id] = this.rooms[id].status
 	status[-1] = this.global.status
 	return status
-}
-
-ChatRoom.updateStatus = function() {
-	Lp.set_status(this.generateStatus())
 }
 
 ChatRoom.rooms = {}
