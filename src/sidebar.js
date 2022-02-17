@@ -14,6 +14,8 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	
 	myAvatar: null,
 	
+	file_upload_form: null,
+	
 	refresh_time_interval(data) { //unused parameter
 		if (intervalId)
 			window.clearInterval(intervalId)
@@ -23,6 +25,16 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	},
 	
 	init() {
+		file_upload_form = new Form({
+			fields: [
+				{name: 'name', type: 'text', input: {label: "File Name"}},
+				{name: 'bucket', type: 'text', input: {label: "Bucket"}},
+				{name: 'quantize', type: 'select', input: {label: "Quantize", options: [
+					["","no"], ["2","2"], ["4","2"], ["8","8"], ["16","16"], ["32","32"], ["64","64"], ["256","256"], // todo: maybe store values in the dropdown, rather than strings?
+				]}},
+			]
+		})
+		$fileUploadForm.replaceChildren(file_upload_form.elem)
 		$openSidebar.onclick = $closeSidebar.onclick = toggle
 		View.attachResize($sidebar, $sidebarResize, true, -1, "sidebarWidth")
 		View.attachResize($sidebarTop, $sidebarResize, false, 1, "sidebarPinnedHeight")
@@ -40,33 +52,22 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		$fileUpload.onclick = function() {
 			if (selectedFile) {
 				$fileUpload.disabled = true
-				if ($fileUploadBucket.value)
-					selectedFile.bucket = $fileUploadBucket.value
-				if ($fileQuantizeColors.value)
-					selectedFile.quantize = $fileQuantizeColors.value
-				if ($fileUploadName.value)
-					selectedFile.filename = $fileUploadName.value
-				Req.uploadFile(selectedFile, (file)=>{
+				
+				let data = file_upload_form.get()
+				if (data.bucket != null)
+					selectedFile.bucket = data.bucket
+				if (data.quantize)
+					selectedFile.quantize = +data.quantize
+				if (data.name != null)
+					selectedFile.filename = data.name
+				Req.uploadFile(selectedFile, (e, file)=>{
 					$fileUpload.disabled = false
-					if (!file)
+					if (e) // failed
 						return
-					// setting the filename takes a second request
-					// not anymore!!
-					// get rid of this and just use the query param!!
-					if ($fileUploadName.value) {
-						$fileUploadNameOut.textContent = "(setting metadata...)"
-						file.name = $fileUploadName.value
-						Req.putFile(file, (e, resp)=>{
-							$fileUploadNameOut.textContent = resp.name
-							// yea
-						})
-					} else {
-						$fileUploadNameOut.textContent = ""
-					}
 					View.flag('sidebarUploaded', true)
+					$fileURL.value = Req.fileURL(file.id)
 					$fileView.src = ""
 					$fileView.src = Req.fileURL(file.id)
-					$fileURL.value = Req.fileURL(file.id)
 				})
 			}
 		}
@@ -172,7 +173,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		selectedFile = null
 		$fileView.src = ""
 		$fileUploadSize.value = ""
-		$fileUploadName.value = ""
+		//$fileUploadName.value = ""
 		// don't reset bucket name
 	},
 	
@@ -182,11 +183,13 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		$fileView.src = ""
 		$fileView.src = URL.createObjectURL(file)
 		$fileUploadSize.value = (file.size/1000)+" kB"
-		$fileUploadName.value = file.name || ""
-		$fileUploadBucket.value = file.bucket || ""
+		file_upload_form.set({
+			name: file.name,
+			bucket: file.bucket,
+			quantize: "",
+		})
 		selectedFile = file
 		selectTab(3) //hack HACK
-		//fillFileFields(file)
 	},
 	
 	toggle() {

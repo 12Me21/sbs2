@@ -237,6 +237,7 @@ const INPUTS = (()=>{
 			get() {
 				return this.input.value
 			}
+			// todo: proper null
 			set(v) {
 				if (!this.options.includes(v)) {
 					this.extra.value = v==null ? "" : v

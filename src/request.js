@@ -303,11 +303,11 @@ const Req = {
 		
 		this.request("File"+this.queryString(params), 'POST', (e, resp)=>{
 			if (e)
-				callback(null)
+				callback(e, resp)
 			else {
 				let l = [resp]
 				Entity.processList('file',l,{})
-				callback(l[0])
+				callback(e, l[0])
 			}
 		}, form)
 	},

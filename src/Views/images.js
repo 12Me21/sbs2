@@ -98,6 +98,8 @@ function selectFile(file) {
 	$fileName.value = file.name
 	$filePermissions.value = JSON.stringify(file.permissions)
 	$fileValues.value = JSON.stringify(file.values)
+	$fileBucket.value = file.bucket
+	
 	$fileUser.replaceChildren(Draw.entity_title_link(file.createUser))
 	$filePageView.src = ""
 	$filePageView.src = Req.fileURL(file.id)
