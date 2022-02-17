@@ -44,10 +44,10 @@ with (View) (()=>{ "use strict"; {
 			form = new Form({
 				fields: [
 					//{name: 'user', type: 'user', output: {label: "User"}},
-					{name: 'filename', type: 'text', input: {label: "File Name"}},
-					{name: 'bucket', type: 'text', input: {label: "Bucket"}},
-					{name: 'values', type: 'text', input: {label: "Values"}}, // todo: add an input type for like, json or specifically these values types idk
-					{name: 'permissions', type: 'text', input: {label: "Permissions"}}, // this could be a real permission editor but image permissions don't really work anyway
+					{name: 'filename', type: 'text', label: "File Name", input: {}},
+					{name: 'bucket', type: 'text', label: "Bucket", input: {}},
+					{name: 'values', type: 'text', label: "Values", input: {}}, // todo: add an input type for like, json or specifically these values types idk
+					{name: 'permissions', type: 'text', label: "Permissions", input: {}}, // this could be a real permission editor but image permissions don't really work anyway
 				]
 			})
 			$imageForm.replaceChildren(form.elem)

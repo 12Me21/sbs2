@@ -64,13 +64,13 @@ class Form {
 			
 			let tr = tbody.createChild('tr')
 			
-			if (field.input.span) {
+			if (field.span) {
 				let t1 = tr.createChild('td')
 				t1.colSpan = 2
 				let label = t1.createChild('label')
 				label.htmlFor = input.html_id
 				let h3 = label.createChild('h3')
-				h3.textContent = field.input.label+": "
+				h3.textContent = field.label+": "
 				t1.append(input.elem)
 				//t1.className += ' input'
 			} else {
@@ -78,7 +78,7 @@ class Form {
 				let t2 = tr.createChild('td')
 				let label = t1.createChild('label')
 				label.htmlFor = input.html_id
-				label.textContent = field.input.label+": "
+				label.textContent = field.label+": "
 				t2.append(input.elem)
 				//t2.className += ' input'
 			}

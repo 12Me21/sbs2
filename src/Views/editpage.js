@@ -69,15 +69,15 @@ addView('editpage', {
 	render(page) {
 		form = new Form({
 			fields: [
-				{name: 'category', type: 'category', input: {label: "Category"}},
-				{name: 'type', type: 'select', input: {
-					label: "Type", options: Entity.CONTENT_TYPES.map(type=>[type, type.replace(/\b./g, l=>l.toUpperCase())])
+				{name: 'category', type: 'category', label: "Category", input: {}},
+				{name: 'type', type: 'select', label: "Type", input: {
+					options: Entity.CONTENT_TYPES.map(type=>[type, type.replace(/\b./g, l=>l.toUpperCase())])
 				}},
-				{name: 'keywords', type: 'word_list', input: {label: "Keywords"}},
-				{name: 'thumbnail', type: 'number', input: {label: "Thumbnail"}},
-				{name: 'photos', type: 'number_list', input: {label: "Photos"}},
-				{name: 'pinned', type: 'number_list', input: {label: "Pinned comments"}},
-				{name: 'permissions', type: 'permissions', input: {label: "Permissions", span: true}},
+				{name: 'keywords', type: 'word_list', label: "Keywords", input: {}},
+				{name: 'thumbnail', type: 'number', label: "Thumbnail", input: {}},
+				{name: 'photos', type: 'number_list', label: "Photos", input: {}},
+				{name: 'pinned', type: 'number_list', label: "Pinned comments", input: {}},
+				{name: 'permissions', type: 'permissions', label: "Permissions", span: true, input: {}},
 			]
 		})
 		// todo: display unknown/unhandled properties somewhere

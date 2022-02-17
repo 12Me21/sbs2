@@ -4,13 +4,13 @@ View.addView('comments', {
 	init() {
 		comment_form = new Form({
 			fields: [
-				{name: 'search', type: 'text', input: {label: "Search"}, convert: CONVERT.string, param: 's'},
-				{name: 'pages', type: 'number_list', input: {label: "Page Ids"}, convert: CONVERT.number_list, param: 'pid'},
-				{name: 'users', type: 'number_list', input: {label: "User Ids"}, convert: CONVERT.number_list, param: 'uid'},
-				{name: 'start', type: 'date', input: {label: "Start Date"}, convert: CONVERT.date, param: 'start'},
-				{name: 'end', type: 'date', input: {label: "End Date"}, convert: CONVERT.date, param: 'end'},
-				{name: 'range', type: 'range', input: {label: "Id Range"}, convert: CONVERT.range, param: 'ids'},
-				{name: 'reverse', type: 'checkbox', input: {label: "Newest First"}, convert: CONVERT.flag, param: 'r'},
+				{name: 'search', type: 'text', label: "Search", input: {}, convert: CONVERT.string, param: 's'},
+				{name: 'pages', type: 'number_list', label: "Page Ids", input: {}, convert: CONVERT.number_list, param: 'pid'},
+				{name: 'users', type: 'number_list', label: "User Ids", input: {}, convert: CONVERT.number_list, param: 'uid'},
+				{name: 'start', type: 'date', label: "Start Date", input: {}, convert: CONVERT.date, param: 'start'},
+				{name: 'end', type: 'date', label: "End Date", input: {}, convert: CONVERT.date, param: 'end'},
+				{name: 'range', type: 'range', label: "Id Range", input: {}, convert: CONVERT.range, param: 'ids'},
+				{name: 'reverse', type: 'checkbox', label: "Newest First", input: {}, convert: CONVERT.flag, param: 'r'},
 			]
 		})
 		$commentSearchForm.replaceWith(comment_form.elem)
