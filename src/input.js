@@ -51,11 +51,14 @@ function url_escape(s) {
 class Form {
 	constructor(p) {
 		this.fields = p.fields // list of fields
+		this.in_fields = [] // list of input fields
+		
 		this.map = {} // map of name -> item in this.fields
-		this.elem = document.createElement('table')
 		this.inputs = {} // map of name -> INPUT instances
-		let tbody = this.elem.createChild('tbody')
+		
+		this.elem = document.createElement('table')
 		this.elem.className += ' form fill'
+		let tbody = this.elem.createChild('tbody')
 		
 		for (let field of this.fields) {
 			// name: field name
@@ -68,8 +71,13 @@ class Form {
 			
 			let input = new (INPUTS[type])(inp)
 			this.inputs[name] = input
+			if (opt.default===undefined)
+				input.set(opt.default)
 			
 			let tr = tbody.createChild('tr')
+			
+			if (!opt.output)
+				this.in_fields.push(field)
 			
 			if (opt.span) {
 				let t1 = tr.createChild('td')
@@ -94,17 +102,27 @@ class Form {
 	destroy() {
 		this.elem.replaceChildren()
 	}
+	reset() {
+		for (let [name, type, opt] of this.fields) {
+			let value = opt.default!==undefined ? opt.default : null
+			this.inputs[name].set(value)
+		}
+	}
 	get() {
-		return this.fields.reduce((a, [name])=>{
+		return this.in_fields.reduce((a, [name])=>{
 			a[name] = this.inputs[name].get()
 			return a
 		}, {})
 	}
-	set(p) {
-		for (let [name] of this.fields) {
-			this.inputs[name].set(p[name])
+	set(data) {
+		for (let [name, type, opt] of this.fields) {
+			let value = data[name]
+			if (value===undefined) value = opt.default
+			if (value===undefined) value = null
+			this.inputs[name].set(value)
 		}
 	}
+	// maybe shouldn't be in this class
 	to_query(p) {
 		let params = []
 		for (let [name, type, opt] of this.fields) {
@@ -222,6 +240,7 @@ const INPUTS = (()=>{
 	}
 	
 	return {
+		// type: String/null(?)
 		select: class extends GenericInput {
 			// todo: option to reject setting invalid values?
 			// probably ALL of these inputs should have settings for
@@ -255,6 +274,7 @@ const INPUTS = (()=>{
 				this.input.value = v
 			}
 		},
+		// type: Boolean
 		checkbox: class extends GenericInput {
 			constructor(p) {
 				super()
@@ -271,6 +291,7 @@ const INPUTS = (()=>{
 				this.input.checked = v
 			}
 		},
+		// type: String/null
 		text: class extends GenericInput {
 			constructor(p) {
 				super()
@@ -287,6 +308,7 @@ const INPUTS = (()=>{
 				this.input.value = v || ""
 			}
 		},
+		// type: [Number/null, Number/null]/null
 		range: class extends GenericInput {
 			constructor(p) {
 				super()
@@ -305,6 +327,7 @@ const INPUTS = (()=>{
 				this.input.value = v==null ? "" : CONVERT.range.encode(v)
 			}
 		},
+		// type: Number/null
 		number: class extends GenericInput {
 			constructor(p) {
 				super()
@@ -322,6 +345,7 @@ const INPUTS = (()=>{
 				this.input.value = v==null ? "" : String(v)
 			}
 		},
+		// type: [Number...]/null
 		number_list: class extends GenericInput {
 			constructor(p) {
 				super()
@@ -335,7 +359,7 @@ const INPUTS = (()=>{
 			get() {
 				if (this.input.value=="")
 					return null
-				return this.input.value.split(/[,\s]/g).filter(x=>x.length!=0).map(x=>Number(x))
+				return this.input.value.split(/[,\s]/g).filter(x=>x.length!=0).map(x=>Number(x)) // todo: make sure the numbers like, exist
 			}
 			set(v) {
 				if (v != null)
@@ -344,6 +368,7 @@ const INPUTS = (()=>{
 					this.input.value = ""
 			}
 		},
+		// type: [String...]/null
 		word_list: class extends GenericInput {
 			constructor(p) {
 				super()
@@ -360,6 +385,7 @@ const INPUTS = (()=>{
 				this.input.value = v==null ? "" : v.join(' ')
 			}
 		},
+		// type:
 		permissions: class extends GenericInput {
 			constructor() {
 				super()
@@ -416,6 +442,7 @@ const INPUTS = (()=>{
 				return ret
 			}
 		},
+		// type: Date/null
 		date: class extends GenericInput {
 			constructor(p) {
 				super()
@@ -453,6 +480,7 @@ const INPUTS = (()=>{
 				}
 			}
 		},
+		// type: 
 		category: class extends GenericInput {
 			constructor(p) {
 				super()
@@ -502,13 +530,16 @@ const INPUTS = (()=>{
 				return +this.input.value
 			}
 		},
+		// type: File/null
 		file: class extends GenericInput {
 			constructor(p) {
+				super()
 				this.input = elem('input')
 				this.input.type = 'file'
 				if (p.accept)
 					this.input.accept = p.accept
 				this.input.onchange = this._onchange.bind(this)
+				this.elem = this.input
 			}
 			get() {
 				return this.input.files[0] || null
@@ -519,6 +550,17 @@ const INPUTS = (()=>{
 				else
 					throw 'cant set file like that'
 			}
-		}
+		},
+		// type: String/null
+		output: class extends GenericInput {
+			constructor(p) {
+				super()
+				this.input = elem('output')
+				this.elem = this.input
+			}
+			set(v) {
+				this.input.value = v==null ? "" : v
+			}
+		},
 	}
 })()

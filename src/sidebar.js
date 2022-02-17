@@ -27,9 +27,10 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	init() {
 		file_upload_form = new Form({
 			fields: [
+				['size', 'output', {output: true, label: "Size"}], //todo: separate set of output fields?
 				['name', 'text', {label: "File Name"}],
 				['bucket', 'text', {label: "Bucket"}],
-				['quantize', 'select', {label: "Quantize"}, {
+				['quantize', 'select', {label: "Quantize", default: ""}, {
 					options: [["","no"], ["2","2"], ["4","2"], ["8","8"], ["16","16"], ["32","32"], ["64","64"], ["256","256"]]
 				}],// todo: maybe store js values in the dropdown, rather than strings?
 			]
@@ -54,12 +55,10 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 				$fileUpload.disabled = true
 				
 				let data = file_upload_form.get()
-				if (data.bucket != null)
-					selectedFile.bucket = data.bucket
+				selectedFile.bucket = data.bucket
 				if (data.quantize)
 					selectedFile.quantize = +data.quantize
-				if (data.name != null)
-					selectedFile.filename = data.name
+				selectedFile.filename = data.name
 				Req.uploadFile(selectedFile, (e, file)=>{
 					$fileUpload.disabled = false
 					if (e) // failed
@@ -172,8 +171,6 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	cleanUp() {
 		selectedFile = null
 		$fileView.src = ""
-		$fileUploadSize.value = ""
-		//$fileUploadName.value = ""
 		// don't reset bucket name
 	},
 	
@@ -182,8 +179,8 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		View.flag('sidebarFile', true)
 		$fileView.src = ""
 		$fileView.src = URL.createObjectURL(file)
-		$fileUploadSize.value = (file.size/1000)+" kB"
 		file_upload_form.set({
+			size: (file.size/1000)+" kB",
 			name: file.name,
 			bucket: file.bucket,
 			quantize: "",
