@@ -54,8 +54,8 @@ addView('images', {
 		}
 		query.bucket && (search.bucket = query.bucket)
 		return Req.read([
-			{file: search},
-			"user.0createUserId"
+			['file', search],
+			['user.0createUserId'],
 		], {}, (e, resp)=>{
 			if (!e)
 				render(resp.file)

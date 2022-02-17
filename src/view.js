@@ -42,7 +42,7 @@ views: {
 	users: {
 		start(id, query, render) {
 			return Req.read([
-				"user",
+				['user'],
 			], {}, (e, resp)=>{
 				if (!e)
 					render(resp.user)

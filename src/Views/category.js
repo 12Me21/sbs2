@@ -27,15 +27,15 @@ addView('category', {
 			reverse: true
 		}
 		return Req.read([
-			{'category~Cmain': {ids: [id]}},
-			{content: search},
-			{category: {parentIds: [id]}},
-			'content.0values_pinned~Ppinned',
-			'user.1createUserId.3createUserId'
+			['category~Cmain', {ids: [id]}],
+			['content', search],
+			['category', {parentIds: [id]}],
+			['content.0values_pinned~Ppinned'],
+			['user.1createUserId.3createUserId'],
 		], {
 			content: 'id,name,parentId,createUserId,editDate,permissions',
 			/*category: "id,name,description,parentId,values",*/
-			user: 'id,username,avatar'
+			user: 'id,username,avatar',
 		}, (e, resp)=>{
 			if (!e) {
 				let category = id==0 ? Entity.categoryMap[0] : resp.Cmain[0]

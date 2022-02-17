@@ -26,9 +26,9 @@ addView('editpage', {
 		if (id) { //edit existing page
 			id = +id
 			return Req.read([
-				{content: {ids: [id]}},
-				"user.0createUserId.0editUserId.0permissions",
-			], {user: "id,username,avatar"}, (e, resp)=>{
+				['content', {ids: [id]}],
+				['user.0createUserId.0editUserId.0permissions'],
+			], {user: 'id,username,avatar'}, (e, resp)=>{
 				if (!e) {
 					let page = resp.content[0]
 					if (page)

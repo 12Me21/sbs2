@@ -6,13 +6,13 @@ addView('', {
 	},
 	start(id, query, render) {
 		return Req.read([
-			{"content~Pgallery": {
+			['content~Pgallery', {
 				type: 'program',
 				limit: 1, sort: 'random',
 				associatedkey: 'photos', associatedvalue: "_%"
-			}},
-			"user.0createUserId",
-			{category: {parentIds: [0]}}
+			}],
+			['user.0createUserId'],
+			['category', {parentIds: [0]}],
 		],{}, (e, resp)=>{
 			if (e)
 				render(null)

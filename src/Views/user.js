@@ -15,11 +15,11 @@ addView('user', {
 			userSearch = {usernames: [id], limit: 1}
 		
 		return Req.read([
-			{"user": userSearch},
-			{"content.0id$createUserIds~Puserpage": {type: 'userpage', limit: 1}},
-			{"activity.0id$userIds": {limit: 20, reverse: true}},
-			{"commentaggregate.0id$userIds": {limit: 100, reverse: true}},
-			"content.2contentId.3id"
+			['user', userSearch],
+			['content.0id$createUserIds~Puserpage', {type: 'userpage', limit: 1}],
+			['activity.0id$userIds', {limit: 20, reverse: true}],
+			['commentaggregate.0id$userIds', {limit: 100, reverse: true}],
+			['content.2contentId.3id'],
 		], {}, (e, resp)=>{
 			if (!e) {
 				let user = resp.user[0]

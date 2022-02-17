@@ -49,10 +49,10 @@ addView('page', {
 			// we might get messages from long polling before
 			// loading the initial messages :(
 			return Req.read([
-				{content: {ids: [id], IncludeAbout: ["votes","watches"]}},
-				{comment: {parentIds: [id], limit: 30, reverse: true}},
-				'comment.0values_pinned~Mpinned',//: {parentIds: [id]}},
-				'user.0createUserId.0editUserId.1createUserId.1editUserId.2createUserId.2editUserId',
+				['content', {ids: [id], IncludeAbout: ["votes","watches"]}],
+				['comment', {parentIds: [id], limit: 30, reverse: true}],
+				['comment.0values_pinned~Mpinned'],//: {parentIds: [id]}},
+				['user.0createUserId.0editUserId.1createUserId.1editUserId.2createUserId.2editUserId'],
 			], {
 				//content: "name,parentId,type,createUserId,editUserId,createDate,editDate,permissions,id"
 			}, (e, resp)=>{

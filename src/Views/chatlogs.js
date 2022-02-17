@@ -30,9 +30,9 @@ addView('chatlogs', {
 			return;
 		}
 		return Req.read([
-			{comment: search},
-			"content.0parentId",
-			"user.0createUserId",
+			['comment', search],
+			['content.0parentId'],
+			['user.0createUserId'],
 		], {}, function(e, resp){
 			if (e)
 				return render(null)

@@ -40,9 +40,9 @@ View.addView('comments', {
 			return;
 		}
 		return Req.read([
-			{comment: search},
-			"content.0parentId",
-			"user.0createUserId",
+			['comment', search],
+			['content.0parentId'],
+			['user.0createUserId'],
 		], {}, (e, resp)=>{
 			if (e) return render(null)
 			render(resp.comment, query, resp.content, data)

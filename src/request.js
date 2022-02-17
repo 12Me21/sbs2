@@ -227,16 +227,13 @@ const Req = {
 	
 	read(requests, filters, callback, needCategories) {
 		let query = {}
-		query.requests = requests.map((req)=>{
+		query.requests = requests.map((line)=>{
 			// `req` will either be:
 			// string: "type"
 			// object: {type: value}
-			if (typeof req == 'string')
-				return req
-			else {
-				let type = Object.first_key(req)
-				return type+"-"+JSON.stringify(req[type])
-			}
+			if (line.length==1)
+				return line[0]
+			return line[0]+"-"+JSON.stringify(line[1])
 		})
 		Object.assign(query, filters)
 		needCategories = needCategories && !this.got_categories
@@ -342,8 +339,8 @@ const Req = {
 		let like = text.replace(/%/g,"_") //the best we can do...
 		let count = 20
 		return this.read([
-			{user: {limit: count, usernameLike: "%"+like+"%", sort: 'editDate', reverse: true}}
-		],{},(e, resp)=>{
+			['user', {limit: count, usernameLike: "%"+like+"%", sort: 'editDate', reverse: true}],
+		], {}, (e, resp)=>{
 			if (!e)
 				callback(resp.userMap)
 			else
@@ -357,12 +354,12 @@ const Req = {
 		let page = 0
 		page = page*count
 		return this.read([
-			{"user~Usearch": {limit: count, skip: page, usernameLike: like+"%"}}, 
-			{content: {limit: count, skip: page, nameLike: "%"+like+"%"}},
-			{content: {limit: count, skip: page, keyword: like}},
-			"user.1createUserId.2createUserId"
+			['user~Usearch', {limit: count, skip: page, usernameLike: like+"%"}],
+			['content', {limit: count, skip: page, nameLike: "%"+like+"%"}],
+			['content', {limit: count, skip: page, keyword: like}],
+			['user.1createUserId.2createUserId'],
 		],{
-			content: "name,id,type,permissions,createUserId" //eh
+			content: 'name,id,type,permissions,createUserId', //eh
 		}, (e, resp)=>{
 			if (!e)
 				callback(resp.Usearch, resp.content)
@@ -371,21 +368,21 @@ const Req = {
 		})
 	},
 	
-	// might be worth speeding up in entity.js
+	// might be worth speeding up in entity.js (100ms)
 	getRecentActivity(callback) {
 		let day = 1000*60*60*24
 		let start = new Date(Date.now() - day).toISOString()
 		// "except no that won't work if site dies lol"
 		return this.read([
-			{activity: {createStart: start}},
-			{"comment~Mall": {reverse: true, limit: 1000}},
-			{"activity~Awatching": {contentLimit:{watches:true}}},
-			"content.0contentId.1parentId.2contentId",
-			{comment: {limit: 50, reverse: true, createStart: start}},
-			"user.0userId.1editUserId.2userId.4createUserId",
+			['activity', {createStart: start}],
+			['comment~Mall', {reverse: true, limit: 1000}],
+			['activity~Awatching', {contentLimit:{watches:true}}],
+			['content.0contentId.1parentId.2contentId'],
+			['comment', {limit: 50, reverse: true, createStart: start}],
+			['user.0userId.1editUserId.2userId.4createUserId'],
 		], {
-			content: "name,id,permissions,type",
-			Mall: "parentId,editUserId,editDate"
+			content: 'name,id,permissions,type',
+			Mall: 'parentId,editUserId,editDate',
 		}, callback)
 	},
 	
@@ -407,7 +404,7 @@ const Req = {
 	
 	getComment(id, callback) {
 		return this.read([
-			{comment: {ids: [id]}} //todo: maybe also get page permissions?
+			['comment', {ids: [id]}], //todo: maybe also get page permissions?
 		], {}, (e, resp)=>{
 			if (!e)
 				callback(resp.comment[0])
@@ -421,8 +418,8 @@ const Req = {
 		if (firstId != null)
 			fi.maxId = firstId // maxId is EXCLUSIVE
 		return this.read([
-			{comment: fi},
-			"user.0createUserId.0editUserId",
+			['comment', fi],
+			['user.0createUserId.0editUserId'],
 		], {}, (e, resp)=>{
 			if (!e)
 				callback(resp.comment)
@@ -436,8 +433,8 @@ const Req = {
 		if (lastId != null)
 			fi.minId = lastId
 		return this.read([
-			{comment: fi},
-			"user.0createUserId.0editUserId",
+			['comment', fi],
+			['user.0createUserId.0editUserId'],
 		], {}, (e, resp)=>{
 			if (!e)
 				callback(resp.comment)
