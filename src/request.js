@@ -371,6 +371,7 @@ const Req = {
 		})
 	},
 	
+	// might be worth speeding up in entity.js
 	getRecentActivity(callback) {
 		let day = 1000*60*60*24
 		let start = new Date(Date.now() - day).toISOString()

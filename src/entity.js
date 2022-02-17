@@ -36,6 +36,7 @@ let Entity = {
 	},
 	
 	process(resp) {
+		//let x = performance.now()
 		// build user map first
 		let users = {}
 		Object.for(resp, (data, key)=>{
@@ -62,6 +63,7 @@ let Entity = {
 				this.onCategoryUpdate && this.onCategoryUpdate(this.categoryMap)
 			}, 0)
 		}
+		//console.log('process took:', performance.now()-x, resp)
 	},
 	key_type(key) {
 		return {
