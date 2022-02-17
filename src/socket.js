@@ -177,11 +177,7 @@ let Lp = {
 			query[name] = field.join(",")
 		})
 		
-		return Req.request("Read/listen"+Req.queryString(query), 'GET', (e, resp)=>{
-			if (!e)
-				Entity.process(resp.chains)
-			callback(e, resp)
-		})
+		return Req.request("Read/listen"+Req.queryString(query), 'GET', callback)
 	},
 	
 	lp_loop(noCancel) {
@@ -201,10 +197,10 @@ let Lp = {
 				// try/catch here so the long poller won't fail when there's an error in the callbacks
 				try {
 					this.lastId = resp.lastId
+					
+					Entity.process(resp.chains)
 					// todo: <debug missing comments here>
 					
-					if (resp.listeners)
-						this.lastListeners = resp.listeners
 					this.process(resp)
 				} catch (e) {
 					console.error(e)
@@ -247,6 +243,9 @@ let Lp = {
 	},
 	
 	process(resp) {
+		if (resp.listeners)
+			this.lastListeners = resp.listeners
+		
 		let c = resp.chains // this SHOULD always be set, yeah?
 		if (resp.listeners)
 			this.handleOnListeners(resp.listeners, c.userMap)
@@ -336,9 +335,6 @@ let Lp = {
 						this.ws_refresh(); // not always necessary, depends on timing
 					} else {
 						// unlike long poller, we DON'T keep this data on the initial response, due to bugs and idk..
-						if (resp.listeners)
-							this.lastListeners = resp.listeners
-						//
 						this.process(resp)
 					}
 				} catch (e) {
