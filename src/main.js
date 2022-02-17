@@ -21,7 +21,7 @@ dark.onchange(dark)
 
 Sidebar.print("hi!\ncommit: "+window.commit)
 
-Req.on_login = function() {
+Req.on_login = ()=>{
 	console.log("login")
 	View.flag('loggedIn', true)
 	
@@ -47,21 +47,41 @@ Entity.onCategoryUpdate = (cats)=>{
 	Sidebar.redrawCategoryTree(cats)
 }
 
-Req.on_guest_load = function(){
+Req.on_guest_load = ()=>{
 	Act.pullRecent()
 }
 
-Req.on_logout = function() {
+Req.on_logout = ()=>{
 	View.flag('loggedIn', false)
 	//this is all messy
 	window.location.reload()
+}
+
+Lp.on_listeners = (map)=>{
+	ChatRoom.updateUserLists(map)
+}
+Lp.on_messages = (comments, contents)=>{
+	ChatRoom.displayMessages(comments)
+	Act.newComments(comments, Entity.makePageMap(contents))
+	Act.redraw()
+	Sidebar.displayMessages(comments)
+}
+Lp.on_activity = (a, p)=>{ //todo: properly link activity with contents?
+	a.forEach((a)=>{
+		if (a.type == 'user')
+			View.updateUserAvatar(a.content) //todo: also update your avatar in sidebar
+	})
+	Act.newActivity(a, Entity.makePageMap(p))
+	Act.redraw()  //this might update unnecessarily often
+}
+Lp.on_start = (me)=>{
+	View.updateMyUser(me) //also sets Req.me...
 }
 
 if (document.readyState == 'loading')
 	document.addEventListener('DOMContentLoaded', ready)
 else
 	ready()
-
 function ready() {
 	console.log("ONLOAD!")
 	Req.tryLoadCachedAuth() // moved this here
