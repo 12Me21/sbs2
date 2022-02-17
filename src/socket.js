@@ -127,40 +127,23 @@ let Lp = {
 	
 	ws_refresh(me) {
 		this.running = true
-		let req = this.make_listen(this.lastId, this.statuses, this.lastListeners, me)
+		let req = this.make_request(this.lastId, this.statuses, this.lastListeners, me)
 		this.ws_message = req
 		this.websocket_flush()
 	},
 	
-	make_listen(lastId, statuses, lastListeners, getMe) {
-		let requests = this.make_request(lastId, statuses, lastListeners, getMe)
-		
-		let query = {}
-		if (this.use_websocket) {
-			requests.forEach((req)=>{
-				let type = Object.first_key(req)
-				query[type] = req[type]
-			})
-			query.fields = {content:['id','createUserId','name','permissions','type']}
-		} else {
-			requests.forEach((req)=>{
-				let type = Object.first_key(req)
-				query[type] = JSON.stringify(req[type])
-			})
-			Object.assign(query, {content: "id,createUserId,name,permissions,type"})
-		}
-		return query
-	},
-	
+	// output is in websocket format
 	make_request(lastId, statuses, lastListeners, getMe) {
 		let actions = {
 			lastId: lastId,
 			statuses: statuses,
 			chains: [
-				"comment.0id",'activity.0id-{"includeAnonymous":true}',"watch.0id", //new stuff //changed
-				"content.1parentId.2contentId.3contentId", //pages
-				"user.1createUserId.2userId.1editUserId.2contentId", //users for comment and activity
-				"category.2contentId" //todo: handle values returned by this
+				'comment.0id',
+				"activity.0id-"+JSON.stringify({includeAnonymous:true}),
+				'watch.0id', //new stuff //changed
+				'content.1parentId.2contentId.3contentId', //pages
+				'user.1createUserId.2userId.1editUserId.2contentId', //users for comment and activity
+				'category.2contentId' //todo: handle values returned by this
 			]
 		}
 		let listeners
@@ -169,23 +152,33 @@ let Lp = {
 				// TODO: make sure lastListeners is something that will never occur so you'll always get the update
 				lastListeners: lastListeners,
 				chains: [
-					"user.0listeners",
-					'user~Ume-{"ids":['+ +Req.uid +'],"limit":1}'
+					'user.0listeners',
+					"user~Ume-"+JSON.stringify({ids:[Req.uid],limit:1}),
 				]
 			}
 		else
 			listeners = {
 				lastListeners: lastListeners,
-				chains: ["user.0listeners"]
+				chains: ['user.0listeners']
 			}
-		return [
-			{actions: actions},
-			{listeners: listeners}
-		]
+		return {
+			actions: actions,
+			listeners: listeners,
+			fields: {content:['id','createUserId','name','permissions','type']},
+		}
 	},
 	
-	do_listen(lastId, statuses, lastListeners, getMe, callback) {
-		let query = this.make_listen(lastId, statuses, lastListeners, getMe)
+	lp_listen(lastId, statuses, lastListeners, getMe, callback) {
+		let requests = this.make_request(lastId, statuses, lastListeners, getMe)
+		// convert make_request output to long poller format
+		let query = {
+			actions: JSON.stringify(requests.actions),
+			listeners: JSON.stringify(requests.listeners),
+		}
+		Object.for(requests.fields, (field, name)=>{
+			query[name] = field.join(",")
+		})
+		
 		return Req.request("Read/listen"+Req.queryString(query), 'GET', (e, resp)=>{
 			if (!e)
 				Entity.process(resp.chains)
@@ -197,7 +190,7 @@ let Lp = {
 		this.running = true
 		//make sure only one instance of this is running
 		let cancelled
-		let x = this.do_listen(this.lastId, this.statuses, this.lastListeners, noCancel, (e, resp)=>{
+		let x = this.lp_listen(this.lastId, this.statuses, this.lastListeners, noCancel, (e, resp)=>{
 			if (noCancel) {
 				this.init = false
 				noCancel(e, resp)
