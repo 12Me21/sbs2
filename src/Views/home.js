@@ -25,7 +25,7 @@ addView('', {
 		setTitle("Welcome to SmileBASIC Source 2!")
 		$homeCategories.replaceChildren()
 		categories.forEach((cat)=>{
-			let bar = Draw.entityTitleLink(cat)
+			let bar = Draw.entity_title_link(cat)
 			bar.className += " linkBar bar rem1-5"
 			$homeCategories.append(bar)
 		})
@@ -34,7 +34,7 @@ addView('', {
 })
 
 function updateGallery(page) {
-	$galleryTitle.replaceChildren(Draw.galleryLabel(page))
+	$galleryTitle.replaceChildren(Draw.gallery_label(page))
 	$galleryImage.src = ""
 	let photos = Entity.parse_numbers(page.values.photos)
 	if (photos && photos[0])

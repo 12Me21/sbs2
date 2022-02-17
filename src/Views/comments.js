@@ -57,7 +57,7 @@ View.addView('comments', {
 		$commentSearchResults.replaceChildren()
 		comments.forEach((c)=>{
 			c.parent = map[c.parentId]
-			$commentSearchResults.append(Draw.searchComment(c))
+			$commentSearchResults.append(Draw.search_comment(c))
 		})
 		if (!comments.length) {
 			$commentSearchResults.textContent = "(no result)"

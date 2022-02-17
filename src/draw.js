@@ -1,26 +1,15 @@
 // HTML RENDERING
-const Draw = Object.create(null)
-with (Draw) (function() { "use strict"
-Object.assign(Draw, { //*/
-
-	avatarURL(user, params) {
+let Draw = Object.create(null)
+with(Draw)((window)=>{"use strict";Object.assign(Draw,{
+	
+	avatar_url(user, params) {
 		if (!user || !user.avatar)
 			return "resource/avatar.png"
 		return Req.fileURL(user.avatar, params)
 	},
 	
-	largeIcon(entity) {
-		let element = E`img`
-		if (entity.Type == 'user') {
-			element.src = avatarURL(entity, "size=400&crop=true")
-			element.width = element.height = 400
-		} else
-			element.src = "resource/unknown.png"
-		return element
-	},
-	
 	// icon + name
-	iconTitle(entity, reverse) {
+	icon_title(entity, reverse) {
 		let elem = F()
 		if (reverse)
 			elem.append(title(entity), icon(entity))
@@ -29,26 +18,26 @@ Object.assign(Draw, { //*/
 		return elem
 	},
 	
-	entityLink(entity) {
+	entity_link(entity) {
 		let path = Nav.entityPath(entity)
 		let element = path ? Nav.link(path) : E`span`
 		return element
 	},
 	
 	// page (or category) wiht user
-	pageBar(page) {
-		let bar = entityTitleLink(page)
+	page_bar(page) {
+		let bar = entity_title_link(page)
 		if (page.createUser) {
-			let usr = entityTitleLink(page.createUser, true)
-			usr.className += 'rightAlign'
+			let usr = entity_title_link(page.createUser, true)
+			usr.className += ' rightAlign'
 			bar.append(usr)
 		}
 		return bar
 	},
 	
-	entityTitleLink(entity, reverse) {
-		let element = entityLink(entity)
-		let icon = iconTitle(entity, reverse)
+	entity_title_link(entity, reverse) {
+		let element = entity_link(entity)
+		let icon = icon_title(entity, reverse)
 		element.append(icon)
 		return element
 	},
@@ -60,28 +49,14 @@ Object.assign(Draw, { //*/
 		return element
 	},
 	
-	textItem(text) {
+	text_item(text) {
 		let element = E`span`
 		element.textContent = text
 		element.className = 'textItem pre'
 		return element
 	},
 	
-	iconURL(entity) {
-		if (entity.Type == 'user') {
-			return 
-		} else if (entity.Type == 'category')
-			return "resource/category.png"
-		else if (entity.Type == 'content') {
-			if (!hasPerm(entity.permissions, 0, 'r'))
-				return "resource/hiddenpage.png"
-			// todo: hidden icon
-			return "resource/page.png"
-		}
-		return "resource/unknown.png"
-	},
-	
-	chatMessagePane() {
+	chat_message_pane() {
 		let outer = E`scroll-outer`
 		outer.className = "grow chatScroller"
 		outer.hidden = true
@@ -90,7 +65,7 @@ Object.assign(Draw, { //*/
 		return [outer, inner]
 	},
 	
-	userList() {
+	user_list() {
 		let outer = E`div`
 		outer.className = "bar rem2-3 userlist"
 		let inner = E`span`
@@ -102,22 +77,22 @@ Object.assign(Draw, { //*/
 		return [outer, inner, b[1]]
 	},
 	
-	userListAvatar(status) {
-		let a = linkAvatar(status.user)
+	user_list_avatar(status) {
+		let a = link_avatar(status.user)
 		if (status.status == "idle")
 			a.className += ' status-idle'
 		return a
 	},
 	
-	sidebarDebug(text) {
+	sidebar_debug(text) {
 		let x = E`div`
 		x.className = 'debugMessage pre'
 		x.textContent = text
 		return x
 	},
 	
-	linkAvatar(user) {
-		let a = entityLink(user)
+	link_avatar(user) {
+		let a = entity_link(user)
 		a.append(avatar(user))
 		a.title = user.username
 		return a
@@ -126,12 +101,12 @@ Object.assign(Draw, { //*/
 	avatar(user) {
 		let element = E`img`
 		element.className += "item avatar"
-		element.src = avatarURL(user, "size=100&crop=true")
+		element.src = avatar_url(user, "size=100&crop=true")
 		element.width = element.height = 100
 		return element
 	},
 	
-	fileThumbnail(file, onclick) {
+	file_thumbnail(file, onclick) {
 		let div = E`div`
 		div.className = 'fileThumbnail item'
 		div.dataset.id = file.id
@@ -145,7 +120,7 @@ Object.assign(Draw, { //*/
 		return div
 	},
 	
-	bgIcon(url) {
+	bg_icon(url) {
 		let element = E`span`
 		element.setAttribute('role', 'img')
 		element.className = "item icon iconBg"
@@ -159,24 +134,23 @@ Object.assign(Draw, { //*/
 		if (type == 'user') {
 			element = E`img`
 			element.className += ' item icon avatar'
-			element.src = avatarURL(entity, "size=100&crop=true")
+			element.src = avatar_url(entity, "size=100&crop=true")
 			element.width = element.height = 100
 		} else if (type=='content') {
-			let hidden = !hasPerm(entity.permissions, 0, 'r')
+			let hidden = !Entity.has_perm(entity.permissions, 0, 'r')
 			if (hidden) {
-				element = bgIcon('resource/hiddenpage.png')
+				element = bg_icon('resource/hiddenpage.png')
 			} else { //TODO: make this better!
 				let pageType = entity.type
-				if (Entity.CONTENT_TYPES.includes(pageType)) {
-					element = bgIcon('resource/page-'+pageType+'.png')
-				} else {
-					element = bgIcon('resource/unknownpage.png')
-				}
+				if (['chat','documentation','program','resource','tutorial','userpage'].includes(pageType))
+					element = bg_icon('resource/page-'+pageType+'.png')
+				else
+					element = bg_icon('resource/unknownpage.png')
 			}
 		} else if (type=='category') {
-			element = bgIcon('resource/category.png')
+			element = bg_icon('resource/category.png')
 		} else {
-			element = bgIcon('resource/unknown.png')
+			element = bg_icon('resource/unknown.png')
 		}
 		return element
 	},
@@ -186,7 +160,7 @@ Object.assign(Draw, { //*/
 		return Parse.parseLang(page.content, lang, true)
 	},
 	
-	titlePath(path) {
+	title_path(path) {
 		let element = F()
 		if (!path)
 			return element
@@ -200,13 +174,14 @@ Object.assign(Draw, { //*/
 			if (i < path.length-1) {
 				let slash = E`span`
 				slash.textContent = "/"
-				slash.className = "pathSeparator textItem"
+				slash.className = 'pathSeparator textItem'
 				element.append(slash)
 			}
 		})
 		return element
 	},
-	messageBlock(comment) {
+	
+	message_block(comment) {
 		let user = comment.createUser
 		let date = comment.createDate
 		
@@ -229,7 +204,7 @@ Object.assign(Draw, { //*/
 		let name = E`span`
 		name.className += " username-label"
 		div.append(name)
-		//let link = entityLink(user)
+		//let link = entity_link(user)
 		//name.append(link)
 		let link = name
 		
@@ -258,17 +233,40 @@ Object.assign(Draw, { //*/
 		let contentBox = E`message-contents`
 		div.append(contentBox)
 		div.dataset.uid = comment.createUserId
-		div.dataset.merge = mergeHash(comment)
+		div.dataset.merge = Entity.comment_merge_hash(comment)
 		return [div, contentBox]
 	},
-	mergeHash(comment) {
-		return comment.createUserId + "," + comment.createUser.avatar+","+(comment.createUser.bigAvatar||"") + "," + comment.createUser.name + " " + (comment.createUser.nickname || "")
+	message_part(comment) {
+		let element = E`message-part`
+		element.className = "markup-root"
+		element.setAttribute('tabindex', "0")
+		
+		if (comment.createDate.getTime() != comment.editDate.getTime())
+			element.className += " edited"
+		
+		element.x_data = comment // mm  was going to use dataset but this is more efficent, and the attribute was taking up tons of space in the html inspector lol
+		element.dataset.id = comment.id
+		element.append(Parse.parseLang(comment.content, comment.meta.m, false))
+		return element
 	},
+	
+	// time string as something like: (depends on locale)
+	// today: "10:37 AM"
+	// older: "December 25, 2021, 4:09 PM"
+	timeString(date) {
+		let options
+		if (Date.now()-date.getTime() > 1000*60*60*12)
+			options = {year:'numeric',month:'long',day:'numeric',hour:'numeric', minute:'2-digit'}
+		else
+			options = {hour:'numeric', minute:'2-digit'}
+		return date.toLocaleString([], options)
+	},
+	
 	// this needs to be improved
-	searchComment(comment) {
+	search_comment(comment) {
 		let outer = E`div`
 		outer.className += " bottomBorder"
-		let pg = entityTitleLink(comment.parent)
+		let pg = entity_title_link(comment.parent)
 		pg.className += " bar rem1-5 linkBar"
 		outer.append(pg)
 		
@@ -286,8 +284,8 @@ Object.assign(Draw, { //*/
 					if (!comments) return
 					comments.forEach((c)=>{
 						firstId = c.id
-						let d = messageBlock(c)
-						d[1].append(messagePart(c))
+						let d = message_block(c)
+						d[1].append(message_part(c))
 						outer.insertBefore(d[0], firstElem)
 						firstElem = d[0]
 					})
@@ -295,8 +293,8 @@ Object.assign(Draw, { //*/
 			}
 		}
 		
-		let d = messageBlock(comment)
-		d[1].append(messagePart(comment))
+		let d = message_block(comment)
+		d[1].append(message_part(comment))
 		outer.append(d[0])
 		firstElem = lastElem = d[0]
 		
@@ -309,8 +307,8 @@ Object.assign(Draw, { //*/
 					if (!comments) return
 					comments.forEach((c)=>{
 						lastId = c.id
-						let d = messageBlock(c)
-						d[1].append(messagePart(c))
+						let d = message_block(c)
+						d[1].append(message_part(c))
 						outer.insertBefore(d[0], b[0]) // yes
 					})
 				})
@@ -320,29 +318,6 @@ Object.assign(Draw, { //*/
 		return outer
 	},
 	
-	messagePart(comment) {
-		let element = E`message-part`
-		element.className = "markup-root"
-		element.setAttribute('tabindex', "0")
-		
-		if (comment.createDate.getTime() != comment.editDate.getTime())
-			element.className += " edited"
-		
-		element.x_data = comment // mm  was going to use dataset but this is more efficent, and the attribute was taking up tons of space in the html inspector lol
-		element.dataset.id = comment.id
-		element.append(Parse.parseLang(comment.content, comment.meta.m, false))
-		return element
-	},
-	timeString(date) {
-		let options
-		if (new Date()-date > 1000*60*60*12) {
-			options = {year:'numeric',month:'long',day:'numeric',hour:'2-digit', minute:'2-digit'}
-		} else {
-			options = {hour:'2-digit', minute:'2-digit'}
-		}
-		return date.toLocaleString([], options)
-	},
-	
 	button() {
 		let container = E`div`
 		container.className = "buttonContainer"
@@ -350,6 +325,7 @@ Object.assign(Draw, { //*/
 		container.append(button)
 		return [container, button]
 	}, // BAD ↕
+	// unused also
 	linkButton() {
 		let container = E`div`
 		container.className = "buttonContainer"
@@ -359,24 +335,18 @@ Object.assign(Draw, { //*/
 		a.append(button)
 		return [container, button]
 	},
-	pageInfo(page) {
+	
+	page_info(page) {
 		let e = E`div`
 		e.className = "pageInfoPane rem2-3 bar"
-		//with(e){
-		e.append(authorBox(page))
-		e.append(voteBox(page))
-		/*var b = linkButton()
-		  b[1].textContent = "Edit Page"
-		  Nav.link("editpage/"+page.id, b[1].parentNode)
-		  b[0].className += " item rightAlign"
-		  e.append(b[0])*/
+		e.append(author_box(page), vote_box(page))
 		return e
 	},
-	sidebarTabs(list, callback) {
+	sidebar_tabs(list, callback) {
 		let btns = []
-		let r = F();
+		let frag = F();
 		let x = {
-			elem: r,
+			elem: frag,
 			select: (i)=>{
 				list.forEach((item, i2)=>{
 					btns[i2].setAttribute('aria-selected', i==i2)
@@ -394,7 +364,7 @@ Object.assign(Draw, { //*/
 			btn.setAttribute('aria-selected', "false")
 			btn.id = "sidebar-tab-"+i
 			btn.setAttribute('aria-controls', "sidebar-panel-"+i)
-			r.append(btn)
+			frag.append(btn)
 			btn.append(item.label)
 			btns[i] = btn
 			btn.onclick = ()=>{
@@ -403,54 +373,47 @@ Object.assign(Draw, { //*/
 		})
 		return x
 	},
-	setBgImage(element, url) {
-		element.style.backgroundImage = ""
-		if (url)
-			element.style.backgroundImage = "url(\""+url+"\")" //todo: escape chars in url!
-	},
-	activityItem(item) {
-		let outer = entityLink(item.content)
+	
+	activity_item(item) {
+		let outer = entity_link(item.content)
 		outer.className += " linkBar"
 		
 		let bar = E`div`
 		bar.className += " ellipsis bar rem1-5"
-		bar.append(iconTitle(item.content))
+		bar.append(icon_title(item.content))
 		
 		let bar2 = E`div`
 		bar2.className += " bar rem1-5"
-		outer.append(bar)
-		outer.append(bar2)
+		outer.append(bar, bar2)
 		
 		let userContainer = bar2.child`activity-users`
 		userContainer.className = "rightAlign"
 		
-		let time = timeAgo(item.lastDate)
+		let time = time_ago(item.lastDate)
 		time.className += " textItem"
-		userContainer.append(time)
-		userContainer.append(" ")
+		userContainer.append(time, " ")
 		
 		item.users.forEach((u)=>{
 			if (u && u.user) {
-				let l = entityLink(u.user)
+				let l = entity_link(u.user)
 				l.append(icon(u.user))
 				userContainer.append(l)
 			}
 		})
 		return outer
 	},
-	navButtons(callback) {
+	// todo: create a special system for pagination
+	nav_buttons(callback) {
 		let prev = button()
 		prev[0].className += " item"
+		prev[1].textContent = "<"
 		let next = button()
 		next[0].className += " item"
-		let page = textItem()
-		prev[1].textContent = "<"
 		next[1].textContent = ">"
+		let page = text_item()
 		page.textContent = 1
 		let e = F()
-		e.append(prev[0])
-		e.append(next[0])
-		e.append(page)
+		e.append(prev[0], next[0], page)
 		let x = {
 			value: 1,
 			element: e,
@@ -471,24 +434,24 @@ Object.assign(Draw, { //*/
 		return x
 	},
 	
-	authorBox(page) {
+	author_box(page) {
 		let elem = F()
 		if (!page)
 			return elem
 		elem.append(
-			pageEditedTime("Author:", page.createDate), " ",
-			entityTitleLink(page.createUser, true))
+			page_edited_time("Author:", page.createDate), " ",
+			entity_title_link(page.createUser, true))
 		if (page.editUserId != page.createUserId) {
 			elem.append(
-				" ", pageEditedTime("Edited by:", page.editDate),
-				" ", entityTitleLink(page.editUser, true))
+				" ", page_edited_time("Edited by:", page.editDate),
+				" ", entity_title_link(page.editUser, true))
 		} else if (page.createDate != page.editDate) { //edited by same user
-			elem.append(" ", pageEditedTime("Edited", page.editDate))
+			elem.append(" ", page_edited_time("Edited", page.editDate))
 		}
 		return elem
 	},
 	
-	pageEditedTime(label, time) {
+	page_edited_time(label, time) {
 		let b = E`span`
 		b.className = "item"
 		
@@ -497,22 +460,22 @@ Object.assign(Draw, { //*/
 		a.textContent = label
 		b.append(a)
 		
-		a = timeAgo(time)
+		a = time_ago(time)
 		a.className += " half"
 		b.append(a)
 		return b
 	},
 	
-	timeAgo(time) {
+	time_ago(time) {
 		let t = E`time`
 		t.className += " time-ago"
 		t.setAttribute('datetime', time.toISOString())
-		t.textContent = timeAgoString(time)
+		t.textContent = time_ago_string(time)
 		t.title = time.toString()
 		return t
 	},
 	
-	timeAgoString(date) {
+	time_ago_string(date) {
 		let seconds = (Date.now() - date.getTime()) / 1000
 		let desc = [
 			[31536000, 1, "year", "years"],
@@ -531,19 +494,14 @@ Object.assign(Draw, { //*/
 		  return Math.round(seconds) + " seconds ago"*/
 	},
 	
-	categoryInput() {
-		let input = new INPUTS.category({})
-		return input
-	},
-	
-	permissionRow(user, perms) {
+	permission_row(user, perms) {
 		let id = user ? user.id : -1
 		let row = E`tr`
 		let name
 		if (!id) {
-			name = textItem("Default")
+			name = text_item("Default")
 		} else
-			name = entityTitleLink(user, true)
+			name = entity_title_link(user, true)
 		name.className += " bar rem1-5"
 		if (id) {
 			let b = button()
@@ -563,12 +521,7 @@ Object.assign(Draw, { //*/
 		return row
 	},
 	
-	permissionInput() {
-		let input = new INPUTS.permissions({})
-		return input
-	},
-	
-	userSelector() {
+	user_selector() {
 		let elem = E`user-select`
 		elem.className = "bar rem1-5"
 		let input = E`input`
@@ -667,7 +620,7 @@ Object.assign(Draw, { //*/
 		return x
 	},
 	
-	messageControls() {
+	message_controls() {
 		let elem = E`message-controls`
 		let x = {
 			elem: elem
@@ -687,6 +640,7 @@ Object.assign(Draw, { //*/
 		return x
 	},
 	
+	// todo: replace this
 	settings(settings, onchange) {
 		let get = {}
 		let set = {}
@@ -753,24 +707,24 @@ Object.assign(Draw, { //*/
 		return x
 	},
 	
-	galleryLabel(entity) {
-		let element = entityLink(entity)
+	gallery_label(entity) {
+		let element = entity_link(entity)
 		element.className += " bar rem1-5"
 		
-		let icon = iconTitle(entity)
+		let icon = icon_title(entity)
 		element.append(icon)
 		
 		return element
 	},
 	
-	sidebarComment(comment) {
+	sidebar_comment(comment) {
 		let d = E`div`
 		d.className += " bar rem1-5 sidebarComment ellipsis"
 		if (comment.editUserId != comment.createUserId) {
-			d.append(entityTitleLink(comment.editUser))
+			d.append(entity_title_link(comment.editUser))
 			d.append(" edited ")
 		}
-		d.append(entityTitleLink(comment.createUser))
+		d.append(entity_title_link(comment.createUser))
 		d.append(": ")
 		d.append(comment.content.replace(/\n/g, "  "))
 		d.dataset.id = comment.id
@@ -790,7 +744,7 @@ Object.assign(Draw, { //*/
 	// feel like touching it.
 	
 	// @@ who wrote this comment??
-	voteButton(disptext, state, page) {
+	vote_button(disptext, state, page) {
 		let b = button()
 		b[0].className += ' item'
 		b[1].className += ' voteButton'
@@ -811,7 +765,7 @@ Object.assign(Draw, { //*/
 		return b[0]
 	},
 	
-	voteBox(page) {
+	vote_box(page) {
 		let element = E`div`
 		element.className += ' item rightAlign'
 		
@@ -819,7 +773,7 @@ Object.assign(Draw, { //*/
 			return element
 		
 		let buttonStates = [['-', 'b'], ['~', 'o'], ['+', 'g']]
-		let buttons = buttonStates.map(x => voteButton(x[0], x[1], page))
+		let buttons = buttonStates.map(x => vote_button(x[0], x[1], page))
 		
 		buttons.forEach((x)=>{
 			x.onclick = (e)=>{
@@ -869,35 +823,32 @@ Object.assign(Draw, { //*/
 		return element
 	},
 	
-	updateTimestamps(element) {
+	update_timestamps(element) {
 		element.querySelectorAll("time.time-ago").forEach((e)=>{
-			e.textContent = timeAgoString(new Date(e.getAttribute('datetime')))
+			e.textContent = time_ago_string(new Date(e.getAttribute('datetime')))
 		})
 	},
 	
-	navCategory(cat) {
+	nav_category(cat) {
 		let elem = E`div`
-		let label = entityTitleLink(cat)
+		let label = entity_title_link(cat)
 		label.className += " bar rem1-5 linkBar"
 		elem.append(label)
 		let elem2 = E`div`
 		elem.append(elem2)
 		elem2.className += " category-childs"
 		cat.children && cat.children.forEach((c)=>{
-			elem2.append(navCategory(c))
+			elem2.append(nav_category(c))
 		})
 		return elem
 	}
+	
+})<!-- PRIVATE })
 
-}) //*/
-
-function hasPerm(perms, id, perm) {
-	return perms && perms[id] && perms[id].includes(perm)
-}
-								  
 let F = document.createDocumentFragment.bind(document)
 function E(name) {
 	return document.createElement(name[0])
 }
 
-}()) //*/
+0<!-- Draw ({
+})(window)

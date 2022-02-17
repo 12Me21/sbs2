@@ -18,13 +18,13 @@ class ChatRoom {
 		this.pageContainer.className = 'split-top border-list'
 		this.pageElement = document.createElement('div')
 		this.pageElement.className = 'markup-root pageContents'
-		this.pageInfoElement = Draw.pageInfo(page)
+		this.pageInfoElement = Draw.page_info(page)
 		this.pageContainer.append(this.pageInfoElement)
 		this.pageContainer.append(this.pageElement)
 		$pageContents.append(this.pageContainer)
 		
 		// user list
-		let ul = Draw.userList()
+		let ul = Draw.user_list()
 		this.userListOuter = ul[0]
 		this.userListInner = ul[1]
 		ul[2].onclick = ()=>{
@@ -42,7 +42,7 @@ class ChatRoom {
 		this.maxMessages = 500
 		this.totalMessages = 0
 		
-		;[this.messagePane, this.messageList] = Draw.chatMessagePane()
+		;[this.messagePane, this.messageList] = Draw.chat_message_pane()
 		
 		let label = document.createElement('label')
 		let checkbox = label.createChild('input')
@@ -81,7 +81,7 @@ class ChatRoom {
 		// set up message controls //
 		/////////////////////////////
 		this.controls_message = null
-		let controls = Draw.messageControls()
+		let controls = Draw.message_controls()
 		controls.onclick = ()=>{
 			if (this.controls_message)
 				window.editComment(this.controls_message.x_data)
@@ -194,15 +194,15 @@ class ChatRoom {
 	}
 	updateUserList(list) {
 		this.userListInner.replaceChildren(
-			...Object.values(list).map(item => Draw.userListAvatar(item))
+			...Object.values(list).map(item => Draw.user_list_avatar(item))
 		)
 	}
 	displayInitialMessages(comments, pinned) {
 		comments.forEach(comment => this.displayMessage(comment, false))
 		if (pinned instanceof Array && this.pinnedList) {
 			this.pinnedList.append(...pinned.map((comment)=>{
-				let b = Draw.messageBlock(comment)
-				b[1].append(Draw.messagePart(comment))
+				let b = Draw.message_block(comment)
+				b[1].append(Draw.message_part(comment))
 				return b[0]
 			}))
 		}
@@ -260,7 +260,7 @@ class ChatRoom {
 	can_merge(block, comment, time) {
 		if (block) {
 			let hash = block.dataset.merge
-			return hash && hash==Draw.mergeHash(comment) && (!time || comment.createDate-time <= 1000*60*5)
+			return hash && hash==Entity.comment_merge_hash(comment) && (!time || comment.createDate-time <= 1000*60*5)
 		}
 		return false
 	}
@@ -273,7 +273,7 @@ class ChatRoom {
 		if (this.can_merge(block, comment, time))
 			contents = block.getElementsByTagName('message-contents')[0]// not great...
 		if (!contents) {
-			let b = Draw.messageBlock(comment)
+			let b = Draw.message_block(comment)
 			this.messageList[backwards?'prepend':'append'](b[0])
 			contents = b[1]
 		}
@@ -291,7 +291,7 @@ class ChatRoom {
 				this.removeMessage(comment.id)
 			} else {
 				// `old` should never be set here, I think...
-				let node = Draw.messagePart(comment)
+				let node = Draw.message_part(comment)
 				this.insert_merge(node, comment, null, true)
 			}
 		})
@@ -307,7 +307,7 @@ class ChatRoom {
 			if (comment.deleted) {
 				this.removeMessage(comment.id)
 			} else {
-				let part = Draw.messagePart(comment)
+				let part = Draw.message_part(comment)
 				
 				if (old) { // edited
 					old.parentNode.replaceChild(part, old)

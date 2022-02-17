@@ -1,5 +1,6 @@
 let Sidebar = Object.create(null)
-with (Sidebar) (function($) { "use strict"; Object.assign(Sidebar, { 
+with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{ 
+	
 	selectedFile: null,
 	
 	scroller: null,
@@ -13,17 +14,15 @@ with (Sidebar) (function($) { "use strict"; Object.assign(Sidebar, {
 	
 	myAvatar: null,
 	
-	refreshInterval(data) {
-		if (intervalId) {
-			$.clearInterval(intervalId)
-			intervalId = null
-		}
-		intervalId = $.setInterval(()=>{
-			Draw.updateTimestamps($sidebarActivity)
+	refresh_time_interval(data) { //unused parameter
+		if (intervalId)
+			window.clearInterval(intervalId)
+		intervalId = window.setInterval(()=>{
+			Draw.update_timestamps($sidebarActivity)
 		}, 1000*30)
 	},
 	
-	onLoad() {
+	init() {
 		$openSidebar.onclick = $closeSidebar.onclick = toggle
 		View.attachResize($sidebar, $sidebarResize, true, -1, "sidebarWidth")
 		View.attachResize($sidebarTop, $sidebarResize, false, 1, "sidebarPinnedHeight")
@@ -85,7 +84,7 @@ with (Sidebar) (function($) { "use strict"; Object.assign(Sidebar, {
 		myAvatar.className += " loggedIn fill"
 		y.className += " loggedOut"
 		y.textContent = "log in"
-		let sidebarTabs = Draw.sidebarTabs([
+		let sidebarTabs = Draw.sidebar_tabs([
 			{label: document.createTextNode("✨"), elem: $sidebarActivityPanel},
 			{label: document.createTextNode("W"), elem: $sidebarWatchPanel},
 			{label: document.createTextNode("🔍"), elem: $sidebarNavPanel},
@@ -102,12 +101,12 @@ with (Sidebar) (function($) { "use strict"; Object.assign(Sidebar, {
 				$searchButton.disabled = false
 				$searchResults.replaceChildren()
 				pages.forEach((item)=>{
-					let bar = Draw.pageBar(item)
+					let bar = Draw.page_bar(item)
 					bar.className += " linkBar bar rem1-5"
 					$searchResults.append(bar)
 				})
 				users.forEach((item)=>{
-					let bar = Draw.entityTitleLink(item)
+					let bar = Draw.entity_title_link(item)
 					bar.className += " linkBar bar rem1-5"
 					$searchResults.append(bar)
 				})
@@ -128,15 +127,15 @@ with (Sidebar) (function($) { "use strict"; Object.assign(Sidebar, {
 		$sidebarActivity.replaceChildren()
 		$sidebarWatch.replaceChildren()
 		items.forEach((item)=>{
-			$sidebarActivity.append(Draw.activityItem(item))
+			$sidebarActivity.append(Draw.activity_item(item))
 			if (item.watching)
-				$sidebarWatch.append(Draw.activityItem(item))
+				$sidebarWatch.append(Draw.activity_item(item))
 		})
-		refreshInterval(aggregate)
+		refresh_time_interval(aggregate)
 	},
 	
 	redrawCategoryTree(cats) {
-		$sidebarCategories.replaceChildren(Draw.navCategory(cats[0]))
+		$sidebarCategories.replaceChildren(Draw.nav_category(cats[0]))
 	},
 	
 	print(...args) {
@@ -156,7 +155,7 @@ with (Sidebar) (function($) { "use strict"; Object.assign(Sidebar, {
 			scroller.handlePrint(()=>{
 				displayedMessages++
 				limitMessages()
-				return Draw.sidebarDebug(text)
+				return Draw.sidebar_debug(text)
 			}, true)
 		else
 			prePrint.push(text)	
@@ -220,7 +219,7 @@ with (Sidebar) (function($) { "use strict"; Object.assign(Sidebar, {
 					}
 				} else {
 					let old = displayedIds[c.id]
-					let nw = Draw.sidebarComment(c)
+					let nw = Draw.sidebar_comment(c)
 					if (old) {
 						old.replaceWith(nw)
 					} else {
@@ -249,10 +248,9 @@ limitMessages() {
 	//scroller.scrollBottom = x
 }
 
-<!--/* 
-}) //*/
+})<!-- PRIVATE })
 
-<!--/*
-}(window)) //*/
+0<!-- Sidebar ({
+})(window)
 
 window.print = Sidebar.print

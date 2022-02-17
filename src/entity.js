@@ -22,6 +22,14 @@ let Entity = {
 		'resource', 'chat', 'program', 'tutorial', 'documentation', 'userpage'
 	],
 	
+	has_perm(perms, uid, perm) {
+		return perms && perms[uid] && perms[uid].includes(perm)
+	},
+	
+	comment_merge_hash(comment) {
+		return comment.createUserId + "," + comment.createUser.avatar+","+(comment.createUser.bigAvatar||"") + "," + comment.createUser.name + " " + (comment.createUser.nickname || "")
+	},
+	
 	filter_nickname(name) {
 		return String(name).substr(0,50).replace(/\n/g, "  ")
 	},

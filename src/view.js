@@ -52,7 +52,7 @@ views: {
 		render(users) {
 			setTitle("Users")
 			$memberList.childs = users.map((user)=>{
-				let bar = Draw.entityTitleLink(user)
+				let bar = Draw.entity_title_link(user)
 				bar.className += " linkBar bar rem2-3"
 				return bar
 			})
@@ -61,7 +61,7 @@ views: {
 			$memberList.childs = null
 		},
 		init() {
-			$memberNav.append(Draw.navButtons().element)
+			$memberNav.append(Draw.nav_buttons().element)
 		}
 	},
 	pages: {
@@ -86,7 +86,7 @@ getView(name) {
 },
 
 setEntityTitle(entity) {
-	$pageTitle.childs = Draw.iconTitle(entity)
+	$pageTitle.childs = Draw.icon_title(entity)
 	document.title = entity.name
 	realTitle = entity.name
 	changeFavicon(false)
@@ -99,7 +99,7 @@ setTitle(text) {
 },
 
 setPath(path) {
-	$path.childs = Draw.titlePath(path)
+	$path.childs = Draw.title_path(path)
 },
 setEntityPath(page) {
 	if (!page) {
@@ -152,7 +152,7 @@ updateMyUser(user) {
 		let icon = Draw.icon(user)
 		Sidebar.myAvatar.childs = icon
 	}
-	//$loggedIn.replaceChildren(Draw.entityTitleLink(user, true))
+	//$loggedIn.replaceChildren(Draw.entity_title_link(user, true))
 },
 
 handleView(type, id, query, callback) {
@@ -343,7 +343,8 @@ onLoad() {
 			}
 		}
 	}
-	Sidebar.onLoad()
+	
+	Sidebar.init()
 },
 
 addView(name, data) {
@@ -419,7 +420,7 @@ attachResize(element, tab, horiz, dir, save, callback) {
 },
 
 commentTitle(comment) {
-	titleNotification(comment.content, Draw.avatarURL(comment.createUser, "size=120&crop=true"))
+	titleNotification(comment.content, Draw.avatar_url(comment.createUser, "size=120&crop=true"))
 },
 
 titleNotification(text, icon) {

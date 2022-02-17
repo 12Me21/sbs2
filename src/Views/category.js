@@ -4,7 +4,7 @@ with (View) (function($) { "use strict" //*/
 addView('category', {
 	init() {
 		let nav = $categoryNav
-		navButtons = Draw.navButtons()
+		navButtons = Draw.nav_buttons()
 		nav.append(navButtons.element)
 		navButtons.onchange = (n)=>{
 			if (currentCategory == null)
@@ -56,17 +56,17 @@ addView('category', {
 		Nav.link("editpage?cid="+category.id, $createPage.parentNode)
 		Nav.link("editcategory/"+category.id, $editCategory.parentNode)
 		category.children.forEach((child)=>{
-			let bar = Draw.entityTitleLink(child)
+			let bar = Draw.entity_title_link(child)
 			bar.className += " linkBar bar rem2-3"
 			$categoryCategories.append(bar)
 		})
 		pinned.forEach((page)=>{
-			let bar = Draw.pageBar(page)
+			let bar = Draw.page_bar(page)
 			bar.className += " linkBar bar rem2-3"
 			$categoryCategories.append(bar)
 		})
 		pages.forEach((page)=>{
-			let bar = Draw.pageBar(page)
+			let bar = Draw.page_bar(page)
 			bar.className += " linkBar bar rem2-3"
 			$categoryPages.append(bar)
 		})

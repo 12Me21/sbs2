@@ -49,7 +49,7 @@ addView('chatlogs', {
 		$chatlogSearchResults.replaceChildren()
 		comments.forEach(function(c) {
 			c.parent = map[c.parentId]
-			$chatlogSearchResults.appendChild(Draw.searchComment(c))
+			$chatlogSearchResults.appendChild(Draw.search_comment(c))
 		})
 		if (!comments.length) {
 			$chatlogSearchResults.textContent = "(no result)"

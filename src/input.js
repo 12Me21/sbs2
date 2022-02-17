@@ -357,7 +357,7 @@ const INPUTS = (()=>{
 				super()
 				this.elem = elem('div')
 				this.elem.id = this.html_id //todo: put a hidden <input> element or something?
-				this.input = Draw.userSelector()
+				this.input = Draw.user_selector()
 				let table = elem('table')
 				table.className += " permission-table"
 				let header = table.createChild('thead').createChild('tr')
@@ -381,7 +381,7 @@ const INPUTS = (()=>{
 			_add_row(user, perm) {
 				//ok we really need to fix the problem with null users
 				// one solution is to have a user map lookup function which returns a placeholder object if the user is not found, to store the 2 important (and known) properties, Type and id, just to avoid losing that information.
-				this.body.append(Draw.permissionRow(user, perm))
+				this.body.append(Draw.permission_row(user, perm))
 			}
 			set([perms, users]) {
 				this.body.replaceChildren()

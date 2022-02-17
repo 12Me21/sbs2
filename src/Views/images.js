@@ -15,7 +15,7 @@ addView('images', {
 			currentQuery.bucket = $fileSearchBucket.value || undefined
 			Nav.go("images"+Req.queryString(currentQuery))
 		}
-		navButtons = Draw.navButtons()
+		navButtons = Draw.nav_buttons()
 		nav.append(navButtons.element)
 		navButtons.onchange = (n)=>{
 			currentQuery.page = n
@@ -68,7 +68,7 @@ addView('images', {
 		setTitle("Files")
 		fileList = files
 		files.forEach((file)=>{
-			$fileBox.append(Draw.fileThumbnail(file, selectFile))
+			$fileBox.append(Draw.file_thumbnail(file, selectFile))
 		})
 	},
 	cleanUp() {
@@ -98,7 +98,7 @@ function selectFile(file) {
 	$fileName.value = file.name
 	$filePermissions.value = JSON.stringify(file.permissions)
 	$fileValues.value = JSON.stringify(file.values)
-	$fileUser.replaceChildren(Draw.entityTitleLink(file.createUser))
+	$fileUser.replaceChildren(Draw.entity_title_link(file.createUser))
 	$filePageView.src = ""
 	$filePageView.src = Req.fileURL(file.id)
 	//Draw.setBgImage($filePageView, Req.fileURL(file.id))

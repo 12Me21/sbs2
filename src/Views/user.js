@@ -43,8 +43,8 @@ addView('user', {
 			Nav.link(path, $editUserPage)
 		}
 		setEntityTitle(user)
-		/*$userPageAvatarLink.href = Draw.avatarURL(user)*/
-		$userPageAvatar.src = Draw.avatarURL(user, "size=400&crop=true")
+		/*$userPageAvatarLink.href = Draw.avatar_url(user)*/
+		$userPageAvatar.src = Draw.avatar_url(user, "size=400&crop=true")
 		//setPath([["users","Users"], [Nav.entityPath(user), user.name]])
 		if (userpage)
 			$userPageContents.replaceChildren(Draw.markup(userpage))
