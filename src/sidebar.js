@@ -27,11 +27,11 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	init() {
 		file_upload_form = new Form({
 			fields: [
-				{name: 'name', type: 'text', input: {label: "File Name"}},
-				{name: 'bucket', type: 'text', input: {label: "Bucket"}},
-				{name: 'quantize', type: 'select', input: {label: "Quantize", options: [
-					["","no"], ["2","2"], ["4","2"], ["8","8"], ["16","16"], ["32","32"], ["64","64"], ["256","256"], // todo: maybe store values in the dropdown, rather than strings?
-				]}},
+				['name', 'text', {label: "File Name"}],
+				['bucket', 'text', {label: "Bucket"}],
+				['quantize', 'select', {label: "Quantize"}, {
+					options: [["","no"], ["2","2"], ["4","2"], ["8","8"], ["16","16"], ["32","32"], ["64","64"], ["256","256"]]
+				}],// todo: maybe store js values in the dropdown, rather than strings?
 			]
 		})
 		$fileUploadForm.replaceChildren(file_upload_form.elem)

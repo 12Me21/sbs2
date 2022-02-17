@@ -69,15 +69,15 @@ addView('editpage', {
 	render(page) {
 		form = new Form({
 			fields: [
-				{name: 'category', type: 'category', label: "Category", input: {}},
-				{name: 'type', type: 'select', label: "Type", input: {
+				['category', 'category', {label: "Category"}],
+				['type', 'select', {label: "Type"}, {
 					options: Entity.CONTENT_TYPES.map(type=>[type, type.replace(/\b./g, l=>l.toUpperCase())])
-				}},
-				{name: 'keywords', type: 'word_list', label: "Keywords", input: {}},
-				{name: 'thumbnail', type: 'number', label: "Thumbnail", input: {}},
-				{name: 'photos', type: 'number_list', label: "Photos", input: {}},
-				{name: 'pinned', type: 'number_list', label: "Pinned comments", input: {}},
-				{name: 'permissions', type: 'permissions', label: "Permissions", span: true, input: {}},
+				}],
+				['keywords', 'word_list', {label: "Keywords"}],
+				['thumbnail', 'number', {label: "Thumbnail"}],
+				['photos', 'number_list', {label: "Photos"}],
+				['pinned', 'number_list', {label: "Pinned comments"}],
+				['permissions', 'permissions', {label: "Permissions", span: true}],
 			]
 		})
 		// todo: display unknown/unhandled properties somewhere

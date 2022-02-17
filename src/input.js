@@ -58,19 +58,26 @@ class Form {
 		this.elem.className += ' form fill'
 		
 		for (let field of this.fields) {
-			this.map[field.name] = field
-			let input = new (INPUTS[field.type])(field.input)
-			this.inputs[field.name] = input
+			// name: field name
+			// type: field type
+			// opt: field options (ex: label)
+			// inp: options for the input element itself (ex: list for <select>)
+			// wait how do we change a select's values afterwards then?
+			let [name, type, opt, inp={}] = field
+			this.map[name] = field
+			
+			let input = new (INPUTS[type])(inp)
+			this.inputs[name] = input
 			
 			let tr = tbody.createChild('tr')
 			
-			if (field.span) {
+			if (opt.span) {
 				let t1 = tr.createChild('td')
 				t1.colSpan = 2
 				let label = t1.createChild('label')
 				label.htmlFor = input.html_id
 				let h3 = label.createChild('h3')
-				h3.textContent = field.label+": "
+				h3.textContent = opt.label+": "
 				t1.append(input.elem)
 				//t1.className += ' input'
 			} else {
@@ -78,7 +85,7 @@ class Form {
 				let t2 = tr.createChild('td')
 				let label = t1.createChild('label')
 				label.htmlFor = input.html_id
-				label.textContent = field.label+": "
+				label.textContent = opt.label+": "
 				t2.append(input.elem)
 				//t2.className += ' input'
 			}
@@ -88,24 +95,24 @@ class Form {
 		this.elem.replaceChildren()
 	}
 	get() {
-		return this.fields.reduce((a, field)=>{
-			a[field.name] = this.inputs[field.name].get()
+		return this.fields.reduce((a, [name])=>{
+			a[name] = this.inputs[name].get()
 			return a
 		}, {})
 	}
 	set(p) {
-		for (let field of this.fields) {
-			this.inputs[field.name].set(p[field.name])
+		for (let [name] of this.fields) {
+			this.inputs[name].set(p[name])
 		}
 	}
 	to_query(p) {
 		let params = []
-		for (let field of this.fields) {
-			let value = p[field.name]
-			if (value != null && field.convert)
-				value = field.convert.encode(value)
+		for (let [name, type, opt] of this.fields) {
+			let value = p[name]
+			if (value != null && opt.convert)
+				value = opt.convert.encode(value)
 			if (value != null) {
-				let key = url_escape(field.param)
+				let key = url_escape(opt.param)
 				if (value === true)
 					params.push(key)
 				else if (value !== false)
@@ -118,12 +125,12 @@ class Form {
 	}
 	from_query(query) {
 		let p = {}
-		for (let field of this.fields) {
-			let value = query[field.param]
-			if (field.convert)
-				value = field.convert.decode(value)
+		for (let [name, type, opt] of this.fields) {
+			let value = query[opt.param]
+			if (opt.convert)
+				value = opt.convert.decode(value)
 			if (value != null)
-				p[field.name] = value
+				p[name] = value
 		}
 		return p
 	}

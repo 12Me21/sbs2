@@ -3,6 +3,9 @@
 // because View has been initialized, so it COULD have a property named `window`...
 with (View) (()=>{ "use strict"; {
 	let form = null
+	let selectedFile = null
+	let navButtons
+	let currentQuery
 	
 	// todo:
 	// - page selector input type
@@ -44,10 +47,10 @@ with (View) (()=>{ "use strict"; {
 			form = new Form({
 				fields: [
 					//{name: 'user', type: 'user', output: {label: "User"}},
-					{name: 'filename', type: 'text', label: "File Name", input: {}},
-					{name: 'bucket', type: 'text', label: "Bucket", input: {}},
-					{name: 'values', type: 'text', label: "Values", input: {}}, // todo: add an input type for like, json or specifically these values types idk
-					{name: 'permissions', type: 'text', label: "Permissions", input: {}}, // this could be a real permission editor but image permissions don't really work anyway
+					['filename', 'text', {label: "File Name"}],
+					['bucket', 'text', {label: "Bucket"}],
+					['values', 'text', {label: "Values"}], // todo: add an input type for like, json or specifically these values types idk
+					['permissions', 'text', {label: "Permissions"}] //could be a real permission editor but image permissions don't really work anyway
 				]
 			})
 			$imageForm.replaceChildren(form.elem)
@@ -106,7 +109,6 @@ with (View) (()=>{ "use strict"; {
 			return
 		}
 		selectedFile = file
-		console.log(file.bucket)
 		form.set({
 			filename: file.name,
 			bucket: file.bucket,
@@ -120,10 +122,4 @@ with (View) (()=>{ "use strict"; {
 		flag('fileSelected', true)
 		flag('canEdit', /u/.test(file.myPerms))
 	}
-	
-	
-	var selectedFile
-	var navButtons
-	var currentQuery
-	
 }})()
