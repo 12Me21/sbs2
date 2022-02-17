@@ -470,7 +470,7 @@ const INPUTS = (()=>{
 				}
 			}
 		},
-		// type: 
+		// type:
 		category: class extends GenericInput {
 			constructor(p) {
 				super()

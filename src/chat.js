@@ -264,7 +264,7 @@ class ChatRoom {
 		}
 		return false
 	}
-	// 
+	//
 	insert_merge(part, comment, time, backwards) {
 		let block = this.messageList[backwards?'firstChild':'lastChild']
 		// todo: store time on block itself? but for this to insert in both directions it should store first/last time

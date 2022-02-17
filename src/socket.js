@@ -126,7 +126,7 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 			listeners: listeners,
 			fields: {content:['id','createUserId','name','permissions','type']},
 		}
-	},	
+	},
 	
 	ws_refresh(get_me) {
 		running = true
@@ -147,7 +147,7 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 		return Req.request("Read/listen"+Req.queryString(query), 'GET', callback)
 	},
 	
-	// if 
+	// if
 	lp_loop(get_me) {
 		running = true
 		//make sure only one instance of this is running

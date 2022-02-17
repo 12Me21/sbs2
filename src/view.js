@@ -1,7 +1,7 @@
 <!--/* trick indenter
 var View = Object.create(null)
 with (View) (function($) { "use strict"//*/
-Object.assign(View, { 
+Object.assign(View, {
 
 cancelRequest: null,
 // this will always be the currently rendered view
@@ -460,7 +460,7 @@ changeFavicon(src) {
 	faviconElement.href = src
 }
 
-<!--/* 
+<!--/*
 }) //*/
 
 <!--/*

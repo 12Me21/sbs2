@@ -1,5 +1,5 @@
 let Sidebar = Object.create(null)
-with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{ 
+with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	
 	selectedFile: null,
 	
@@ -158,7 +158,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 				return Draw.sidebar_debug(text)
 			}, true)
 		else
-			prePrint.push(text)	
+			prePrint.push(text)
 	},
 	
 	fileCancel() {
