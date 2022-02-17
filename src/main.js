@@ -57,8 +57,6 @@ Req.on_logout = function() {
 	window.location.reload()
 }
 
-Req.tryLoadCachedAuth()
-
 if (document.readyState == 'loading')
 	document.addEventListener('DOMContentLoaded', ready)
 else
@@ -66,6 +64,7 @@ else
 
 function ready() {
 	console.log("ONLOAD!")
+	Req.tryLoadCachedAuth() // moved this here
 	// does this still work
 	if (navigator.vendor=="Google Inc.")
 		document.documentElement.style.imageRendering = "-webkit-optimize-contrast"
