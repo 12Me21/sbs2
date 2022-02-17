@@ -4,12 +4,11 @@
 * {
 	margin: 0;
 	box-sizing: border-box;
+	word-break: break-word;
 }
 
 html {
 	font-variant-ligatures: none;
-	overflow-wrap: break-word;
-	overflow-wrap: anywhere; /*break-word;*/
 }
 
 /* may need more things here */
