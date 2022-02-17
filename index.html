@@ -139,28 +139,7 @@
 			Click an image to select
 			<div class="fileSelected">
 				<button id=$setAvatarButton class="loggedIn">Use As Avatar</button>
-				<table class="form">
-					<tr>
-						<th>User:</th>
-						<td id=$fileUser class="bar rem1-7"></td>
-					</tr>
-					<tr>
-						<th><label for=$fileName>File Name:</label></th>
-						<td><input id=$fileName></td>
-					</tr>
-					<tr>
-						<th><label for=$filePermissions>Permissions:</label></th>
-						<td><input id=$filePermissions><br></td>
-					</tr>
-					<tr>
-						<th><label for=$fileValues>Values:</label></th>
-						<td><input id=$fileValues></td>
-					</tr>
-					<tr>
-						<th><label for=$fileBucket>Bucket:</label></th>
-						<td><input id=$fileBucket></td>
-					</tr>
-				</table>
+				<div id=$imageForm></div>
 				<button id=$fileUpdateButton class="fileUpdateButton canEdit loggedIn">Save Settings</button>
 			</div>
 		</v-b>
