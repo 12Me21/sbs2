@@ -200,7 +200,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	},
 	
 	isFullscreen() {
-		return !$.matchMedia || $.matchMedia("(max-width: 700px)").matches
+		return !window.matchMedia || window.matchMedia("(max-width: 700px)").matches
 	},
 	
 	displayedMessages: 0,
