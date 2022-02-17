@@ -288,6 +288,9 @@ button {
 	padding: 0 0.5rem;
 	
 	background: var(--button-bg);
+	
+	overflow-wrap: break-word;
+	overflow-wrap: anywhere; /*break-word;*/
 }
 .buttonContainer {
 	padding: 1px;
@@ -765,25 +768,34 @@ html:not(.f-myUserPage) .myUserPage {
  ** Form Tables **
  *****************/
 
-table.form {
-	border-collapse: collapse;
+form-table {
+	display: grid;
+	grid-template-columns: [labels] max-content [controls] auto;
+	grid-auto-flow: row;
 }
 
-table.form > tbody > tr > td {
-	padding: 0;
-	padding: 1px 0;
-	vertical-align: middle;
-	width: 50%;
-}
-table.form > tbody > tr > td > * {
-	width: 100%
+form-table > .label {
+	font-weight: bold;
+	grid-column: labels;
+   grid-row: auto;
+   text-align: right;
+   padding-right: 0.5rem;
 }
 
-table.form > tbody > tr > th {
-	padding: 0;
-	padding-right: 0.5rem;
-	text-align:right;
+form-table > .field {
+   grid-column: controls;
+   grid-row: auto;
 	vertical-align: middle;
+}
+
+form-table > .wide {
+	grid-column: labels / span 2;
+}
+
+form-table > .wide.label {
+	text-align: left;
+	font-weight: bold;
+	font-size: 1.2em;
 }
 
 input::placeholder {
@@ -791,10 +803,6 @@ input::placeholder {
 	color: rgba(128,128,128,0.6);
 	padding-left: 0.3rem;
 }
-
-/*table.form input { // todo:fix this to select the right thing
-	width: 100%;
-}*/
 
 /* what are these for? */
 table {
@@ -1018,7 +1026,7 @@ select {
 	/*margin: 1px;*/
 }
 
-input {
+input, select {
 	min-width: 0;
 	max-width: 100%;
 }

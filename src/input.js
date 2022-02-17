@@ -56,9 +56,9 @@ class Form {
 		this.map = {} // map of name -> item in this.fields
 		this.inputs = {} // map of name -> INPUT instances
 		
-		this.elem = document.createElement('table')
-		this.elem.className += ' form fill'
-		let tbody = this.elem.createChild('tbody')
+		this.elem = document.createElement('form-table')
+		this.elem.className += ' fill'
+		let body = this.elem
 		
 		for (let field of this.fields) {
 			// name: field name
@@ -74,29 +74,19 @@ class Form {
 			if (opt.default===undefined)
 				input.set(opt.default)
 			
-			let tr = tbody.createChild('tr')
-			
 			if (!opt.output)
 				this.in_fields.push(field)
 			
+			let label = body.createChild('label')
+			label.htmlFor = input.html_id
+			label.textContent = opt.label+":"
+			label.className += ' label'
+			input.elem.className += ' field'
 			if (opt.span) {
-				let t1 = tr.createChild('td')
-				t1.colSpan = 2
-				let label = t1.createChild('label')
-				label.htmlFor = input.html_id
-				let h3 = label.createChild('h3')
-				h3.textContent = opt.label+": "
-				t1.append(input.elem)
-				//t1.className += ' input'
-			} else {
-				let t1 = tr.createChild('th')
-				let t2 = tr.createChild('td')
-				let label = t1.createChild('label')
-				label.htmlFor = input.html_id
-				label.textContent = opt.label+": "
-				t2.append(input.elem)
-				//t2.className += ' input'
+				label.className += ' wide'
+				input.elem.className += ' wide'
 			}
+			body.append(input.elem)
 		}
 	}
 	destroy() {
