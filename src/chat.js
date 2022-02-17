@@ -101,7 +101,7 @@ class ChatRoom {
 		
 		this.messageList.onmouseover = (e)=>{
 			let elem = e.target.closest("message-part, message-controls, scroll-inner")
-			if (!elem)
+			if (!elem || elem.tagName=='SCROLL-INNER')
 				this.showControls(null)
 			else if (elem.tagName=='MESSAGE-PART')
 				this.showControls(elem)
