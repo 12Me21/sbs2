@@ -4,15 +4,22 @@
 * {
 	margin: 0;
 	box-sizing: border-box;
+	/* required for text wrapping to work */
 	word-break: break-word;
 }
 
 html {
+	/* disable ligatures like fi ffi etc. */
+	/* (doesn't affect real languages or emoji)*/
 	font-variant-ligatures: none;
+	/* this fixes an ios safari bug where some text is "stuck" at larger sizes after rotating the screen */
+	-webkit-text-size-adjust: none;
 }
 
+/* this fixes a weird positioning bug in html/css */
 /* may need more things here */
-.textItem, .item, .buttonContainer button, .avatar, tbody, img {
+.textItem, .item, .buttonContainer button, .avatar,
+tbody, img, canvas, button {
 	vertical-align: top;
 }
 
@@ -381,7 +388,6 @@ tab-list > button {
 	flex-grow: 1;
 	flex-basis: 0;
 	height: 2rem;
-	vertical-align: top;
 	font-size: 1em;
 	padding: 0;
 }
@@ -598,7 +604,7 @@ message-block > .username-label {
 
 message-contents {
 	display: block;
-	vertical-align: top;
+	vertical-align: top; /* why? */
 	overflow: auto;
 }
 
@@ -627,6 +633,11 @@ message-controls {
 	user-select: none;
 	display: inline-flex;
 	height: 1.3rem;
+}
+
+message-controls > button {
+	padding: 0;
+	flex-grow: 1;
 }
 
 message-controls:hover + message-part {
@@ -863,7 +874,7 @@ button.voteButton[data-selected][data-vote="o"] {
 	max-height: 50px;
 	border: 1px solid black;
 	box-sizing: content-box;
-	vertical-align: top; /* what the fuck */
+	/*vertical-align: top; /* what the fuck */
 }
 
 .fileView {
@@ -1018,7 +1029,7 @@ scroll-inner {
 }
 
 select {
-	width: 7em;
+	/*width: 7em;*/
 }
 
 .registerBox input {
@@ -1212,7 +1223,6 @@ textarea-container, textarea-container > textarea {
 
 .gallery-inner canvas {
 	width: 100%;
-	vertical-align: top; /* but, why? */
 }
 
 .gallery-inner > div {
