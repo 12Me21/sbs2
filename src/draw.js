@@ -653,14 +653,14 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			elem: F(),
 			get() {
 				let ret = {}
-				get.forEach((func, key)=>{ret[key] = func()})
+				Object.for(get,(func, key)=>{ret[key] = func()})
 				return ret
 			},
 			set(data) {
-				set.forEach((func, key)=>{func(data[key])})
+				Object.for(set,(func, key)=>{func(data[key])})
 			},
 			saveAll() {
-				get.forEach((func, key)=>{change(key)})
+				Object.for(get,(func, key)=>{change(key)})
 			}
 		}
 		Object.for(settings, (data, name)=>{
