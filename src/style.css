@@ -1,4 +1,4 @@
-OA/****************
+/****************
  ** All Things **
  ****************/
 * {
@@ -25,6 +25,30 @@ tbody, img, canvas, button {
 
 [hidden] {
 	display: none !important;
+}
+
+/* main stuff */
+
+html {
+	background-color: #FEE; /* for debug */
+	font-family: roboto, sans-serif;
+	color: var(--maintxtcolor);
+	position: fixed;
+}
+
+body {
+	position: fixed;
+	overflow: hidden;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: var(--mainbgcolor);
+}
+
+.fill {
+	width: 100%;
+	height: 100%;
 }
 
 /**********
@@ -112,10 +136,6 @@ textarea {
 	background-color: var(--mainbgcolor);
 }
 
-select {
-	font-size: 1em;
-}
-
 sup {vertical-align: super;}
 sub {vertical-align: sub;}
 
@@ -143,9 +163,10 @@ time {
 }
 
 .rightAlign {
-	float: right;
+	float: right; /* bad */
 }
 
+/* markup */
 .markup-root { /* make sure this is before most things */
 	padding: 0.5rem;
 }
@@ -164,40 +185,11 @@ body.chatMode .bottomSpacer {
 	white-space: pre-wrap;
 }
 
-input {
-	font-size: 0.8em;
-}
-
-input:invalid {
-	background: var(--error-bg);
-}
-
-html {
-	background-color: #FEE;
-	font-family: roboto, sans-serif;
-	position: fixed;
-	color: var(--maintxtcolor);
-}
-
-body {
-	position: fixed;
-	overflow: hidden;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background: var(--mainbgcolor);
-	/*height: 100vh;*/ /* @@@ */
-}
-
-.fill {
-	width: 100%;
-	height: 100%;
-}
-
 /*********
  ** Bar **
  *********/
+/* the bar system is really gross and should probably be turned into flex now (or grid?)*/
+
 /* These 3 classes handle like 90% of the layout lol */
 .bar { /* contains textitems and items */
 	display: block;
@@ -294,9 +286,6 @@ button {
 	padding: 0 0.5rem;
 	
 	background: var(--button-bg);
-	
-	overflow-wrap: break-word;
-	overflow-wrap: anywhere; /*break-word;*/
 }
 .buttonContainer {
 	padding: 1px;
@@ -306,18 +295,6 @@ button {
 	margin: 0;
 	height: 100%;
 	overflow-y: hidden;
-	/*
-	padding: 0 0.5rem;
-	background-color: #EEE;
-	border: 2px solid gray;
-	border-style: outset;
-	border-radius: 0px;*/
-/*
-	padding: 0 0.5rem;
-	background-color: #DDD;
-	border: 2px solid gray;
-	border-color: white #333 #333 white;
-	border-radius: 0px;*/
 }
 
 .buttonContainer > a[href] {
@@ -328,11 +305,9 @@ button {
 button:hover {
 	border-color: var(--button-hover-color);
 }
-
 button[aria-selected="true"] {
 	background: var(--button-selected-bg);
 }
-
 button:active {
 	border-style: inset;
 	background: var(--button-active-bg);
@@ -418,7 +393,6 @@ html:not(.f-sidebarUploaded) .sidebarUploadedFile {
  ** Title Pane **
  ****************/
 .titlePane {
-	/*border-bottom: 2px solid black;*/
 	background: var(--databarbgcolor);
 	color: var(--databartxtcolor);
 	/*box-shadow: 0 2px 3px rgba(0,0,0,0.3);*/
@@ -426,7 +400,6 @@ html:not(.f-sidebarUploaded) .sidebarUploadedFile {
 	padding: 1px;
 	/*transition: background-color 0.1s ease;*/
 }
-
 
 .titlePane .entity-title {
 	font-weight: normal;
@@ -498,19 +471,14 @@ sidebar-container {
 	width: 30vw;
 	min-width: 10vw;
 	z-index: 20;
-	/*box-shadow: -1px 0px 3px rgba(0,0,0,0.3);*/
 }
 
 html:not(.f-sidebar) sidebar-container {
 	display: none;
 }
 
-html.f-sidebar main {
-	overflow: auto;
-}
-
-html:not(.f-sidebar) main {
-	overflow: auto;
+html main {
+	overflow: auto; /* ? */
 }
 
 /**********
@@ -519,24 +487,16 @@ html:not(.f-sidebar) main {
 main-scrollable {
 	overflow-y: auto;
 	flex-basis: auto;
-	
-	/*padding: 0.5rem;*/
-	/*overflow-y: scroll;*/
-	
-	/*min-height: 300px;
-	height: 300px;*/
 }
 
 /*******************
  ** Category Pane **
  *******************/
 .linkBar {
-	/*font-weight: bold;*/
 	display: block;
 	background: var(--mainbgcolor);
 	padding: 0.2rem;
 }
-
 .linkBar:focus {
 	background: var(--bar-bg);
 }
@@ -548,7 +508,6 @@ main-scrollable {
 	background: var(--light-invert-bg);
 	color: var(--databartxtcolor);
 }
-
 .nav > span {
 	color: var(--databartxtcolor);
 }
@@ -560,7 +519,6 @@ main-scrollable {
 	box-shadow: var(--normal-shadow);
 	z-index: 4;
 }
-
 .userlist {
 	background: var(--bar-bg);
 }
@@ -812,6 +770,18 @@ input::placeholder {
 	font-style: italic;
 	color: rgba(128,128,128,0.6);
 	padding-left: 0.3rem;
+}
+
+select {
+	font-size: 1em;
+}
+
+input {
+	font-size: 0.8em;
+}
+
+input:invalid {
+	background: var(--error-bg);
 }
 
 /* what are these for? */
