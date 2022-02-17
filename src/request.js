@@ -228,9 +228,6 @@ const Req = {
 	read(requests, filters, callback, needCategories) {
 		let query = {}
 		query.requests = requests.map((line)=>{
-			// `req` will either be:
-			// string: "type"
-			// object: {type: value}
 			if (line.length==1)
 				return line[0]
 			return line[0]+"-"+JSON.stringify(line[1])
