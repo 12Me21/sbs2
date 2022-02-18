@@ -2,3 +2,4 @@ _build.*
 old
 *.swp
 src/index.html
+*.txt
