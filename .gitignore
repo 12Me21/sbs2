@@ -1,5 +1,9 @@
 _build.*
-old
-*.swp
+old/
 src/index.html
 *.txt
+
+*.swp
+.#*
+\#*
+*~
