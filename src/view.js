@@ -375,6 +375,7 @@ attachResize(element, tab, horiz, dir, save, callback) {
 			return e[horiz?'clientX':'clientY']
 	}
 	function down(e) {
+		e.preventDefault()
 		tab.setAttribute('dragging',"")
 		start = event_pos(e)
 		start_size = element[horiz?'offsetWidth':'offsetHeight']
@@ -387,7 +388,9 @@ attachResize(element, tab, horiz, dir, save, callback) {
 			Store.set(save, size)
 	}
 	function update_size(px) {
+		//window.setTimeout(()=>{
 		element.style[horiz?'width':'height'] = px+"px"
+		//}, 0)
 	}
 	function move(e) {
 		if (!held)
@@ -398,10 +401,7 @@ attachResize(element, tab, horiz, dir, save, callback) {
 		callback && callback(size)
 	}
 	tab.addEventListener('mousedown', down)
-	tab.addEventListener('touchstart', (e)=>{
-		e.preventDefault()
-		down(e)
-	}, {passive:true}) //todo: prevent scrolling on mobile
+	tab.addEventListener('touchstart', down, {passive:true})
 	
 	document.addEventListener('mouseup', up)
 	document.addEventListener('touchend', up)
