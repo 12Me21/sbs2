@@ -98,6 +98,32 @@ function build_search(data) {
 	return search
 }
 
+View.addView('chatlogs', {
+	redirect: (id, query)=>{
+		let q = {r: true}
+		// we do it this way so the ORDER is preserved :D
+		for (let key in query) {
+			if (key=='t')
+				q.s = query.t // name changed
+			else if (key=='pid')
+				q.pid = query.pid
+			else if (key=='uid')
+				q.uid = query.uid
+		}
+		// switch to "comments/<id>" url if there is one pid
+		id = null
+		if (q.pid) {
+			let pids = CONVERT.number_list.decode(q.pid)
+			if (pids && pids.length==1) {
+				delete q.pid
+				id = pids[0]
+			}
+		}
+		return ['comments', id, q]
+	},
+	//TODO: results are links to chatlog viewer which lets you load surrounding messages etc.
+	// show page name etc.
+})
 
 // ha
 

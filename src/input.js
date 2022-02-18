@@ -154,7 +154,7 @@ const CONVERT = {
 	},
 	number_list: {
 		encode: x => x ? x.join(",") : null,
-		decode: x => typeof x == 'string' ? x.split(",").map(x=>Number(x)) : null, // todo: filter if values aren't valid numbers
+		decode: x => typeof x == 'string' ? x.split(",").map(x=>Number(x)) : null, // todo: filter if values aren't valid numbers, allow spaces and other separators? etc
 	},
 	number: {
 		encode: x => x != null ? String(x) : null,

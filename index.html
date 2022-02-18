@@ -62,7 +62,6 @@
 <script src=src/Views/category.js></script>
 <script src=src/Views/user.js></script>
 <script src=src/Views/home.js></script>
-<script src=src/Views/chatlogs.js></script>
 <script src=src/Views/comments.js></script>
 
 <script src=src/navigate.js></script>
@@ -131,14 +130,6 @@
 		
 		<v-b data-view-membersMode class='nav bar rem1-7' id=$memberNav></v-b>
 		
-		<v-b data-view-chatlogs class='nav'>
-			<input id=$chatlogSearchText placeholder="text">
-			<input type=number id=$chatlogSearchRoom placeholder="room id">
-			<input type=number id=$chatlogSearchUser placeholder="user id">
-			<button id=$chatlogSearchButton>Search</button>
-			<!--<span id=$chatlogSearchUser></span>-->
-		</v-b>
-		
 		<!--=======================\
 		|| MAIN SCROLLING SECTION ||
 		\========================-->
@@ -171,8 +162,6 @@
 			<v-b data-view-userMode class='userActivity' id=$userActivity></v-b>
 			
 			<v-b data-view-errorMode class='pre errorPage' id=$errorMessage></v-b>			
-			<v-b data-view-chatlogs id=$chatlogSearchResults></v-b>
-			
 			<v-b data-view-comments>
 				<div id=$commentSearch class='nav'>
 					<br id=$commentSearchForm>

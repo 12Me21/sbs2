@@ -102,7 +102,7 @@ const Nav = {
 	// no fragment?
 	set_location(type, id, query) {
 		let url = Nav.encode_path({
-			path: id==null ? [type] : [type,id],
+			path: id==null ? [type] : [type, String(id)],
 			query: query,
 		})
 		window.history.replaceState(null, "", "?"+url)
