@@ -1272,3 +1272,7 @@ main, sidebar-container, #\$sidebarTop, #\$sidebarBottom, .resize, .sidebarComme
 message-part, header, .markup-root, message-block {
 	contain: content;
 }
+/* this might be bad */
+.chatScroller > scroll-inner, #\$sidebarScroller, $sidebarActivity {
+	will-change: contents;
+}
