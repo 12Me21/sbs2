@@ -1113,6 +1113,7 @@ textarea-container {
 	padding: 5px;
 	/* overflow: hidden; this was needed only because of the vertical-align bug */
 	background: var(--mainbgcolor);
+	vertical-align: top; /* idk if needed but there was a sizing bug when opening the console so mmm*/
 }
 
 .inputPane {
