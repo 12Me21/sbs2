@@ -73,67 +73,67 @@
 
 </head>
 
-<body class="flex">
+<body class='flex'>
 
 <!--=======\
 || HEADER ||
 \========-->
 
-<header class="titlePane bar rem2-3 loadBG" id=$titlePane>
-	<div class="pageCreate textItem rightAlign">
-		<button id=$openSidebar class="item">|||</button>
+<header class='titlePane bar rem2-3 loadBG' id=$titlePane>
+	<div class='pageCreate textItem rightAlign'>
+		<button id=$openSidebar class='item'>|||</button>
 	</div>
 	
-	<a data-static-path="" class="textItem"><img class="item" src=resource/iconbig.png alt="SBS"></a>
+	<a data-static-path="" class='textItem'><img class='item' src=resource/iconbig.png alt="SBS"></a>
 	<noscript>This web-site requires JavaScript</noscript>
-	<v-b data-view-page data-view-categoryMode><span id=$path></span></v-b><h1 id=$pageTitle class="textItem pageTitle"></h1>
+	<v-b data-view-page data-view-categoryMode><span id=$path></span></v-b><h1 id=$pageTitle class='textItem pageTitle'></h1>
 	
-	<v-b data-view-userMode><a class="textItem loggedIn myUserPage" id=$editUserPage>Edit User Page</a></v-b>
-	<div class="item loggedIn myUserPage">
-		<div id=$userPageStatus class="textItem"></div>
+	<v-b data-view-userMode><a class='textItem loggedIn myUserPage' id=$editUserPage>Edit User Page</a></v-b>
+	<div class='item loggedIn myUserPage'>
+		<div id=$userPageStatus class='textItem'></div>
 	</div>
 	<v-b data-view-editpage data-view-catEditMode>
-		<input class="item" id=$titleInput placeholder="Title" required>
-		<button class="item" id=$submitEdit>Submit</button>
-		<button class="item" id=$deletePage>DELETE</button>
+		<input class='item' id=$titleInput placeholder="Title" required>
+		<button class='item' id=$submitEdit>Submit</button>
+		<button class='item' id=$deletePage>DELETE</button>
 	</v-b>
-	<v-b data-view-page class="canEdit">
-		<a data-static-path class="textItem" id=$pageEditLink>[Edit]</a>
+	<v-b data-view-page class='canEdit'>
+		<a data-static-path class='textItem' id=$pageEditLink>[Edit]</a>
 	</v-b>
 	<v-b data-view-page>
-		<a data-static-path class="textItem" id=$pageCommentsLink>[Logs]</a>
+		<a data-static-path class='textItem' id=$pageCommentsLink>[Logs]</a>
 	</v-b>
 </header>
 
-<horizontal-split class="grow flex-row">
-	<main class="flex grow" id=$realMain>
+<horizontal-split class='grow flex-row'>
+	<main class='flex grow' id=$realMain>
 		
 		<!--============\
 		|| TOP OF PAGE ||
 		\=============-->
 		
-		<v-b data-view-fileMode class="rem1-7 bar nav">
+		<v-b data-view-fileMode class='rem1-7 bar nav'>
 			<span id=$fileNav></span>
 		  	<label for=$fileSearchBucket>Bucket:</label>
 			<input id=$fileSearchBucket>
-			<div class="rightAlign">Upload images in sidebar →</div>
+			<div class='rightAlign'>Upload images in sidebar →</div>
 		</v-b>
 		
-		<v-b data-view-fileMode class="fileBox bar" id=$fileBox></v-b>
+		<v-b data-view-fileMode class='fileBox bar' id=$fileBox></v-b>
 		
 		<v-b data-view-fileMode>
-			<button id=$fileUploadButton class="fileUploading">Upload Image!</button>
+			<button id=$fileUploadButton class='fileUploading'>Upload Image!</button>
 			Click an image to select
-			<div class="fileSelected">
-				<button id=$setAvatarButton class="loggedIn">Use As Avatar</button>
+			<div class='fileSelected'>
+				<button id=$setAvatarButton class='loggedIn'>Use As Avatar</button>
 				<div id=$imageForm></div>
-				<button id=$fileUpdateButton class="fileUpdateButton canEdit loggedIn">Save Settings</button>
+				<button id=$fileUpdateButton class='fileUpdateButton canEdit loggedIn'>Save Settings</button>
 			</div>
 		</v-b>
 		
-		<v-b data-view-membersMode class="nav bar rem1-7" id=$memberNav></v-b>
+		<v-b data-view-membersMode class='nav bar rem1-7' id=$memberNav></v-b>
 		
-		<v-b data-view-chatlogs class="nav">
+		<v-b data-view-chatlogs class='nav'>
 			<input id=$chatlogSearchText placeholder="text">
 			<input type=number id=$chatlogSearchRoom placeholder="room id">
 			<input type=number id=$chatlogSearchUser placeholder="user id">
@@ -145,10 +145,10 @@
 		|| MAIN SCROLLING SECTION ||
 		\========================-->
 		
-		<main-scrollable class="flex grow" id=$main>
-			<v-b data-view-userMode class="userPageBox flex-row">
-				<a id=$userPageAvatarLink><img id=$userPageAvatar class="userPageAvatar" alt="" src=""></a>
-				<div class="pageContents pre userPageContents markup-root" id=$userPageContents></div>
+		<main-scrollable class='flex grow' id=$main>
+			<v-b data-view-userMode class='userPageBox flex-row'>
+				<a id=$userPageAvatarLink><img id=$userPageAvatar class='userPageAvatar' alt="" src=""></a>
+				<div class='pageContents pre userPageContents markup-root' id=$userPageContents></div>
 			</v-b>
 			
 			<v-b data-view-catEditorMode>
@@ -158,21 +158,21 @@
 				<label>Local Superusers:<input id=$cateditLocalSupers></label><br>
 				<textarea id=$cateditDescription></textarea><br>
 			</v-b>
-			<v-b data-view-fileMode class="image-box fill"><img id=$filePageView></v-b>
+			<v-b data-view-fileMode class='image-box fill'><img id=$filePageView></v-b>
 			
-			<v-b data-view-categoryMode id=$categoryDescription class="categoryDescription pre pageContents markup-root"></v-b>
+			<v-b data-view-categoryMode id=$categoryDescription class='categoryDescription pre pageContents markup-root'></v-b>
 			<v-b data-view-categoryMode id=$categoryCategories></v-b>
 			<v-b data-view-categoryMode id=$categoryPinned></v-b>
-			<v-b data-view-categoryMode class="page-select rem1-7 bar">
+			<v-b data-view-categoryMode class='page-select rem1-7 bar'>
 				<span id=$categoryNav></span>
-				<button id=$createPage class="item" data-static-link>Create Page</button>
-				<button id=$editCategory class="item canEdit" data-static-link>Edit Category</button>
+				<button id=$createPage class='item' data-static-link>Create Page</button>
+				<button id=$editCategory class='item canEdit' data-static-link>Edit Category</button>
 			</v-b>
-			<v-b data-view-categoryMode id=$categoryPages class="categoryPages"></v-b>
+			<v-b data-view-categoryMode id=$categoryPages class='categoryPages'></v-b>
 			
-			<v-b data-view-userMode class="userActivity" id=$userActivity></v-b>
+			<v-b data-view-userMode class='userActivity' id=$userActivity></v-b>
 			
-			<v-b data-view-errorMode class="pre errorPage" id=$errorMessage></v-b>			
+			<v-b data-view-errorMode class='pre errorPage' id=$errorMessage></v-b>			
 			<v-b data-view-chatlogs id=$chatlogSearchResults></v-b>
 			
 			<v-b data-view-comments>
@@ -183,12 +183,12 @@
 				<div id=$commentSearchResults></div>
 			</v-b>
 			
-			<v-b data-view-home class="border-list">
+			<v-b data-view-home class='border-list'>
 				<div>
 					a
-					<div class="gallery-inner" style="max-width: 400px;">
+					<div class='gallery-inner' style="max-width: 400px;">
 						<div>
-							<div class="image-box image-box-large fill">
+							<div class='image-box image-box-large fill'>
 								<img id=$galleryImage>
 							</div>
 						</div>
@@ -198,14 +198,14 @@
 							have fixed aspect ratio
 						</canvas>
 					</div>
-					<div class="gallery-title" style="max-width: 400px;" id=$galleryTitle></div>
+					<div class='gallery-title' style="max-width: 400px;" id=$galleryTitle></div>
 					a
 				</div>
-				<div id=$homeCategories class="border-list-2"></div>
+				<div id=$homeCategories class='border-list-2'></div>
 			</v-b>
 			
-			<v-b data-view-membersMode class="memberPane">
-				<div id=$memberList class="border-list-2"></div>
+			<v-b data-view-membersMode class='memberPane'>
+				<div id=$memberList class='border-list-2'></div>
 			</v-b>
 			
 			<v-b data-view-activity id=$activity></v-b>
@@ -213,11 +213,11 @@
 			<v-b data-view-testMode>
 				<textarea id=$testTextarea></textarea><br>
 				<button id=$testButton>Run</button><br>
-				<div id=$testOut class="pre"></div>
+				<div id=$testOut class='pre'></div>
 			</v-b>
 			
 			
-			<v-b data-view-membersMode data-view-home class="bottomSpacer"></v-b>
+			<v-b data-view-membersMode data-view-home class='bottomSpacer'></v-b>
 		</main-scrollable>
 		
 		<!--===============\
@@ -226,8 +226,8 @@
 		
 		<v-b data-view-editpage class='fill resize-box'>
 			<div class='flex-sized' id=$editorPreviewPane>
-				<div class="editorNotPreview">
-					<div class="registerBox input-form" id=$editPageForm>
+				<div class='editorNotPreview'>
+					<div class='registerBox input-form' id=$editPageForm>
 					</div>
 					<label>Markup language:<select id=$markupSelect>
 						<option value="plaintext">plain text</option>
@@ -236,23 +236,23 @@
 					</select></label>
 					<button id=$markupUpdate>Update Preview</button>
 				</div>
-				<div class="editorPreview flex-sized">
-					<div id=$editorPreview class="markup-root"></div>
+				<div class='editorPreview flex-sized'>
+					<div id=$editorPreview class='markup-root'></div>
 				</div>
 			</div>
 			<resize-handle id=$editorPreviewResize>↕ <button id=$toggleEditorMode>Toggle Preview</button></resize-handle>
-			<div class="grow editorTextarea">
-				<textarea id=$editorTextarea minlength=2 required class="fill"></textarea>
+			<div class='grow editorTextarea'>
+				<textarea id=$editorTextarea minlength=2 required class='fill'></textarea>
 			</div>
 		</v-b>
 		
-		<v-b data-view-page id=$chatContainer class="fill flex">
-			<div data-view-page id=$chatPaneBox class="grow slide-box"></div>
-			<div data-view-page class="inputPane loggedIn flex-row">
-				<button class="showWhenEdit" id=$chatCancelEdit>Cancel Edit</button>
-				<textarea-container class="grow"><textarea class="chatTextarea" id=$chatTextarea accesskey="z"></textarea></textarea-container>
+		<v-b data-view-page id=$chatContainer class='fill flex'>
+			<div data-view-page id=$chatPaneBox class='grow slide-box'></div>
+			<div data-view-page class='inputPane loggedIn flex-row'>
+				<button class='showWhenEdit' id=$chatCancelEdit>Cancel Edit</button>
+				<textarea-container class='grow'><textarea class='chatTextarea' id=$chatTextarea accesskey="z"></textarea></textarea-container>
 				<div>
-					<label class="no-select">Markup:<input type=checkbox checked autocomplete=off id=$chatMarkupSelect></label>
+					<label class='no-select'>Markup:<input type=checkbox checked autocomplete=off id=$chatMarkupSelect></label>
 				</div>
 			</div>
 		</v-b>
@@ -262,40 +262,40 @@
 	|| SIDEBAR ||
 	\=========-->
 	
-	<sidebar-container id=$sidebar class="flex-sized resize-box">
-		<button class="closeSidebar" id=$closeSidebar>Close Sidebar</button>
-		<div class="userlist bar rem1-5"><span id=$sidebarUserList></span><button id=$hideGlobalStatusButton class="item rightAlign loggedIn">Hide</button></div>
+	<sidebar-container id=$sidebar class='flex-sized resize-box'>
+		<button class='closeSidebar' id=$closeSidebar>Close Sidebar</button>
+		<div class='userlist bar rem1-5'><span id=$sidebarUserList></span><button id=$hideGlobalStatusButton class='item rightAlign loggedIn'>Hide</button></div>
 		<!--<span id=$longPollStatus></span>-->
 		<tab-list id=$sidebarTabs role="tablist" aria-label="sidebar tab"></tab-list>
-		<div id=$sidebarTop class="flex-sized slide-box">
+		<div id=$sidebarTop class='flex-sized slide-box'>
 			<sidebar-panel id=$sidebarActivityPanel>
-				<scroll-outer><scroll-inner id=$sidebarActivity class="border-list-2"></scroll-inner></scroll-outer>
+				<scroll-outer><scroll-inner id=$sidebarActivity class='border-list-2'></scroll-inner></scroll-outer>
 			</sidebar-panel>
 			<sidebar-panel id=$sidebarWatchPanel>
-				<scroll-outer><scroll-inner id=$sidebarWatch class="border-list-2"></scroll-inner></scroll-outer>
+				<scroll-outer><scroll-inner id=$sidebarWatch class='border-list-2'></scroll-inner></scroll-outer>
 			</sidebar-panel>
 			<sidebar-panel id=$sidebarNavPanel>
-				<div class="bar rem1-5"><input id=$searchInput class="item"><button id=$searchButton class="item">Search</button></div>
+				<div class='bar rem1-5'><input id=$searchInput class='item'><button id=$searchButton class='item'>Search</button></div>
 				<div id=$searchResults></div>
 				<div id=$sidebarCategories></div>
 			</sidebar-panel>
-			<!--<div id=$sidebarWatchingPanel class="fill"></div>-->
-			<sidebar-panel id=$sidebarFilePanel class="flex">
-				<div class="bar rem1-5">
-					<input type=file accept="image/*" id=$imageUpload class="sidebarUploadingHide item">
-					<button id=$fileCancel class="sidebarUploadingFile item">Cancel</button>
-					<button id=$fileUpload class="sidebarUploadingFile rightAlign item">Upload Image</button>
-					<input readonly id=$fileURL class="item sidebarUploadedFile">
-					<button id=$fileDone class="item sidebarUploadedFile">Done</button>
+			<!--<div id=$sidebarWatchingPanel class='fill'></div>-->
+			<sidebar-panel id=$sidebarFilePanel class='flex'>
+				<div class='bar rem1-5'>
+					<input type=file accept="image/*" id=$imageUpload class='sidebarUploadingHide item'>
+					<button id=$fileCancel class='sidebarUploadingFile item'>Cancel</button>
+					<button id=$fileUpload class='sidebarUploadingFile rightAlign item'>Upload Image</button>
+					<input readonly id=$fileURL class='item sidebarUploadedFile'>
+					<button id=$fileDone class='item sidebarUploadedFile'>Done</button>
 				</div>
-				<div class="sidebarUploadingFile" id=$fileUploadForm></div>
-				<div class="image-box grow"><img id=$fileView></div>
+				<div class='sidebarUploadingFile' id=$fileUploadForm></div>
+				<div class='image-box grow'><img id=$fileView></div>
 				<a data-static-path=images>Uploaded Images</a>
 			</sidebar-panel>
 			<sidebar-panel id=$sidebarUserPanel>
 				<button onclick="window.location+=''">Reload Page</button>
-				<div class="loggedOut">
-					<div class="registerBox">
+				<div class='loggedOut'>
+					<div class='registerBox'>
 						<h2>Log In</h2>
 						<form id=$loginForm method=dialog>
 							<input placeholder=Username name=username><br>
@@ -304,7 +304,7 @@
 						</form>
 						<div id=$loginError></div>
 					</div>
-					<div class="registerBox">
+					<div class='registerBox'>
 						<h2>Register</h2>
 						<form id=$registerForm autocomplete=off method=dialog> <!-- I set method=dialog so the form can't be submitted -->
 							<input placeholder=Username name=username minlength=2 maxlength=20> 2 to 20 characters, no spaces<br>
@@ -313,14 +313,14 @@
 							<button>Register</button>
 						</form>
 						<button id=$registerResend>Resend Email</button>
-						<div id=$registerError class="pre"></div>
+						<div id=$registerError class='pre'></div>
 						<h3>Confirm Registration</h3>
 						<form id=$confirmForm method=dialog>
 							<input placeholder="Confirmation Code" name=code>
 							<button>Confirm</button>
 						</form>
 					</div>
-					<div class="registerBox">
+					<div class='registerBox'>
 						<h2>Password Reset</h2>
 						<form id=$passwordForm method=dialog>
 							<input placeholder="Email" type=email name=email><br>
@@ -334,21 +334,21 @@
 						</form>
 					</div>
 				</div>
-				<div class="loggedIn border-list">
-					<div class="registerBox">
+				<div class='loggedIn border-list'>
+					<div class='registerBox'>
 						<button id=$logOut>Log out</button><br>
 					</div>
-					<div class="registerBox">
+					<div class='registerBox'>
 						<a data-static-path=images>Change your avatar here</a>
 					</div>
-					<div class="registerBox">
+					<div class='registerBox'>
 						<a data-static-path=users>User list</a>
 					</div>
-					<div class="registerBox">
+					<div class='registerBox'>
 						<div id=$localSettings></div>
 						<button id=$localSettingsSave>Save Settings</button>
 					</div>
-					<div class="registerBox">
+					<div class='registerBox'>
 						<h2>Change account settings</h2>
 						<form id=$changeForm method=dialog>
 							<input placeholder="Old Password" name=oldPassword minlength=8 type=password><br>
@@ -358,14 +358,14 @@
 							<input placeholder="New Email" name=email type=email><input placeholder="Confirm New Email" name=email2 type=email><br>
 							<button>Save</button>
 						</form>
-						<div id=$userSettingsError class="pre"></div>
+						<div id=$userSettingsError class='pre'></div>
 					</div>
 				</div>
 			</sidebar-panel>
 		</div>
 		<resize-handle id=$sidebarResize>↕↔</resize-handle>
-		<div id=$sidebarBottom class="grow">
-			<scroll-outer><scroll-inner id=$sidebarScroller class="border-list"></scroll-inner></scroll-outer>
+		<div id=$sidebarBottom class='grow'>
+			<scroll-outer><scroll-inner id=$sidebarScroller class='border-list'></scroll-inner></scroll-outer>
 		</div>
 	</sidebar-container>
 </horizontal-split>
