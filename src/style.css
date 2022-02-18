@@ -527,62 +527,86 @@ main-scrollable {
  ** Chat Messages **
  *******************/
 message-block {
+	--chat-gutter: 4rem;
+	--chat-avatar-size: calc(var(--chat-gutter) - 0.5rem);
 	font-size: 1em;
 	padding: 0.4rem 0.5rem;
 	white-space: pre-wrap;
 	/*border-left-width: 0.5em;
 	border-left-style: solid;
 	border-left-color: rgb(255,153,153);*/
-	clear: both;
 	overflow: auto;
 	display: block;
 	box-sizing: content-box;
-	min-height: 3.5rem;
-}
-
-message-block > time {
-	float: right;
-	font-weight: normal;
-	padding-right: .5em;
-	color: var(--chat-dim-color);
+	min-height: var(--chat-avatar-size);
+	position: relative;
 }
 message-block > img.avatar {
 	display: inline-block;
-	width: 3.5rem;
-	height: 3.5rem;
+	width: var(--chat-avatar-size);
+	height: var(--chat-avatar-size);
 	border: none;/*1px solid #777;*/
 	/*background-color: transparent;*/
 	/*background-color: #AAB;*/
-	margin-right: 0.5rem;
+	margin-right: calc(var(--chat-gutter) - var(--chat-avatar-size));
+	position: absolute;
 }
-message-block > .username-label {
-	margin-left: 4rem;
-	display: block;
+message-block > message-header {
+	margin-left: var(--chat-gutter);
+	display: flex;
+	flex-wrap: wrap-reverse;
+	align-items: center;
+}
+message-block > message-header > time {
+	font-weight: normal;
+	padding-right: 0.5em;
+	color: var(--chat-dim-color);
+	flex-grow: 1;
+	text-align: right;
 }
 
 message-contents {
 	display: block;
 	vertical-align: top; /* why? */
 	overflow: auto;
-}
-
-message-block {
-	position: relative;
-}
-message-block > .avatar {
-	position: absolute;
-}
-message-contents {
 	position: relative;
 	margin-top: 0.2rem;
 	min-height: 1.5rem; /* this is so the message controls always have somewhere to be shown */
 	overflow-y: hidden;
 	overflow-y: clip;
 }
+message-contents img {
+	max-width: 100%;
+	max-height: 10vh;
+	border: 1px solid var(--image-border-color);
+}
+
+/* fake selector because we need to override things set on markup-root (why...) */
+message-part:not(#a) {
+	display: block;
+	padding-top: 0;
+	padding-bottom: 0.2rem;
+	padding-left: calc(var(--chat-gutter) + 0.2rem);
+	padding-right: 0.2rem;
+	min-height: 1rem; /* this is so the message controls always have somewhere to be shown */
+}
+message-part.edited {
+	/* todo: fix this styling */
+	/* we may just need an extra container for message-parts... */
+	padding-left: calc(var(--chat-gutter) + 0.2rem - 1px);
+	border-left: 1px solid var(--chat-gutter);
+}
+message-part[editing] {
+	background: yellow;
+}
+message-part:focus {
+	background: rgba(0,224,255,0.1);
+	outline: none;
+}
 
 message-controls {
 	position: absolute;
-	width: 4rem;
+	width: var(--chat-gutter);
 	z-index: 9;
 /*(	overflow: hidden;*/
 	/* don't remove these prefixes */
@@ -592,44 +616,12 @@ message-controls {
 	display: inline-flex;
 	height: 1.3rem;
 }
-
 message-controls > button {
 	padding: 0;
 	flex-grow: 1;
 }
-
 message-controls:hover + message-part {
 	background: rgba(0,0,0,0.1);
-}
-message-part:focus {
-	background: rgba(0,224,255,0.1);
-	outline: none;
-}
-
-message-part:not(.whatever) {
-	/*margin: 0.2rem 0;*/
-	padding: 0 0.2rem;
-	display: block;
-	/*margin: 0.2rem 0;*/
-	padding-left: 4.2rem;
-	padding-bottom: 0.2rem;
-	min-height: 1rem;
-}
-message-part.edited {
-	/* todo: fix this */
-	/* we may just need an extra container for message-parts... */
-	padding-left: 4.1rem;
-	border-left: 0.1rem solid var(--border-color);
-}
-
-message-contents img {
-	max-width: 100%;
-	max-height: 10vh;
-	border: 1px solid var(--image-border-color);
-}
-
-message-part[editing] {
-	background: yellow;
 }
 
 #\$chatTextarea[disabled] {
@@ -927,6 +919,8 @@ scroll-outer {
 	display: block;
 	height: 100%;
 	overflow-y: scroll;
+	/*will-change: scroll-position; /*breakks cleartype xd*/
+	contain: strict;
 }
 
 scroll-inner {
@@ -1138,8 +1132,8 @@ textarea-container > textarea {
 	margin: 0;
 	border-radius: 0;
 	box-shadow: none;
-	
 	overflow-y: scroll;
+	vertical-align: top;
 }
 
 textarea-container > textarea:focus {
@@ -1268,4 +1262,13 @@ html.f-editorPreview .editorNotPreview {
 
 .real-name-label {
 	color: gray
+}
+
+
+/* contain */
+main, sidebar-container, #\$sidebarTop, #\$sidebarBottom, .resize, .sidebarComment, $sidebarActivity > .linkBar {
+	contain: strict;
+}
+message-part, header, .markup-root, message-block {
+	contain: content;
 }

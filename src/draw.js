@@ -186,11 +186,6 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		let date = comment.createDate
 		
 		let div = E`message-block`
-		// time
-		let timeStamp = E`time`
-		timeStamp.setAttribute("datetime", date+"")
-		timeStamp.textContent = timeString(date)
-		div.append(timeStamp)
 		// avatar
 		if (user.bigAvatar) {
 			let d = E`div`
@@ -201,9 +196,11 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			div.append(avatar(user))
 		}
 		// username
+		let label = E`message-header`
+		div.append(label)
+		
 		let name = E`span`
-		name.className += " username-label"
-		div.append(name)
+		label.append(name)
 		//let link = entity_link(user)
 		//name.append(link)
 		let link = name
@@ -228,6 +225,12 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			n.textContent = user.name
 			link.append(":")
 		}
+		
+		// time
+		let timeStamp = E`time`
+		timeStamp.setAttribute("datetime", date+"")
+		timeStamp.textContent = timeString(date)
+		label.append(timeStamp)
 		
 		// contents
 		let contentBox = E`message-contents`
