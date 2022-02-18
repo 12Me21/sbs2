@@ -1,6 +1,5 @@
 _build.*
 old/
-src/index.html
 *.txt
 
 *.swp
