@@ -31,7 +31,7 @@ addView('user', {
 				render(null)
 		}, true)
 	},
-	className: 'userMode',
+	className: 'user',
 	render(user, userpage, activity, ca, content) {
 		if (user.id == Req.uid) {
 			flag('myUserPage', true)

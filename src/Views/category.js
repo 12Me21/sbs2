@@ -45,7 +45,7 @@ addView('category', {
 		}, true)
 	},
 	
-	className: 'categoryMode',
+	className: 'category',
 	render(category, cats, pages, pinned, pageNum) {
 		currentCategory = category.id
 		navButtons.set(pageNum)

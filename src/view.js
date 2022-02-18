@@ -27,7 +27,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 					}
 				}
 			},
-			className: 'testMode',
+			className: 'test',
 			render() {
 				setTitle("Testing")
 			},
@@ -46,7 +46,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 						render(resp.user)
 				}, true)
 			},
-			className: 'membersMode',
+			className: 'users',
 			render(users) {
 				setTitle("Users")
 				$memberList.childs = users.map((user)=>{
@@ -67,7 +67,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		},
 	},
 	errorView: {
-		className: 'errorMode',
+		className: 'error',
 		render(message, error) {
 			setTitle(message)
 			$errorMessage.textContent = error ? error+"\n"+error.stack : ""

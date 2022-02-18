@@ -1,3 +1,6 @@
+// todo: put these vars in a scope somewhere?
+// maybe define scopes at like View.views[name]? and separate methods from the rest of the scope of course,
+
 let comment_form
 
 View.addView('comments', {

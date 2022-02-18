@@ -85,9 +85,9 @@
 	
 	<a data-static-path="" class='textItem'><img class='item' src=resource/iconbig.png alt="SBS"></a>
 	<noscript>This web-site requires JavaScript</noscript>
-	<v-b data-view-page data-view-categoryMode><span id=$path></span></v-b><h1 id=$pageTitle class='textItem pageTitle'></h1>
+	<v-b data-view-page data-view-category><span id=$path></span></v-b><h1 id=$pageTitle class='textItem pageTitle'></h1>
 	
-	<v-b data-view-userMode><a class='textItem loggedIn myUserPage' id=$editUserPage>Edit User Page</a></v-b>
+	<v-b data-view-user><a class='textItem loggedIn myUserPage' id=$editUserPage>Edit User Page</a></v-b>
 	<div class='item loggedIn myUserPage'>
 		<div id=$userPageStatus class='textItem'></div>
 	</div>
@@ -109,59 +109,52 @@
 		|| TOP OF PAGE ||
 		\=============-->
 		
-		<v-b data-view-fileMode class='rem1-7 bar nav'>
-			<span id=$fileNav></span>
-		  	<label for=$fileSearchBucket>Bucket:</label>
-			<input id=$fileSearchBucket>
-			<div class='rightAlign'>Upload images in sidebar →</div>
-		</v-b>
-		
-		<v-b data-view-fileMode class='fileBox bar' id=$fileBox></v-b>
-		
-		<v-b data-view-fileMode>
-			<button id=$fileUploadButton class='fileUploading'>Upload Image!</button>
+		<v-b data-view-images>
+			<div class='rem1-7 bar nav'>
+				<span id=$fileNav></span>
+		  		<label>Bucket:<input id=$fileSearchBucket></label>
+				<div class='rightAlign'>Upload images in sidebar →</div>
+			</div>
+			<div class='fileBox bar' id=$fileBox></div>
 			Click an image to select
 			<div class='fileSelected'>
 				<button id=$setAvatarButton class='loggedIn'>Use As Avatar</button>
 				<div id=$imageForm></div>
-				<button id=$fileUpdateButton class='fileUpdateButton canEdit loggedIn'>Save Settings</button>
+				<button id=$fileUpdateButton class='canEdit loggedIn'>Save Settings</button>
 			</div>
 		</v-b>
 		
-		<v-b data-view-membersMode class='nav bar rem1-7' id=$memberNav></v-b>
+		<v-b data-view-users class='nav bar rem1-7' id=$memberNav></v-b>
 		
 		<!--=======================\
 		|| MAIN SCROLLING SECTION ||
 		\========================-->
 		
 		<main-scrollable class='flex grow' id=$main>
-			<v-b data-view-userMode class='userPageBox flex-row'>
+			<v-b data-view-user class='userPageBox flex-row'>
 				<a id=$userPageAvatarLink><img id=$userPageAvatar class='userPageAvatar' alt="" src=""></a>
 				<div class='pageContents pre userPageContents markup-root' id=$userPageContents></div>
 			</v-b>
 			
-			<v-b data-view-catEditorMode>
-				<label>Pinned pages:<input id=$cateditPinned></label><br>
-				<label>Parent category:<input id=$cateditCategory type=number></label><br>
-				<label>Permissions:<input id=$cateditPermissions></label><br>
-				<label>Local Superusers:<input id=$cateditLocalSupers></label><br>
-				<textarea id=$cateditDescription></textarea><br>
+			<!-- todo: add category editor page? -->
+			
+			<v-b data-view-images class='image-box fill'><img id=$filePageView></v-b>
+			
+			<v-b data-view-category>
+				<div id=$categoryDescription class='categoryDescription pre pageContents markup-root'></div>
+				<div id=$categoryCategories></div>
+				<div id=$categoryPinned></div>
+				<div class='page-select rem1-7 bar'>
+					<span id=$categoryNav></span>
+					<button id=$createPage class='item' data-static-link>Create Page</button>
+					<button id=$editCategory class='item canEdit' data-static-link>Edit Category</button>
+				</div>
+				<div id=$categoryPages class='categoryPages'></div>
 			</v-b>
-			<v-b data-view-fileMode class='image-box fill'><img id=$filePageView></v-b>
 			
-			<v-b data-view-categoryMode id=$categoryDescription class='categoryDescription pre pageContents markup-root'></v-b>
-			<v-b data-view-categoryMode id=$categoryCategories></v-b>
-			<v-b data-view-categoryMode id=$categoryPinned></v-b>
-			<v-b data-view-categoryMode class='page-select rem1-7 bar'>
-				<span id=$categoryNav></span>
-				<button id=$createPage class='item' data-static-link>Create Page</button>
-				<button id=$editCategory class='item canEdit' data-static-link>Edit Category</button>
-			</v-b>
-			<v-b data-view-categoryMode id=$categoryPages class='categoryPages'></v-b>
+			<v-b data-view-user class='userActivity' id=$userActivity></v-b>
 			
-			<v-b data-view-userMode class='userActivity' id=$userActivity></v-b>
-			
-			<v-b data-view-errorMode class='pre errorPage' id=$errorMessage></v-b>			
+			<v-b data-view-error class='pre errorPage' id=$errorMessage></v-b>			
 			<v-b data-view-comments>
 				<div id=$commentSearch class='nav'>
 					<br id=$commentSearchForm>
@@ -191,20 +184,19 @@
 				<div id=$homeCategories class='border-list-2'></div>
 			</v-b>
 			
-			<v-b data-view-membersMode class='memberPane'>
+			<v-b data-view-users>
 				<div id=$memberList class='border-list-2'></div>
 			</v-b>
 			
 			<v-b data-view-activity id=$activity></v-b>
 			
-			<v-b data-view-testMode>
+			<v-b data-view-test>
 				<textarea id=$testTextarea></textarea><br>
 				<button id=$testButton>Run</button><br>
 				<div id=$testOut class='pre'></div>
 			</v-b>
 			
-			
-			<v-b data-view-membersMode data-view-home class='bottomSpacer'></v-b>
+			<v-b data-view-users data-view-home class='bottomSpacer'></v-b>
 		</main-scrollable>
 		
 		<!--===============\

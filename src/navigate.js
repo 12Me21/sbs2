@@ -1,3 +1,5 @@
+// todo: i suspect that quickly doubleclicking the same link is a thing which happens and isnt good
+
 const Nav = {
 	current_path: null,
 	initial_pop: false,

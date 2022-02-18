@@ -76,7 +76,7 @@ with (View) (()=>{ "use strict"; {
 					render(null)
 			}, false) //mm
 		},
-		className: 'fileMode',
+		className: 'images',
 		render(files) {
 			setTitle("Files")
 			fileList = files
