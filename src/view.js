@@ -258,7 +258,6 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			// goal: instead of hiding things, we should
 			// use the .slide system for all pages etc.
 			
-			//$.document.body.className = view.className
 			document.querySelectorAll("v-b").forEach((e)=>{
 				e.hidden = !e.hasAttribute("data-view-"+view.className)
 			})
@@ -367,8 +366,22 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 	
 	// should be a class (actually nevermind the syntax is gross)
 	attachResize(element, tab, horiz, dir, save, callback) {
-		let start, start_size, held
+		let start_pos, start_size
+		let held = false
 		let size = null
+		
+		tab.addEventListener('mousedown', down)
+		tab.addEventListener('touchstart', down)
+		document.addEventListener('mouseup', up)
+		document.addEventListener('touchend', up)
+		document.addEventListener('mousemove', move)
+		document.addEventListener('touchmove', move)
+		
+		if (save) {
+			let s = Store.get(save)
+			s && update_size(+s)
+		}
+		
 		function event_pos(e) {
 			if (e.touches)
 				return e.touches[0][horiz?'pageX':'pageY']
@@ -378,45 +391,26 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		function down(e) {
 			e.preventDefault()
 			tab.setAttribute('dragging',"")
-			start = event_pos(e)
-			start_size = element[horiz?'offsetWidth':'offsetHeight']
 			held = true
-		}
-		function up(e) {
-			held = false
-			tab.removeAttribute('dragging')
-			if (save && size != null)
-				Store.set(save, size)
-		}
-		function update_size(px) {
-			//window.setTimeout(()=>{
-			element.style[horiz?'width':'height'] = px+"px"
-			//}, 0)
+			start_pos = event_pos(e)
+			start_size = element[horiz?'offsetWidth':'offsetHeight']
 		}
 		function move(e) {
 			if (!held)
 				return
-			let v = (event_pos(e) - start) * dir
-			size = Math.max(start_size + v, 0)
-			update_size(size)
-			callback && callback(size)
+			let v = (event_pos(e) - start_pos) * dir
+			update_size(start_size + v)
 		}
-		tab.addEventListener('mousedown', down)
-		tab.addEventListener('touchstart', down, {passive:true})
-		
-		document.addEventListener('mouseup', up)
-		document.addEventListener('touchend', up)
-		
-		document.addEventListener('mousemove', move)
-		document.addEventListener('touchmove', move)
-		
-		if (save) {
-			size = Store.get(save)
-			if (size) {
-				size = Math.max(0, +size)
-				update_size(size)
-				callback && callback(size)
-			}
+		function up(e) {
+			tab.removeAttribute('dragging')
+			held = false
+			if (save && size != null)
+				Store.set(save, size)
+		}
+		function update_size(px) {
+			size = Math.max(px, 0)
+			element.style[horiz?'width':'height'] = size+"px"
+			callback && callback(size)
 		}
 	},
 	

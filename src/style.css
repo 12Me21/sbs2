@@ -175,10 +175,6 @@ time {
 	padding: .75rem 1rem;
 }
 
-body.chatMode .bottomSpacer {
-	display: none;
-}
-
 .username {
 	font-weight: bold;
 	unicode-bidi: embed;
@@ -435,6 +431,7 @@ html:not(.f-canEdit) .canEdit {
 	display: none;
 }
 
+/* broken? */
 .errorMode .titlePane {
 	color: var(--error-invert-bg);
 	font-family: monospace;
@@ -963,29 +960,6 @@ scroll-inner {
 	textarea, input {
 		font-size: 100%;
 	}
-	/* make the entire page scroll */
-	/* todo: make chat mode work better here */
-	/*body:not(.pageMode) {
-		position: static;
-		min-height: 100vh;
-		font-size: 0.9em;
-	}
-	body:not(.pageMode) main-scrollable {
-		height: auto !important;
-		flex-basis: auto;
-	}
-	html {
-		background-color: transparent;
-	}
-	.editorPreview {
-		flex-basis: auto;
-	}
-	.userPageBox {
-		max-height: none;
-	}
-	.inputPane textArea {
-		font-size: 1rem;
-	}*/
 }
 
 .registerBox {
@@ -1025,10 +999,6 @@ input, select {
 .half-label {
 	font-weight: bold;
 	/*text-align: right;*/
-}
-
-body.pageMode main-scrollable {
-	height: 100%;
 }
 
 .chatScroller {
