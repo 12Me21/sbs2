@@ -860,10 +860,6 @@ html:not(.f-fileUploading) .fileUploading {
 /*************
  ** Sidebar **
  *************/
-#\$sidebarPinnedResize {
-	display: inline-block;
-}
-
 .closeSidebar {
 	display: none;
 }
@@ -972,9 +968,6 @@ input, select {
 	/*text-align: right;*/
 }
 
-#\$sidebarPinned {
-	width: 100%;
-}
 .wideCell {
 	width: 100%;
 }

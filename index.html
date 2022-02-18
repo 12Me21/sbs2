@@ -262,7 +262,7 @@
 	|| SIDEBAR ||
 	\=========-->
 	
-	<sidebar-container id=$sidebar class="flex flex-sized">
+	<sidebar-container id=$sidebar class="flex-sized resize-box">
 		<button class="closeSidebar" id=$closeSidebar>Close Sidebar</button>
 		<div class="userlist bar rem1-5"><span id=$sidebarUserList></span><button id=$hideGlobalStatusButton class="item rightAlign loggedIn">Hide</button></div>
 		<!--<span id=$longPollStatus></span>-->
@@ -363,7 +363,6 @@
 				</div>
 			</sidebar-panel>
 		</div>
-		
 		<resize-handle id=$sidebarResize>↕↔</resize-handle>
 		<div id=$sidebarBottom class="grow">
 			<scroll-outer><scroll-inner id=$sidebarScroller class="border-list"></scroll-inner></scroll-outer>
