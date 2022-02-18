@@ -176,7 +176,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		} else if (type=='category') {
 			element = bg_icon('resource/category.png')
 		} else {
-			element = bg_icon('resource/unknown.png')
+			element = bg_icon('resource/unknownpage.png')
 		}
 		return element
 	},
