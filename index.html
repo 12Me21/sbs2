@@ -253,9 +253,9 @@
 		
 		<v-b data-view-page id=$chatResize class="resize"> ↕</v-b>
 		<v-b data-view-page id=$chatContainer class="grow flex">
-			<v-b data-view-page id=$chatPane class="flex chatMode grow chatPane border-list"></v-b>
+			<div data-view-page id=$chatPaneBox class="grow slide-box"></div>
 			
-			<v-b data-view-page class="inputPane chatMode loggedIn flex-row">
+			<div data-view-page class="inputPane loggedIn flex-row">
 				<button class="showWhenEdit" id=$chatCancelEdit>Cancel Edit</button>
 				<textarea-container class="grow"><textarea class="chatTextarea" id=$chatTextarea accesskey="z"></textarea></textarea-container>
 				<!--<label for=$chatBigMode class="no-select">Big:</label>
@@ -263,7 +263,7 @@
 				<div>
 					<label class="no-select">Markup:<input type=checkbox checked autocomplete=off id=$chatMarkupSelect></label>
 				</div>
-			</v-b>
+			</div>
 		</v-b>
 	</main>
 	

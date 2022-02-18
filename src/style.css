@@ -23,7 +23,7 @@ tbody, img, canvas, button {
 	vertical-align: top;
 }
 
-[hidden] {
+[hidden]:not(.slide) {
 	display: none !important;
 }
 
@@ -1276,4 +1276,19 @@ message-part, header, .markup-root, message-block {
 /* this might be bad */
 .chatScroller > scroll-inner, #\$sidebarScroller, $sidebarActivity {
 	will-change: contents;
+}
+
+/* new chat system */
+.slide-box {
+	position: relative;
+	display: block;
+}
+.slide-box > .slide {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	/*display: block;*/ /* override this */
+}
+.slide-box > .slide[hidden] {
+	visibility: hidden;
 }

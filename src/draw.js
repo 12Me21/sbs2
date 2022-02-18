@@ -56,20 +56,27 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return element
 	},
 	
+	chat_pane() {
+		let box = E`chat-pane`
+		box.hidden = true
+		box.className = 'flex chatPane border-list slide'
+		let [outer, inner] = chat_message_pane()
+		let [list1, list2, button] = user_list()
+		box.append(list1, outer)
+		return [box, outer, inner, list2, button]
+	},
+	
 	chat_message_pane() {
 		let outer = E`scroll-outer`
-		outer.className = "grow chatScroller"
-		outer.hidden = true
-		let inner = E`scroll-inner`
-		outer.append(inner)
+		outer.className = 'grow chatScroller'
+		let inner = outer.child`scroll-inner`
 		return [outer, inner]
 	},
 	
 	user_list() {
 		let outer = E`div`
 		outer.className = "bar rem2-3 userlist"
-		let inner = E`span`
-		outer.append(inner)
+		let inner = outer.child`span`
 		let b = button()
 		b[1].textContent = "Hide"
 		b[0].className += " rightAlign item loggedIn"

@@ -23,26 +23,21 @@ class ChatRoom {
 		this.pageContainer.append(this.pageElement)
 		$pageContents.append(this.pageContainer)
 		
-		// user list
-		let ul = Draw.user_list()
-		this.userListOuter = ul[0]
-		this.userListInner = ul[1]
-		ul[2].onclick = ()=>{
+		let btn
+		([this.chat_pane, this.messagePane, this.messageList, this.userListInner, btn] = Draw.chat_pane())
+		
+		btn.onclick = ()=>{
 			this.toggleHiding(()=>{
 				ul[2].disabled = false
 			})
 			ul[2].disabled = true
 		}
-		this.userListOuter.hidden = true
-		$chatPane.append(this.userListOuter)
 		
 		// chat
 		this.messageElements = {}
 		this.lastTime = 0
 		this.maxMessages = 500
 		this.totalMessages = 0
-		
-		;[this.messagePane, this.messageList] = Draw.chat_message_pane()
 		
 		let label = document.createElement('label')
 		let checkbox = label.createChild('input')
@@ -75,7 +70,7 @@ class ChatRoom {
 		}
 		
 		this.messagePane.dataset.id = page.id
-		$chatPane.append(this.messagePane)
+		$chatPaneBox.append(this.chat_pane)
 		
 		/////////////////////////////
 		// set up message controls //
@@ -219,17 +214,15 @@ class ChatRoom {
 		let old = this.constructor.currentRoom
 		if (old && old!=this)
 			old.hide()
-		this.messagePane.hidden = false
-		this.userListOuter.hidden = false
 		this.pageContainer.hidden = false
+		this.chat_pane.hidden = false
 		this.visible = true
 		this.constructor.currentRoom = this
 	}
 	hide() {
 		if (this.pinned) {
-			this.messagePane.hidden = true
-			this.userListOuter.hidden = true
 			this.pageContainer.hidden = true
+			this.chat_pane.hidden = true
 			if (this.constructor.currentRoom == this)
 				this.constructor.currentRoom = null
 			this.visible = false
@@ -241,11 +234,13 @@ class ChatRoom {
 		if (this.constructor.currentRoom == this)
 			this.constructor.currentRoom = null
 		this.constructor.removeRoom(this)
-		this.userListOuter.remove()
-		this.messagePane.remove()
 		this.pageContainer.remove()
-		this.userListOuter = null //gc
+		
+		this.chat_pane.remove()
 		this.userListInner = null
+		this.messagePane = null
+		this.messageList.replaceChildren()
+		
 		this.scroller.destroy()
 		this.scroller = null
 		this.visible = false
@@ -381,6 +376,7 @@ ChatRoom.removeRoom = function(room) {
 	//ChatRoom.setViewing(Object.keys(ChatRoom.rooms))
 }
 
+// unused
 ChatRoom.setViewing = function(ids) {
 	Lp.set_listening(ids)
 	Lp.refresh()

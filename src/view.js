@@ -257,6 +257,9 @@ handleView(type, id, query, callback) {
 	}
 	
 	function after() {
+		// goal: instead of hiding things, we should
+		// use the .slide system for all pages etc.
+		
 		//$.document.body.className = view.className
 		document.querySelectorAll("v-b").forEach((e)=>{
 			e.hidden = !e.hasAttribute("data-view-"+view.className)
