@@ -1,66 +1,21 @@
-<!--/* trick indenter
-with (View) (function($) { "use strict" //*/
-
-// this should be changed to a redirect to the new 'comments' page
-
-addView('chatlogs', {
-	init: function() {
-		//var sel = Draw.userSelector()
-		//$chatlogSearchUser.replaceChildren(sel.elem)
-		$chatlogSearchButton.onclick = function() {
-			var query = {}
-			query.t = $chatlogSearchText.value
-			query.pid = $chatlogSearchRoom.value
-			query.uid = $chatlogSearchUser.value
-			Nav.go("chatlogs"+Req.queryString(query))
-		}
-	},
-	start: function(id, query, render, quick) {
-		var search = {limit: 100, reverse: true}
-		if (query.t)
-			search.contentLike = "%\n%"+query.t+"%"
-		if (query.pid)
-			search.parentIds = query.pid.split(",").map(Number) //whatever
-		if (query.uid)
-			search.userIds = query.uid.split(",").map(Number)
-		if (!(search.contentLike || search.parentIds || search.userIds)) {
-			quick(function(){
-				$chatlogSearchResults.replaceChildren()
-			})
-			return;
-		}
-		return Req.read([
-			['comment', search],
-			['content.0parentId'],
-			['user.0createUserId'],
-		], {}, function(e, resp){
-			if (e)
-				return render(null)
-			render(resp.comment, query, resp.content)
-		})
-	},
-	className: 'chatlogs',
-	render: function(comments, query, pages) {
-		var map = Entity.makePageMap(pages)
-		$chatlogSearchText.value = query.t || ""
-		$chatlogSearchRoom.value = query.pid || ""
-		$chatlogSearchUser.value = query.uid || ""
-		
-		$chatlogSearchResults.replaceChildren()
-		comments.forEach(function(c) {
-			c.parent = map[c.parentId]
-			$chatlogSearchResults.appendChild(Draw.search_comment(c))
-		})
-		if (!comments.length) {
-			$chatlogSearchResults.textContent = "(no result)"
-		}
+with (View) (()=>{ "use strict"; {
+	
+	addView('chatlogs', {
+		redirect: (id, query)=>{
+			let q = {r: true}
+			// we do it this way so the ORDER is preserved :D
+			for (let key in query) {
+				if (key=='t')
+					q.s = query.t // name changed
+				else if (key=='pid')
+					q.pid = query.pid
+				else if (key=='uid')
+					q.uid = query.uid
+			}
+			return ['comments', null, q]
+		},
 		//TODO: results are links to chatlog viewer which lets you load surrounding messages etc.
 		// show page name etc.
-	},
-	cleanUp: function() {
-		$chatlogSearchResults.replaceChildren()
-	},
-})
-
-<!--/*
-}(window)) //*/
+	})
+	
+}})()

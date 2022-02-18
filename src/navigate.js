@@ -81,10 +81,36 @@ const Nav = {
 		return {path, query: vars, fragment, type, id}
 	},
 	
+	encode_path({path, query, fragment}) {
+		let url = path.map(url_escape).join("/")
+		let params = []
+		Object.for(query, (value, key)=>{
+			if (value!=undefined) {
+				let param = url_escape(key)
+				if (value!==true)
+					param += "="+url_escape(value)
+				params.push(param)
+			}
+		})
+		if (params.length!=0)
+			url += "?"+params.join("&")
+		if (fragment != null)
+			url += "#"+fragment
+		return url
+	},
+	
+	// no fragment?
+	set_location(type, id, query) {
+		let url = Nav.encode_path({
+			path: id==null ? [type] : [type,id],
+			query: query,
+		})
+		window.history.replaceState(null, "", "?"+url)
+	},
+	
 	render(path, callback) {
 		Nav.current_path = path
 		path = Nav.decodePath(String(path))
-		// todo: update url when view is redirected
 		View.handleView(path.type, path.id, path.query, callback)
 	},
 	

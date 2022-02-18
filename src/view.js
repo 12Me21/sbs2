@@ -63,7 +63,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			}
 		},
 		pages: {
-			redirect: 'page'
+			redirect: (id, query) => ['page', id, query]
 		},
 	},
 	errorView: {
@@ -76,11 +76,20 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			$errorMessage.textContent = ""
 		}
 	},
-	getView(name) {
+	
+	// handle redirects
+	getView(name, id, query) {
 		let view = views[name]
-		while (view && view.redirect) //danger!
-			view = views[view.redirect]
-		return view
+		let got = false
+		while (view && view.redirect) {//danger!
+			let ret = view.redirect(id, query)
+			if (!ret) // oops no redirect
+				break;
+			;[name, id, query] = ret
+			view = views[name]
+			got = true
+		}
+		return [name, id, query, got]
 	},
 	
 	setEntityTitle(entity) {
@@ -158,7 +167,22 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			cancelRequest()
 			cancelRequest = null
 		}
-		let view = getView(type)
+		let view
+		try {
+			let got_redirect
+			;[type, id, query, got_redirect] = getView(type, id, query)
+			view = views[type]
+			if (got_redirect) {
+				Nav.set_location(type, id, query)
+			}
+		} catch(e) {
+			console.error("error during redirect", e)
+			whenPageLoaded(()=>{
+				cleanUp()
+				errorRender("error during redirect", e)
+			})
+			return // ??
+		}
 		
 		function cleanUp() {
 			if (currentView && currentView.cleanUp) {
