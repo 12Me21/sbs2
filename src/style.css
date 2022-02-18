@@ -655,10 +655,6 @@ html:not(.f-chatEditing) .showWhenEdit {
 	flex-grow: 1;
 }
 
-#\$editorTextareaPanel {
-	/*overflow-y: hidden;*/
-}
-
 .editorTextarea {
 	position: relative;
 	min-height: 2.5em;
