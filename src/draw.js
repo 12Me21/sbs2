@@ -56,14 +56,33 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return element
 	},
 	
-	chat_pane() {
+	page_element(page) {
+		let container = E`div`
+		container.className = 'flex-sized page-container'
+		let info = page_info(page)
+		let elem = E`div`
+		elem.className = 'markup-root pageContents'
+		container.append(info, elem)
+		return [container, elem]
+	},
+	
+	chat_pane(page) {
 		let box = E`chat-pane`
 		box.hidden = true
-		box.className = 'flex chatPane border-list slide'
-		let [outer, inner] = chat_message_pane()
+		box.className = 'chatPane slide resize-box'
+		//
+		let [page1, page2] = page_element(page)
+		//
+		let resize = E`resize-handle`
+		resize.textContent = "↕"
+		View.attachResize(page1, resize, false, 1) // todo: save?
+		// 
 		let [list1, list2, button] = user_list()
-		box.append(list1, outer)
-		return [box, outer, inner, list2, button]
+		// 
+		let [outer, inner] = chat_message_pane()
+		//
+		box.append(page1, resize, list1, outer)
+		return [box, page1, page2, outer, inner, list2, button]
 	},
 	
 	chat_message_pane() {

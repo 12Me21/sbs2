@@ -185,7 +185,6 @@
 			
 			<v-b data-view-userMode class="userActivity" id=$userActivity></v-b>
 			
-			<v-b data-view-page id=$pageContents class="grow"></v-b>
 			<v-b data-view-errorMode class="pre errorPage" id=$errorMessage></v-b>
 			<v-b data-view-editpage class="grow editorPreview">
 				<div class="split-top" id=$editorPreviewPane>
@@ -251,10 +250,8 @@
 			</div>
 		</v-b>
 		
-		<v-b data-view-page id=$chatResize class="resize"> ↕</v-b>
-		<v-b data-view-page id=$chatContainer class="grow flex">
+		<v-b data-view-page id=$chatContainer class="fill flex">
 			<div data-view-page id=$chatPaneBox class="grow slide-box"></div>
-			
 			<div data-view-page class="inputPane loggedIn flex-row">
 				<button class="showWhenEdit" id=$chatCancelEdit>Cancel Edit</button>
 				<textarea-container class="grow"><textarea class="chatTextarea" id=$chatTextarea accesskey="z"></textarea></textarea-container>
@@ -371,7 +368,7 @@
 			</sidebar-panel>
 		</div>
 		
-		<div id=$sidebarResize class="resize">↕↔</div>
+		<resize-handle id=$sidebarResize>↕↔</resize-handle>
 		<div id=$sidebarBottom class="grow">
 			<scroll-outer><scroll-inner id=$sidebarScroller class="border-list"></scroll-inner></scroll-outer>
 		</div>

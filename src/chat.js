@@ -13,18 +13,8 @@ class ChatRoom {
 			return
 		}
 		
-		// page
-		this.pageContainer = document.createElement('div')
-		this.pageContainer.className = 'split-top border-list'
-		this.pageElement = document.createElement('div')
-		this.pageElement.className = 'markup-root pageContents'
-		this.pageInfoElement = Draw.page_info(page)
-		this.pageContainer.append(this.pageInfoElement)
-		this.pageContainer.append(this.pageElement)
-		$pageContents.append(this.pageContainer)
-		
 		let btn
-		([this.chat_pane, this.messagePane, this.messageList, this.userListInner, btn] = Draw.chat_pane())
+		([this.chat_pane, this.pageContainer, this.pageElement, this.messagePane, this.messageList, this.userListInner, btn] = Draw.chat_pane(page))
 		
 		btn.onclick = ()=>{
 			this.toggleHiding(()=>{
@@ -122,7 +112,7 @@ class ChatRoom {
 		else if (this.page.type == 'chat')
 			this.pageContainer.style.height = "0"
 		//this.pageContainer.style.maxHeight = '40vh'
-		View.attachResize(this.pageContainer, $chatResize, false, 1)
+		//View.attachResize(this.pageContainer, $chatResize, false, 1)
 	}
 	
 	loadOlder(num, callback) {
@@ -214,14 +204,12 @@ class ChatRoom {
 		let old = this.constructor.currentRoom
 		if (old && old!=this)
 			old.hide()
-		this.pageContainer.hidden = false
 		this.chat_pane.hidden = false
 		this.visible = true
 		this.constructor.currentRoom = this
 	}
 	hide() {
 		if (this.pinned) {
-			this.pageContainer.hidden = true
 			this.chat_pane.hidden = true
 			if (this.constructor.currentRoom == this)
 				this.constructor.currentRoom = null
@@ -234,12 +222,11 @@ class ChatRoom {
 		if (this.constructor.currentRoom == this)
 			this.constructor.currentRoom = null
 		this.constructor.removeRoom(this)
-		this.pageContainer.remove()
 		
 		this.chat_pane.remove()
+		this.chat_pane.replaceChildren()
 		this.userListInner = null
 		this.messagePane = null
-		this.messageList.replaceChildren()
 		
 		this.scroller.destroy()
 		this.scroller = null

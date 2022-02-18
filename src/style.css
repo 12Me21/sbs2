@@ -71,7 +71,6 @@ body {
 	flex-shrink: 1;
 	flex-basis: 0;
 }
-
 .flex-sized {
 	flex-shrink: 1;
 }
@@ -334,10 +333,6 @@ html.f-error .loadBG {
 	/*box-shadow: inset 0 -2px 3px rgba(0,0,0,0.3);*/
 }
 
-#\$chatContainer {
-	overflow-y: hidden;
-}
-
 .bottomBorder {
 	border-bottom: 1px solid var(--border-color);
 }
@@ -512,9 +507,10 @@ main-scrollable {
 /**************
  ** Userlist **
  **************/
-.chatPane .userlist {
+chat-pane .userlist {
 	box-shadow: var(--normal-shadow);
 	z-index: 4;
+	border-bottom: 1px solid var(--border-color);
 }
 .userlist {
 	background: var(--bar-bg);
@@ -641,12 +637,15 @@ html:not(.f-chatEditing) .showWhenEdit {
 	margin: 0.3rem 0;
 }
 
+.chatScroller > scroll-inner {
+	padding-bottom: 0.5rem;
+}
+
 /****************
  ** Chat Input **
  ****************/
-
 .chatSend {
-	height:2.5rem;
+	height: 2.5rem;
 }
 
 /*****************
@@ -806,15 +805,11 @@ button.voteButton[data-selected][data-vote="o"] {
 	padding: 1.5em;
 }
 
-#\$pageContents {
-	flex-basis: auto;
-}
-
 .pageInfoPane {
 	background: var(--bar-bg);
-	/*overflow: auto;*/
 	padding: 0 0.3rem;
 	box-shadow: var(--normal-shadow);
+	border-bottom: 1px solid var(--border-color);
 }
 
 /***********
@@ -863,27 +858,6 @@ html:not(.f-fileUploading) .fileUploading {
 	background-position: center;
 	/*margin-right: 0.3rem;*/
 	margin-left: 0.1rem;
-}
-
-/************
- ** Resize **
- ************/
-.resize {
-	-webkit-touch-callout: none;
-	
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	user-select: none;
-	cursor: grab;
-	color: var(--databartxtcolor);
-	background: var(--databarbgcolor);
-	height: 1.2em;
-	line-height: 1;
-	overflow: hidden;
-	/*box-shadow: 0 -2px 3px rgba(0,0,0,0.3);*/
-}
-.resize[dragging] {
-	cursor: grabbing;
 }
 
 /*************
@@ -1001,14 +975,6 @@ input, select {
 	/*text-align: right;*/
 }
 
-.chatScroller {
-	height: 300px;
-}
-
-.chatPane {
-	overflow-y: auto;
-}
-
 #\$sidebarPinned {
 	width: 100%;
 }
@@ -1020,20 +986,11 @@ input, select {
 	display: block;
 }
 
-.chatScroller {
-	height: 100vh;
-}
-
-.chatScroller > scroll-inner {
-	padding-bottom: 0.5rem;
-}
-
 html.f-splitView main-scrollable {
 	flex-grow: 0;
 	flex-basis: auto;
 	overflow-y: hidden;
 }
-
 
 sidebar-panel {
 	display: block;
@@ -1138,19 +1095,6 @@ textarea-container, textarea-container > textarea {
 	text-align: right;
 }
 
-#\$pageContents {
-	max-height: 100%;
-}
-
-.split-top {
-	max-height: 100%;
-	
-	overflow-y: scroll;
-
-	height: 40vh;
-	min-height: 2.3rem;
-}
-
 .gallery-inner {
 	margin: 0 auto;
 	position: relative;
@@ -1248,9 +1192,12 @@ message-part, header, .markup-root, message-block {
 	will-change: contents;
 }
 
-/* new chat system */
+/****************
+ ** Slides Box **
+ ****************/
 .slide-box {
 	position: relative;
+	contain: strict;
 	display: block;
 }
 .slide-box > .slide {
@@ -1261,4 +1208,51 @@ message-part, header, .markup-root, message-block {
 }
 .slide-box > .slide[hidden] {
 	visibility: hidden;
+}
+
+/************
+ ** Resize **
+ ************/
+.resize-box {
+	contain: strict;
+	display: flex;
+	flex-direction: column;
+}
+.resize-box > * {
+	flex-shrink: 0;
+}
+.resize-box > .grow {
+	flex-grow: 1;
+	flex-shrink: 1;
+	flex-basis: 0;
+}
+.resize-box > .flex-sized {
+	flex-shrink: 1;
+	overflow-y: auto
+}
+resize-handle, .resize {
+	-webkit-touch-callout: none;
+	
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+	cursor: grab;
+	color: var(--databartxtcolor);
+	background: var(--databarbgcolor);
+	height: 1.2em;
+	line-height: 1;
+	overflow: hidden;
+	/*box-shadow: 0 -2px 3px rgba(0,0,0,0.3);*/
+}
+resize-handle[dragging], .resize[dragging] {
+	cursor: grabbing;
+}
+
+/*   idk   */
+
+.page-container:not(#a) {
+	max-height: 100%;
+	overflow-y: scroll;
+	height: 40vh;
+	min-height: 2.3rem;
 }
