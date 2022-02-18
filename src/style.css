@@ -23,7 +23,8 @@ tbody, img, canvas, button {
 	vertical-align: top;
 }
 
-[hidden]:not(.slide) {
+/* nyehhhh */
+*:not(.slide-box) > [hidden] {
 	display: none !important;
 }
 
@@ -989,9 +990,7 @@ html.f-splitView main-scrollable {
 }
 
 sidebar-panel {
-	display: block;
-	width: 100%;
-	height: 100%;
+	overflow: auto;
 }
 
 .image-box {
@@ -1195,14 +1194,15 @@ message-part, header, .markup-root, message-block {
 	position: relative;
 	contain: strict;
 	display: block;
+	overflow: unset; /* ?? */
 }
-.slide-box > .slide {
+.slide-box > * {
 	position: absolute;
 	width: 100%;
 	height: 100%;
 	/*display: block;*/ /* override this */
 }
-.slide-box > .slide[hidden] {
+.slide-box > *[hidden] {
 	visibility: hidden;
 }
 

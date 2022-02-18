@@ -69,7 +69,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	chat_pane(page) {
 		let box = E`chat-pane`
 		box.hidden = true
-		box.className = 'chatPane slide resize-box'
+		box.className = 'chatPane resize-box'
 		//
 		let [page1, page2] = page_element(page)
 		//
