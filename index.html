@@ -225,7 +225,6 @@
 		\================-->
 		
 		<v-b data-view-editpage class='fill resize-box'>
-			<button id=$toggleEditorMode>Toggle Preview</button>
 			<div class='flex-sized' id=$editorPreviewPane>
 				<div class="editorNotPreview">
 					<div class="registerBox input-form" id=$editPageForm>
@@ -241,7 +240,7 @@
 					<div id=$editorPreview class="markup-root"></div>
 				</div>
 			</div>
-			<resize-handle id=$editorPreviewResize>↕</resize-handle>
+			<resize-handle id=$editorPreviewResize>↕ <button id=$toggleEditorMode>Toggle Preview</button></resize-handle>
 			<div class="grow editorTextarea">
 				<textarea id=$editorTextarea minlength=2 required class="fill"></textarea>
 			</div>
