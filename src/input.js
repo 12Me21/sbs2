@@ -112,6 +112,13 @@ class Form {
 			this.inputs[name].set(value)
 		}
 	}
+	set_some(data) {
+		for (let [name, type, opt] of this.fields) {
+			let value = data[name]
+			if (value!==undefined)
+				this.inputs[name].set(value)
+		}
+	}
 	// maybe shouldn't be in this class
 	to_query(p) {
 		let params = []

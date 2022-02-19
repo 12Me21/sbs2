@@ -171,7 +171,6 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	cleanUp() {
 		selectedFile = null
 		$fileView.src = ""
-		// don't reset bucket name
 	},
 	
 	fileUploaded(file) {
@@ -179,11 +178,9 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		View.flag('sidebarFile', true)
 		$fileView.src = ""
 		$fileView.src = URL.createObjectURL(file)
-		file_upload_form.set({
+		file_upload_form.set_some({
 			size: (file.size/1000)+" kB",
 			name: file.name,
-			bucket: file.bucket,
-			quantize: "",
 		})
 		selectedFile = file
 		selectTab(3) //hack HACK
