@@ -137,6 +137,7 @@
 				<a id=$userPageAvatarLink><img id=$userPageAvatar class='userPageAvatar' alt="" src=""></a>
 				<div class='pageContents pre userPageContents markup-root' id=$userPageContents></div>
 			</v-b>
+			<v-b data-view-user class='userActivity' id=$userActivity></v-b>
 			
 			<!-- todo: add category editor page? -->
 			
@@ -153,8 +154,6 @@
 				</div>
 				<div id=$categoryPages class='categoryPages'></div>
 			</v-b>
-			
-			<v-b data-view-user class='userActivity' id=$userActivity></v-b>
 			
 			<v-b data-view-error class='pre errorPage' id=$errorMessage></v-b>			
 			<v-b data-view-comments>
@@ -228,8 +227,8 @@
 		</v-b>
 		
 		<v-b data-view-page id=$chatContainer class='fill flex'>
-			<div data-view-page id=$chatPaneBox class='grow slide-box'></div>
-			<div data-view-page class='inputPane loggedIn flex-row'>
+			<div id=$chatPaneBox class='grow slide-box'></div>
+			<div class='inputPane loggedIn flex-row'>
 				<button class='showWhenEdit' id=$chatCancelEdit>Cancel Edit</button>
 				<textarea-container class='grow'><textarea class='chatTextarea' id=$chatTextarea accesskey="z"></textarea></textarea-container>
 				<div>
