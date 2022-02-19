@@ -38,7 +38,7 @@ View.addView('comments', {
 			quick(()=>{
 				View.setTitle("Comments")
 				comment_form.set(data)
-				$chatlogSearchResults.replaceChildren()
+				$commentSearchResults.replaceChildren()
 			})
 			return;
 		}
