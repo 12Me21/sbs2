@@ -291,6 +291,28 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return date.toLocaleString([], options)
 	},
 	
+	can_merge_comment(block, comment, time) {
+		if (block) {
+			let hash = block.dataset.merge
+			return hash && hash==Entity.comment_merge_hash(comment) && (!time || comment.createDate-time <= 1000*60*5)
+		}
+		return false
+	},
+	// too many args
+	insert_comment_merge(elem, part, comment, time, backwards) {
+		let block = elem[backwards?'firstChild':'lastChild']
+		// todo: store time on block itself? but for this to insert in both directions it should store first/last time
+		// + with message deletion, really we have to store time per message part, which sucks...
+		let contents
+		if (can_merge_comment(block, comment, time))
+			contents = block.getElementsByTagName('message-contents')[0]// not great...
+		if (!contents) {
+			let b = message_block(comment)
+			elem[backwards?'prepend':'append'](b[0])
+			contents = b[1]
+		}
+		contents[backwards?'prepend':'append'](part)
+	},
 	// this needs to be improved
 	search_comment(comment) {
 		let outer = E`div`

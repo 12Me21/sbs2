@@ -239,27 +239,9 @@ class ChatRoom {
 	shouldScroll() {
 		return this.scroller.atBottom
 	}
-	can_merge(block, comment, time) {
-		if (block) {
-			let hash = block.dataset.merge
-			return hash && hash==Entity.comment_merge_hash(comment) && (!time || comment.createDate-time <= 1000*60*5)
-		}
-		return false
-	}
 	//
 	insert_merge(part, comment, time, backwards) {
-		let block = this.messageList[backwards?'firstChild':'lastChild']
-		// todo: store time on block itself? but for this to insert in both directions it should store first/last time
-		// + with message deletion, really we have to store time per message part, which sucks...
-		let contents
-		if (this.can_merge(block, comment, time))
-			contents = block.getElementsByTagName('message-contents')[0]// not great...
-		if (!contents) {
-			let b = Draw.message_block(comment)
-			this.messageList[backwards?'prepend':'append'](b[0])
-			contents = b[1]
-		}
-		contents[backwards?'prepend':'append'](part)
+		Draw.insert_comment_merge(this.messageList, part, comment, time, backwards)
 		this.totalMessages++
 		this.messageElements[comment.id] = part
 		this.limitMessages()

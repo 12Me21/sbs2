@@ -33,37 +33,52 @@ View.addView('comments', {
 		let data = comment_form.from_query(query)
 		if (id)
 			data.pages = [id]
-		let search = build_search(data)
-		if (!search) {
+		let [search, merge] = build_search(data)
+		
+		if (search) {
+			return Req.read([
+				['comment', search],
+				['content.0parentId'],
+				['user.0createUserId'],
+			], {}, (e, resp)=>{
+				if (e) return render(null)
+				render(resp.comment, resp.content, data, merge)
+			})
+		} else {
+			// if no search, just display the form right away
 			quick(()=>{
 				View.setTitle("Comments")
 				comment_form.set(data)
 				$commentSearchResults.replaceChildren()
 			})
-			return;
 		}
-		return Req.read([
-			['comment', search],
-			['content.0parentId'],
-			['user.0createUserId'],
-		], {}, (e, resp)=>{
-			if (e) return render(null)
-			render(resp.comment, query, resp.content, data)
-		})
+		
 	},
 	className: 'comments',
-	render(comments, query, pages, data) {
+	render(comments, pages, data, merge) {
 		View.setTitle("Comments")
 		comment_form.set(data)
 		
-		let map = Entity.makePageMap(pages)
 		$commentSearchResults.replaceChildren()
-		comments.forEach((c)=>{
-			c.parent = map[c.parentId]
-			$commentSearchResults.append(Draw.search_comment(c))
-		})
 		if (!comments.length) {
 			$commentSearchResults.textContent = "(no result)"
+		} else {
+			let map = Entity.makePageMap(pages)
+			if (merge) {
+				let last_time = 0
+				for (let comment of comments) {
+					if (comment.deleted)
+						continue
+					let part = Draw.message_part(comment)
+					Draw.insert_comment_merge($commentSearchResults, part, comment, last_time, false)
+					last_time = comment.createDate
+				}
+			} else {
+				for (let c of comments) {
+					c.parent = map[c.parentId]
+					$commentSearchResults.append(Draw.search_comment(c))
+				}
+			}
 		}
 	},
 	cleanUp() {
@@ -72,21 +87,29 @@ View.addView('comments', {
 })
 
 function build_search(data) {
+	let merge = true;
 	let search = {limit: 200}
 	if (!data.search && !(data.users && data.users.length) && !data.range && !data.start && !data.end)
-		return null
-	if (data.reverse)
+		return [null, null]
+	if (data.reverse) {
 		search.reverse = true
-	if (data.search)
+		merge = false
+	}
+	if (data.search) {
 		search.contentLike = "%\n%"+data.search+"%"
+		merge = false
+	}
 	if (data.pages)
 		search.parentIds = data.pages
-	if (data.users)
+	if (data.users) { // todo: is an empty list [] or null?
 		search.userIds = data.users
+		merge = false
+	}
 	let range = data.range
+	// todo: list of ids (remember to turn off merge)
 	if (range) {
 		if (typeof range == 'number')
-			range = [number, number]
+			range = [range, range]
 		// either: 123-456
 		// or      123-
 		if (range[0] !== null)
@@ -98,8 +121,13 @@ function build_search(data) {
 		search.createStart = data.start.toISOString()
 	if (data.end)
 		search.createEnd = data.end.toISOString()
-	return search
+	return [search, merge]
 }
+// todo: ids should accept either:
+// <number>
+// <number>-
+// <number>-<number>
+// <number>,<number>... (or space etc)
 
 View.addView('chatlogs', {
 	redirect: (id, query)=>{
