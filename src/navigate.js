@@ -83,9 +83,28 @@ const Nav = {
 		return {path, query: vars, fragment, type, id}
 	},
 	
+	// convert back to url
 	encode_path({path, query, fragment}) {
 		let url = path.map(url_escape).join("/")
 		let params = []
+		Object.for(query, (value, key)=>{
+			if (value!=undefined) {
+				let param = url_escape(key)
+				if (value!==true)
+					param += "="+url_escape(value)
+				params.push(param)
+			}
+		})
+		if (params.length!=0)
+			url += "?"+params.join("&")
+		if (fragment != null)
+			url += "#"+fragment
+		return url
+	},
+	
+	haloopdy_path({path, query, fragment}) {
+		let url = "https://smilebasicsource.com/"
+		let params = ["p="+path.map(url_escape).join("-")] // can escape - though?
 		Object.for(query, (value, key)=>{
 			if (value!=undefined) {
 				let param = url_escape(key)
@@ -113,7 +132,12 @@ const Nav = {
 	render(path, callback) {
 		Nav.current_path = path
 		path = Nav.decodePath(String(path))
-		View.handleView(path.type, path.id, path.query, callback)
+		let {type, id, query} = path
+		$haloopdyLink.href = this.haloopdy_path({
+			path: id==null ? [type] : [type, String(id)],
+			query: query,
+		})
+		View.handleView(type, id, query, callback)
 	},
 	
 	reload() {
