@@ -127,8 +127,4 @@ function error(e, ...rest) {
 	}
 }
 
-function heckd() {
-	return eval("\nnew Error()")
-}
-
 //talking excitedly about javasscript getters and setters for an hour and then crying

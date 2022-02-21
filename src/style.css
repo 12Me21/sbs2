@@ -4,19 +4,7 @@
 * {
 	margin: 0;
 	box-sizing: border-box;
-	
-	/* using inherit here should mean:
-	 * elements which have an explicit word-break set will use that
-	 * elements which have a word-break set by the browser will inherit it from either
-	   * <html> where it is set to break-word
-      * some parent element which explicit sets it
-
-the reason i set word-break on * is to hopefully disable any browser styles which have it set to some other value. but that might be the default since we set the property on <html> anyway...
-
-at the very least, i know we can't set it to break-word here, because
-otherwise, ex: elements inside code blocks (which use break-all) will have it set back to break-word
-	 */
-	word-break: inherit;
+	word-break: inherit; /* this might not actually do anything. note that we can't set it to break-word here, otherwise it messes up children of elements with word-break set to something else */
 }
 
 html {
@@ -159,12 +147,12 @@ sub {vertical-align: sub;}
 	background: var(--avatar-bg);
 }
 
+/* this is really hard to get working */
 .ellipsis {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: pre !important;
 }
-
 .ellipsis * {
 	white-space: pre !important;
 }
@@ -177,11 +165,6 @@ time {
 
 .rightAlign {
 	float: right; /* bad */
-}
-
-/* markup */
-.markup-root { /* make sure this is before most things */
-	padding: 0.5rem;
 }
 
 #\$categoryDescription.markup-root { /* make sure this is before most things */
@@ -588,8 +571,7 @@ message-contents img {
 	border: 1px solid var(--image-border-color);
 }
 
-/* fake selector because we need to override things set on markup-root (why...) */
-message-part:not(#a) {
+message-part {
 	display: block;
 	padding-top: 0;
 	padding-bottom: 0.2rem;
