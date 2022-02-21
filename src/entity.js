@@ -6,6 +6,19 @@
 // functions for processing recieved entities/
 // DATA PROCESSOR
 
+function entity_map(type, map) {
+	return new Proxy({type, map}, {
+		get({type, map}, id) {
+			return map[id] || {
+				Type: type,
+				name: `{${type}: ${id}}`,
+				id: id,
+				fake: true,
+			}
+		}
+	})
+}
+
 let Entity = {
 	categoryMap: {0: {
 		name: "[root]",
@@ -46,12 +59,15 @@ let Entity = {
 	process(resp) {
 		//let x = performance.now()
 		// build user map first
-		let users = {}
+		let map = {}
+		let users = entity_map('user', map)
+		
 		Object.for(resp, (data, key)=>{
 			let type = this.key_type(key)
 			if (type == 'user') {
 				this.processList(type, data, users)
-				data.forEach((user) => users[user.id] = user )
+				for (let user of data)
+					map[user.id] = user
 			}
 		})
 		
@@ -97,16 +113,10 @@ let Entity = {
 			data[i].Type = type
 		})
 	},
-	// returns a dummy object if not found
-	// todo: maybe create a special Map type
-	// which stores its Type and has this as a METHOD
-	get(map, type, id) {
-		return map[id] || {Type:type, id:id, Fake:true}
-	},
 	process_editable(data, users) {
-		data.editUser = this.get(users, 'user', data.editUserId)
-		data.createUser = this.get(users, 'user', data.createUserId)
-		if (data.editDate)
+		data.editUser = users[data.editUserId]
+		data.createUser = users[data.createUserId]
+		if (data.editDate) // date will always be non-null in the database but we might filter it out in the response
 			data.editDate = this.parse_date(data.editDate)
 		if (data.createDate)
 			data.createDate = this.parse_date(data.createDate)
@@ -117,14 +127,15 @@ let Entity = {
 			if (data.date)
 				data.date = this.parse_date(data.date)
 			if (data.type == 'user')
-				data.content = this.get(users, 'user', data.contentId)
+				data.content = users[data.contentId]
 			if (data.userId)
-				data.user = this.get(users, 'user', data.userId)
+				data.user = users[data.userId]
 			return data
 		},
 		user(data, users) {
 			if (data.createDate)
 				data.createDate = this.parse_date(data.createDate)
+			// store user's name in .name instead of .username to be consistent with other entity types
 			data.name = data.name || data.username
 			return data
 		},
@@ -141,9 +152,9 @@ let Entity = {
 		},
 		content(data, users) {
 			data = this.process_editable(data, users)
-			if (data.parentId != undefined)
+			if (data.parentId != null)
 				data.parent = this.categoryMap[data.parentId]
-			data.users = users //hack for permissions users
+			data.users = users //hack for permissions users. TODO: what?
 			return data
 		},
 		comment(data, users) {
@@ -204,14 +215,12 @@ let Entity = {
 			return data //TODO
 		},
 		activityaggregate(data, users) {
-			data.users = data.userIds.map((id)=>{
-				return this.get(users, 'user', id)
-			})
+			data.users = data.userIds.map((id)=>users[id])
 			return data
 		},
 		commentaggregate(data, users) {
 			// need to filter out uid 0 (I think this comes from deleted comments)
-			data.users = data.userIds.filter(x=>x!=0).map((id) => this.get(users, 'user', id))
+			data.users = data.userIds.filter(x=>x!=0).map((id)=>users[id])
 			if (data.firstDate)
 				data.firstDate = this.parse_date(data.firstDate)
 			if (data.lastDate)
@@ -241,6 +250,8 @@ let Entity = {
 	// parsing the ISO 8601 timestamps used by sbs
 	// new Date() /can/ do this, but just in case...
 	parse_date(str) {
+		if (str == null)
+			return null
 		if (typeof str != 'string') {
 			console.log("got weird date:", str)
 			return new Date(NaN)

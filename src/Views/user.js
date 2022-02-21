@@ -39,7 +39,7 @@ addView('user', {
 			if (userpage) {
 				path="editpage/"+userpage.id
 			} else
-				path="editpage?type=userpage&name="+url_escape(user.username)+"'s user page"
+				path="editpage?type=userpage&name="+url_escape(user.name)+"'s user page"
 			Nav.link(path, $editUserPage)
 		}
 		setEntityTitle(user)

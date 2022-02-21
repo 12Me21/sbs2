@@ -44,7 +44,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	
 	title(entity) {
 		let element = E`span`
-		element.textContent = entity ? entity.name : "MISSINGNO."
+		element.textContent = entity ? entity.name : "MISSINGNO." // todo: this should be like, "user 14" (we should always know the uid)
 		element.className = 'textItem pre entity-title'
 		return element
 	},
@@ -120,7 +120,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	link_avatar(user) {
 		let a = entity_link(user)
 		a.append(avatar(user))
-		a.title = user.username
+		a.title = user.name
 		return a
 	},
 	
@@ -630,7 +630,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 				Object.for(user_map, (user)=>{
 					let option = E`option`
 					option.value = user.id
-					option.textContent = user.username
+					option.textContent = user.name
 					dropdown.append(option)
 					found = true
 				})
@@ -779,7 +779,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		d.append(": ")
 		d.append(comment.content.replace(/\n/g, "  "))
 		d.dataset.id = comment.id
-		d.title = comment.createUser.username+" in "+comment.parentId+":\n"+comment.content
+		d.title = comment.createUser.name+" in "+comment.parentId+":\n"+comment.content
 		return d
 	},
 	
