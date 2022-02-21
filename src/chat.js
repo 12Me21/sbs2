@@ -237,7 +237,7 @@ class ChatRoom {
 	// todo: make renderuserlist etc.
 	// reuse for sidebar + page userlist?
 	shouldScroll() {
-		return this.scroller.atBottom
+		return this.scroller.at_bottom
 	}
 	//
 	insert_merge(part, comment, time, backwards) {

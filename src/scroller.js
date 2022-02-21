@@ -69,108 +69,110 @@ class Scroller {
 	constructor(outer, inner) {
 		this.outer = outer
 		this.inner = inner
-		this.animationId = null
-		this.atBottom = true
+		this.animation = null
+		this.at_bottom = true
 		this.rate = 0.25 //autoscroll rate: amount of remaining distance to scroll per 1/60 second
 		this.bottomHeight = 0.25 //if within this distance of bottom, autoscroll is enabled
-		this.registerSizeChange()
+		this.register_size_change()
 		outer.addEventListener('scroll', (e)=>{
-			if (this.ignoreScroll) {
-				this.ignoreScroll = false
+			if (this.ignore_scroll) {
+				this.ignore_scroll = false
 				return
 			}
-			if (this.hasSizeChanged()) {
-				// should I do $.registerSizeChange() here?
+			if (this.size_changed()) {
+				// should I do $.register_size_change() here?
 				return
 			}
-			if (this.animationId)
-				this.cancelAutoScroll()
-			this.atBottom = this.scrollBottom < this.outer.clientHeight*this.bottomHeight
+			if (this.animation)
+				this.cancel_scroll()
+			this.at_bottom = this.scrollBottom < this.outer.clientHeight*this.bottomHeight
 		}, {passive: true})
 		
 		let onResize = ()=>{
-			this.registerSizeChange()
-			if (this.atBottom && !this.animationId) // when message is inserted, it triggers the resize detector, which would interrupt the scroll animation, so we don't force scroll if an animation is playing
+			this.register_size_change()
+			if (this.at_bottom && !this.animation) // when message is inserted, it triggers the resize detector, which would interrupt the scroll animation, so we don't force scroll if an animation is playing
 				this.scrollInstant()
 		}
 		track_scroll_resize.add(this.outer, onResize)
 		track_scroll_resize.add(this.inner, onResize)
 	}
-	hasSizeChanged() {
-		return this.innerHeight!=this.inner.getBoundingClientRect().height || this.outerHeight!=this.outer.getBoundingClientRect().height
+	size_changed() {
+		return this.inner_height!=this.inner.getBoundingClientRect().height || this.outer_height!=this.outer.getBoundingClientRect().height
 	}
-	registerSizeChange() {
-		this.innerHeight = this.inner.getBoundingClientRect().height
-		this.outerHeight = this.outer.getBoundingClientRect().height
+	register_size_change() {
+		this.inner_height = this.inner.getBoundingClientRect().height
+		this.outer_height = this.outer.getBoundingClientRect().height
 	}
 	get scrollBottom() {
-		var parent = this.outer
+		let parent = this.outer
 		return parent.scrollHeight-parent.clientHeight-parent.scrollTop
 	}
 	set scrollBottom(value) {
-		var parent = this.outer
+		let parent = this.outer
 		// need to round here because it would be reversed otherwise
 		//value = value/window.devicePixelRatio)*window.devicePixelRatio
 		parent.scrollTop = Math.ceil((parent.scrollHeight-parent.clientHeight-value)*window.devicePixelRatio)/window.devicePixelRatio
 	}
 	scrollInstant() {
-		this.cancelAutoScroll()
-		this.ignoreScroll = true
+		this.cancel_scroll()
+		this.ignore_scroll = true
 		this.scrollBottom = 0
-		this.atBottom = true
+		this.at_bottom = true
 	}
-	autoScroll() {
+	autoscroll() {
 		if (!window.requestAnimationFrame) {
-			this.ignoreScroll = true
+			this.ignore_scroll = true
 			this.scrollBottom = 0
-			this.atBottom = true
+			this.at_bottom = true
 			return
 		}
-		if (this.animationId)
+		if (this.animation)
 			return
-		/*this.animationId = null
+		/*this.animation = null
 		  var now = performance.now()
-		  this.animationStart = now - 1000/60 //assume 60fps on first frame..
-		  this.autoScrollAnimation(now)
+		  this.animation_start = now - 1000/60 //assume 60fps on first frame..
+		  this.scroll_animation(now)
 		  // edited to start animation la-a-a-ater*/
-		this.animationId = window.requestAnimationFrame((time)=>{
-			var now = performance.now()
+		this.animation = window.requestAnimationFrame((time)=>{
+			let now = performance.now()
 			//assume 60fps on first frame..
-			this.animationStart = now - 1000/60
-			this.autoScrollAnimation(now)
+			this.animation_start = now - 1000/60
+			this.scroll_animation(now)
 		})
 	}
-	cancelAutoScroll() {
-		if (this.animationId) {
-			window.cancelAnimationFrame(this.animationId)
-			this.animationId = false
+	cancel_scroll() {
+		if (this.animation) {
+			window.cancelAnimationFrame(this.animation)
+			this.animation = false
 		}
 	}
-	autoScrollAnimation(time) {
-		var dt = 1//(time - this.animationStart) / (1000/60)
-		this.animationStart = time
+	scroll_animation(time) {
+		let dt = 1//(time - this.animation_start) / (1000/60)
+		this.animation_start = time // unused
 		
-		this.atBottom = true
-		this.ignoreScroll = true
+		this.at_bottom = true
+		this.ignore_scroll = true
 		
 		// if we are more than 1 page up, just start scrolling at half a page
 		if (this.scrollBottom > this.outer.clientHeight)
 			this.scrollBottom = this.outer.clientHeight
 		
-		if (this.scrollBottom == this.oldScrollBottom) {
-			this.animationId = null
+		if (this.scrollBottom == this.old_scroll_bottom) {
+			this.animation = null
 			return
 		} // PLEASE
-		this.oldScrollBottom = this.scrollBottom
+		this.old_scroll_bottom = this.scrollBottom
 		
 		this.scrollBottom = Math.floor(this.scrollBottom * Math.pow(1-this.rate, dt))
 		if (this.scrollBottom <= 0.5) {
-			this.animationId = null
+			this.animation = null
 			return
 		}
 		
-		this.animationId = window.requestAnimationFrame((time)=>{
-			this.autoScrollAnimation(time)
+		this.animation = window.requestAnimationFrame((time)=>{
+			if (!this.animation) // was cancelled. i JUST added this check and i bet it fixes something...
+				return
+			this.scroll_animation(time)
 		})
 	}
 	//if you want to insert an element into the scroller, do something like:
@@ -180,19 +182,19 @@ class Scroller {
 	//(the reason it's inside a function is because it needs to run code
 	// before AND after inserting the element)
 	handlePrint(callback, autoscroll) {
-		let should = autoscroll && this.atBottom
+		let should = autoscroll && this.at_bottom
 		try {
 			let elem = callback()
 			elem && this.inner.append(elem)
 		} finally {
-			should && this.autoScroll()
+			should && this.autoscroll()
 		}
 	}
 	handlePrintTop(callback) {
-		var height = this.outer.scrollHeight
-		var scroll = this.outer.scrollTop
+		let height = this.outer.scrollHeight
+		let scroll = this.outer.scrollTop
 		try {
-			var elem = callback()
+			let elem = callback()
 			elem && this.inner.prepend(elem)
 		} finally {
 			this.outer.scrollTop = scroll + (this.outer.scrollHeight-height)
