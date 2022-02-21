@@ -387,7 +387,7 @@ const Req = {
 	},
 	
 	// might be worth speeding up in entity.js (100ms)
-	getRecentActivity(callback) {
+	getRecentActivity(callback, fail) {
 		let day = 1000*60*60*24
 		let start = new Date(Date.now() - day).toISOString()
 		// "except no that won't work if site dies lol"
@@ -401,7 +401,12 @@ const Req = {
 		], {
 			content: 'name,id,permissions,type',
 			Mall: 'parentId,editUserId,editDate',
-		}, callback)
+		}, (e,resp)=>{
+			if (e)
+				fail(e, resp)
+			else
+				callback(resp)
+		})
 	},
 	
 	setVote(id, state, callback) {

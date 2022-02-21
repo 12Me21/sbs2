@@ -203,17 +203,17 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	displayedIds: {},
 	
 	displayMessages(comments, initial) {
+		// todo: show page titles?
 		scroller.handlePrint(()=>{
-			comments.forEach((c)=>{
+			for (let c of comments) {
+				let old = displayedIds[c.id]
 				if (c.deleted) {
-					let del = displayedIds[c.id]
-					if (del) {
+					if (old) {
 						del.remove()
 						delete displayedIds[c.id]
 						displayedMessages--
 					}
 				} else {
-					let old = displayedIds[c.id]
 					let nw = Draw.sidebar_comment(c)
 					if (old) {
 						old.replaceWith(nw)
@@ -224,7 +224,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 					displayedIds[c.id] = nw
 					limitMessages()
 				}
-			})
+			}
 		}, !initial)
 		if (initial)
 			scroller.scrollInstant()

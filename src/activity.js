@@ -4,8 +4,12 @@
 // use this for activity and watchlist
 
 let Act = {
+	// this is a list of activity items
+	// i.e. pages with recent activity, displayed in the sidebar
 	items: {},
-	// aaa i wish i could use the proxy system here but the extra date argument...
+	
+	// if an item exists for that id, return it
+	// otherwise create a new one and return it
 	getItem(id, pageMap, date) {
 		if (this.items[id])
 			return this.items[id]
@@ -24,19 +28,23 @@ let Act = {
 	
 	pullRecent() {
 		// bad arguments :(
-		Req.getRecentActivity((e, resp)=>{
-			print("got recent activity")
-			// todo: if we switch to separate callbacks for success/error, we can use parameter destructuring!
-			if (!e) {
-				this.process_stuff(resp.activity, resp.Mall, resp.Awatching, resp.content)
-				Sidebar.displayMessages(resp.comment.reverse(), true)
-			}
-		})
+		Req.getRecentActivity(({activity, Mall, Awatching, content, comment})=>{
+			this.process_stuff(activity, Mall, Awatching, content)
+			Sidebar.displayMessages(comment.reverse(), true)
+		}, (e)=>{print("initial activity failed!")})
+		// better yet, we could use .then/.catch here?
 	},
 	
-	process_stuff(act, comments, watching, pages) {
+	process_stuff(act, comments, watching, pages=[]) {
 		if (act || comments || watching) {
-			let p = Entity.page_map(pages)
+			let map = {}
+			pages.forEach(p => map[p.id] = p)
+			let p = entity_map(map, (id)=>({
+				Type: 'content',
+				name: `{content: ${id}}`,
+				id: id,
+				fake: true,
+			}))
 			act && this.newActivity(act, p)
 			comments && this.newComments(comments, p)
 			watching && this.newActivity(watching, p, true)
@@ -48,16 +56,17 @@ let Act = {
 	// this system merges Activity, Comment, ~and CommentAggregate~
 	// so we need these ~3~ 2 awful functions to handle them slightly differently
 	
-	// this ONLY updates the order of users in the list
-	// this should NOT add page to activity items if it isn't there already
+	// this gets called when you visit a page and load the recent comments
+	// if that page is in the activity list, we update its userlist
+	// but, if the page isn't there, we don't add it, because it's old
 	// problem: this can be called before initial activity data is loaded
-	// so this function doesn't work on the first page you visit
+	// so this function doesn't work on the first page you visit - TODO
 	newPageComments(page, comments) {
 		let item = this.items[page.id]
 		if (!item) //old page
 			return
-		comments.forEach((c)=>
-			this.userUpdate(item, c.editUser, c.editDate)) //nice formatting
+		comments.forEach(({editUser, editDate})=>
+			this.userUpdate(item, editUser, editDate)) //nice formatting
 	},
 	
 	newThing(id, date, user, pageMap, watch, update_pages) {
@@ -77,13 +86,13 @@ let Act = {
 	newComments(comments, pageMap, watch) {
 		// todo: commentaggregate only tracks createDate
 		// so maybe use that here for consistency between reloads
-		for (let c of comments)
-			this.newThing(c.parentId, c.editDate, c.editUser, pageMap, watch, false)
+		for (let {id:parentId, date:editDate, user:editUser} of comments)
+			this.newThing(id, date, user, pageMap, watch, false)
 	},
 	
 	newActivity(activity, pageMap, watch) {
-		for (let a of activity)
-			this.newThing(a.contentId, a.date, a.user, pageMap, watch, true)
+		for (let {id:contentId, date, user} of activity)
+			this.newThing(id, date, user, pageMap, watch, true)
 	},
 	
 	//todo: somewhere we are getting Fake users with uid 0/
