@@ -559,5 +559,19 @@ const INPUTS = (()=>{
 				this.input.value = v==null ? "" : v
 			}
 		},
+		// type: User/null
+		user_output: class extends GenericInput {
+			constructor(p) {
+				super()
+				this.input = elem('div')
+				this.input.className = 'bar rem1-5'
+				this.elem = this.input
+			}
+			set(v) {
+				this.input.replaceChildren()
+				if (v)
+					this.input.append(Draw.entity_title_link(v))
+			}
+		},
 	}
 })()

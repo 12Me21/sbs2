@@ -46,11 +46,13 @@ with (View) (()=>{ "use strict"; {
 			
 			form = new Form({
 				fields: [
-					//{name: 'user', type: 'user', output: {label: "User"}},
+					['user', 'user_output', {output: true, label: "User"}],
 					['filename', 'text', {label: "File Name"}],
 					['bucket', 'text', {label: "Bucket"}],
 					['values', 'text', {label: "Values"}], // todo: add an input type for like, json or specifically these values types idk
-					['permissions', 'text', {label: "Permissions"}] //could be a real permission editor but image permissions don't really work anyway
+					['permissions', 'text', {label: "Permissions"}], //could be a real permission editor but image permissions don't really work anyway
+					//['size', 'output', {output: true, label: "Size"}], I wish
+					['quantization', 'output', {output: true, label: "Quantization"}],
 				]
 			})
 			$imageForm.replaceChildren(form.elem)
@@ -80,9 +82,8 @@ with (View) (()=>{ "use strict"; {
 		render(files) {
 			setTitle("Files")
 			fileList = files
-			files.forEach((file)=>{
-				$fileBox.append(Draw.file_thumbnail(file, selectFile))
-			})
+			$fileBox.replaceChildren(
+				...files.map(file => Draw.file_thumbnail(file, selectFile)))
 		},
 		cleanUp() {
 			$fileBox.replaceChildren()
@@ -91,7 +92,7 @@ with (View) (()=>{ "use strict"; {
 		},
 	})
 	
-	var fileList
+	let fileList
 	
 	function readFields(file) {
 		let data = form.get()
@@ -102,24 +103,50 @@ with (View) (()=>{ "use strict"; {
 	}
 	
 	function selectFile(file) {
+		$filePageView.src = "" // set to "" to hide old image immediately
 		if (!file) {
 			selectedFile = file
 			flag('fileSelected', false)
-			$filePageView.src = ""
 			return
 		}
 		selectedFile = file
 		form.set({
+			user: file.createUser,
 			filename: file.name,
 			bucket: file.bucket,
 			values: JSON.stringify(file.values),
 			permissions: JSON.stringify(file.permissions),
+			quantization: file.quantization,
 		})
-		//$fileUser.replaceChildren(Draw.entity_title_link(file.createUser))
-		$filePageView.src = ""
 		$filePageView.src = Req.fileURL(file.id)
 		//Draw.setBgImage($filePageView, Req.fileURL(file.id))
 		flag('fileSelected', true)
 		flag('canEdit', /u/.test(file.myPerms))
 	}
 }})()
+
+/*
+later: 
+async function download_link_onclick(e) {
+	console.log('download')
+	e.preventDefault()
+	let link = e.target
+	let url = link.href
+	let pc = link.onclick
+	if (!url)
+		return
+	link.disabled = true
+	// download file and create object url
+	let blob = await fetch(url).then(x=>x.blob())
+	link.href = URL.createObjectURL(blob)
+	// click the link to save the file
+	link.disabled = false
+	link.onclick = null
+	link.click()
+	// free the object url and revert the link
+	await blink()
+	URL.revokeObjectURL(link.href)
+	link.href = url
+	link.onclick = pc
+}
+*/
