@@ -63,7 +63,7 @@ View.addView('comments', {
 		if (!comments.length) {
 			$commentSearchResults.textContent = "(no result)"
 		} else {
-			let map = Entity.makePageMap(pages)
+			let map = Entity.page_map(pages)
 			if (merge) {
 				let last_time = 0
 				for (let comment of comments) {

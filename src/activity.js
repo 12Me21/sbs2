@@ -35,16 +35,9 @@ let Act = {
 		// better yet, we could use .then/.catch here?
 	},
 	
-	process_stuff(act, comments, watching, pages=[]) {
+	process_stuff(act, comments, watching, pages) {
 		if (act || comments || watching) {
-			let map = {}
-			pages.forEach(p => map[p.id] = p)
-			let p = entity_map(map, (id)=>({
-				Type: 'content',
-				name: `{content: ${id}}`,
-				id: id,
-				fake: true,
-			}))
+			let p = Entity.page_map(pages)
 			act && this.newActivity(act, p)
 			comments && this.newComments(comments, p)
 			watching && this.newActivity(watching, p, true)
