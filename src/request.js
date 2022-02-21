@@ -9,13 +9,34 @@ function arrayToggle(array, value) {
 }
 
 const Req = {
-	//storage_key = "devauth"
-	storage_key: "auth",
+	on_login() {
+		console.log("login")
+		View.flag('loggedIn', true)
+		
+		// display user info etc.
+		// start long poller
+		console.log("staring long poller")
+		if (Store.get('websocket'))
+			Lp.start(true)
+		else
+			Lp.start(false)
+		
+		Act.pullRecent()
+		//TODO
+		// update currently viewed page (in case page was hidden)
+	},
+	on_logout() {
+		View.flag('loggedIn', false)
+		//this is all messy
+		window.location.reload()
+	},
+	on_guest_load() {
+		Act.pullRecent()
+	},
 	
 	auth: null,
-	on_login: null,
-	on_logout: null,
-	on_guest_load: null,
+	storage_key: "auth",
+	//storage_key = "devauth"
 	
 	server: "smilebasicsource.com/api", // no you can't add "https://" to this string, because we need to use wss:// in another place
 	

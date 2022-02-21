@@ -1,11 +1,30 @@
+// it's very important that the first long poll request finishes instantly
+// we normally ensure this by having lpLastListeners always have at least one room set but this can be accidentally broken very easily and it's a mess
+// need a more consistent way to update lastlisteners PLEASE
+
 let Lp = Object.create(null)
 with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 	
-	// external
-	on_listeners: null,
-	on_messages: null,
-	on_activity: null,
-	on_start: null,
+	// interfacing with other systems
+	on_listeners(map) {
+		ChatRoom.updateUserLists(map)
+	},
+	on_messages(comments, pagemap) {
+		ChatRoom.displayMessages(comments)
+		Act.newComments(comments, pagemap)
+		Act.redraw()
+		Sidebar.displayMessages(comments)
+	},
+	on_activity(as, pagemap) { 
+		for (let a of as)
+			if (a.type == 'user')
+				View.updateUserAvatar(a.content) //todo: also update your avatar in sidebar
+		Act.newActivity(as, pagemap)
+		Act.redraw() //this might update unnecessarily often
+	},
+	on_start(me) {
+		View.updateMyUser(me) //also sets Req.me...
+	},
 	
 	// this is used in the userlist
 	processed_listeners: {},
@@ -216,25 +235,31 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 			//console.log('keeping data: ', resp)
 			
 			if (resp.listeners) {
-				let out = {}
 				// process listeners (convert uids to user objetcs) (also makes a copy)
 				// shouldn't this be handled by Entity?
+				let out = {}
 				Object.for(resp.listeners, (list, id)=>{
 					out[id] = {}
 					Object.for(list, (status, uid)=>{
 						out[id][uid] = {user: c.userMap[uid], status: status}
 					})
 				})
+				/*
+				processed_listeners = Object.map(resp.listeners, (list, id)=>
+					Object.map(list, (status, uid)=>
+						({user: c.userMap[uid], status: status})
+					)
+				)
+				*/
 				processed_listeners = out
 				on_listeners(out)
 			}
+			//todo: properly link activity with contents?
+			let page_map = Entity.page_map(c.content)
 			// todo: <debug missing comments here>
-			if (c.comment)
-				on_messages(c.comment, c.content)
-			if (c.commentdelete)
-				on_messages(c.commentdelete)
-			if (c.activity)
-				on_activity(c.activity, c.content)
+			c.comment && on_messages(c.comment, page_map)
+			c.commentdelete && on_messages(c.commentdelete, page_map)
+			c.activity && on_activity(c.activity, page_map)
 		} catch (e) {
 			console.error("error processing lp/ws response: ", e)
 		}

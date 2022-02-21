@@ -6,20 +6,19 @@
 // functions for processing recieved entities/
 // DATA PROCESSOR
 
-function entity_map(type, map) {
-	return new Proxy({type, map}, {
-		get({type, map}, id) {
-			return map[id] || {
-				Type: type,
-				name: `{${type}: ${id}}`,
-				id: id,
-				fake: true,
-			}
+function entity_map(map, fake) {
+	return new Proxy({map, fake}, {
+		get({map, fake}, id) {
+			return map[id] || fake(id, map)
 		}
 	})
 }
 
 let Entity = {
+	onCategoryUpdate(cats) {
+		Sidebar.redrawCategoryTree(cats)
+	},
+	
 	categoryMap: {0: {
 		name: "[root]",
 		id: 0,
@@ -29,7 +28,6 @@ let Entity = {
 	}},
 	gotNewCategory: false,
 	
-	onCategoryUpdate: null,
 	// official page types
 	CONTENT_TYPES: [
 		'resource', 'chat', 'program', 'tutorial', 'documentation', 'userpage'
@@ -60,7 +58,12 @@ let Entity = {
 		//let x = performance.now()
 		// build user map first
 		let map = {}
-		let users = entity_map('user', map)
+		let users = entity_map(map, (id)=>({
+			Type: 'user',
+			name: `{user: ${id}}`,
+			id: id,
+			fake: true,
+		}))
 		
 		Object.for(resp, (data, key)=>{
 			let type = this.key_type(key)
@@ -229,10 +232,15 @@ let Entity = {
 		},
 	},
 	
-	makePageMap(page) {
-		let pageMap = {}
-		page && page.forEach((p)=> pageMap[p.id] = p )
-		return pageMap
+	page_map(pages) {
+		let map = {}
+		pages && pages.forEach(p => map[p.id] = p)
+		return entity_map(map, (id)=>({
+			Type: 'content',
+			name: `{content: ${id}}`,
+			id: id,
+			fake: true,
+		}))
 	},
 	
 	rebuildCategoryTree() {

@@ -21,63 +21,6 @@ dark.onchange(dark)
 
 Sidebar.print("hi!\ncommit: "+window.commit)
 
-Req.on_login = ()=>{
-	console.log("login")
-	View.flag('loggedIn', true)
-	
-	// display user info etc.
-	// start long poller
-	
-	console.log("staring long poller")
-	// it's very important that the first long poll request finishes instantly
-	// we normally ensure this by having lpLastListeners always have at least one room set but this can be accidentally broken very easily and it's a mess
-	// need a more consistent way to update lastlisteners PLEASE
-	if (Store.get('websocket'))
-		Lp.start(false)
-	else
-		Lp.start(false)
-	
-	Act.pullRecent()
-	
-	//TODO
-	// update currently viewed page (in case page was hidden)
-}
-
-Entity.onCategoryUpdate = (cats)=>{
-	Sidebar.redrawCategoryTree(cats)
-}
-
-Req.on_guest_load = ()=>{
-	Act.pullRecent()
-}
-
-Req.on_logout = ()=>{
-	View.flag('loggedIn', false)
-	//this is all messy
-	window.location.reload()
-}
-
-Lp.on_listeners = (map)=>{
-	ChatRoom.updateUserLists(map)
-}
-Lp.on_messages = (comments, contents)=>{
-	ChatRoom.displayMessages(comments)
-	Act.newComments(comments, Entity.makePageMap(contents))
-	Act.redraw()
-	Sidebar.displayMessages(comments)
-}
-Lp.on_activity = (a, p)=>{ //todo: properly link activity with contents?
-	a.forEach((a)=>{
-		if (a.type == 'user')
-			View.updateUserAvatar(a.content) //todo: also update your avatar in sidebar
-	})
-	Act.newActivity(a, Entity.makePageMap(p))
-	Act.redraw()  //this might update unnecessarily often
-}
-Lp.on_start = (me)=>{
-	View.updateMyUser(me) //also sets Req.me...
-}
-
 if (document.readyState == 'loading')
 	document.addEventListener('DOMContentLoaded', ready)
 else
