@@ -1,6 +1,8 @@
 // todo: put these vars in a scope somewhere?
 // maybe define scopes at like View.views[name]? and separate methods from the rest of the scope of course,
 
+// todo: should have some indicator whether the input fields reflect the current search results or have been edited
+
 let comment_form
 
 View.addView('comments', {
@@ -106,16 +108,16 @@ function build_search(data) {
 		merge = false
 	}
 	let range = data.range
-	// todo: list of ids (remember to turn off merge)
 	if (range) {
-		if (typeof range == 'number')
-			range = [range, range]
-		// either: 123-456
-		// or      123-
-		if (range[0] !== null)
-			search.minId = range[0]-1
-		if (range[1] !== null)
-			search.maxId = range[1]+1
+		if (range.ids) {
+			search.ids = range.ids
+			merge = false
+		} else {
+			if (range.min != null)
+				search.minId = range.min-1
+			if (range.max != null)
+				search.maxId = range.max+1
+		}
 	}
 	if (data.start)
 		search.createStart = data.start.toISOString()
@@ -156,7 +158,3 @@ View.addView('chatlogs', {
 	// show page name etc.
 })
 
-// ha
-
-// env+square wave for trumpets ?
-// c# c# b f# c#

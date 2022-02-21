@@ -179,33 +179,28 @@ const CONVERT = {
 		encode: x => {
 			if (x == null)
 				return null
-			if (typeof x == 'number')
-				return String(x)
-			let min = x[0]
-			if (min == null)
-				min = "0"
-			let max = x[1]
-			if (max == null)
-				max = ""
-			return min+"-"+max
+			if (x.ids!=null)
+				return x.ids.join(",")
+			if (x.min!=null && x.max!=null)
+				return `${x.min}-${x.max}`
+			if (x.min!=null)
+				return `${x.min}-`
+			if (x.max!=null)
+				return `0-${x.max}`
+			return null // idk
 		},
 		decode: x => {
-			if (typeof x == 'string') {
-				let match = x.match(/^(\d+)(?:(-)(\d*))?$/)
-				if (match) {
-					let min = match[1]
-					let dash = match[2]
-					let max = match[3]
-					if (min != null)
-						min = +min
-					if (max != null)
-						max = +max
-					if (!dash) {
-						return min
-					} else {
-						return [min, max]
-					}
-				}
+			//from https://github.com/randomouscrap98/newsbs/blob/42b4c5b383f738f6b492b77d9a7d5d0d92f56761/index.js#L1341
+			if (typeof x != 'string')
+				return null
+			let match = x.match(/^(\d*)-(\d*)$/)
+			if (match) {
+				return {
+					min: match[1] ? Number(match[1]) : null,
+					max: match[2] ? Number(match[2]) : null,
+				} // what if number parse fails? should be null i think
+			} else {
+				return {ids: x.split(",").map(x=>Number(x))}
 			}
 		}
 	},
@@ -305,7 +300,7 @@ const INPUTS = (()=>{
 				this.input.value = v || ""
 			}
 		},
-		// type: [Number/null, Number/null]/null
+		// type: {min: Number/null, max: Number/null} / {ids: [Number...]} / null
 		range: class extends GenericInput {
 			constructor(p) {
 				super()
