@@ -52,7 +52,12 @@ fields: {
 		type: 'textarea',
 		autosave: false, //todo: maybe highlight when changed, to notify user that they need to save manually?
 		update: function(value) {
-			eval(value)
+			try {
+				eval(value)
+			} catch (e) {
+				print(e.stack)
+				console.error("failed to run sitejs", e)
+			}
 		},
 	},
 	sitecss: {
