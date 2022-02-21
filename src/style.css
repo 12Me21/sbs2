@@ -4,8 +4,19 @@
 * {
 	margin: 0;
 	box-sizing: border-box;
-	/* required for text wrapping to work */
-	word-break: break-word;
+	
+	/* using inherit here should mean:
+	 * elements which have an explicit word-break set will use that
+	 * elements which have a word-break set by the browser will inherit it from either
+	   * <html> where it is set to break-word
+      * some parent element which explicit sets it
+
+the reason i set word-break on * is to hopefully disable any browser styles which have it set to some other value. but that might be the default since we set the property on <html> anyway...
+
+at the very least, i know we can't set it to break-word here, because
+otherwise, ex: elements inside code blocks (which use break-all) will have it set back to break-word
+	 */
+	word-break: inherit;
 }
 
 html {
@@ -14,6 +25,8 @@ html {
 	font-variant-ligatures: none;
 	/* this fixes an ios safari bug where some text is "stuck" at larger sizes after rotating the screen */
 	-webkit-text-size-adjust: none;
+	/* required for text wrapping to work */
+	word-break: break-word;
 }
 
 /* this fixes a weird positioning bug in html/css */
