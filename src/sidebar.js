@@ -117,20 +117,18 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	
 	// this needs to be optimized
 	// it redraws the entire list of pages in activity + watching, EVERY time they update
+	// TODO
+	// TODO TODO
 	onAggregateChange(aggregate) {
-		let items = []
-		Object.for(aggregate, (a)=>{
-			if (a.content) //HACK
-				items.push(a)
-		})
+		let items = Object.values(aggregate).filter(a=>a.content) //HACK (what did i mean by this?)
 		items.sort((a, b)=> -(a.lastDate - b.lastDate))
 		$sidebarActivity.replaceChildren()
 		$sidebarWatch.replaceChildren()
-		items.forEach((item)=>{
+		for (let item of items) {
 			$sidebarActivity.append(Draw.activity_item(item))
 			if (item.watching)
 				$sidebarWatch.append(Draw.activity_item(item))
-		})
+		}
 		refresh_time_interval(aggregate)
 	},
 	

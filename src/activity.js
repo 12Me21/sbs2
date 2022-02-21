@@ -26,17 +26,22 @@ let Act = {
 		// bad arguments :(
 		Req.getRecentActivity((e, resp)=>{
 			print("got recent activity")
+			// todo: if we switch to separate callbacks for success/error, we can use parameter destructuring!
 			if (!e) {
-				console.log(resp)
-				let p = Entity.page_map(resp.content)
-				this.newActivity(resp.activity, p)
-				this.newComments(resp.Mall, p)
-				this.newActivity(resp.Awatching, p, true)
-				//newCommentAggregate(wc, p, true)
-				this.redraw()
+				this.process_stuff(resp.activity, resp.Mall, resp.Awatching, resp.content)
 				Sidebar.displayMessages(resp.comment.reverse(), true)
 			}
 		})
+	},
+	
+	process_stuff(act, comments, watching, pages) {
+		if (act || comments || watching) {
+			let p = Entity.page_map(pages)
+			act && this.newActivity(act, p)
+			comments && this.newComments(comments, p)
+			watching && this.newActivity(watching, p, true)
+			this.redraw()
+		}
 	},
 	
 	// ew
@@ -55,9 +60,9 @@ let Act = {
 			this.userUpdate(item, c.editUser, c.editDate)) //nice formatting
 	},
 	
-	newThing(id, date, user, pageMap, watch) {
+	newThing(id, date, user, pageMap, watch, update_pages) {
 		let item = this.getItem(id, pageMap, date)
-		if (pageMap[id]) // hopefully this takes care of pages in activity list being updated? (i think we only need to do this on newActivity not newComments)
+		if (update_pages && pageMap[id]) // hopefully this takes care of pages in activity list being updated? (i think we only need to do this on newActivity not newComments)
 			item.content = pageMap[id]
 		if (watch)
 			item.watching = true
@@ -73,12 +78,12 @@ let Act = {
 		// todo: commentaggregate only tracks createDate
 		// so maybe use that here for consistency between reloads
 		for (let c of comments)
-			this.newThing(c.parentId, c.editDate, c.editUser, pageMap, watch)
+			this.newThing(c.parentId, c.editDate, c.editUser, pageMap, watch, false)
 	},
 	
 	newActivity(activity, pageMap, watch) {
 		for (let a of activity)
-			this.newThing(a.contentId, a.date, a.user, pageMap, watch)
+			this.newThing(a.contentId, a.date, a.user, pageMap, watch, true)
 	},
 	
 	//todo: somewhere we are getting Fake users with uid 0/
@@ -90,6 +95,8 @@ let Act = {
 	// add or move+update user to start of list
 	userUpdate(item, user, date) {
 		if (!user) return // just in case
+		// i really hate this code
+		
 		// remove old user
 		for (let i=0; i<item.users.length; i++)
 			if (item.users[i].user.id == user.id) {

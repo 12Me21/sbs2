@@ -9,18 +9,24 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 	on_listeners(map) {
 		ChatRoom.updateUserLists(map)
 	},
-	on_messages(comments, pagemap) {
-		ChatRoom.displayMessages(comments)
-		Act.newComments(comments, pagemap)
-		Act.redraw()
-		Sidebar.displayMessages(comments)
-	},
-	on_activity(as, pagemap) { 
-		for (let a of as)
-			if (a.type == 'user')
-				View.updateUserAvatar(a.content) //todo: also update your avatar in sidebar
-		Act.newActivity(as, pagemap)
-		Act.redraw() //this might update unnecessarily often
+	on_data({comment, commentdelete, activity, content}) {
+		function comments(c) {
+			if (c) {
+				ChatRoom.displayMessages(c)
+				Sidebar.displayMessages(c)
+			}
+		}
+		comments(comment)
+		comments(commentdelete)
+		
+		//todo: properly link activity with contents?
+		// todo: do we want to pass commentdelete here?
+		Act.process_stuff(activity, comment, null, content)
+		
+		if (activity)
+			for (let a of activity)
+				if (a.type == 'user')
+					View.updateUserAvatar(a.content) //todo: also update your avatar in sidebar
 	},
 	on_start(me) {
 		View.updateMyUser(me) //also sets Req.me...
@@ -111,9 +117,8 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 	// output is in websocket format
 	make_request(get_me) {
 		let new_listeners = {}
-		listening.forEach((id)=>{
+		for (let id of listening)
 			new_listeners[id] = lastListeners[id] || {'0':""}
-		})
 		
 		let actions = {
 			lastId: lastId,
@@ -154,13 +159,13 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 	},
 	
 	lp_listen(get_me, callback) {
-		let requests = make_request(get_me)
+		let {actions, listeners, fields} = make_request(get_me)
 		// convert make_request output to long poller format
 		let query = {
-			actions: JSON.stringify(requests.actions),
-			listeners: JSON.stringify(requests.listeners),
+			actions: JSON.stringify(actions),
+			listeners: JSON.stringify(listeners),
 		}
-		for (let [key, value] of Object.entries(requests.fields))
+		for (let [key, value] of Object.entries(fields))
 			query[key] = value.join(",")
 		
 		return Req.request("Read/listen"+Req.queryString(query), 'GET', callback)
@@ -213,9 +218,8 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 				lastListeners = resp.listeners
 			
 			let c = resp.chains // this SHOULD always be set, yeah?
-			Entity.process(c)
-			
-			let me = c.Ume
+			c && Entity.process(c)
+			let me = c && c.Ume
 			
 			if (init || me) {
 				print("got initial lp response!")
@@ -254,12 +258,8 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 				processed_listeners = out
 				on_listeners(out)
 			}
-			//todo: properly link activity with contents?
-			let page_map = Entity.page_map(c.content)
-			// todo: <debug missing comments here>
-			c.comment && on_messages(c.comment, page_map)
-			c.commentdelete && on_messages(c.commentdelete, page_map)
-			c.activity && on_activity(c.activity, page_map)
+			
+			c && on_data(c)
 		} catch (e) {
 			console.error("error processing lp/ws response: ", e)
 		}
