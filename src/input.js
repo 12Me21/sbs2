@@ -301,12 +301,13 @@ const INPUTS = (()=>{
 			}
 		},
 		// type: {min: Number/null, max: Number/null} / {ids: [Number...]} / null
+		// formats: "min-max"  "min-"  "-max"  "id1,id2,..."
 		range: class extends GenericInput {
 			constructor(p) {
 				super()
 				this.input = elem('input')
 				this.input.id = this.html_id
-				this.input.placeholder = "min-max"
+				this.input.placeholder = "min-max or id list"
 				this.elem = this.input
 				this.input.onchange = this._onchange.bind(this)
 			}

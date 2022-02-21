@@ -32,6 +32,11 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 				setTitle("Testing")
 			},
 		},
+		test_error: {
+			render() {
+				throw new Error("heck")
+			}
+		},
 		// alright, so, the way this works
 		// first, .start is called. this will usually make an API request.
 		// if this fails or something bad happens, it should be handled I think
@@ -168,6 +173,58 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			cancelRequest = null
 		}
 		let view
+		
+		let cleanUp = ()=>{
+			if (currentView && currentView.cleanUp) {
+				try {
+					currentView.cleanUp(type, id, query)
+				} catch(e) {
+					// we ignore this error, because it's probably not important
+					// and also cleanUp gets called during error handling so we don't want to get into a loop of errors
+					error(e, "error in cleanup function")
+				}
+			}
+			currentView = null
+			$main.scrollTop = 0
+		}
+		
+		let after = ()=>{
+			// goal: instead of hiding things, we should
+			// use the .slide system for all pages etc.
+			document.querySelectorAll("v-b").forEach((e)=>{
+				e.hidden = !e.hasAttribute("data-view-"+view.className)
+			})
+			View.flag('splitView', view.splitView==true)
+			View.flag('viewReady', true)
+			View.flag('mobileSidebar', false) //bad (should be function on Sidebar)
+			Lp.set_listening(ChatRoom.listening_rooms())
+			Lp.set_statuses(ChatRoom.generateStatus())
+			Lp.refresh()
+			
+			callback && callback()
+			// todo: scroll to fragment element
+		}
+		
+		let errorRender = (message, error)=>{
+			cleanUp()
+			currentView = view = errorView
+			view.render(message, error)
+			after()
+		}
+		
+		let cancelled = false
+		
+		let whenPageLoaded = (callback)=>{
+			if (cancelled)
+				return
+			if (initDone)
+				callback()
+			else {
+				console.log("deferring render")
+				runOnLoad.push(callback)
+			}
+		}
+		
 		try {
 			let got_redirect
 			;[type, id, query, got_redirect] = getView(type, id, query)
@@ -176,32 +233,30 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 				Nav.set_location(type, id, query)
 			}
 		} catch(e) {
-			console.error("error during redirect", e)
+			window.ee=e
+			error(e, "error during redirect")
 			whenPageLoaded(()=>{
-				cleanUp()
 				errorRender("error during redirect", e)
 			})
 			return // ??
 		}
 		
-		function cleanUp() {
-			if (currentView && currentView.cleanUp) {
-				try {
-					currentView.cleanUp(type, id, query)
-				} catch(e) {
-					console.error("error in cleanup function", e)
-				} finally {
-					currentView = null
-				}
+		let quick= (ren)=>{
+			cleanUp()
+			currentView = view
+			try {
+				ren(id, query)
+				after()
+			} catch(e) {
+				errorRender("render failed", e)
 			}
-			$main.scrollTop = 0
+			loadEnd()
 		}
 		
 		let xhr
-		let cancelled = false
+		
 		if (!view) {
 			whenPageLoaded(()=>{
-				cleanUp()
 				errorRender("Unknown page type: \""+type+"\"")
 			})
 		} else if (view.start) {
@@ -222,14 +277,15 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 								view.render(...args)
 								after()
 							} catch(e) {
-								// cleanUp() maybe?
 								errorRender("render failed", e)
 							}
 						}
 						loadEnd()
 					})
 				}, (e)=>{
-					whenPageLoaded(()=>{quick(e)})
+					whenPageLoaded(()=>{
+						quick(e)
+					})
 				})
 			} catch(e) {
 				errorRender("render failed 1", e)
@@ -242,60 +298,12 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			})
 		}
 		
-		function whenPageLoaded(callback) {
-			if (cancelled)
-				return
-			if (initDone)
-				callback()
-			else {
-				console.log("deferring render")
-				runOnLoad.push(callback)
-			}
-		}
-		
-		function quick(ren) {
-			cleanUp()
-			currentView = view
-			try {
-				ren(id, query)
-				after()
-			} catch(e) {
-				errorRender("render failed", e)
-			}
-			loadEnd()
-		}
-		
-		function errorRender(message, error) {
-			cleanUp()
-			currentView = view = errorView
-			view.render(message, error)
-			after()
-		}
-		
 		cancelRequest = ()=>{
 			loadEnd()
 			xhr && xhr.abort && xhr.abort()
 			cancelled = true
 		}
 		
-		function after() {
-			// goal: instead of hiding things, we should
-			// use the .slide system for all pages etc.
-			
-			document.querySelectorAll("v-b").forEach((e)=>{
-				e.hidden = !e.hasAttribute("data-view-"+view.className)
-			})
-			View.flag('splitView', view.splitView==true)
-			View.flag('viewReady', true)
-			View.flag('mobileSidebar', false) //bad (should be function on Sidebar)
-			
-			Lp.set_listening(ChatRoom.listening_rooms())
-			Lp.set_statuses(ChatRoom.generateStatus())
-			Lp.refresh()
-			
-			callback && callback()
-			// todo: scroll to fragment element
-		}
 	},
 	
 	onLoad() {

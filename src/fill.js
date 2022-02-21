@@ -100,4 +100,35 @@ Object.first_key = function(obj) {
 		return key
 }
 
+function error(e, ...rest) {
+	try {
+		if (/^.*\n    at /.test(e.stack)) {
+			let [message, ...trace] = e.stack.split("\n")
+			let longest = 0
+			trace = trace.map(line=>{
+				let [match, func="", path="", name, lnum, cnum] = line.match(/^ *at (?:(.*) )?\(?(.*\/)?(.*):(\d+):(\d+)\)?$/) || [null]
+				if (match==null)
+					return [null, line]
+				let at = `at (${path}${name}:${lnum}:0)`
+				longest = Math.max(longest, at.length-path.length)
+				return [at, func.replace(/^Object\./, "{}."), path.length]
+			}).map(([at, func, extra])=>{
+				if (!at)
+					return func
+				return at.padEnd(longest+extra+1,"—") + func
+			})
+			let old = e.stack
+			e.stack = message+"\n"+trace.join("\n")
+			console.error(...rest, "\n", e)
+			e.stack = old
+		}
+	} catch (e2) {
+		console.error(...rest, "\n", e)
+	}
+}
+
+function heckd() {
+	return eval("\nnew Error()")
+}
+
 //talking excitedly about javasscript getters and setters for an hour and then crying
