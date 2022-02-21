@@ -118,35 +118,13 @@ with (View) (()=>{ "use strict"; {
 			permissions: JSON.stringify(file.permissions),
 			quantization: file.quantization,
 		})
-		$filePageView.src = Req.fileURL(file.id)
+		let url = Req.fileURL(file.id)
+		$fileDownload.href = url
+		$fileDownload.download = file.name
+		
+		$filePageView.src = url
 		//Draw.setBgImage($filePageView, Req.fileURL(file.id))
 		flag('fileSelected', true)
 		flag('canEdit', /u/.test(file.myPerms))
 	}
 }})()
-
-/*
-later: 
-async function download_link_onclick(e) {
-	console.log('download')
-	e.preventDefault()
-	let link = e.target
-	let url = link.href
-	let pc = link.onclick
-	if (!url)
-		return
-	link.disabled = true
-	// download file and create object url
-	let blob = await fetch(url).then(x=>x.blob())
-	link.href = URL.createObjectURL(blob)
-	// click the link to save the file
-	link.disabled = false
-	link.onclick = null
-	link.click()
-	// free the object url and revert the link
-	await blink()
-	URL.revokeObjectURL(link.href)
-	link.href = url
-	link.onclick = pc
-}
-*/
