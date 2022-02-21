@@ -113,7 +113,7 @@ function build_search(data) {
 		// either: 123-456
 		// or      123-
 		if (range[0] !== null)
-			search.minId = range[0]
+			search.minId = range[0]-1
 		if (range[1] !== null)
 			search.maxId = range[1]+1
 	}
