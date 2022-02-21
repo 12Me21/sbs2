@@ -671,23 +671,22 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return x
 	},
 	
-	message_controls() {
+	message_controls(info, edit) {
 		let elem = E`message-controls`
 		let x = {
 			elem: elem
 		}
 		let btn = E`button`
 		elem.append(btn)
-		//btn[1].onclick = ()=>{x.onclick()}
+		btn.onclick = info
 		btn.tabIndex = "-1"
 		btn.textContent = "⚙"
 		
 		btn = E`button`
 		elem.append(btn)
-		btn.onclick = ()=>{x.onclick()}
+		btn.onclick = edit
 		btn.tabIndex = "-1"
 		btn.textContent = "✏"
-		/*btn[0].className += " rightAlign loggedIn"*/
 		return x
 	},
 	

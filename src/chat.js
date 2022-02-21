@@ -66,11 +66,12 @@ class ChatRoom {
 		// set up message controls //
 		/////////////////////////////
 		this.controls_message = null
-		let controls = Draw.message_controls()
-		controls.onclick = ()=>{
+		let controls = Draw.message_controls(()=>{
+			alert(JSON.stringify(this.controls_message.x_data))
+		},()=>{
 			if (this.controls_message)
 				window.editComment(this.controls_message.x_data)
-		}
+		})
 		this.controls = controls.elem
 		
 		this.messageList.addEventListener('focusin', (e)=>{
