@@ -40,11 +40,11 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		View.attachResize($sidebar, $sidebarResize, true, -1, "sidebarWidth")
 		View.attachResize($sidebarTop, $sidebarResize, false, 1, "sidebarPinnedHeight")
 		View.flag('sidebar', true)
-		View.attachPaste((file)=>{ fileUploaded(file) })
+		View.attachPaste((file)=>{ got_file(file) })
 		$imageUpload.onchange = function(e) { // must not be arrow func
 			let file = this.files[0]
 			try {
-				file && fileUploaded(file)
+				file && got_file(file)
 			} finally {
 				this.value = ""
 			}
@@ -55,14 +55,19 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 				$fileUpload.disabled = true
 				
 				let data = file_upload_form.get()
-				selectedFile.bucket = data.bucket
+				let params = {
+					bucket: data.bucket,
+					filename: data.name,
+					tryresize: true,
+				}
 				if (data.quantize)
-					selectedFile.quantize = +data.quantize
-				selectedFile.filename = data.name
-				Req.uploadFile(selectedFile, (e, file)=>{
+					params.quantize = +data.quantize
+				
+				Req.uploadFile(selectedFile, params, (e, file)=>{
 					$fileUpload.disabled = false
 					if (e) // failed
 						return
+					selectedFile = null
 					View.flag('sidebarUploaded', true)
 					$fileURL.value = Req.fileURL(file.id)
 					$fileView.src = ""
@@ -171,7 +176,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		$fileView.src = ""
 	},
 	
-	fileUploaded(file) {
+	got_file(file) {
 		View.flag('sidebarUploaded', false)
 		View.flag('sidebarFile', true)
 		$fileView.src = ""
@@ -230,19 +235,19 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 			scroller.scrollInstant()
 	},
 	
-limitMessages() {
-	//var x = scroller.scrollBottom
-	while (displayedMessages > 500) {
-		let n = scroller.inner.firstChild
-		let id = n.dataset.id
-		if (id)
-			delete displayedIds[+id]
-		n.remove()
-		displayedMessages--
+	limitMessages() {
+		//var x = scroller.scrollBottom
+		while (displayedMessages > 500) {
+			let n = scroller.inner.firstChild
+			let id = n.dataset.id
+			if (id)
+				delete displayedIds[+id]
+			n.remove()
+			displayedMessages--
+		}
+		//scroller.scrollBottom = x
 	}
-	//scroller.scrollBottom = x
-}
-
+	
 })<!-- PRIVATE })
 
 0<!-- Sidebar ({

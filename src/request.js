@@ -49,7 +49,6 @@ const Req = {
 	locked: false, // for testing
 	
 	raw_request(url, method, callback, data, auth) {
-		print("request: "+url)
 		let x = new XMLHttpRequest()
 		x.open(method, url)
 		let args = arguments
@@ -62,7 +61,7 @@ const Req = {
 				console.log("will retry", reason, "in "+time/1000+" sec")
 				if (time > 2000)
 					try {
-						Sidebar.print("Warning: request was rate limited with extremely long wait time: "+time/1000+" seconds")
+						print("Warning: request was rate limited with extremely long wait time: "+time/1000+" seconds")
 					} catch(e) {}
 				let id = setTimeout(()=>{retry(null, reason)}, time)
 				x.abort = ()=>{clearTimeout(id)}
@@ -313,18 +312,9 @@ const Req = {
 		}
 	},
 	
-	uploadFile(file, callback) {
+	uploadFile(file, params, callback) {
 		let form = new FormData()
 		form.append('file', file)
-		let params = {}
-		// todo: should these check for falsey or null?
-		if (file.bucket) params.bucket = file.bucket
-		if (file.quantize) params.quantize = file.quantize
-		if (file.name) params.name = file.filename
-		params.tryresize = true
-		print("quantize:"+file.quantize)
-		print("params:"+JSON.stringify(params))
-		print("query:"+this.queryString(params))
 		
 		this.request("File"+this.queryString(params), 'POST', (e, resp)=>{
 			if (e)
