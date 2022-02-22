@@ -1,11 +1,11 @@
 let View = Object.create(null)
 with(View)((window)=>{"use strict";Object.assign(View,{
 	
-	cancelRequest: null,
+	cancel_request: null,
 	// this will always be the currently rendered view
 	// (set before `render` is called, and unset before `cleanUp` is called)
-	// currentView.cleanUp should always be correct!
-	currentView: null,
+	// current_view.cleanUp should always be correct!
+	current_view: null,
 	
 	initDone: false,
 	runOnLoad: [],
@@ -161,23 +161,23 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 	},
 	
 	handleView(type, id, query, callback) {
-		if (cancelRequest) {
-			cancelRequest()
-			cancelRequest = null
+		if (cancel_request) {
+			cancel_request()
+			cancel_request = null
 		}
 		let view
 		
 		let cleanUp = ()=>{
-			if (currentView && currentView.cleanUp) {
+			if (current_view && current_view.cleanUp) {
 				try {
-					currentView.cleanUp(type, id, query)
+					current_view.cleanUp(type, id, query)
 				} catch(e) {
 					// we ignore this error, because it's probably not important
 					// and also cleanUp gets called during error handling so we don't want to get into a loop of errors
 					error(e, "error in cleanup function")
 				}
 			}
-			currentView = null
+			current_view = null
 			$main.scrollTop = 0
 		}
 		
@@ -200,7 +200,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		
 		let errorRender = (message, error)=>{
 			cleanUp()
-			currentView = view = errorView
+			current_view = view = errorView
 			view.render(message, error)
 			after()
 		}
@@ -236,7 +236,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		
 		let quick= (ren)=>{
 			cleanUp()
-			currentView = view
+			current_view = view
 			try {
 				ren(id, query)
 				after()
@@ -265,7 +265,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 							let msg = ok==false ? "error 1" : "content not found?"
 							errorRender(msg)
 						} else {
-							currentView = view
+							current_view = view
 							try {
 								view.render(...args)
 								after()
@@ -291,7 +291,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			})
 		}
 		
-		cancelRequest = ()=>{
+		cancel_request = ()=>{
 			loadEnd()
 			xhr && xhr.abort && xhr.abort()
 			cancelled = true
