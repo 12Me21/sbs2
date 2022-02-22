@@ -321,6 +321,9 @@ const Req = {
 		if (file.quantize) params.quantize = file.quantize
 		if (file.name) params.name = file.filename
 		params.tryresize = true
+		print("quantize:"+file.quantize)
+		print("params:"+JSON.stringify(params))
+		print("query:"+this.queryString(params))
 		
 		this.request("File"+this.queryString(params), 'POST', (e, resp)=>{
 			if (e)
