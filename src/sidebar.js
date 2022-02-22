@@ -25,7 +25,6 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	},
 	
 	init() {
-		file_cancel()
 		file_upload_form = new Form({
 			fields: [
 				['size', 'output', {output: true, label: "Size"}], //todo: separate set of output fields?
@@ -37,6 +36,8 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 			]
 		})
 		$file_upload_form.replaceWith(file_upload_form.elem) // todo: maybe preserve the id on the new element here incase init ... ehhh nah
+		file_cancel()
+		
 		$openSidebar.onclick = $closeSidebar.onclick = toggle
 		View.attachResize($sidebar, $sidebarResize, true, -1, "sidebarWidth")
 		View.attachResize($sidebarTop, $sidebarResize, false, 1, "sidebarPinnedHeight")
@@ -72,7 +73,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 					
 					$file_url.hidden = false
 					$file_done.parentNode.hidden = false
-					$file_upload_form.hidden = true
+					file_upload_form.elem.hidden = true
 					$file_browse.hidden = true
 					$file_cancel.parentNode.hidden = true
 					$file_upload.parentNode.hidden = true
@@ -179,7 +180,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		$file_url.hidden = true
 		$file_done.parentNode.hidden = true
 		$file_upload.parentNode.hidden = true
-		$file_upload_form.hidden = true
+		file_upload_form.elem.hidden = true
 		cleanUp()
 	},
 	
@@ -191,7 +192,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	got_file(file) {
 		$file_cancel.parentNode.hidden = false
 		$file_upload.parentNode.hidden = false
-		$file_upload_form.hidden = false
+		file_upload_form.elem.hidden = false
 		$file_browse.hidden = true
 		$file_url.hidden = true
 		$file_done.parentNode.hidden = true
