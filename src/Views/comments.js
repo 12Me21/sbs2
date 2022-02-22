@@ -79,6 +79,10 @@ View.addView('comments', {
 				for (let c of comments) {
 					c.parent = map[c.parentId]
 					$commentSearchResults.append(Draw.search_comment(c))
+					// idea:
+					// put all these into a normal comment scroller
+					// then add some kind of "history separator" between
+					// them, which gets deleted if enough messages are loaded so that the ids overlap
 				}
 			}
 		}

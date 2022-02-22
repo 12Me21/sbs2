@@ -110,11 +110,11 @@
 	/*margin: 0 1px; why is this here */
 }
 
-.markup-root [loading] {
+.markup-root [data-loading] {
 	min-height: 10vh;
 }
 
-.markup-root [bigImage] {
+.markup-root [data-big] {
 	max-height: 75vh;
 }
 

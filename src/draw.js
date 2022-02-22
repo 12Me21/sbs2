@@ -129,6 +129,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		element.className += "item avatar"
 		element.src = avatar_url(user, "size=100&crop=true")
 		element.width = element.height = 100
+		element.alt = ""
 		return element
 	},
 	
@@ -151,6 +152,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		element.setAttribute('role', 'img')
 		element.className = "item icon iconBg"
 		element.style.backgroundImage = 'url("'+url+'")'
+		element.alt = "" // todo
 		return element
 	},
 	
