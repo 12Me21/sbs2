@@ -57,7 +57,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 				let data = file_upload_form.get()
 				let params = {
 					bucket: data.bucket,
-					filename: data.name,
+					name: data.name,
 					tryresize: true,
 				}
 				if (data.quantize)

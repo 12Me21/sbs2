@@ -154,7 +154,7 @@ const Req = {
 		let params = []
 		for (let key in obj) {
 			let val = obj[key]
-			if (val === undefined)
+			if (val == undefined) // I changed this to == so null is ignored too. I think that's fine? better than turning it into a string, at least. perhaps it should map to "key=" or "key" instead
 				continue
 			let item = encodeURIComponent(key)+"="
 			// array items are encoded as
