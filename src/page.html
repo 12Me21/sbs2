@@ -263,15 +263,21 @@
 			</sidebar-panel>
 			<!--<div id=$sidebarWatchingPanel class='fill'></div>-->
 			<sidebar-panel id=$sidebarFilePanel class='flex'>
-				<div class='bar rem1-5'>
-					<input type=file accept="image/*" id=$imageUpload class='sidebarUploadingHide item'>
-					<button id=$fileCancel class='sidebarUploadingFile item'>Cancel</button>
-					<button id=$fileUpload class='sidebarUploadingFile rightAlign item'>Upload Image</button>
-					<input readonly id=$fileURL class='item sidebarUploadedFile'>
-					<button id=$fileDone class='item sidebarUploadedFile'>Done</button>
+				<div class='bar rem1-5 sidebarUploadingHide'>
+					<input type=file accept="image/*" id=$imageUpload class='item'>
 				</div>
-				<div class='sidebarUploadingFile' id=$fileUploadForm></div>
-				<div class='image-box grow'><img id=$fileView></div>
+				<div class='bar rem1-5 sidebarUploadedFile'>
+					<input readonly id=$fileURL class='item'>
+					<button id=$fileDone class='item'>Done</button>
+				</div>
+				<div class='sidebarUploadingFile'>
+					<div class='bar rem1-5'>
+						<button id=$fileCancel class='item'>Cancel</button>
+						<button id=$fileUpload class='rightAlign item'>Upload Image</button>
+					</div>
+					<div id=$fileUploadForm></div>
+				</div>
+				<div class='image-box grow' style="min-height: 3rem;"><img id=$fileView></div>
 				<a data-static-path=images>Uploaded Images</a>
 			</sidebar-panel>
 			<sidebar-panel id=$sidebarUserPanel>
