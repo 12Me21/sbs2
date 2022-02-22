@@ -42,7 +42,7 @@
 // nicer replacement for encodeURIComponent
 function url_escape(s) {
 	let escape = c => "%"+(c.charCodeAt(0)+0x100).toString(16).substr(1)
-	return s.replace(/[^-\w\$\.+!*',;/\:@#%~]/g, escape).replace(/[,\.?!:]$/, escape)
+	return s.replace(/[^-\w\$\.+!*',;/\:@~]/g, escape).replace(/[,\.?!:]$/, escape) 
 }
 // todo: also make a full query string encode function
 

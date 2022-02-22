@@ -60,7 +60,7 @@
 	-moz-tab-size: 4;
 	tab-size: 4;
 	white-space: pre-wrap;
-	word-break: break-all;
+	/*word-break: break-all;*/ /* this has some nasty effects when interacting with other inline elements. I want to try replacing spaces in <code> with &nbsp; maybe but its kinda cursed... */
 	font-family: 'cascadia code', consolas, monospace;
 	font-size: 0.9em;
 }
@@ -71,6 +71,7 @@
 	border: 1px solid black;
 	padding: 0.5em;
 	margin: 0.25em 0;
+	word-break: break-all;
 }
 
 .markup-root code {
