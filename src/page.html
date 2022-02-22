@@ -209,8 +209,7 @@
 		<v-b data-view-editpage class='fill resize-box'>
 			<div class='flex-sized' id=$editorPreviewPane>
 				<div class='editorNotPreview'>
-					<div class='registerBox input-form' id=$editPageForm>
-					</div>
+					<div class='registerBox' id=$editPageForm></div> <!-- really what we want here is a marker, not a container element or a replaced element. I would use <br> and then .replaceWith(form.elem), then set the form's .id back to $editPageForm. but that feels unsafe for something which could be generated many times. plus we have to set it back when cleaning up. -->
 					<label>Markup language:<select id=$markupSelect>
 						<option value="plaintext">plain text</option>
 						<option value="12y">12-y documentation markup format</option>
@@ -263,22 +262,16 @@
 			</sidebar-panel>
 			<!--<div id=$sidebarWatchingPanel class='fill'></div>-->
 			<sidebar-panel id=$sidebarFilePanel class='flex'>
-				<div class='bar rem1-5 sidebarUploadingHide'>
-					<input type=file accept="image/*" id=$imageUpload class='item'>
+				<div class='rem1-5 flex-row justify-between'>
+					<input type=file accept="image/*" id=$file_browse class='grow item'>
+					<button id=$file_cancel class='item'>Cancel</button>
+					<input readonly id=$file_url class='grow'>
+					<button id=$file_done class='item'>Done</button>
+					<button id=$file_upload class='item'>Upload Image</button>
 				</div>
-				<div class='bar rem1-5 sidebarUploadedFile'>
-					<input readonly id=$fileURL class='item'>
-					<button id=$fileDone class='item'>Done</button>
-				</div>
-				<div class='sidebarUploadingFile'>
-					<div class='bar rem1-5'>
-						<button id=$fileCancel class='item'>Cancel</button>
-						<button id=$fileUpload class='rightAlign item'>Upload Image</button>
-					</div>
-					<div id=$fileUploadForm></div>
-				</div>
-				<div class='image-box grow' style="min-height: 3rem;"><img id=$fileView></div>
-				<a data-static-path=images>Uploaded Images</a>
+				<br id=$file_upload_form>
+				<div class='image-box grow' style="min-height: 3rem;"><img id=$file_image></div>
+				<a data-static-path=images>Uploaded Images</a> <!-- I want to move this into the upper bar so it takes up less space... -->
 			</sidebar-panel>
 			<sidebar-panel id=$sidebarUserPanel>
 				<button onclick="window.location+=''">Reload Page</button>

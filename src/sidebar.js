@@ -25,6 +25,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	},
 	
 	init() {
+		file_cancel()
 		file_upload_form = new Form({
 			fields: [
 				['size', 'output', {output: true, label: "Size"}], //todo: separate set of output fields?
@@ -35,13 +36,13 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 				}],// todo: maybe store js values in the dropdown, rather than strings?
 			]
 		})
-		$fileUploadForm.replaceChildren(file_upload_form.elem)
+		$file_upload_form.replaceWith(file_upload_form.elem) // todo: maybe preserve the id on the new element here incase init ... ehhh nah
 		$openSidebar.onclick = $closeSidebar.onclick = toggle
 		View.attachResize($sidebar, $sidebarResize, true, -1, "sidebarWidth")
 		View.attachResize($sidebarTop, $sidebarResize, false, 1, "sidebarPinnedHeight")
 		View.flag('sidebar', true)
 		View.attachPaste((file)=>{ got_file(file) })
-		$imageUpload.onchange = function(e) { // must not be arrow func
+		$file_browse.onchange = function(e) { // must not be arrow func
 			let file = this.files[0]
 			try {
 				file && got_file(file)
@@ -49,10 +50,10 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 				this.value = ""
 			}
 		}
-		$fileCancel.onclick = $fileDone.onclick = fileCancel
-		$fileUpload.onclick = function() {
+		$file_cancel.onclick = $file_done.onclick = file_cancel
+		$file_upload.onclick = function() {
 			if (selectedFile) {
-				$fileUpload.disabled = true
+				$file_upload.disabled = true
 				
 				let data = file_upload_form.get()
 				let params = {
@@ -64,18 +65,25 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 					params.quantize = +data.quantize
 				
 				Req.uploadFile(selectedFile, params, (e, file)=>{
-					$fileUpload.disabled = false
+					$file_upload.disabled = false
 					if (e) // failed
 						return
 					selectedFile = null
-					View.flag('sidebarUploaded', true)
-					$fileURL.value = Req.fileURL(file.id)
-					$fileView.src = ""
-					$fileView.src = Req.fileURL(file.id)
+					
+					$file_url.hidden = false
+					$file_done.parentNode.hidden = false
+					$file_upload_form.hidden = true
+					$file_browse.hidden = true
+					$file_cancel.parentNode.hidden = true
+					$file_upload.parentNode.hidden = true
+					
+					$file_url.value = Req.file_url(file.id)
+					$file_image.src = ""
+					$file_image.src = Req.file_url(file.id)
 				})
 			}
 		}
-		$fileURL.onclick = function() { $fileURL.select() }
+		$file_url.onclick = function() { $file_url.select() }
 		scroller = new Scroller($sidebarScroller.parentNode, $sidebarScroller)
 		prePrint.forEach((x)=> print(x) )
 		prePrint = null
@@ -164,23 +172,32 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 			prePrint.push(text)
 	},
 	
-	fileCancel() {
+	file_cancel() {
 		selectedFile = null
-		View.flag('sidebarFile', false)
-		View.flag('sidebarUploaded', false)
+		$file_browse.hidden = false
+		$file_cancel.parentNode.hidden = true // parentnode because buttoncontainer.. messy todo
+		$file_url.hidden = true
+		$file_done.parentNode.hidden = true
+		$file_upload.parentNode.hidden = true
+		$file_upload_form.hidden = true
 		cleanUp()
 	},
 	
 	cleanUp() {
 		selectedFile = null
-		$fileView.src = ""
+		$file_image.src = ""
 	},
 	
 	got_file(file) {
-		View.flag('sidebarUploaded', false)
-		View.flag('sidebarFile', true)
-		$fileView.src = ""
-		$fileView.src = URL.createObjectURL(file)
+		$file_cancel.parentNode.hidden = false
+		$file_upload.parentNode.hidden = false
+		$file_upload_form.hidden = false
+		$file_browse.hidden = true
+		$file_url.hidden = true
+		$file_done.parentNode.hidden = true
+		
+		$file_image.src = ""
+		$file_image.src = URL.createObjectURL(file)
 		file_upload_form.set_some({
 			size: (file.size/1000)+" kB",
 			name: file.name,

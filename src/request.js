@@ -473,7 +473,7 @@ const Req = {
 		return this.request("Comment/"+id+"/delete", 'POST', callback)
 	},
 	
-	fileURL(id, query) {
+	file_url(id, query) {
 		if (query)
 			return "https://"+this.server+"/File/raw/"+id+"?"+query
 		return "https://"+this.server+"/File/raw/"+id

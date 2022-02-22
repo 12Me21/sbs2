@@ -118,12 +118,12 @@ with (View) (()=>{ "use strict"; {
 			permissions: JSON.stringify(file.permissions),
 			quantization: file.quantization,
 		})
-		let url = Req.fileURL(file.id)
+		let url = Req.file_url(file.id)
 		$fileDownload.href = url
 		$fileDownload.download = file.name
 		
 		$filePageView.src = url
-		//Draw.setBgImage($filePageView, Req.fileURL(file.id))
+		//Draw.setBgImage($filePageView, Req.file_url(file.id))
 		flag('fileSelected', true)
 		flag('canEdit', /u/.test(file.myPerms))
 	}

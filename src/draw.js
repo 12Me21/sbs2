@@ -5,7 +5,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	avatar_url(user, params) {
 		if (!user || !user.avatar)
 			return "resource/avatar.png"
-		return Req.fileURL(user.avatar, params)
+		return Req.file_url(user.avatar, params)
 	},
 	
 	// icon + name
@@ -137,7 +137,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		div.className = 'fileThumbnail item'
 		div.dataset.id = file.id
 		let img = E`img`
-		img.src = Req.fileURL(file.id, "size=50")
+		img.src = Req.file_url(file.id, "size=50")
 		img.alt = file.name
 		img.title = file.name
 		div.append(img)
@@ -215,7 +215,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		// avatar
 		if (user.bigAvatar) {
 			let d = E`div`
-			d.style.backgroundImage = "url("+Req.fileURL(user.bigAvatar, "size=500")+")"
+			d.style.backgroundImage = "url("+Req.file_url(user.bigAvatar, "size=500")+")"
 			d.className += " bigAvatar"
 			div.append(d)
 		} else {

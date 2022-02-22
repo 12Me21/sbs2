@@ -38,7 +38,7 @@ function updateGallery(page) {
 	$galleryImage.src = ""
 	let photos = Entity.parse_numbers(page.values.photos)
 	if (photos && photos[0])
-		$galleryImage.src = Req.fileURL(photos[0])
+		$galleryImage.src = Req.file_url(photos[0])
 }
 
 <!--/*

@@ -57,7 +57,7 @@ class Form {
 		this.inputs = {} // map of name -> INPUT instances
 		
 		this.elem = document.createElement('form-table')
-		this.elem.className += ' fill'
+		//this.elem.className += ' fill' // we don't need this, it messes up the height. width will be 100% anyway because its a block...
 		let body = this.elem
 		
 		for (let field of this.fields) {

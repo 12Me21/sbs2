@@ -81,6 +81,9 @@ body {
 .flex-sized {
 	flex-shrink: 1;
 }
+.justify-between {
+	justify-content: space-between;
+}
 
 /*********/
 
@@ -371,17 +374,6 @@ button[aria-selected="true"] {
 
 /**********/
 
-html.f-sidebarFile .sidebarUploadingHide,
-html.f-sidebarUploaded .sidebarUploadingHide {
-	display: none;
-}
-
-html.f-sidebarUploaded .sidebarUploadingFile,
-html:not(.f-sidebarFile) .sidebarUploadingFile,
-html:not(.f-sidebarUploaded) .sidebarUploadedFile {
-	display: none;
-}
-
 /****************
  ** Title Pane **
  ****************/
@@ -642,6 +634,23 @@ html:not(.f-chatEditing) .showWhenEdit {
 	padding-bottom: 0.5rem;
 }
 
+.bigAvatar {
+	width: 4.5rem;
+	height: 100%;
+	position: absolute;
+	background-size: cover;
+	background-position-x: center;
+	background-position-y: top;
+	background-repeat: no-repeat;
+	left: 0;
+	top: 0;
+	z-index: -10;
+}
+
+.real-name-label {
+	color: gray
+}
+
 /****************
  ** Chat Input **
  ****************/
@@ -842,10 +851,6 @@ html:not(.f-fileSelected) .fileSelected {
 	display: none;
 }
 
-html:not(.f-fileUploading) .fileUploading {
-	display: none;
-}
-
 /***********
  ** Icons **
  ***********/
@@ -1025,17 +1030,6 @@ but, then we can't add a border to the image
 }
 */
 
-/*
-I don't know why this exists?
-it seems to just make images display with the wrong size
-.image-box-large > img {
-	max-width: 1%;
-	max-height: 1%;
-	transform: scale(100);
-	border: none;
-}
-*/
-
 user-select {
 	display: block;
 }
@@ -1165,28 +1159,6 @@ html.f-editorPreview .editorNotPreview {
 .inputPane > * {
 	height: 100%;
 }
-
-.bigAvatar {
-	width: 4.5rem;
-	height: 100%;
-	position: absolute;
-	background-size: cover;
-	background-position-x: center;
-	background-position-y: top;
-	background-repeat: no-repeat;
-	left: 0;
-	top: 0;
-	z-index: -10;
-}
-
-/*.input-form > * > * {
-	display: block; ???
-}*/
-
-.real-name-label {
-	color: gray
-}
-
 
 /* contain */
 main, sidebar-container, #\$sidebarTop, #\$sidebarBottom, .resize, .sidebarComment, $sidebarActivity > .linkBar {
