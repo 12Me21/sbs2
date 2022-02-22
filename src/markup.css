@@ -1,7 +1,6 @@
 .markup-root {
 	white-space: pre-wrap;
 	overflow-x: auto;
-	/*display: table;*/
 	vertical-align: baseline;
 }
 
@@ -31,10 +30,6 @@
 	/*color: rgb(50, 130, 200)*/
 }
 
-/*.markup-root * {
-	vertical-align: baseline;
-}*/
-
 .markup-root h2,
 .markup-root h3,
 .markup-root h4 {
@@ -61,31 +56,30 @@
 	border-bottom: 1px solid #EEE;
 }
 
-
-.markup-root pre {
-	font-size: 0.9em;
-	font-family: 'cascadia code', consolas, monospace;
-	color: white;
-	background-color: black;
+.markup-root pre, .markup-root code {
+	-moz-tab-size: 4;
+	tab-size: 4;
 	white-space: pre-wrap;
 	word-break: break-all;
+	font-family: 'cascadia code', consolas, monospace;
+	font-size: 0.9em;
+}
+
+.markup-root pre {
+	color: white;
+	background-color: black;
+	border: 1px solid black;
+	padding: 0.5em;
+	margin: 0.25em 0;
 }
 
 .markup-root code {
-	font-size: 0.9em;
-	font-family: 'cascadia code', consolas, monospace;
 	background-color: rgba(0,0,0,0.1);
 	padding: 0 0.2em;
 }
 
 .markup-root pre /*, .markup-root table*/ {
 	box-shadow: 2px 2px 2px var(--border-color);
-}
-
-.markup-root pre {
-	border: 1px solid black;
-	padding: 0.5em;
-	margin: 0.25em 0;
 }
 
 .markup-root ruby {
@@ -276,17 +270,14 @@ markup-root .youtube {
 	margin-bottom: 0.2em;
 }*/
 
-.markup-root > :first-child {
+/*.markup-root > :first-child {
 	margin-top: 0;
 }
 .markup-root > :last-child {
 	margin-bottom: 0;
 }
-
-.markup-root pre, .markup-root code {
-	-moz-tab-size: 4;
-	tab-size: 4;
-}
+this doesn't work because text nodes...
+*/
 
 .markup-root .i {
 	text-decoration: wavy underline red;
