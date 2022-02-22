@@ -49,6 +49,7 @@ const Req = {
 	locked: false, // for testing
 	
 	raw_request(url, method, callback, data, auth) {
+		print("request: "+url)
 		let x = new XMLHttpRequest()
 		x.open(method, url)
 		let args = arguments
