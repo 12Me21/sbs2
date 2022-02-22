@@ -342,7 +342,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			b[1].textContent = "Load Older"
 			outer.append(b[0])
 			b[1].onclick = ()=>{
-				Req.getCommentsBefore(comment.parentId, firstId, 10, (comments)=>{
+				Req.get_older_comments(comment.parentId, firstId, 10, (comments)=>{
 					if (!comments) return
 					comments.forEach((c)=>{
 						firstId = c.id
@@ -365,7 +365,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			b[1].textContent = "Load Newer"
 			outer.append(b[0])
 			b[1].onclick = ()=>{
-				Req.getCommentsAfter(comment.parentId, lastId, 10, (comments)=>{
+				Req.get_newer_comments(comment.parentId, lastId, 10, (comments)=>{
 					if (!comments) return
 					comments.forEach((c)=>{
 						lastId = c.id

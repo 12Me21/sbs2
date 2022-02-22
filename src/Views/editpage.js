@@ -1,7 +1,7 @@
 <!--/* trick indenter
 with (View) (function($) { "use strict" //*/
 
-addView('editpage', {
+add_view('editpage', {
 	init: function() {
 		$editorTextarea.oninput = ()=>{updatePreview(true)}
 		$markupSelect.onchange = ()=>{updatePreview(true)}

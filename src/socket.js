@@ -172,7 +172,7 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 		for (let [key, value] of Object.entries(fields))
 			query[key] = value.join(",")
 		
-		return Req.request("Read/listen"+Req.queryString(query), 'GET', callback)
+		return Req.request("Read/listen"+Req.query_string(query), 'GET', callback)
 	},
 	
 	// if

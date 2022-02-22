@@ -4,7 +4,7 @@
 <!--/* trick indenter
 with (View) (function($) { "use strict" //*/
 
-addView('settings', {
+add_view('settings', {
 	className: 'settingsMode',
 	render: function() {
 		setTitle("Account Settings")
@@ -96,7 +96,7 @@ addView('settings', {
 				return
 			}
 			delete data.error
-			Req.setSensitive(data, function(e, resp) {
+			Req.set_sensitive(data, function(e, resp) {
 				if (!e)
 					registerError("Updated", undefined, $userSettingsError)
 				else

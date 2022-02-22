@@ -5,7 +5,7 @@
 
 let comment_form
 
-View.addView('comments', {
+View.add_view('comments', {
 	init() {
 		comment_form = new Form({
 			fields: [
@@ -135,7 +135,7 @@ function build_search(data) {
 // <number>-<number>
 // <number>,<number>... (or space etc)
 
-View.addView('chatlogs', {
+View.add_view('chatlogs', {
 	redirect: (id, query)=>{
 		let q = {r: true}
 		// we do it this way so the ORDER is preserved :D

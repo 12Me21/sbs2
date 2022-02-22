@@ -1,7 +1,7 @@
 <!--/* trick indenter
 with (View) (function($) { "use strict" //*/
 
-addView('category', {
+add_view('category', {
 	init() {
 		let nav = $categoryNav
 		navButtons = Draw.nav_buttons()
@@ -10,7 +10,7 @@ addView('category', {
 			if (currentCategory == null)
 				return
 			currentQuery.page = n
-			Nav.go("category/"+currentCategory+Req.queryString(currentQuery))
+			Nav.go("category/"+currentCategory+Req.query_string(currentQuery))
 		}
 	},
 	

@@ -1,4 +1,4 @@
-View.addView('template', {
+View.add_view('template', {
 	init() {
 		// this is called when the page initially loads
 		// (in the future, it may be deferred until the view is visited

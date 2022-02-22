@@ -24,7 +24,7 @@ let render_page = (page)=>{
 
 let last_sent = null;
 
-addView('page', {
+add_view('page', {
 	// in this case, we sometimes make a request, and sometimes
 	// load the page instantly because the chatroom is cached
 	// so, call either `render` or `quick`
@@ -100,7 +100,7 @@ addView('page', {
 				$chatTextarea.focus()
 				
 				if (data.content) { // input not blank
-					Req.editMessage(last_edit.id, last_edit.parentId, data.content, data.meta, (e)=>{
+					Req.edit_message(last_edit.id, last_edit.parentId, data.content, data.meta, (e)=>{
 						if (e) {
 							alert("Editing comment failed")
 						}
@@ -108,7 +108,7 @@ addView('page', {
 				} else { // input is blank
 					let resp = confirm("Are you sure you want to delete this message?\n"+last_edit.content)
 					if (resp) {
-						Req.deleteMessage(last_edit.id, (e, resp)=>{
+						Req.delete_message(last_edit.id, (e, resp)=>{
 							if (e) {
 								alert("Deleting comment failed")
 							}
@@ -118,7 +118,7 @@ addView('page', {
 			} else { // posting new comment
 				if (data.content) { // input is not blank
 					let old = data
-					Req.sendMessage(room.id, data.content, data.meta, (e, resp)=>{
+					Req.send_message(room.id, data.content, data.meta, (e, resp)=>{
 						if (e) {
 							//error sending message
 							write_input(old)
@@ -162,7 +162,7 @@ addView('page', {
 			if ($hideGlobalStatusButton.disabled)
 				return
 			$hideGlobalStatusButton.disabled = true
-			ChatRoom.global.toggleHiding(()=>{
+			ChatRoom.global.toggle_hiding(()=>{
 				$hideGlobalStatusButton.disabled = false
 			})
 		}

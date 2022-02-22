@@ -10,24 +10,24 @@ with (View) (()=>{ "use strict"; {
 	// todo:
 	// - page selector input type
 	// - add a page for viewing info about a specific image (image/id? or images/id?), or otherwise some way to find a specific image by id here
-	addView('images', {
+	add_view('images', {
 		init() {
 			let nav = $fileNav
 			$fileSearchBucket.onchange = ()=>{
 				currentQuery.bucket = $fileSearchBucket.value || undefined
-				Nav.go("images"+Req.queryString(currentQuery))
+				Nav.go("images"+Req.query_string(currentQuery))
 			}
 			navButtons = Draw.nav_buttons()
 			nav.append(navButtons.element)
 			navButtons.onchange = (n)=>{
 				currentQuery.page = n
-				Nav.go("images"+Req.queryString(currentQuery))
+				Nav.go("images"+Req.query_string(currentQuery))
 			}
 			
 			$setAvatarButton.onclick = ()=>{
 				if (!selectedFile)
 					return
-				Req.setBasic({avatar: selectedFile.id}, (user)=>{
+				Req.set_basic({avatar: selectedFile.id}, (user)=>{
 					user && updateMyUser(user) // have to do this because rannnnnnnnnnndommmmmmm broke user activityyy
 				})
 			}

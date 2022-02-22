@@ -65,7 +65,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 				if (data.quantize)
 					params.quantize = +data.quantize
 				
-				Req.uploadFile(selectedFile, params, (e, file)=>{
+				Req.upload_file(selectedFile, params, (e, file)=>{
 					$file_upload.disabled = false
 					if (e) // failed
 						return

@@ -1,7 +1,7 @@
 <!--/* trick indenter
 with (View) (function($) { "use strict" //*/
 
-addView('user', {
+add_view('user', {
 	start(id, query, render) {
 		if (typeof id == 'string' && id[0] == "@")
 			id = id.substr(1)

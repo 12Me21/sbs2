@@ -148,7 +148,7 @@ const Req = {
 		return this.request("User/passwordreset", "POST", callback, {resetKey: key, password: password})
 	},
 	
-	queryString(obj) {
+	query_string(obj) {
 		if (!obj)
 			return ""
 		let params = []
@@ -188,16 +188,16 @@ const Req = {
 	},
 	// call to set the current auth token
 	// should only be called once (triggers login event)
-	gotAuth(newAuth) {
-		let newUid
+	got_auth(new_auth) {
+		let new_uid
 		try {
-			newUid = Number(JSON.parse(window.atob(newAuth.split(".")[1])).uid) //yeah
+			new_uid = Number(JSON.parse(window.atob(new_auth.split(".")[1])).uid) //yeah
 		} catch(e) {
 			this.log_out()
 			return false
 		}
-		this.auth = newAuth
-		this.uid = newUid
+		this.auth = new_auth
+		this.uid = new_uid
 		this.on_login()
 		return true
 	},
@@ -205,7 +205,7 @@ const Req = {
 	authenticate(username, password, callback) {
 		return this.request("User/authenticate", 'POST', (e, resp)=>{
 			if (!e) {
-				this.gotAuth(resp)
+				this.got_auth(resp)
 				Store.set(this.storage_key, resp, true)
 			}
 			callback(e, resp)
@@ -218,7 +218,7 @@ const Req = {
 	// return: Boolean
 	tryLoadCachedAuth() {
 		let auth = Store.get(this.storage_key)
-		let ok = auth ? this.gotAuth(auth) : false
+		let ok = auth ? this.got_auth(auth) : false
 		if (!ok)
 			this.on_guest_load()
 		return ok
@@ -246,7 +246,7 @@ const Req = {
 		return this.request("User/register/sendemail", 'POST', callback, {email: email})
 	},
 	
-	read(requests, filters, callback, needCategories) {
+	read(requests, filters, callback, need_cats) {
 		let query = {}
 		query.requests = requests.map((line)=>{
 			if (line.length==1)
@@ -254,20 +254,20 @@ const Req = {
 			return line[0]+"-"+JSON.stringify(line[1])
 		})
 		Object.assign(query, filters)
-		needCategories = needCategories && !this.got_categories
-		if (needCategories)
+		need_cats = need_cats && !this.got_categories
+		if (need_cats)
 			query.requests.push('category~Ctree')
-		return this.request("Read/chain"+this.queryString(query), 'GET', (e, resp)=>{
+		return this.request("Read/chain"+this.query_string(query), 'GET', (e, resp)=>{
 			if (!e) {
 				Entity.process(resp)
-				if (needCategories)
+				if (need_cats)
 					this.got_categories = true
 			}
 			callback(e, resp)
 		})
 	},
 	
-	getMe(callback) {
+	get_me(callback) {
 		return this.request("User/me", 'GET', (e, resp)=>{
 			if (!e) {
 				let l = [resp]
@@ -278,7 +278,7 @@ const Req = {
 		})
 	},
 	
-	setBasic(data, callback) {
+	set_basic(data, callback) {
 		return this.request("User/basic", 'PUT', (e, resp)=>{
 			if (!e) {
 				let l = [resp]
@@ -289,16 +289,17 @@ const Req = {
 		}, data)
 	},
 	
-	setSensitive(data, callback) {
+	set_sensitive(data, callback) {
 		return this,request("User/sensitive", 'POST', callback, data)
 	},
 	
 	// this should accept as many types as possible
-	uploadImage(thing, callback) {
+	// unused!
+	upload_image(thing, callback) {
 		if (thing instanceof HTMLCanvasElement) {
 			thing.toBlob((blob)=>{
 				if (blob)
-					this.uploadFile(blob, callback)
+					this.upload_file(blob, callback)
 				else
 					callback(null)
 			})
@@ -312,11 +313,11 @@ const Req = {
 		}
 	},
 	
-	uploadFile(file, params, callback) {
+	upload_file(file, params, callback) {
 		let form = new FormData()
 		form.append('file', file)
 		
-		this.request("File"+this.queryString(params), 'POST', (e, resp)=>{
+		this.request("File"+this.query_string(params), 'POST', (e, resp)=>{
 			if (e)
 				callback(e, resp)
 			else {
@@ -327,12 +328,12 @@ const Req = {
 		}, form)
 	},
 	
-	toggleHiding(id, callback) {
-		return this.getMe((me)=>{
+	toggle_hiding(id, callback) {
+		return this.get_me((me)=>{
 			if (me) {
 				let hiding = me.hidelist
 				let hidden = arrayToggle(hiding, id)
-				this.setBasic({hidelist:hiding}, (e)=>{
+				this.set_basic({hidelist:hiding}, (e)=>{
 					if (e)
 						callback(null)
 					else
@@ -341,10 +342,6 @@ const Req = {
 			} else
 				callback(null)
 		})
-	},
-	
-	getCategories(callback) {
-		return this.read([], {}, callback, true)
 	},
 	
 	searchUsers(text, callback) {
@@ -381,7 +378,7 @@ const Req = {
 	},
 	
 	// might be worth speeding up in entity.js (100ms)
-	getRecentActivity(callback, fail) {
+	get_recent_activity(callback, fail) {
 		let day = 1000*60*60*24
 		let start = new Date(Date.now() - day).toISOString()
 		// "except no that won't work if site dies lol"
@@ -419,19 +416,8 @@ const Req = {
 			this.request("Content", 'POST', callback, page)
 	},
 	
-	getComment(id, callback) {
-		return this.read([
-			['comment', {ids: [id]}], //todo: maybe also get page permissions?
-		], {}, (e, resp)=>{
-			if (!e)
-				callback(resp.comment[0])
-			else
-				callback(null)
-		})
-	},
-	
-	getCommentsBefore(id, firstId, count, callback, err) {
-		let fi = {reverse: true, limit: count, parentIds: [id]}
+	get_older_comments(pid, firstId, count, callback, err) {
+		let fi = {reverse: true, limit: count, parentIds: [pid]}
 		if (firstId != null)
 			fi.maxId = firstId // maxId is EXCLUSIVE
 		return this.read([
@@ -446,8 +432,8 @@ const Req = {
 		// so messy, with the different types of error hiding and shit
 	},
 	
-	getCommentsAfter(id, lastId, count, callback) {
-		let fi = {limit: count, parentIds: [id]}
+	get_newer_comments(pid, lastId, count, callback) {
+		let fi = {limit: count, parentIds: [pid]}
 		if (lastId != null)
 			fi.minId = lastId
 		return this.read([
@@ -461,15 +447,15 @@ const Req = {
 		})
 	},
 	
-	sendMessage(room, text, meta, callback) {
+	send_message(room, text, meta, callback) {
 		return this.request("Comment", 'POST', callback, {parentId: room, content: Entity.encode_comment(text, meta)})
 	},
 	
-	editMessage(id, room, text, meta, callback) {
+	edit_message(id, room, text, meta, callback) {
 		return this.request("Comment/"+id, 'PUT', callback, {parentId: room, content: Entity.encode_comment(text, meta)})
 	},
 	
-	deleteMessage(id, callback) {
+	delete_message(id, callback) {
 		return this.request("Comment/"+id+"/delete", 'POST', callback)
 	},
 	

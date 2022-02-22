@@ -1,3 +1,5 @@
+// todo: View class (oops name collision though...)
+
 let View = Object.create(null)
 with(View)((window)=>{"use strict";Object.assign(View,{
 	
@@ -7,10 +9,10 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 	// current_view.cleanUp should always be correct!
 	current_view: null,
 	
-	initDone: false,
-	runOnLoad: [],
-	realTitle: null,
-	faviconElement: null,
+	init_done: false,
+	run_on_load: [],
+	real_title: null,
+	favicon_element: null,
 	
 	// create public variables here
 	views: {
@@ -100,13 +102,13 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 	setEntityTitle(entity) {
 		$pageTitle.childs = Draw.icon_title(entity)
 		document.title = entity.name
-		realTitle = entity.name
+		real_title = entity.name
 		changeFavicon(false)
 	},
 	setTitle(text) {
 		$pageTitle.textContent = text
 		document.title = text
-		realTitle = text
+		real_title = text
 		changeFavicon(false)
 	},
 	
@@ -210,11 +212,11 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		let whenPageLoaded = (callback)=>{
 			if (cancelled)
 				return
-			if (initDone)
+			if (init_done)
 				callback()
 			else {
 				console.log("deferring render")
-				runOnLoad.push(callback)
+				run_on_load.push(callback)
 			}
 		}
 		
@@ -299,7 +301,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		
 	},
 	
-	onLoad() {
+	init() {
 		document.querySelectorAll("a[data-static-path]").forEach((elem)=>{
 			Nav.link(elem.dataset.staticPath, elem)
 		})
@@ -325,9 +327,9 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			// though none of them should really take a significant amount of time, so whatver
 		})
 		
-		initDone = true
-		runOnLoad.forEach((f)=>f())
-		runOnLoad = null
+		init_done = true
+		run_on_load.forEach((f)=>f())
+		run_on_load = null
 		
 		// video player does not fire 'click' events so instead
 		// need to detect when the video is played
@@ -372,10 +374,10 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		Sidebar.init()
 	},
 	
-	addView(name, data) {
+	add_view(name, data) {
 		data.name = name
 		views[name] = data
-		initDone && data.init && data.init()
+		init_done && data.init && data.init()
 	},
 	
 	attachPaste(callback) {
@@ -447,7 +449,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		if (!Req.me)
 			return;
 		if (text == false) {
-			document.title = realTitle
+			document.title = real_title
 			changeFavicon(false)
 		} else {
 			document.title = text
@@ -466,18 +468,18 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 	},
 	
 	changeFavicon(src) {
-		if (!faviconElement) {
+		if (!favicon_element) {
 			if (src == false)
 				return
 			document.head.querySelectorAll("link[data-favicon]").forEach(e=>e.remove())
-			faviconElement = document.createElement('link')
-			faviconElement.rel = "icon"
-			document.head.append(faviconElement)
-		} else if (faviconElement.href == src)
+			favicon_element = document.createElement('link')
+			favicon_element.rel = "icon"
+			document.head.append(favicon_element)
+		} else if (favicon_element.href == src)
 			return
 		if (src == false)
 			src = "resource/icon16.png"
-		faviconElement.href = src
+		favicon_element.href = src
 	}
 	
 })<!-- PRIVATE })

@@ -1,7 +1,7 @@
 <!--/* trick indenter
 with (View) (function($) { "use strict" //*/
 
-addView('', {
+add_view('', {
 	init() {
 	},
 	start(id, query, render) {

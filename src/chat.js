@@ -17,7 +17,7 @@ class ChatRoom {
 		([this.chat_pane, this.page_outer, this.page_contents, this.messages_outer, this.messageList, this.userlist_elem, btn] = Draw.chat_pane(page))
 		
 		btn.onclick = ()=>{
-			this.toggleHiding(()=>{
+			this.toggle_hiding(()=>{
 				ul[2].disabled = false
 			})
 			ul[2].disabled = true
@@ -113,7 +113,7 @@ class ChatRoom {
 	
 	loadOlder(num, callback) {
 		let firstId = Object.first_key(this.message_parts)
-		Req.getCommentsBefore(this.id, +firstId, num, (comments)=>{
+		Req.get_older_comments(this.id, +firstId, num, (comments)=>{
 			comments && comments.forEach(c => this.displayOldMessage(c))
 			callback()
 		})
@@ -146,8 +146,8 @@ class ChatRoom {
 		
 		return true
 	}
-	toggleHiding(callback) {
-		Req.toggleHiding(this.id, (hidden)=>{
+	toggle_hiding(callback) {
+		Req.toggle_hiding(this.id, (hidden)=>{
 			if (hidden)
 				delete this.userList[Req.uid]
 			else
