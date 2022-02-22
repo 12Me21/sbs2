@@ -119,7 +119,6 @@ addView('page', {
 				if (data.content) { // input is not blank
 					let old = data
 					Req.sendMessage(room.id, data.content, data.meta, (e, resp)=>{
-						console.log(resp)
 						if (e) {
 							//error sending message
 							write_input(old)
