@@ -193,7 +193,7 @@ class ChatRoom {
 	update_page(page) {
 		this.page = page
 		this.page_contents.childs = 
-			Parse.parseLang(page.content, page.values.markupLang))
+			Parse.parseLang(page.content, page.values.markupLang)
 	}
 	// 8:10;35
 	show() {

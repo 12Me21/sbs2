@@ -265,7 +265,7 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 			
 			c && on_data(c)
 		} catch (e) {
-			console.error("error processing lp/ws response: ", e)
+			error("error processing lp/ws response: ", e)
 		}
 	},
 	

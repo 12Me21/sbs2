@@ -209,7 +209,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 				let old = displayedIds[c.id]
 				if (c.deleted) {
 					if (old) {
-						del.remove()
+						old.remove()
 						delete displayedIds[c.id]
 						displayedMessages--
 					}
