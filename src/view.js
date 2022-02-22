@@ -347,23 +347,23 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			let element = e.target
 			if (!(element instanceof HTMLTextAreaElement)) {
 				if (embiggenedImage && element != embiggenedImage) {
-					embiggenedImage.removeAttribute('bigImage')
+					embiggenedImage.removeAttribute('data-big')
 					embiggenedImage = null
 				}
 			}
 		}
 		
 		function imageFocusClickHandler(element, growOnly) {
-			if (element.hasAttribute('shrink')) {
+			if (element.hasAttribute('data-shrink')) {
 				// if click on image that's already big:
 				if (embiggenedImage && embiggenedImage == element) {
 					if (!growOnly) {
-						embiggenedImage.removeAttribute('bigImage')
+						embiggenedImage.removeAttribute('data-big')
 						embiggenedImage = null
 					}
 				} else if (element != embiggenedImage) { // if click on new iamge
-					embiggenedImage && embiggenedImage.removeAttribute('bigImage')
-					element.setAttribute('bigImage', "")
+					embiggenedImage && embiggenedImage.removeAttribute('data-big')
+					element.setAttribute('data-big', "")
 					embiggenedImage = element
 				}
 			}
