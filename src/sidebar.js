@@ -150,7 +150,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 			}
 		}).join("\n")
 		if (scroller)
-			scroller.handlePrint(()=>{
+			scroller.print(()=>{
 				displayedMessages++
 				limitMessages()
 				return Draw.sidebar_debug(text)
@@ -202,9 +202,9 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	
 	displayedIds: {},
 	
-	displayMessages(comments, initial) {
+	display_messages(comments, initial) {
 		// todo: show page titles?
-		scroller.handlePrint(()=>{
+		scroller.print(()=>{
 			for (let c of comments) {
 				let old = displayedIds[c.id]
 				if (c.deleted) {

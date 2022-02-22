@@ -1,6 +1,6 @@
 class ChatRoom {
 	constructor(id, page) {
-		let old = this.constructor.rooms[id]
+		let old = ChatRoom.rooms[id]
 		if (old)
 			return old
 		
@@ -9,12 +9,12 @@ class ChatRoom {
 		this.userList = []
 		
 		if (id <= 0) {
-			this.userListInner = $sidebarUserList
+			this.userlist_elem = $sidebarUserList
 			return
 		}
 		
 		let btn
-		([this.chat_pane, this.pageContainer, this.pageElement, this.messagePane, this.messageList, this.userListInner, btn] = Draw.chat_pane(page))
+		([this.chat_pane, this.page_outer, this.page_contents, this.messages_outer, this.messageList, this.userlist_elem, btn] = Draw.chat_pane(page))
 		
 		btn.onclick = ()=>{
 			this.toggleHiding(()=>{
@@ -24,7 +24,7 @@ class ChatRoom {
 		}
 		
 		// chat
-		this.messageElements = {}
+		this.message_parts = {}
 		this.lastTime = 0
 		this.maxMessages = 500
 		this.totalMessages = 0
@@ -36,7 +36,7 @@ class ChatRoom {
 		let text = document.createTextNode('disable limit')
 		label.append(text)
 		
-		this.messagePane.prepend(label)
+		this.messages_outer.prepend(label)
 		{
 			let b = Draw.button()
 			let btn = b[1]
@@ -47,19 +47,19 @@ class ChatRoom {
 				btn.disabled = true
 				this.loadOlder(50, ()=>{btn.disabled = false}) //todo: lock
 			}
-			this.messagePane.prepend(b[0])
+			this.messages_outer.prepend(b[0])
 		}
 		
 		if (page.values.pinned) { //todo: check if actually we have any real pinned messages
 			let pinnedSeparator = document.createElement('div')
 			pinnedSeparator.className = "messageGap"
-			this.messagePane.prepend(pinnedSeparator)
+			this.messages_outer.prepend(pinnedSeparator)
 			
 			this.pinnedList = document.createElement('scroll-inner')
-			this.messagePane.prepend(this.pinnedList)
+			this.messages_outer.prepend(this.pinnedList)
 		}
 		
-		this.messagePane.dataset.id = page.id
+		this.messages_outer.dataset.id = page.id
 		$chatPaneBox.append(this.chat_pane)
 		
 		/////////////////////////////
@@ -97,27 +97,22 @@ class ChatRoom {
 			this.showControls(null)
 		}
 		///////////
-		
-		this.showChat = page.type == "@page.discussion"
-		
 		this.visible = false
 		this.pinned = false
-		this.scroller = new Scroller(this.messagePane, this.messageList)
-		this.updatePage(page)
+		this.scroller = new Scroller(this.messages_outer, this.messageList)
+		this.update_page(page)
 		let l = Lp.processed_listeners[id] //should this be done with id -1? // what?
-		l && this.updateUserList(l)
-		this.constructor.addRoom(this)
+		l && this.update_userlist(l)
+		ChatRoom.addRoom(this)
 		
 		if (this.page.type == 'resource')
-			this.pageContainer.style.height = "1000px" //whatever
+			this.page_outer.style.height = "1000px" //whatever
 		else if (this.page.type == 'chat')
-			this.pageContainer.style.height = "0"
-		//this.pageContainer.style.maxHeight = '40vh'
-		//View.attachResize(this.pageContainer, $chatResize, false, 1)
+			this.page_outer.style.height = "0"
 	}
 	
 	loadOlder(num, callback) {
-		let firstId = Object.first_key(this.messageElements)
+		let firstId = Object.first_key(this.message_parts)
 		Req.getCommentsBefore(this.id, +firstId, num, (comments)=>{
 			comments && comments.forEach(c => this.displayOldMessage(c))
 			callback()
@@ -126,7 +121,7 @@ class ChatRoom {
 	limitMessages() {
 		if (this.limitCheckbox.checked)
 			return
-		for (let id in this.messageElements) {
+		for (let id in this.message_parts) {
 			if (this.totalMessages <= this.maxMessages)
 				break
 			if (!this.removeMessage(id))
@@ -134,7 +129,7 @@ class ChatRoom {
 		}
 	}
 	removeMessage(id) {
-		let message = this.messageElements[id]
+		let message = this.message_parts[id]
 		if (!message)
 			return false
 		
@@ -142,7 +137,7 @@ class ChatRoom {
 		
 		//var x = this.scroller.scrollBottom
 		message.remove()
-		delete this.messageElements[id]
+		delete this.message_parts[id]
 		this.totalMessages--
 		
 		if (!parent.firstChild)
@@ -157,34 +152,34 @@ class ChatRoom {
 				delete this.userList[Req.uid]
 			else
 				this.userList[Req.uid] = {user: Req.me, status: "unknown"}
-			this.updateUserList(this.userList)
+			this.update_userlist(this.userList)
 			callback && callback()
 		})
 	}
-	updateUserAvatar(user) {
+	update_avatar(user) {
 		let item = this.userList.find(item => item.user.id == user.id)
 		if (item) {
 			item.user = user
-			this.updateUserList(this.userList)
+			this.update_userlist(this.userList)
 		}
 	}
 	get scrollBottom() {
-		let parent = this.messagePane
+		let parent = this.messages_outer
 		return parent.scrollHeight-parent.clientHeight-parent.scrollTop
 	}
 	set scrollBottom(value) {
 		// need to round here because it would be reversed otherwise
 		value = Math.floor(value*window.devicePixelRatio)/window.devicePixelRatio
-		let parent = this.messagePane
+		let parent = this.messages_outer
 		parent.scrollTop = parent.scrollHeight-parent.clientHeight-value
 	}
-	updateUserList(list) {
-		this.userListInner.replaceChildren(
-			...Object.values(list).map(item => Draw.user_list_avatar(item))
+	update_userlist(list) {
+		this.userlist_elem.replaceChildren(
+			...Object.values(list).map(item => Draw.userlist_avatar(item))
 		)
 	}
 	displayInitialMessages(comments, pinned) {
-		comments.forEach(comment => this.displayMessage(comment, false))
+		comments.forEach(comment => this.display_message(comment, false))
 		if (pinned instanceof Array && this.pinnedList) {
 			this.pinnedList.append(...pinned.map((comment)=>{
 				let b = Draw.message_block(comment)
@@ -195,44 +190,44 @@ class ChatRoom {
 		// ugh why do we need this?
 		window.setTimeout(()=>{this.scroller.scrollInstant()}, 0)
 	}
-	updatePage(page) {
+	update_page(page) {
 		this.page = page
-		this.pageElement.replaceChildren(
+		this.page_contents.childs = 
 			Parse.parseLang(page.content, page.values.markupLang))
 	}
 	// 8:10;35
 	show() {
-		let old = this.constructor.currentRoom
+		let old = ChatRoom.currentRoom
 		if (old && old!=this)
 			old.hide()
 		this.chat_pane.hidden = false
 		this.visible = true
-		this.constructor.currentRoom = this
+		ChatRoom.currentRoom = this
 	}
 	hide() {
 		if (this.pinned) {
 			this.chat_pane.hidden = true
-			if (this.constructor.currentRoom == this)
-				this.constructor.currentRoom = null
+			if (ChatRoom.currentRoom == this)
+				ChatRoom.currentRoom = null
 			this.visible = false
 		} else
 			this.destroy()
 	}
 	destroy() {
 		console.log("DESTROY")
-		if (this.constructor.currentRoom == this)
-			this.constructor.currentRoom = null
-		this.constructor.removeRoom(this)
+		if (ChatRoom.currentRoom == this)
+			ChatRoom.currentRoom = null
+		ChatRoom.removeRoom(this)
 		
 		this.chat_pane.remove()
 		this.chat_pane.replaceChildren()
-		this.userListInner = null
-		this.messagePane = null
+		this.userlist_elem = null
+		this.messages_outer = null
 		
 		this.scroller.destroy()
 		this.scroller = null
 		this.visible = false
-		this.messageElements = {}
+		this.message_parts = {}
 		Object.setPrototypeOf(this, null) // DIEEEEE
 	}
 	// todo: make renderuserlist etc.
@@ -241,44 +236,44 @@ class ChatRoom {
 		return this.scroller.at_bottom
 	}
 	//
-	insert_merge(part, comment, time, backwards) {
+	insert_merge(comment, time, backwards) {
+		let part = Draw.message_part(comment)
 		Draw.insert_comment_merge(this.messageList, part, comment, time, backwards)
 		this.totalMessages++
-		this.messageElements[comment.id] = part
+		this.message_parts[comment.id] = part
 		this.limitMessages()
 	}
 	// "should be called in reverse order etc. etc. you know
 	// times will be incorrect oh well"
 	displayOldMessage(comment) {
-		this.scroller.handlePrintTop(()=>{
-			let old = this.messageElements[comment.id]
+		this.scroller.print_top(()=>{
+			let old = this.message_parts[comment.id]
 			if (comment.deleted) {
 				this.removeMessage(comment.id)
 			} else {
 				// `old` should never be set here, I think...
 				let node = Draw.message_part(comment)
-				this.insert_merge(node, comment, null, true)
+				this.insert_merge(comment, null, true)
 			}
 		})
 	}
 	my_last_message() {
-		return Object.values(this.messageElements).findLast((msg)=>{
+		return Object.values(this.message_parts).findLast((msg)=>{
 			return msg && msg.x_data.createUserId == Req.uid
 		})
 	}
-	displayMessage(comment, autoscroll) {
-		this.scroller.handlePrint(()=>{
-			let old = this.messageElements[comment.id]
+	display_message(comment, autoscroll) {
+		this.scroller.print(()=>{
+			let old = this.message_parts[comment.id]
 			if (comment.deleted) {
 				this.removeMessage(comment.id)
 			} else {
-				let part = Draw.message_part(comment)
-				
 				if (old) { // edited
+					let part = Draw.message_part(comment)
+					this.message_parts[comment.id] = part
 					old.parentNode.replaceChild(part, old)
-					this.messageElements[comment.id] = part
 				} else { // new comment
-					this.insert_merge(part, comment, this.lastTime, false)
+					this.insert_merge(comment, this.lastTime, false)
 					this.lastTime = comment.createDate //todo: improve
 					View.commentTitle(comment)
 				}
@@ -328,9 +323,9 @@ ChatRoom.generateStatus = function() {
 
 ChatRoom.rooms = {}
 
-ChatRoom.updateUserAvatar = function(user) {
-	Object.for(this.rooms, room => room.updateUserAvatar(user))
-	this.global && this.global.updateUserAvatar(user)
+ChatRoom.update_avatar = function(user) {
+	Object.for(this.rooms, room => room.update_avatar(user))
+	this.global && this.global.update_avatar(user)
 }
 
 ChatRoom.addRoom = function(room) {
@@ -352,21 +347,21 @@ ChatRoom.setViewing = function(ids) {
 	Lp.refresh()
 }
 
-ChatRoom.updateUserLists = function(a) {
+ChatRoom.update_userlists = function(a) {
 	// why don't we just use .rooms[-1] instead of .global?
-	a[-1] && this.global.updateUserList(a[-1])
+	a[-1] && this.global.update_userlist(a[-1])
 	for (let id in a) {
 		let room = this.rooms[id]
-		room && room.updateUserList(a[id])
+		room && room.update_userlist(a[id])
 	}
 }
 
-ChatRoom.displayMessages = function(comments) {
+ChatRoom.display_messages = function(comments) {
 	let displayedIn = {} // unused?
 	comments.forEach((comment)=>{
 		let room = this.rooms[comment.parentId]
 		if (room) {
-			room.displayMessage(comment)
+			room.display_message(comment)
 			displayedIn[room.id] = true
 		}
 	})

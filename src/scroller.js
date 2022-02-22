@@ -176,12 +176,12 @@ class Scroller {
 		})
 	}
 	//if you want to insert an element into the scroller, do something like:
-	// scroller.handlePrint(function() {
+	// scroller.print(function() {
 	//    return document.createElement('div')
 	// }, true) // (or `false` to disable scrolling (for example, when inserting the initial elements, you might disable scrolling here and then run scroller.autoScroll(true) afterwards, to scroll to the bottom instantly)
 	//(the reason it's inside a function is because it needs to run code
 	// before AND after inserting the element)
-	handlePrint(callback, autoscroll) {
+	print(callback, autoscroll) {
 		let should = autoscroll && this.at_bottom
 		try {
 			let elem = callback()
@@ -190,7 +190,7 @@ class Scroller {
 			should && this.autoscroll()
 		}
 	}
-	handlePrintTop(callback) {
+	print_top(callback) {
 		let height = this.outer.scrollHeight
 		let scroll = this.outer.scrollTop
 		try {

@@ -77,7 +77,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		resize.textContent = "↕"
 		View.attachResize(page1, resize, false, 1) // todo: save?
 		// 
-		let [list1, list2, button] = user_list()
+		let [list1, list2, button] = userlist()
 		// 
 		let [outer, inner] = chat_message_pane()
 		//
@@ -92,7 +92,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return [outer, inner]
 	},
 	
-	user_list() {
+	userlist() {
 		let outer = E`div`
 		outer.className = "bar rem2-3 userlist"
 		let inner = outer.child`span`
@@ -103,7 +103,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return [outer, inner, b[1]]
 	},
 	
-	user_list_avatar(status) {
+	userlist_avatar(status) {
 		let a = link_avatar(status.user)
 		if (status.status == "idle")
 			a.className += ' status-idle'
@@ -265,6 +265,8 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		div.dataset.merge = Entity.comment_merge_hash(comment)
 		return [div, contentBox]
 	},
+	// comment: Comment
+	// return: Element
 	message_part(comment) {
 		let element = E`message-part`
 		element.className = "markup-root"
@@ -275,14 +277,16 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		
 		element.x_data = comment // mm  was going to use dataset but this is more efficent, and the attribute was taking up tons of space in the html inspector lol
 		element.dataset.id = comment.id
+		element.dataset.time = comment.createDate.getTime()
 		element.append(Parse.parseLang(comment.content, comment.meta.m, false))
 		return element
 	},
-	
-	// time string as something like: (depends on locale)
-	// today: "10:37 AM"
-	// older: "December 25, 2021, 4:09 PM"
+	// date: Date
+	// return: String
 	timeString(date) {
+		// time string as something like: (depends on locale)
+		// today: "10:37 AM"
+		// older: "December 25, 2021, 4:09 PM"
 		let options
 		if (Date.now()-date.getTime() > 1000*60*60*12)
 			options = {year:'numeric',month:'long',day:'numeric',hour:'numeric', minute:'2-digit'}
@@ -290,7 +294,9 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			options = {hour:'numeric', minute:'2-digit'}
 		return date.toLocaleString([], options)
 	},
-	
+	// block: Element
+	// comment: Comment
+	// time: Date
 	can_merge_comment(block, comment, time) {
 		if (block) {
 			let hash = block.dataset.merge
@@ -298,11 +304,14 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		}
 		return false
 	},
-	// too many args
-	insert_comment_merge(elem, part, comment, time, backwards) {
+	// elem: Element - container to insert message blocks into
+	// part: Element - new message part
+	// comment: Comment - data used to generate `part`
+	// time: Date - date of last message
+	// backwards: Boolean - whether to insert at beginning
+	insert_comment_merge(elem, part, comment, time, backwards) { // too many args
+		// todo: get the time from the block itself
 		let block = elem[backwards?'firstChild':'lastChild']
-		// todo: store time on block itself? but for this to insert in both directions it should store first/last time
-		// + with message deletion, really we have to store time per message part, which sucks...
 		let contents
 		if (can_merge_comment(block, comment, time))
 			contents = block.getElementsByTagName('message-contents')[0]// not great...

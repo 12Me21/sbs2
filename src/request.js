@@ -436,7 +436,7 @@ const Req = {
 		})
 	},
 	
-	getCommentsBefore(id, firstId, count, callback) {
+	getCommentsBefore(id, firstId, count, callback, err) {
 		let fi = {reverse: true, limit: count, parentIds: [id]}
 		if (firstId != null)
 			fi.maxId = firstId // maxId is EXCLUSIVE
@@ -449,6 +449,7 @@ const Req = {
 			else
 				callback(null)
 		})
+		// so messy, with the different types of error hiding and shit
 	},
 	
 	getCommentsAfter(id, lastId, count, callback) {

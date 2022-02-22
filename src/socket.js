@@ -7,13 +7,13 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 	
 	// interfacing with other systems
 	on_listeners(map) {
-		ChatRoom.updateUserLists(map)
+		ChatRoom.update_userlists(map)
 	},
 	on_data({comment, commentdelete, activity, content}) {
 		function comments(c) {
 			if (c) {
-				ChatRoom.displayMessages(c)
-				Sidebar.displayMessages(c)
+				ChatRoom.display_messages(c)
+				Sidebar.display_messages(c)
 			}
 		}
 		comments(comment)
@@ -23,10 +23,14 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 		// todo: do we want to pass commentdelete here?
 		Act.process_stuff(activity, comment, null, content)
 		
+		// I dont think user edits are broadcast anymore, but
 		if (activity)
 			for (let a of activity)
-				if (a.type == 'user')
-					View.updateUserAvatar(a.content) //todo: also update your avatar in sidebar
+				if (a.type == 'user') {
+					if (a.content.id == Req.uid)
+						View.updateMyUser(a.content)
+					ChatRoom.update_avatar(a.content)
+				}
 	},
 	on_start(me) {
 		View.updateMyUser(me) //also sets Req.me...

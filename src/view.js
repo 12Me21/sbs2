@@ -149,12 +149,6 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		}
 	},
 	
-	updateUserAvatar(user) {
-		ChatRoom.updateUserAvatar(user) //todo: don't hardcode this
-		if (user.id == Req.uid)
-			updateMyUser(user)
-	},
-	
 	updateMyUser(user) {
 		if (user.id != Req.uid)
 			return //uh oh
@@ -164,7 +158,6 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			let icon = Draw.icon(user)
 			Sidebar.myAvatar.childs = icon
 		}
-		//$loggedIn.replaceChildren(Draw.entity_title_link(user, true))
 	},
 	
 	handleView(type, id, query, callback) {

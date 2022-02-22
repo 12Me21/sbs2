@@ -38,7 +38,8 @@ let Entity = {
 	},
 	
 	comment_merge_hash(comment) {
-		return comment.createUserId + "," + comment.createUser.avatar+","+(comment.createUser.bigAvatar||"") + "," + comment.createUser.name + " " + (comment.createUser.nickname || "")
+		let user = comment.createUser || {}
+		return `${comment.parentId},${comment.createUserId},${user.avatar},${user.bigAvatar||""},${user.name} ${user.nickname || ""}`
 	},
 	
 	filter_nickname(name) {

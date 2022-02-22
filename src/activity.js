@@ -30,7 +30,7 @@ let Act = {
 		// bad arguments :(
 		Req.getRecentActivity(({activity, Mall, Awatching, content, comment})=>{
 			this.process_stuff(activity, Mall, Awatching, content)
-			Sidebar.displayMessages(comment.reverse(), true)
+			Sidebar.display_messages(comment.reverse(), true)
 		}, (e)=>{print("initial activity failed!")})
 		// better yet, we could use .then/.catch here?
 	},
