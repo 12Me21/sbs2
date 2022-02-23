@@ -221,7 +221,7 @@ let Entity = {
 			return data //TODO
 		},
 		activityaggregate(data, users) {
-			data.users = data.userIds.filter(id=>id).map(id=>users[id])
+			data.users = data.userIds /*.filter(id=>id)*/ .map(id=>users[id])
 			return data
 		},
 		commentaggregate(data, users) {
