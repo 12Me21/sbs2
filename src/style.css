@@ -1,96 +1,13 @@
-/****************
- ** All Things **
- ****************/
-* {
-	margin: 0;
-	box-sizing: border-box;
-	word-break: inherit; /* this might not actually do anything. note that we can't set it to break-word here, otherwise it messes up children of elements with word-break set to something else */
-}
-
-html {
-	/* disable ligatures like fi ffi etc. */
-	/* (doesn't affect real languages or emoji)*/
-	font-variant-ligatures: none;
-	/* this fixes an ios safari bug where some text is "stuck" at larger sizes after rotating the screen */
-	-webkit-text-size-adjust: none;
-	/* required for text wrapping to work */
-	word-break: break-word;
-}
-
-/* this fixes a weird positioning bug in html/css */
-/* may need more things here */
-.textItem, .item, .buttonContainer button, .avatar,
-tbody, img, canvas, button {
-	vertical-align: top;
-}
-
-/* always display images at correct aspect ratio, even if the element is the wrong size */
-img {
-	object-fit: contain;
-}
-
-/* nyehhhh */
-*:not(.slide-box) > [hidden] {
-	display: none !important;
-}
-
 /* main stuff */
 
 html {
 	background-color: #FEE; /* for debug */
 	font-family: roboto, sans-serif;
 	color: var(--maintxtcolor);
-	position: fixed;
 }
 
 body {
-	position: fixed;
-	overflow: hidden;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
 	background: var(--mainbgcolor);
-}
-
-.fill {
-	width: 100%;
-	height: 100%;
-}
-
-/**********
- ** Flex **
- **********/
-.flex {
-	display: block;
-	display: flex;
-	flex-direction: column;
-}
-.flex-row {
-	display: inline-block;
-	display: flex;
-}
-.flex > *, .flex-row > * {
-	flex-shrink: 0;
-}
-.grow {
-	flex-grow: 1;
-	flex-shrink: 1;
-	flex-basis: 0;
-}
-.flex-sized {
-	flex-shrink: 1;
-}
-.justify-between {
-	justify-content: space-between;
-}
-
-/*********/
-
-/* all elements with user content, where whitespace should be preserved */
-.pre {
-	white-space: pre-wrap;
-	unicode-bidi: embed;
 }
 
 /***********
@@ -155,24 +72,10 @@ sub {vertical-align: sub;}
 	background: var(--avatar-bg);
 }
 
-/* this is really hard to get working */
-.ellipsis {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: pre !important;
-}
-.ellipsis * {
-	white-space: pre !important;
-}
-
 time {
 	color: var(--time-color);
 	font-size: 0.9em;
 	vertical-align: baseline;
-}
-
-.rightAlign {
-	float: right; /* bad */
 }
 
 #\$categoryDescription.markup-root { /* make sure this is before most things */
@@ -183,93 +86,6 @@ time {
 	font-weight: bold;
 	unicode-bidi: embed;
 	white-space: pre-wrap;
-}
-
-/*********
- ** Bar **
- *********/
-/* the bar system is really gross and should probably be turned into flex now (or grid?)*/
-
-/* These 3 classes handle like 90% of the layout lol */
-.bar { /* contains textitems and items */
-	display: block;
-	overflow: hidden;
-	box-sizing: content-box;
-	/* set min-height */
-}
-
-.textItem { /* basically anything within a .bar */
-	max-width: 100%;
-	display: inline;
-	/* set min-height, line-height */
-}
-.item { /* for images and other blocks that can't wrap */
-	display: inline-block;
-	max-width: 100%;
-	/* set height */
-}
-
-.rem1-7 {
-	min-height: 1.7rem;
-	line-height: 1.7rem;
-}
-.rem1-7 .item {
-	height: 1.7rem;
-	line-height: 1.7rem;
-}
-.rem1-7 .textItem {
-	min-height: 1.7rem;
-	line-height: 1.7rem;
-}
-.rem1-7 .avatar {
-	width: 1.7rem;
-}
-.rem1-7 .iconBg {
-	width: 1rem;
-	/*margin-right: 0.2rem;*/
-}
-
-.linkBar.rem1-5 {
-	padding: 0;
-}
-
-.rem1-5 {
-	min-height: 1.5rem;
-	line-height: 1.5rem;
-}
-.rem1-5 .item {
-	height: 1.5rem;
-	line-height: 1.5rem;
-}
-.rem1-5 .textItem {
-	min-height: 1.5rem;
-	line-height: 1.5rem;
-}
-.rem1-5 .avatar {
-	width: 1.5rem;
-}
-.rem1-5 .iconBg {
-	width: 1rem;
-	/*margin-right: 0.2rem;*/
-}
-
-.rem2-3 {
-	min-height: 2.3rem;
-	line-height: 2.3rem;
-}
-.rem2-3 .item {
-	height: 2.3rem;
-	line-height: 2.3rem;
-}
-.rem2-3 .textItem {
-	min-height: 2.3rem;
-	line-height: 2.3rem;
-}
-.rem2-3 .avatar {
-	width: 2.3rem;
-}
-.rem2-3 .iconBg {
-	width: 1.5rem;
 }
 
 /**********************
@@ -448,6 +264,7 @@ horizontal-split {
 
 main {
 	height: 100%;
+	overflow: auto; /* ? */
 	/*overflow-y: hidden; /* mmm */
 }
 
@@ -461,10 +278,6 @@ sidebar-container {
 
 html:not(.f-sidebar) sidebar-container {
 	display: none;
-}
-
-html main {
-	overflow: auto; /* ? */
 }
 
 /**********
@@ -482,6 +295,10 @@ main-scrollable {
 	display: block;
 	background: var(--mainbgcolor);
 	padding: 0.2rem;
+	
+	border-bottom: 1px solid var(--border-color);
+	border-top: 1px solid white;
+	padding: 0.15rem 0.2rem 0.2rem 0.2rem;
 }
 .linkBar:focus {
 	background: var(--bar-bg);
@@ -726,32 +543,14 @@ html:not(.f-myUserPage) .myUserPage {
 	}
 }
 
-/*****************
- ** Form Tables **
- *****************/
-
-form-table {
-	display: grid;
-	grid-template-columns: [labels] max-content [controls] auto;
-	grid-auto-flow: row;
-}
-
 form-table > .label {
 	font-weight: bold;
-	grid-column: labels;
-   grid-row: auto;
    text-align: right;
    padding-right: 0.5rem;
 }
 
 form-table > .field {
-   grid-column: controls;
-   grid-row: auto;
 	vertical-align: middle;
-}
-
-form-table > .wide {
-	grid-column: labels / span 2;
 }
 
 form-table > .wide.label {
@@ -765,25 +564,43 @@ input::placeholder {
 	color: rgba(128,128,128,0.6);
 	padding-left: 0.3rem;
 }
-
 select {
 	font-size: 1em;
 }
-
 input {
 	font-size: 0.8em;
 }
-
 input:invalid {
 	background: var(--error-bg);
 }
 
 /* what are these for? */
+/* permissions editor i guess */
 table {
 	border-collapse: collapse;
 }
 th {
 	padding: 0 0.3rem;
+}
+.permissionRow > th {
+	padding: 0;
+	text-align: left;
+}
+.permissionRow > td {
+	text-align: center;
+	padding: 0;
+}
+.permission-table thead th {
+	padding: 0 0.5rem
+}
+.permission-table td {
+	text-align: center;
+}
+.permission-users td {
+	text-align: center;
+}
+.permission-users th {
+	text-align: right;
 }
 
 /**********
@@ -880,22 +697,6 @@ html:not(.f-fileSelected) .fileSelected {
 	overflow: auto;
 }
 
-/**************
- ** Scroller **
- **************/
-
-scroll-outer {
-	display: block;
-	height: 100%;
-	overflow-y: scroll;
-	/*will-change: scroll-position; /*breakks cleartype xd*/
-	contain: strict;
-}
-
-scroll-inner {
-	display: block;
-}
-
 /* narrow screen: fullscreen sidebar */
 @media (max-width: 700px) {
 	sidebar-container {
@@ -938,28 +739,11 @@ scroll-inner {
 	padding: 0.3rem 0.5rem;
 }
 
-select {
-	/*width: 7em;*/
-}
-
-.registerBox input {
-	/*margin: 1px;*/
-}
-
-input, select {
-	min-width: 0;
+input, select { /* this is old & probably not needed */
+	min-width: 0; 
 	max-width: 100%;
 }
 
-.permissionRow > th {
-	padding: 0;
-	text-align: left;
-}
-
-.permissionRow > td {
-	text-align: center;
-	padding: 0;
-}
 
 .half {
 	text-align: center;
@@ -985,44 +769,9 @@ sidebar-panel {
 	overflow: auto;
 }
 
-.image-box {
-	overflow: hidden;
-	position: relative;
-}
-
 .image-box > img {
-	position: absolute;
-	left: -10000%;
-	right: -10000%;
-	top: -10000%;
-	bottom: -10000%;
-	margin: auto auto;
-	max-width: 100%;
-	max-height: 100%;
-	box-sizing: border-box;
-	border: 1px solid black;
-
-	/*padding: 1px;
-	background: black;
-	border: 5px solid white;*/
-	/* transform: scale(1); //this should be the inverse of the max-width/height value (5% -> 20, etc.)*/
-}
-
-/*
-would be nice to use something like this
-but, then we can't add a border to the image
-.image-box {
-	overflow: hidden;
-}
-
-.image-box > img {
-	object-fit: scale-down;
-	// important: .image-box must have some size constraints otherwise it will infinitely big. idk how to fix this
-	width: 100%;
-	height: 100%;
 	border: 1px solid black;
 }
-*/
 
 user-select {
 	display: block;
@@ -1037,10 +786,6 @@ textarea-container {
 	/* overflow: hidden; this was needed only because of the vertical-align bug */
 	background: var(--mainbgcolor);
 	vertical-align: top; /* idk if needed but there was a sizing bug when opening the console so mmm*/
-}
-
-.inputPane {
-	align-items: end;
 }
 
 textarea-container > textarea {
@@ -1075,22 +820,6 @@ textarea-container, textarea-container > textarea {
 	user-select: none;
 }
 
-.permission-table thead th {
-	padding: 0 0.5rem
-}
-
-.permission-table td {
-	text-align: center;
-}
-
-.permission-users td {
-	text-align: center;
-}
-
-.permission-users th {
-	text-align: right;
-}
-
 .gallery-inner {
 	margin: 0 auto;
 	position: relative;
@@ -1113,23 +842,9 @@ textarea-container, textarea-container > textarea {
 	background: var(--bar-bg);
 }
 
-.ellipsis {
-	text-overflow: ellipsis;
-}
-
-.ellipsis, .ellipsis * {
-	white-space: pre;
-}
-
 .debugMessage {
 	background: var(--bar-bg);
 	padding: 2px 3px;
-}
-
-.linkBar {
-	border-bottom: 1px solid var(--border-color);
-	border-top: 1px solid white;
-	padding: 0.15rem 0.2rem 0.2rem 0.2rem;
 }
 
 activity-users {
@@ -1139,6 +854,10 @@ activity-users {
 
 .inputPane {
 	background: var(--bar-bg);
+	align-items: end;
+}
+.inputPane > * {
+	height: 100%;
 }
 
 html:not(.f-editorPreview) .editorPreview,
@@ -1148,10 +867,6 @@ html.f-editorPreview .editorNotPreview {
 
 .category-childs {
 	margin-left: 1rem;
-}
-
-.inputPane > * {
-	height: 100%;
 }
 
 /* contain */
@@ -1166,65 +881,7 @@ message-part, header, .markup-root, message-block {
 	will-change: contents;
 }
 
-/****************
- ** Slides Box **
- ****************/
-.slide-box {
-	position: relative;
-	contain: strict;
-	display: block;
-	overflow: unset; /* ?? */
-}
-.slide-box > * {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	/*display: block;*/ /* override this */
-}
-.slide-box > *[hidden] {
-	visibility: hidden;
-}
-
-/************
- ** Resize **
- ************/
-.resize-box {
-	contain: strict;
-	display: flex;
-	flex-direction: column;
-}
-.resize-box > * {
-	flex-shrink: 0;
-}
-.resize-box > .grow {
-	flex-grow: 1;
-	flex-shrink: 1;
-	flex-basis: 0;
-}
-.resize-box > .flex-sized {
-	flex-shrink: 1;
-	overflow-y: auto
-}
-resize-handle, .resize {
-	-webkit-touch-callout: none;
-	
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	user-select: none;
-	cursor: grab;
-	color: var(--databartxtcolor);
-	background: var(--databarbgcolor);
-	height: 1.2em;
-	line-height: 1;
-	overflow: hidden;
-	/*box-shadow: 0 -2px 3px rgba(0,0,0,0.3);*/
-}
-resize-handle[data-dragging], .resize[data-dragging] {
-	cursor: grabbing;
-}
-
 /*   idk   */
-
 .page-container:not(#a) {
 	max-height: 100%;
 	overflow-y: scroll;

@@ -1,0 +1,327 @@
+/****************
+ ** All Things **
+ ****************/
+* {
+	margin: 0;
+	box-sizing: border-box;
+	word-break: inherit; /* this might not actually do anything. note that we can't set it to break-word here, otherwise it messes up children of elements with word-break set to something else */
+}
+
+html {
+	/* disable ligatures like fi ffi etc. */
+	/* (doesn't affect real languages or emoji)*/
+	font-variant-ligatures: none;
+	/* this fixes an ios safari bug where some text is "stuck" at larger sizes after rotating the screen */
+	-webkit-text-size-adjust: none;
+	/* required for text wrapping to work */
+	word-break: break-word;
+}
+
+/* this fixes a weird positioning bug in html/css */
+/* may need more things here */
+.textItem, .item, .buttonContainer button, .avatar,
+tbody, img, canvas, button {
+	vertical-align: top;
+}
+
+/* always display images at correct aspect ratio, even if the element is the wrong size */
+img {
+	object-fit: contain;
+}
+
+/* nyehhhh */
+*:not(.slide-box) > [hidden] {
+	display: none !important;
+}
+
+html {
+	position: fixed;
+}
+
+body {
+	position: fixed;
+	overflow: hidden;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+
+.fill {
+	width: 100%;
+	height: 100%;
+}
+
+/**********
+ ** Flex **
+ **********/
+.flex {
+	display: block;
+	display: flex;
+	flex-direction: column;
+}
+.flex-row {
+	display: inline-block;
+	display: flex;
+}
+.flex > *, .flex-row > * {
+	flex-shrink: 0;
+}
+.grow {
+	flex-grow: 1;
+	flex-shrink: 1;
+	flex-basis: 0;
+}
+.flex-sized {
+	flex-shrink: 1;
+}
+.justify-between {
+	justify-content: space-between;
+}
+
+/*********/
+/* all elements with user content, must be tied up */
+.pre {
+	white-space: pre-wrap;
+	unicode-bidi: embed;
+}
+
+/* this is really hard to get working */
+.ellipsis {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: pre !important;
+}
+.ellipsis * {
+	white-space: pre !important;
+}
+
+.rightAlign {
+	float: right; /* bad */
+}
+
+/*********
+ ** Bar **
+ *********/
+/* the bar system is really gross and should probably be turned into flex now (or grid?)*/
+
+/* These 3 classes handle like 90% of the layout lol */
+.bar { /* contains textitems and items */
+	display: block;
+	overflow: hidden;
+	box-sizing: content-box;
+	/* set min-height */
+}
+
+.textItem { /* basically anything within a .bar */
+	max-width: 100%;
+	display: inline;
+	/* set min-height, line-height */
+}
+.item { /* for images and other blocks that can't wrap */
+	display: inline-block;
+	max-width: 100%;
+	/* set height */
+}
+
+.rem1-7 {
+	min-height: 1.7rem;
+	line-height: 1.7rem;
+}
+.rem1-7 .item {
+	height: 1.7rem;
+	line-height: 1.7rem;
+}
+.rem1-7 .textItem {
+	min-height: 1.7rem;
+	line-height: 1.7rem;
+}
+.rem1-7 .avatar {
+	width: 1.7rem;
+}
+.rem1-7 .iconBg {
+	width: 1rem;
+	/*margin-right: 0.2rem;*/
+}
+
+.linkBar.rem1-5 {
+	padding: 0;
+}
+
+.rem1-5 {
+	min-height: 1.5rem;
+	line-height: 1.5rem;
+}
+.rem1-5 .item {
+	height: 1.5rem;
+	line-height: 1.5rem;
+}
+.rem1-5 .textItem {
+	min-height: 1.5rem;
+	line-height: 1.5rem;
+}
+.rem1-5 .avatar {
+	width: 1.5rem;
+}
+.rem1-5 .iconBg {
+	width: 1rem;
+	/*margin-right: 0.2rem;*/
+}
+
+.rem2-3 {
+	min-height: 2.3rem;
+	line-height: 2.3rem;
+}
+.rem2-3 .item {
+	height: 2.3rem;
+	line-height: 2.3rem;
+}
+.rem2-3 .textItem {
+	min-height: 2.3rem;
+	line-height: 2.3rem;
+}
+.rem2-3 .avatar {
+	width: 2.3rem;
+}
+.rem2-3 .iconBg {
+	width: 1.5rem;
+}
+
+
+/*****************
+ ** Form Tables **
+ *****************/
+
+form-table {
+	display: grid;
+	grid-template-columns: [labels] max-content [controls] auto;
+	grid-auto-flow: row;
+}
+
+form-table > .label {
+	grid-column: labels;
+	grid-row: auto;
+}
+
+form-table > .field {
+   grid-column: controls;
+   grid-row: auto;
+}
+
+form-table > .wide {
+	grid-column: labels / span 2;
+}
+
+/**************
+ ** Scroller **
+ **************/
+
+scroll-outer {
+	display: block;
+	height: 100%;
+	overflow-y: scroll;
+	contain: strict;
+}
+
+scroll-inner {
+	display: block;
+}
+
+
+
+.image-box {
+	overflow: hidden;
+	position: relative;
+}
+
+.image-box > img {
+	position: absolute;
+	left: -10000%;
+	right: -10000%;
+	top: -10000%;
+	bottom: -10000%;
+	margin: auto auto;
+	max-width: 100%;
+	max-height: 100%;
+	box-sizing: border-box;
+
+	/*padding: 1px;
+	background: black;
+	border: 5px solid white;*/
+	/* transform: scale(1); //this should be the inverse of the max-width/height value (5% -> 20, etc.)*/
+}
+
+
+/*
+would be nice to use something like this
+but, then we can't add a border to the image
+.image-box {
+	overflow: hidden;
+}
+
+.image-box > img {
+	object-fit: scale-down;
+	// important: .image-box must have some size constraints otherwise it will infinitely big. idk how to fix this
+	width: 100%;
+	height: 100%;
+	border: 1px solid black;
+}
+*/
+
+
+/****************
+ ** Slides Box **
+ ****************/
+.slide-box {
+	position: relative;
+	contain: strict;
+	display: block;
+	overflow: unset; /* ?? */
+}
+.slide-box > * {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	/*display: block;*/ /* override this */
+}
+.slide-box > *[hidden] {
+	visibility: hidden;
+}
+
+/************
+ ** Resize **
+ ************/
+.resize-box {
+	contain: strict;
+	display: flex;
+	flex-direction: column;
+}
+.resize-box > * {
+	flex-shrink: 0;
+}
+.resize-box > .grow {
+	flex-grow: 1;
+	flex-shrink: 1;
+	flex-basis: 0;
+}
+.resize-box > .flex-sized {
+	flex-shrink: 1;
+	overflow-y: auto
+}
+resize-handle, .resize {
+	-webkit-touch-callout: none;
+	
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+	cursor: grab;
+	color: var(--databartxtcolor);
+	background: var(--databarbgcolor);
+	height: 1.2em;
+	line-height: 1;
+	overflow: hidden;
+	/*box-shadow: 0 -2px 3px rgba(0,0,0,0.3);*/
+}
+resize-handle[data-dragging], .resize[data-dragging] {
+	cursor: grabbing;
+}
