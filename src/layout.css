@@ -271,6 +271,7 @@ but, then we can't add a border to the image
 	position: absolute;
 	width: 100%;
 	height: 100%;
+	overflow: auto;
 }
 .slide-box > :not(.shown),
 .slide-box > .shown ~ .shown { /* in case there are multiple */

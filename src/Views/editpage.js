@@ -1,6 +1,14 @@
 <!--/* trick indenter
 with (View) (function($) { "use strict" //*/
 
+let editor_preview = false
+function set_editor_preview(state) {
+	editor_preview = state
+	let name = state ? 'preview' : 'form'
+	for (let elem of $editorPreviewPane.children)
+		elem.classList.toggle('shown', elem.dataset.slide == name)
+}
+
 add_view('editpage', {
 	init() {
 		$editorTextarea.oninput = ()=>{update_preview(true)} // todo: argument should set preview flag (whether to load videos etc.)
@@ -16,8 +24,7 @@ add_view('editpage', {
 			})
 		}
 		$toggleEditorMode.onclick = ()=>{
-			let e = View.flags.editorPreview
-			View.flag('editorPreview', !e)
+			set_editor_preview(!editor_preview)
 		}
 		View.attach_resize($editorPreviewPane, $editorPreviewResize, false, 1)
 	},
@@ -66,6 +73,8 @@ add_view('editpage', {
 	
 	className: 'editpage',
 	render(page) {
+		set_editor_preview(false)
+		
 		form = new Form({
 			fields: [
 				['category', 'category', {label: "Category", default: [0, null]}],

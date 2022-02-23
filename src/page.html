@@ -91,7 +91,7 @@
 		<a data-static-path class='textItem canEdit' id=$pageEditLink>[Edit]</a>
 		<a data-static-path class='textItem' id=$pageCommentsLink>[Logs]</a>
 	</span>
-	<span data-view=user><a class='textItem loggedIn myUserPage' id=$editUserPage>Edit User Page</a></div>
+	<span data-view=user><a class='textItem loggedIn myUserPage' id=$editUserPage>Edit User Page</a></span>
 	<span class='item loggedIn myUserPage'>
 		<div id=$userPageStatus class='textItem'></div>
 	</span>
@@ -132,13 +132,13 @@
 		<div data-slide=user>
 			<div class='userPageBox flex-row'>
 				<a id=$userPageAvatarLink><img id=$userPageAvatar class='userPageAvatar' alt="" src=""></a>
-				<div class='pageContents pre userPageContents markup-root' id=$userPageContents></div>
+				<div class='pageContents userPageContents markup-root' id=$userPageContents></div>
 			</div>
 			<div class='userActivity' id=$userActivity></div>
 		</div>
 		
 		<div data-slide=category>
-			<div id=$categoryDescription class='categoryDescription pre pageContents markup-root'></div>
+			<div id=$categoryDescription class='categoryDescription pageContents markup-root'></div>
 			<div id=$categoryCategories></div>
 			<div id=$categoryPinned></div>
 			<div class='page-select rem1-7 bar'>
@@ -146,7 +146,7 @@
 				<button id=$createPage class='item' data-static-link>Create Page</button>
 				<button id=$editCategory class='item canEdit' data-static-link>Edit Category</button>
 			</div>
-			<div id=$categoryPages class='categoryPages'></div>
+			<div id=$categoryPages></div>
 		</div>
 		
 		<div data-slide=error class='pre errorPage' id=$errorMessage></div>
@@ -165,7 +165,7 @@
 				a
 				<div class='gallery-inner' style="max-width: 400px;">
 					<div>
-						<div class='image-box image-box-large fill'>
+						<div class='image-box fill'>
 							<img id=$galleryImage>
 						</div>
 					</div>
@@ -181,6 +181,7 @@
 			<div id=$homeCategories class='border-list-2'></div>
 		</div>
 		
+		<!-- todo -->
 		<div data-slide=activity id=$activity></div>
 		
 		<div data-slide=test>
@@ -190,24 +191,24 @@
 		</div>
 		
 		<div data-slide=editpage class='fill resize-box'>
-			<div class='sized' id=$editorPreviewPane>
-				<div class='editorNotPreview'>
+			<div class='sized slide-box' id=$editorPreviewPane>
+				<div data-slide=form>
 					<div class='registerBox' id=$editPageForm></div> <!-- really what we want here is a marker, not a container element or a replaced element. I would use <br> and then .replaceWith(form.elem), then set the form's .id back to $editPageForm. but that feels unsafe for something which could be generated many times. plus we have to set it back when cleaning up. -->
-					<label>Markup language:<select id=$markupSelect>
-						<option value="plaintext">plain text</option>
-						<option value="12y">12-y documentation markup format</option>
-						<option disabled value="bbcode">bbcode</option>
-					</select></label>
-					<button id=$markupUpdate>Update Preview</button>
 				</div>
-				<div class='editorPreview'>
-					<div id=$editorPreview class='markup-root'></div>
+				<div data-slide=preview>
+					<div id=$editorPreview class='markup-root pageContents'></div>
 				</div>
 			</div>
 			<resize-handle id=$editorPreviewResize>↕ <button id=$toggleEditorMode>Toggle Preview</button></resize-handle>
-			<div class='grow editorTextarea'>
-				<textarea id=$editorTextarea minlength=2 required class='fill'></textarea>
+			<div>
+				<label>Markup language:<select id=$markupSelect>
+					<option value="plaintext">plain text</option>
+					<option value="12y">12-y documentation markup format</option>
+					<option disabled value="bbcode">bbcode</option>
+				</select></label>
+				<button id=$markupUpdate>Update Preview</button>
 			</div>
+			<textarea id=$editorTextarea minlength=2 required class='fill grow'></textarea>
 		</div>
 		
 		<div data-slide=page id=$chatContainer class='fill flex'>

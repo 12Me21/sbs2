@@ -457,19 +457,10 @@ html:not(.f-chatEditing) .showWhenEdit {
 /*****************
  ** Editor Pane **
  *****************/
-.editorPane {
-	flex-grow: 1;
-}
-
-.editorTextarea {
-	position: relative;
-	min-height: 2.5em;
-}
-
 #\$editorTextarea {
-	position: absolute;
 	resize: none;
-	box-sizing: border-box;
+	overflow-y: scroll;
+	min-height: 3rem;
 }
 
 /*********/
@@ -697,10 +688,6 @@ input, select { /* this is old & probably not needed */
 	display: block;
 }
 
-sidebar-panel {
-	overflow: auto;
-}
-
 .image-box > img {
 	border: 1px solid black;
 }
@@ -792,11 +779,6 @@ activity-users {
 	height: 100%;
 }
 
-html:not(.f-editorPreview) .editorPreview,
-html.f-editorPreview .editorNotPreview {
-	display: none;
-}
-
 .category-childs {
 	margin-left: 1rem;
 }
@@ -821,10 +803,10 @@ message-part, header, .markup-root, message-block {
 	min-height: 2.3rem;
 }
 
-main > * {
-	overflow-y: auto;
-}
-
 #\$titlePane [data-view]:not(.shown) {
 	display: none !important;
+}
+
+#\$editorPreviewPane {
+	height: 50%;
 }
