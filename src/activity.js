@@ -79,8 +79,8 @@ let Act = {
 	new_comments(comments, pageMap, watch) {
 		// todo: commentaggregate only tracks createDate
 		// so maybe use that here for consistency between reloads
-		for (let {parentId:id, editDate:date, editUser:user} of comments)
-			this.new_thing(id, date, user, pageMap, watch, false)
+		for (let {parentId, editDate, editUser, deleted} of comments)
+			this.new_thing(parentId, editDate, editUser, pageMap, watch, false)
 	},
 	
 	new_activity(activity, pageMap, watch) {

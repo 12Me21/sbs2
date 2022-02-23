@@ -118,8 +118,10 @@ let Entity = {
 		})
 	},
 	process_editable(data, users) {
-		data.editUser = users[data.editUserId]
-		data.createUser = users[data.createUserId]
+		if (data.editUserId) // checking both null and 0
+			data.editUser = users[data.editUserId]
+		if (data.createUserId)
+			data.createUser = users[data.createUserId]
 		if (data.editDate) // date will always be non-null in the database but we might filter it out in the response
 			data.editDate = this.parse_date(data.editDate)
 		if (data.createDate)
@@ -219,12 +221,12 @@ let Entity = {
 			return data //TODO
 		},
 		activityaggregate(data, users) {
-			data.users = data.userIds.map((id)=>users[id])
+			data.users = data.userIds.filter(id=>id).map(id=>users[id])
 			return data
 		},
 		commentaggregate(data, users) {
 			// need to filter out uid 0 (I think this comes from deleted comments)
-			data.users = data.userIds.filter(x=>x!=0).map((id)=>users[id])
+			data.users = data.userIds.filter(id=>id).map(id=>users[id])
 			if (data.firstDate)
 				data.firstDate = this.parse_date(data.firstDate)
 			if (data.lastDate)
