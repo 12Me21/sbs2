@@ -350,3 +350,4 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 
 0<!-- Lp ({
 })(window)
+Object.seal(Lp)

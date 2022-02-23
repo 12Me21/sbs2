@@ -63,6 +63,11 @@ class ChatRoom {
 		this.messages_outer.dataset.id = page.id
 		$chatPaneBox.append(this.chat_pane)
 		
+		///////////
+		this.visible = false
+		this.pinned = false
+		this.scroller = new Scroller(this.messages_outer, this.messageList)
+		
 		/////////////////////////////
 		// set up message controls //
 		/////////////////////////////
@@ -97,10 +102,6 @@ class ChatRoom {
 		this.messageList.onmouseleave = (e)=>{
 			this.show_controls(null)
 		}
-		///////////
-		this.visible = false
-		this.pinned = false
-		this.scroller = new Scroller(this.messages_outer, this.messageList)
 		this.update_page(page)
 		let l = Lp.processed_listeners[id] //should this be done with id -1? // what?
 		l && this.update_userlist(l)
@@ -110,6 +111,8 @@ class ChatRoom {
 			this.page_outer.style.height = "1000px" //whatever
 		else if (this.page.type == 'chat')
 			this.page_outer.style.height = "0"
+		
+		Object.seal(this)
 	}
 	
 	load_older(num, callback) {
@@ -179,7 +182,10 @@ class ChatRoom {
 			}))
 		}
 		// ugh why do we need this?
-		window.setTimeout(()=>{this.scroller.scroll_instant()}, 0)
+		window.setTimeout(()=>{
+			// todo: this can be called after the page is destroyed
+			this.scroller.scroll_instant()
+		}, 0)
 	}
 	update_page(page) {
 		this.page = page
@@ -219,7 +225,6 @@ class ChatRoom {
 		this.scroller = null
 		this.visible = false
 		this.message_parts = {}
-		Object.setPrototypeOf(this, null) // DIEEEEE
 	}
 	// todo: make renderuserlist etc.
 	// reuse for sidebar + page userlist?
@@ -314,6 +319,8 @@ ChatRoom.generateStatus = function() {
 }
 
 ChatRoom.rooms = {}
+ChatRoom.global = null
+ChatRoom.currentRoom = null
 
 ChatRoom.update_avatar = function(user) {
 	Object.for(this.rooms, room => room.update_avatar(user))
@@ -358,3 +365,5 @@ ChatRoom.display_messages = function(comments) {
 		}
 	})
 }
+
+Object.seal(ChatRoom)

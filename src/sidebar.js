@@ -280,5 +280,6 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 
 0<!-- Sidebar ({
 })(window)
+Object.seal(Sidebar)
 
 window.print = Sidebar.print

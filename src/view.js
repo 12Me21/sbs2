@@ -199,10 +199,11 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			// todo: scroll to fragment element
 		}
 		
-		let error_render = (message, error)=>{
+		let error_render = (message, e)=>{
+			error(e, message)
 			cleanup()
 			current_view = view = errorView
-			view.render(message, error)
+			view.render(message, e)
 			after()
 		}
 		
@@ -470,7 +471,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 
 0<!-- View ({
 })(window)
-
+Object.seal(View)
 
 // todo: id can be a string now,
 // so, we need to test if it is valid + in range (positive) in many places

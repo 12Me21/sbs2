@@ -23,6 +23,7 @@ class ResizeTracker {
 				})
 			}, 200)
 		}
+		Object.seal(this)
 	}
 	check_element(item, rect) {
 		if (!item) return
@@ -70,7 +71,10 @@ class Scroller {
 		this.outer = outer
 		this.inner = inner
 		this.animation = null
+		this.animation_start = null
 		this.at_bottom = true
+		this.ignore_scroll = false
+		this.old_scroll_bottom = null
 		this.rate = 0.25 //autoscroll rate: amount of remaining distance to scroll per 1/60 second
 		this.bottom_height = 0.25 //if within this distance of bottom, autoscroll is enabled
 		this.register_size_change()
@@ -95,6 +99,7 @@ class Scroller {
 		}
 		track_scroll_resize.add(this.outer, onResize)
 		track_scroll_resize.add(this.inner, onResize)
+		Object.seal(this)
 	}
 	size_changed() {
 		return this.inner_height!=this.inner.getBoundingClientRect().height || this.outer_height!=this.outer.getBoundingClientRect().height
@@ -140,7 +145,7 @@ class Scroller {
 		this.animation = window.requestAnimationFrame((time)=>{
 			let now = performance.now()
 			//assume 60fps on first frame..
-			this.animation_start = now - 1000/60
+			//this.animation_start = now - 1000/60
 			this.scroll_animation(now)
 		})
 	}
@@ -152,7 +157,7 @@ class Scroller {
 	}
 	scroll_animation(time) {
 		let dt = 1//(time - this.animation_start) / (1000/60)
-		this.animation_start = time // unused
+		//this.animation_start = time // unused
 		
 		this.at_bottom = true
 		this.ignore_scroll = true

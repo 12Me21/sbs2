@@ -905,6 +905,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	}
 	
 })<!-- PRIVATE })
+Object.seal(Draw)
 
 let F = document.createDocumentFragment.bind(document)
 function E(name) {

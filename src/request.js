@@ -465,6 +465,7 @@ const Req = {
 		return "https://"+this.server+"/File/raw/"+id
 	},
 }
+Object.seal(Req)
 
 if (0)
 	server = protocol+"//newdev.smilebasicsource.com/api"

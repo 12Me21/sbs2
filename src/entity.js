@@ -297,3 +297,4 @@ let Entity = {
 		return JSON.stringify(metadata || {})+"\n"+text
 	},
 }
+Object.seal(Entity)

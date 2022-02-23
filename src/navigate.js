@@ -144,6 +144,7 @@ const Nav = {
 		window.location += ""
 	},
 }
+Object.seal(Nav)
 
 window.onpopstate = ()=>{
 	Nav.init = true

@@ -118,3 +118,4 @@ let Act = {
 		  user = Object.create(user, {unsorted: {value: true}})*/
 	},
 }
+Object.seal(Act)

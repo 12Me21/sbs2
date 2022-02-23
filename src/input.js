@@ -88,6 +88,7 @@ class Form {
 			}
 			body.append(input.elem)
 		}
+		Object.seal(this)
 	}
 	destroy() {
 		this.elem.replaceChildren()

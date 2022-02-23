@@ -13,6 +13,7 @@ let track_resize_2 = new ResizeTracker('width')
 with (View) (function($) { "use strict" //*/
 
 let room
+
 let render_page = (page)=>{
 	set_entity_title(page)
 	set_entity_path(page.parent)
