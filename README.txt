@@ -3,7 +3,7 @@
 • Make sure ❲markup/❳ isn't empty:
   ◦ If you're using git:
     💲 git submodule update --init
-  ◦ Otherwise, download the files from ❲https://github.com/12Me21/sbs2-markup❳ and put them in ❲markup/❳
+  ◦ Otherwise, download the files from https://github.com/12Me21/sbs2-markup and put them in ❲markup/❳
 
 • Open ❲index.html❳ in a web browser
 
