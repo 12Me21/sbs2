@@ -7,7 +7,7 @@ with (View) (function($) { "use strict" //*/
 add_view('settings', {
 	className: 'settingsMode',
 	render: function() {
-		setTitle("Account Settings")
+		set_title("Account Settings")
 	},
 	init: function() {
 		$loginForm.onsubmit = function(e) {

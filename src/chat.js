@@ -6,7 +6,7 @@ class ChatRoom {
 		
 		this.id = id
 		this.status = "active"
-		this.userList = []
+		this.userlist = []
 		
 		if (id <= 0) {
 			this.userlist_elem = $sidebarUserList
@@ -25,18 +25,19 @@ class ChatRoom {
 		
 		// chat
 		this.message_parts = {}
-		this.lastTime = 0
-		this.maxMessages = 500
-		this.totalMessages = 0
+		this.last_time = 0
+		this.max_messages = 500
+		this.total_messages = 0
 		
 		let label = document.createElement('label')
 		let checkbox = label.createChild('input')
 		checkbox.type = 'checkbox'
-		this.limitCheckbox = checkbox
+		this.limit_checkbox = checkbox
 		let text = document.createTextNode('disable limit')
 		label.append(text)
 		
 		this.messages_outer.prepend(label)
+		
 		{
 			let b = Draw.button()
 			let btn = b[1]
@@ -45,7 +46,7 @@ class ChatRoom {
 				if (btn.disabled)
 					return
 				btn.disabled = true
-				this.loadOlder(50, ()=>{btn.disabled = false}) //todo: lock
+				this.load_older(50, ()=>{btn.disabled = false}) //todo: lock
 			}
 			this.messages_outer.prepend(b[0])
 		}
@@ -77,24 +78,24 @@ class ChatRoom {
 		this.messageList.addEventListener('focusin', (e)=>{
 			let elem = e.target.closest("message-part, scroll-inner")
 			if (!elem)
-				this.showControls(null)
+				this.show_controls(null)
 			else if (elem.tagName=='MESSAGE-PART')
-				this.showControls(elem)
+				this.show_controls(elem)
 		})
 		this.messageList.addEventListener('focusout', (e)=>{
-			this.showControls(null)
+			this.show_controls(null)
 		})
 		
 		this.messageList.onmouseover = (e)=>{
 			let elem = e.target.closest("message-part, message-controls, scroll-inner")
 			if (!elem || elem.tagName=='SCROLL-INNER')
-				this.showControls(null)
+				this.show_controls(null)
 			else if (elem.tagName=='MESSAGE-PART')
-				this.showControls(elem)
+				this.show_controls(elem)
 			// otherwise, the element is <message-controls> so we do nothing
 		}
 		this.messageList.onmouseleave = (e)=>{
-			this.showControls(null)
+			this.show_controls(null)
 		}
 		///////////
 		this.visible = false
@@ -111,24 +112,24 @@ class ChatRoom {
 			this.page_outer.style.height = "0"
 	}
 	
-	loadOlder(num, callback) {
+	load_older(num, callback) {
 		let firstId = Object.first_key(this.message_parts)
 		Req.get_older_comments(this.id, +firstId, num, (comments)=>{
-			comments && comments.forEach(c => this.displayOldMessage(c))
+			comments && comments.forEach(c => this.display_old_message(c))
 			callback()
 		})
 	}
-	limitMessages() {
-		if (this.limitCheckbox.checked)
+	limit_messages() {
+		if (this.limit_checkbox.checked)
 			return
 		for (let id in this.message_parts) {
-			if (this.totalMessages <= this.maxMessages)
+			if (this.total_messages <= this.max_messages)
 				break
-			if (!this.removeMessage(id))
+			if (!this.remove_message(id))
 				break //fail
 		}
 	}
-	removeMessage(id) {
+	remove_message(id) {
 		let message = this.message_parts[id]
 		if (!message)
 			return false
@@ -138,7 +139,7 @@ class ChatRoom {
 		//var x = this.scroller.scrollBottom
 		message.remove()
 		delete this.message_parts[id]
-		this.totalMessages--
+		this.total_messages--
 		
 		if (!parent.firstChild)
 			parent.parentNode.remove()
@@ -149,36 +150,26 @@ class ChatRoom {
 	toggle_hiding(callback) {
 		Req.toggle_hiding(this.id, (hidden)=>{
 			if (hidden)
-				delete this.userList[Req.uid]
+				delete this.userlist[Req.uid]
 			else
-				this.userList[Req.uid] = {user: Req.me, status: "unknown"}
-			this.update_userlist(this.userList)
+				this.userlist[Req.uid] = {user: Req.me, status: "unknown"}
+			this.update_userlist(this.userlist)
 			callback && callback()
 		})
 	}
 	update_avatar(user) {
-		let item = this.userList.find(item => item.user.id == user.id)
+		let item = this.userlist.find(item => item.user.id == user.id)
 		if (item) {
 			item.user = user
-			this.update_userlist(this.userList)
+			this.update_userlist(this.userlist)
 		}
-	}
-	get scrollBottom() {
-		let parent = this.messages_outer
-		return parent.scrollHeight-parent.clientHeight-parent.scrollTop
-	}
-	set scrollBottom(value) {
-		// need to round here because it would be reversed otherwise
-		value = Math.floor(value*window.devicePixelRatio)/window.devicePixelRatio
-		let parent = this.messages_outer
-		parent.scrollTop = parent.scrollHeight-parent.clientHeight-value
 	}
 	update_userlist(list) {
 		this.userlist_elem.replaceChildren(
 			...Object.values(list).map(item => Draw.userlist_avatar(item))
 		)
 	}
-	displayInitialMessages(comments, pinned) {
+	display_initial_messages(comments, pinned) {
 		comments.forEach(comment => this.display_message(comment, false))
 		if (pinned instanceof Array && this.pinnedList) {
 			this.pinnedList.append(...pinned.map((comment)=>{
@@ -188,7 +179,7 @@ class ChatRoom {
 			}))
 		}
 		// ugh why do we need this?
-		window.setTimeout(()=>{this.scroller.scrollInstant()}, 0)
+		window.setTimeout(()=>{this.scroller.scroll_instant()}, 0)
 	}
 	update_page(page) {
 		this.page = page
@@ -232,24 +223,21 @@ class ChatRoom {
 	}
 	// todo: make renderuserlist etc.
 	// reuse for sidebar + page userlist?
-	shouldScroll() {
-		return this.scroller.at_bottom
-	}
 	//
 	insert_merge(comment, time, backwards) {
 		let part = Draw.message_part(comment)
 		Draw.insert_comment_merge(this.messageList, part, comment, time, backwards)
-		this.totalMessages++
+		this.total_messages++
 		this.message_parts[comment.id] = part
-		this.limitMessages()
+		this.limit_messages()
 	}
 	// "should be called in reverse order etc. etc. you know
 	// times will be incorrect oh well"
-	displayOldMessage(comment) {
+	display_old_message(comment) {
 		this.scroller.print_top(()=>{
 			let old = this.message_parts[comment.id]
 			if (comment.deleted) {
-				this.removeMessage(comment.id)
+				this.remove_message(comment.id)
 			} else {
 				// `old` should never be set here, I think...
 				let node = Draw.message_part(comment)
@@ -262,26 +250,30 @@ class ChatRoom {
 			return msg && msg.x_data.createUserId == Req.uid
 		})
 	}
+	comment_title(comment) {
+		View.title_notification(comment.content, Draw.avatar_url(comment.createUser, "size=120&crop=true"))
+		// todo: also call if the current comment being shown in the title is edited
+	}
 	display_message(comment, autoscroll) {
 		this.scroller.print(()=>{
 			let old = this.message_parts[comment.id]
 			if (comment.deleted) {
-				this.removeMessage(comment.id)
+				this.remove_message(comment.id)
 			} else {
 				if (old) { // edited
 					let part = Draw.message_part(comment)
 					this.message_parts[comment.id] = part
 					old.parentNode.replaceChild(part, old)
 				} else { // new comment
-					this.insert_merge(comment, this.lastTime, false)
-					this.lastTime = comment.createDate //todo: improve
-					View.commentTitle(comment)
+					this.insert_merge(comment, this.last_time, false)
+					this.last_time = comment.createDate //todo: improve
+					this.comment_title(comment)
 				}
 			}
 		}, autoscroll != false)
 	}
 	
-	showControls(elem) {
+	show_controls(elem) {
 		if (elem) {
 			// why does this fail sometimes?
 			if (!elem.parentNode) {

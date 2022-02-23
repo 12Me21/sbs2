@@ -981,12 +981,6 @@ input, select {
 	display: block;
 }
 
-html.f-splitView main-scrollable {
-	flex-grow: 0;
-	flex-basis: auto;
-	overflow-y: hidden;
-}
-
 sidebar-panel {
 	overflow: auto;
 }
@@ -1225,7 +1219,7 @@ resize-handle, .resize {
 	overflow: hidden;
 	/*box-shadow: 0 -2px 3px rgba(0,0,0,0.3);*/
 }
-resize-handle[dragging], .resize[dragging] {
+resize-handle[data-dragging], .resize[data-dragging] {
 	cursor: grabbing;
 }
 

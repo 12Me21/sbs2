@@ -38,7 +38,7 @@ add_view('category', {
 			user: 'id,username,avatar',
 		}, (e, resp)=>{
 			if (!e) {
-				let category = id==0 ? Entity.categoryMap[0] : resp.Cmain[0]
+				let category = id==0 ? Entity.category_map[0] : resp.Cmain[0]
 				render(category, resp.category, resp.content, resp.Ppinned, page)
 			} else
 				render(null)
@@ -49,8 +49,8 @@ add_view('category', {
 	render(category, cats, pages, pinned, pageNum) {
 		currentCategory = category.id
 		navButtons.set(pageNum)
-		setEntityTitle(category)
-		setEntityPath(category.parent)
+		set_entity_title(category)
+		set_entity_path(category.parent)
 		$categoryDescription.replaceChildren(Parse.parseLang(category.description, category.values.markupLang))
 		$categoryCategories.replaceChildren()
 		Nav.link("editpage?cid="+category.id, $createPage.parentNode)
@@ -75,7 +75,7 @@ add_view('category', {
 		if (/u/.test(category.myPerms))
 			flag('canEdit', true)
 	},
-	cleanUp() {
+	cleanup() {
 		$categoryCategories.replaceChildren()
 		$categoryPages.replaceChildren()
 		$categoryDescription.replaceChildren()

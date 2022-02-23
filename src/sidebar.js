@@ -1,25 +1,22 @@
 let Sidebar = Object.create(null)
 with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	
-	selectedFile: null,
+	selected_file: null,
 	
 	scroller: null,
-	prePrint: [],
+	pre_print: [],
 	
-	sidebarPanels: null,
+	select_tab: null,
 	
-	selectTab: null,
-	
-	intervalId: null,
-	
-	myAvatar: null,
+	my_avatar: null,
 	
 	file_upload_form: null,
 	
+	interval: null,
 	refresh_time_interval(data) { //unused parameter
-		if (intervalId)
-			window.clearInterval(intervalId)
-		intervalId = window.setInterval(()=>{
+		if (interval)
+			window.clearInterval(interval)
+		interval = window.setInterval(()=>{
 			Draw.update_timestamps($sidebarActivity)
 		}, 1000*30)
 	},
@@ -39,10 +36,12 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		file_cancel()
 		
 		$openSidebar.onclick = $closeSidebar.onclick = toggle
-		View.attachResize($sidebar, $sidebarResize, true, -1, "sidebarWidth")
-		View.attachResize($sidebarTop, $sidebarResize, false, 1, "sidebarPinnedHeight")
+		View.attach_resize($sidebar, $sidebarResize, true, -1, "sidebarWidth")
+		View.attach_resize($sidebarTop, $sidebarResize, false, 1, "sidebarPinnedHeight")
 		View.flag('sidebar', true)
-		View.attachPaste((file)=>{ got_file(file) })
+		
+		attach_paste(got_file)
+		
 		$file_browse.onchange = function(e) { // must not be arrow func
 			let file = this.files[0]
 			try {
@@ -53,7 +52,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		}
 		$file_cancel.onclick = $file_done.onclick = file_cancel
 		$file_upload.onclick = function() {
-			if (selectedFile) {
+			if (selected_file) {
 				$file_upload.disabled = true
 				
 				let data = file_upload_form.get()
@@ -65,11 +64,11 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 				if (data.quantize)
 					params.quantize = +data.quantize
 				
-				Req.upload_file(selectedFile, params, (e, file)=>{
+				Req.upload_file(selected_file, params, (e, file)=>{
 					$file_upload.disabled = false
 					if (e) // failed
 						return
-					selectedFile = null
+					selected_file = null
 					
 					$file_url.hidden = false
 					$file_done.parentNode.hidden = false
@@ -86,28 +85,28 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		}
 		$file_url.onclick = function() { $file_url.select() }
 		scroller = new Scroller($sidebarScroller.parentNode, $sidebarScroller)
-		prePrint.forEach((x)=> print(x) )
-		prePrint = null
+		pre_print.forEach((x)=> print(x) )
+		pre_print = null
 		// todo: maybe a global ESC handler?
 		/*document.addEventListener('keydown', function(e) {
 		  
 		  })*/
 		let x = document.createDocumentFragment()
 		let y = x.createChild('span')
-		myAvatar = x.createChild('span')
-		myAvatar.className += " loggedIn fill"
+		my_avatar = x.createChild('span')
+		my_avatar.className += " loggedIn fill"
 		y.className += " loggedOut"
 		y.textContent = "log in"
-		let sidebarTabs = Draw.sidebar_tabs([
+		let sidebar_tabs = Draw.sidebar_tabs([
 			{label: document.createTextNode("✨"), elem: $sidebarActivityPanel},
 			{label: document.createTextNode("W"), elem: $sidebarWatchPanel},
 			{label: document.createTextNode("🔍"), elem: $sidebarNavPanel},
 			{label: document.createTextNode("📷"), elem: $sidebarFilePanel},
 			{label: x, elem: $sidebarUserPanel},
 		])
-		$sidebarTabs.replaceChildren(sidebarTabs.elem)
-		sidebarTabs.select(0)
-		selectTab = sidebarTabs.select
+		$sidebar_tabs.replaceChildren(sidebar_tabs.elem)
+		sidebar_tabs.select(0)
+		select_tab = sidebar_tabs.select
 		
 		$searchButton.onclick = ()=>{
 			$searchButton.disabled = true
@@ -129,15 +128,26 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		View.bind_enter($searchInput, $searchButton.onclick)
 	},
 	
+	attach_paste(callback) {
+		document.addEventListener('paste', (event)=>{
+			let data = event.clipboardData
+			if (data && data.files) {
+				let file = data.files[0]
+				if (file && (/^image\//).test(file.type))
+					callback(file)
+			}
+		})
+	},
+	
 	// this needs to be optimized
 	// it redraws the entire list of pages in activity + watching, EVERY time they update
 	// TODO
 	// TODO TODO
-	onAggregateChange(aggregate) {
+	on_aggregate_change(aggregate) {
 		let items = Object.values(aggregate).filter(a=>a.content) //HACK (what did i mean by this?)
 		items.sort((a, b)=> -(a.lastDate - b.lastDate))
-		$sidebarActivity.replaceChildren()
-		$sidebarWatch.replaceChildren()
+		$sidebarActivity.childs = null
+		$sidebarWatch.childs = null
 		for (let item of items) {
 			$sidebarActivity.append(Draw.activity_item(item))
 			if (item.watching)
@@ -146,8 +156,8 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		refresh_time_interval(aggregate)
 	},
 	
-	redrawCategoryTree(cats) {
-		$sidebarCategories.replaceChildren(Draw.nav_category(cats[0]))
+	redraw_category_tree(cats) {
+		$sidebarCategories.childs = Draw.nav_category(cats[0])
 	},
 	
 	print(...args) {
@@ -165,27 +175,27 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		}).join("\n")
 		if (scroller)
 			scroller.print(()=>{
-				displayedMessages++
-				limitMessages()
+				message_count++
+				limit_messages()
 				return Draw.sidebar_debug(text)
 			}, true)
 		else
-			prePrint.push(text)
+			pre_print.push(text)
 	},
 	
 	file_cancel() {
-		selectedFile = null
+		selected_file = null
 		$file_browse.hidden = false
 		$file_cancel.parentNode.hidden = true // parentnode because buttoncontainer.. messy todo
 		$file_url.hidden = true
 		$file_done.parentNode.hidden = true
 		$file_upload.parentNode.hidden = true
 		file_upload_form.elem.hidden = true
-		cleanUp()
+		cleanup()
 	},
 	
-	cleanUp() {
-		selectedFile = null
+	cleanup() {
+		selected_file = null
 		$file_image.src = ""
 	},
 	
@@ -203,12 +213,12 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 			size: (file.size/1000)+" kB",
 			name: file.name,
 		})
-		selectedFile = file
-		selectTab(3) //hack HACK
+		selected_file = file
+		select_tab(3) //hack HACK
 	},
 	
 	toggle() {
-		let fullscreen = isFullscreen()
+		let fullscreen = is_fullscreen()
 		if (fullscreen) {
 			View.flag('mobileSidebar', !View.flags.mobileSidebar)
 		} else {
@@ -217,24 +227,24 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		}
 	},
 	
-	isFullscreen() {
+	is_fullscreen() {
 		return !window.matchMedia || window.matchMedia("(max-width: 700px)").matches
 	},
 	
-	displayedMessages: 0,
+	message_count: 0,
 	
-	displayedIds: {},
+	displayed_ids: {},
 	
 	display_messages(comments, initial) {
 		// todo: show page titles?
 		scroller.print(()=>{
 			for (let c of comments) {
-				let old = displayedIds[c.id]
+				let old = displayed_ids[c.id]
 				if (c.deleted) {
 					if (old) {
 						old.remove()
-						delete displayedIds[c.id]
-						displayedMessages--
+						delete displayed_ids[c.id]
+						message_count--
 					}
 				} else {
 					let nw = Draw.sidebar_comment(c)
@@ -242,26 +252,26 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 						old.replaceWith(nw)
 					} else {
 						scroller.inner.append(nw)
-						displayedMessages++
+						message_count++
 					}
-					displayedIds[c.id] = nw
-					limitMessages()
+					displayed_ids[c.id] = nw
+					limit_messages()
 				}
 			}
 		}, !initial)
 		if (initial)
-			scroller.scrollInstant()
+			scroller.scroll_instant()
 	},
 	
-	limitMessages() {
+	limit_messages() {
 		//var x = scroller.scrollBottom
-		while (displayedMessages > 500) {
+		while (message_count > 500) {
 			let n = scroller.inner.firstChild
 			let id = n.dataset.id
 			if (id)
-				delete displayedIds[+id]
+				delete displayed_ids[+id]
 			n.remove()
-			displayedMessages--
+			message_count--
 		}
 		//scroller.scrollBottom = x
 	}

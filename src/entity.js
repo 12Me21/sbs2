@@ -16,17 +16,17 @@ function entity_map(map, fake) {
 
 let Entity = {
 	onCategoryUpdate(cats) {
-		Sidebar.redrawCategoryTree(cats)
+		Sidebar.redraw_category_tree(cats)
 	},
 	
-	categoryMap: {0: {
+	category_map: {0: {
 		name: "[root]",
 		id: 0,
 		Type: 'category',
 		description: "",
 		values: {}
 	}},
-	gotNewCategory: false,
+	got_new_category: false,
 	
 	// official page types
 	CONTENT_TYPES: [
@@ -69,26 +69,26 @@ let Entity = {
 		Object.for(resp, (data, key)=>{
 			let type = this.key_type(key)
 			if (type == 'user') {
-				this.processList(type, data, users)
+				this.process_list(type, data, users)
 				for (let user of data)
 					map[user.id] = user
 			}
 		})
 		
 		if (resp.Ctree)
-			this.processList('category', resp.Ctree, users)
+			this.process_list('category', resp.Ctree, users)
 		
 		Object.for(resp, (data, key)=>{
 			let type = this.key_type(key)
 			if (type!='user' && key!='Ctree')
-				this.processList(type, data, users)
+				this.process_list(type, data, users)
 		})
-		resp.userMap = users
+		resp.user_map = users
 		
-		if (this.gotNewCategory) {
+		if (this.got_new_category) {
 			this.rebuildCategoryTree()
 			window.setTimeout(()=>{
-				this.onCategoryUpdate && this.onCategoryUpdate(this.categoryMap)
+				this.onCategoryUpdate && this.onCategoryUpdate(this.category_map)
 			}, 0)
 		}
 		//console.log('process took:', performance.now()-x, resp)
@@ -103,14 +103,14 @@ let Entity = {
 			G: 'commentaggregate', // ran out of letters
 		}[key[0]] || key
 	},
-	processList(type, data, users) {
+	process_list(type, data, users) {
 		let proc = this.process_type[type]
 		if (!proc) {
 			console.warn('recvd unknown type', type, data)
 			return // uh oh, unknown type
 		}
 		if (type == 'category')
-			this.gotNewCategory = true
+			this.got_new_category = true
 		data.forEach((item, i, data)=>{
 			// this is done in-place
 			data[i] = proc.call(this, item, users) //oops, we have to bind `this` here. maybe time to rethink the use of `this`...
@@ -144,9 +144,9 @@ let Entity = {
 			return data
 		},
 		category(data, users) {
-			let cat = this.categoryMap[data.id]
+			let cat = this.category_map[data.id]
 			if (!cat) {
-				this.categoryMap[data.id] = cat = data
+				this.category_map[data.id] = cat = data
 			} else {
 				Object.assign(cat, data)
 				data = cat
@@ -157,7 +157,7 @@ let Entity = {
 		content(data, users) {
 			data = this.process_editable(data, users)
 			if (data.parentId != null)
-				data.parent = this.categoryMap[data.parentId]
+				data.parent = this.category_map[data.parentId]
 			data.users = users //hack for permissions users. TODO: what?
 			return data
 		},
@@ -245,11 +245,11 @@ let Entity = {
 	},
 	
 	rebuildCategoryTree() {
-		this.gotNewCategory = false
-		Object.for(this.categoryMap, (cat)=> cat.children = [])
+		this.got_new_category = false
+		Object.for(this.category_map, (cat)=> cat.children = [])
 		// todo: make sure root category doesn't have parent
-		Object.for(this.categoryMap, (cat)=>{
-			let parent = this.categoryMap[cat.parentId] || this.categoryMap[0]
+		Object.for(this.category_map, (cat)=>{
+			let parent = this.category_map[cat.parentId] || this.category_map[0]
 			if (cat.id != 0) {
 				parent.children.push(cat)
 				cat.parent = parent

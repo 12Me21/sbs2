@@ -28,7 +28,7 @@ else
 	ready()
 function ready() {
 	console.log("ONLOAD!")
-	Req.tryLoadCachedAuth() // moved this here
+	Req.try_load_cached_auth() // moved this here
 	// does this still work
 	if (navigator.vendor=="Google Inc.")
 		document.documentElement.style.imageRendering = "-webkit-optimize-contrast"

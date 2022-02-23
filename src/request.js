@@ -21,7 +21,7 @@ const Req = {
 		else
 			Lp.start(false)
 		
-		Act.pullRecent()
+		Act.pull_recent()
 		//TODO
 		// update currently viewed page (in case page was hidden)
 	},
@@ -31,7 +31,7 @@ const Req = {
 		window.location.reload()
 	},
 	on_guest_load() {
-		Act.pullRecent()
+		Act.pull_recent()
 	},
 	
 	auth: null,
@@ -75,7 +75,7 @@ const Req = {
 			let type = x.getResponseHeader('Content-Type')
 			let resp
 			if (/^application\/json(?!=\w)/.test(type))
-				resp = JSON.safeParse(x.responseText)
+				resp = JSON.safe_parse(x.responseText)
 			else
 				resp = x.responseText
 			let code = x.status
@@ -91,7 +91,7 @@ const Req = {
 				let after = +(x.getResponseHeader('Retry-After') || 1)
 				retry((after+0.5)*1000, "rate limited "+after+"sec")
 			} else if (code==400)
-				callback('error', JSON.safeParse(resp))
+				callback('error', JSON.safe_parse(resp))
 			else if (code==401)
 				callback('auth', resp)
 			else if (code==403)
@@ -103,12 +103,12 @@ const Req = {
 			else if (code==500) {
 				print("got 500 error! "+resp)
 				console.warn('got 500 error', x, resp)
-				callback('error', JSON.safeParse(resp))
+				callback('error', JSON.safe_parse(resp))
 				//retry(1000, '500 error')
 			} else { // other
 				alert("Request failed! "+code+" "+url)
 				console.log("REQUEST FAILED", x)
-				resp = JSON.safeParse(resp)
+				resp = JSON.safe_parse(resp)
 				callback('error', resp, code)
 			}
 		}
@@ -216,7 +216,7 @@ const Req = {
 	// triggers on_login and returns true if successful
 	// (doesn't check if auth is expired though)
 	// return: Boolean
-	tryLoadCachedAuth() {
+	try_load_cached_auth() {
 		let auth = Store.get(this.storage_key)
 		let ok = auth ? this.got_auth(auth) : false
 		if (!ok)
@@ -224,7 +224,7 @@ const Req = {
 		return ok
 	},
 	
-	putFile(file, callback) {
+	put_file(file, callback) {
 		return this.request("File/"+file.id, 'PUT', callback, file)
 	},
 	
@@ -271,7 +271,7 @@ const Req = {
 		return this.request("User/me", 'GET', (e, resp)=>{
 			if (!e) {
 				let l = [resp]
-				Entity.processList('user',l,{})
+				Entity.process_list('user',l,{})
 				callback(l[0])
 			} else
 				callback(null)
@@ -282,7 +282,7 @@ const Req = {
 		return this.request("User/basic", 'PUT', (e, resp)=>{
 			if (!e) {
 				let l = [resp]
-				Entity.processList('user',l,{})
+				Entity.process_list('user',l,{})
 				callback(l[0])
 			} else
 				callback(null)
@@ -322,7 +322,7 @@ const Req = {
 				callback(e, resp)
 			else {
 				let l = [resp]
-				Entity.processList('file',l,{})
+				Entity.process_list('file',l,{})
 				callback(e, l[0])
 			}
 		}, form)
@@ -351,7 +351,7 @@ const Req = {
 			['user', {limit: count, usernameLike: "%"+like+"%", sort: 'editDate', reverse: true}],
 		], {}, (e, resp)=>{
 			if (!e)
-				callback(resp.userMap)
+				callback(resp.user_map)
 			else
 				callback(null)
 		})

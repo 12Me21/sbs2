@@ -49,7 +49,7 @@ View.add_view('comments', {
 		} else {
 			// if no search, just display the form right away
 			quick(()=>{
-				View.setTitle("Comments")
+				View.set_title("Comments")
 				comment_form.set(data)
 				$commentSearchResults.replaceChildren()
 			})
@@ -58,7 +58,7 @@ View.add_view('comments', {
 	},
 	className: 'comments',
 	render(comments, pages, data, merge) {
-		View.setTitle("Comments")
+		View.set_title("Comments")
 		comment_form.set(data)
 		
 		$commentSearchResults.replaceChildren()
@@ -87,7 +87,7 @@ View.add_view('comments', {
 			}
 		}
 	},
-	cleanUp() {
+	cleanup() {
 		$commentSearchResults.replaceChildren()
 	},
 })

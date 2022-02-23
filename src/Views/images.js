@@ -28,14 +28,14 @@ with (View) (()=>{ "use strict"; {
 				if (!selectedFile)
 					return
 				Req.set_basic({avatar: selectedFile.id}, (user)=>{
-					user && updateMyUser(user) // have to do this because rannnnnnnnnnndommmmmmm broke user activityyy
+					user && update_my_user(user) // have to do this because rannnnnnnnnnndommmmmmm broke user activityyy
 				})
 			}
 			$fileUpdateButton.onclick = ()=>{
 				if (!selectedFile)
 					return
 				readFields(selectedFile)
-				Req.putFile(selectedFile, (e, resp)=>{
+				Req.put_file(selectedFile, (e, resp)=>{
 					if (!e) {
 						resp.createUser = selectedFile.createUser //ehhhhh
 						selectFile(resp)
@@ -80,12 +80,12 @@ with (View) (()=>{ "use strict"; {
 		},
 		className: 'images',
 		render(files) {
-			setTitle("Files")
+			set_title("Files")
 			fileList = files
 			$fileBox.replaceChildren(
 				...files.map(file => Draw.file_thumbnail(file, selectFile)))
 		},
-		cleanUp() {
+		cleanup() {
 			$fileBox.replaceChildren()
 			selectFile(null)
 			fileList = null
@@ -98,8 +98,8 @@ with (View) (()=>{ "use strict"; {
 		let data = form.get()
 		file.name = data.filename
 		file.bucket = data.bucket
-		file.values = JSON.safeParse(data.values)
-		file.permissions = JSON.safeParse(data.permissions)
+		file.values = JSON.safe_parse(data.values)
+		file.permissions = JSON.safe_parse(data.permissions)
 	}
 	
 	function selectFile(file) {

@@ -56,7 +56,7 @@ Node.prototype.child = function(t) {
 }*/
 
 
-JSON.safeParse = function(json) {
+JSON.safe_parse = function(json) { // should be function() not => yeah?
 	try {
 		return JSON.parse(json)
 	} catch(e) {

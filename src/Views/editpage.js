@@ -2,12 +2,12 @@
 with (View) (function($) { "use strict" //*/
 
 add_view('editpage', {
-	init: function() {
-		$editorTextarea.oninput = ()=>{updatePreview(true)}
-		$markupSelect.onchange = ()=>{updatePreview(true)}
-		$markupUpdate.onclick = ()=>{updatePreview(false)}
+	init() {
+		$editorTextarea.oninput = ()=>{update_preview(true)} // todo: argument should set preview flag (whether to load videos etc.)
+		$markupSelect.onchange = ()=>{update_preview(true)}
+		$markupUpdate.onclick = ()=>{update_preview(false)}
 		$submitEdit.onclick = ()=>{
-			submitEdit((e, resp)=>{
+			submit_edit((e, resp)=>{
 				if (!e) {
 					Nav.go("page/"+resp.id)
 				} else {
@@ -19,10 +19,9 @@ add_view('editpage', {
 			let e = View.flags.editorPreview
 			View.flag('editorPreview', !e)
 		}
-		View.attachResize($editorPreviewPane, $editorPreviewResize, false, 1)
+		View.attach_resize($editorPreviewPane, $editorPreviewResize, false, 1)
 	},
-	splitView: true,
-	start: function(id, query, render) {
+	start(id, query, render) {
 		if (id) { //edit existing page
 			id = +id
 			return Req.read([
@@ -32,7 +31,7 @@ add_view('editpage', {
 				if (!e) {
 					let page = resp.content[0]
 					if (page)
-						render(page, resp.userMap)
+						render(page, resp.user_map)
 					else
 						render(null)
 				} else
@@ -53,7 +52,7 @@ add_view('editpage', {
 		}
 		function done() {
 			render({
-				parent: Entity.categoryMap[query.cid || 0],
+				parent: Entity.category_map[query.cid || 0],
 				name: query.name || "",
 				type: query.type || "chat",
 				content: "",
@@ -86,36 +85,36 @@ add_view('editpage', {
 		$editPageForm.replaceChildren(form.elem)
 		
 		if (page.id) {
-			setTitle("Editing Page")
-			fillFields(page)
-			editingPage = {id: page.id, values: page.values, permissions: page.permissions}
-			setEntityPath(page)
+			set_title("Editing Page")
+			fill_fields(page)
+			editing_page = {id: page.id, values: page.values, permissions: page.permissions}
+			set_entity_path(page)
 		} else {
-			setTitle("Creating Page")
-			fillFields(page)
-			editingPage = {}
-			setEntityPath(page.parent)
+			set_title("Creating Page")
+			fill_fields(page)
+			editing_page = {}
+			set_entity_path(page.parent)
 		}
 	},
-	cleanUp: function() {
+	cleanup() {
 		$editorPreview.replaceChildren()
 		form && form.destroy()
 		form = null
-		editingPage = null
+		editing_page = null
 	},
 })
 
-let editingPage = null
+let editing_page = null
 let form = null
 
-function submitEdit(callback) {
-	if (!editingPage)
+function submit_edit(callback) {
+	if (!editing_page)
 		return
-	readFields(editingPage)
-	Req.editPage(editingPage, callback)
+	readFields(editing_page)
+	Req.editPage(editing_page, callback)
 }
 
-function updatePreview() {
+function update_preview() {
 	let parent = $editorPreview
 	let shouldScroll = parent.scrollHeight-parent.clientHeight-parent.scrollTop < 10
 	$editorPreview.replaceChildren(Parse.parseLang($editorTextarea.value, $markupSelect.value, true))
@@ -145,7 +144,7 @@ function readFields(page) {
 		page.values.thumbnail = fields.thumbnail
 }
 
-function fillFields(page) {
+function fill_fields(page) {
 	$titleInput.value = page.name
 	let markup
 	if (page.values)
@@ -154,14 +153,14 @@ function fillFields(page) {
 		markup = "plaintext"
 	$markupSelect.value = markup
 	$editorTextarea.value = page.content
-	updatePreview()
+	update_preview()
 	
 	form.set({
 		keywords: page.keywords,
 		type: page.type,
 		thumbnail: page.values.thumbnail,
 		photos: Entity.parse_numbers(page.values.photos),
-		category: [page.parentId, Entity.categoryMap[0]],
+		category: [page.parentId, Entity.category_map[0]],
 		pinned: Entity.parse_numbers(page.values.pinned),
 		permissions: [page.permissions, page.users],
 	})

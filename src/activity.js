@@ -10,7 +10,7 @@ let Act = {
 	
 	// if an item exists for that id, return it
 	// otherwise create a new one and return it
-	getItem(id, pageMap, date) {
+	get_item(id, pageMap, date) {
 		if (this.items[id])
 			return this.items[id]
 		return this.items[id] = {
@@ -23,10 +23,10 @@ let Act = {
 	},
 	
 	redraw() {
-		Sidebar.onAggregateChange(this.items)
+		Sidebar.on_aggregate_change(this.items)
 	},
 	
-	pullRecent() {
+	pull_recent() {
 		// bad arguments :(
 		Req.get_recent_activity(({activity, Mall, Awatching, content, comment})=>{
 			this.process_stuff(activity, Mall, Awatching, content)
@@ -38,9 +38,9 @@ let Act = {
 	process_stuff(act, comments, watching, pages) {
 		if (act || comments || watching) {
 			let p = Entity.page_map(pages)
-			act && this.newActivity(act, p)
-			comments && this.newComments(comments, p)
-			watching && this.newActivity(watching, p, true)
+			act && this.new_activity(act, p)
+			comments && this.new_comments(comments, p)
+			watching && this.new_activity(watching, p, true)
 			this.redraw()
 		}
 	},
@@ -54,21 +54,21 @@ let Act = {
 	// but, if the page isn't there, we don't add it, because it's old
 	// problem: this can be called before initial activity data is loaded
 	// so this function doesn't work on the first page you visit - TODO
-	newPageComments(page, comments) {
+	new_page_comments(page, comments) {
 		let item = this.items[page.id]
 		if (!item) //old page
 			return
 		comments.forEach(({editUser, editDate})=>
-			this.userUpdate(item, editUser, editDate)) //nice formatting
+			this.user_update(item, editUser, editDate)) //nice formatting
 	},
 	
-	newThing(id, date, user, pageMap, watch, update_pages) {
-		let item = this.getItem(id, pageMap, date)
-		if (update_pages && pageMap[id]) // hopefully this takes care of pages in activity list being updated? (i think we only need to do this on newActivity not newComments)
+	new_thing(id, date, user, pageMap, watch, update_pages) {
+		let item = this.get_item(id, pageMap, date)
+		if (update_pages && pageMap[id]) // hopefully this takes care of pages in activity list being updated? (i think we only need to do this on new_activity not new_comments)
 			item.content = pageMap[id]
 		if (watch)
 			item.watching = true
-		this.userUpdate(item, user, date)
+		this.user_update(item, user, date)
 		item.count++
 		if (date < item.firstDate)
 			item.firstDate = date
@@ -76,16 +76,16 @@ let Act = {
 			item.lastDate = date
 	},
 	
-	newComments(comments, pageMap, watch) {
+	new_comments(comments, pageMap, watch) {
 		// todo: commentaggregate only tracks createDate
 		// so maybe use that here for consistency between reloads
 		for (let {parentId:id, editDate:date, editUser:user} of comments)
-			this.newThing(id, date, user, pageMap, watch, false)
+			this.new_thing(id, date, user, pageMap, watch, false)
 	},
 	
-	newActivity(activity, pageMap, watch) {
+	new_activity(activity, pageMap, watch) {
 		for (let {contentId:id, date, user} of activity)
-			this.newThing(id, date, user, pageMap, watch, true)
+			this.new_thing(id, date, user, pageMap, watch, true)
 	},
 	
 	//todo: somewhere we are getting Fake users with uid 0/
@@ -95,7 +95,7 @@ let Act = {
 	// perhaps just filter those out immediately
 	
 	// add or move+update user to start of list
-	userUpdate(item, user, date) {
+	user_update(item, user, date) {
 		if (!user) return // just in case
 		// i really hate this code
 		

@@ -411,7 +411,7 @@ const INPUTS = (()=>{
 				this.body.append(Draw.permission_row(user, perm))
 			}
 			set([perms, users]) {
-				this.body.replaceChildren()
+				this.body.childs = null
 				let d = false
 				Object.for(perms, (perm, uid) => {
 					uid = +uid
@@ -494,7 +494,7 @@ const INPUTS = (()=>{
 					return x
 				}
 				
-				this.input.replaceChildren(option("", "-- Select Category --"))
+				this.input.childs = option("", "-- Select Category --")
 				if (!tree) return // not ready yet :(
 				
 				// recursive function
@@ -564,9 +564,7 @@ const INPUTS = (()=>{
 				this.elem = this.input
 			}
 			set(v) {
-				this.input.replaceChildren()
-				if (v)
-					this.input.append(Draw.entity_title_link(v))
+				this.input.childs = v ? Draw.entity_title_link(v) : null
 			}
 		},
 	}

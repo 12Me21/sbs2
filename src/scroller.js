@@ -72,7 +72,7 @@ class Scroller {
 		this.animation = null
 		this.at_bottom = true
 		this.rate = 0.25 //autoscroll rate: amount of remaining distance to scroll per 1/60 second
-		this.bottomHeight = 0.25 //if within this distance of bottom, autoscroll is enabled
+		this.bottom_height = 0.25 //if within this distance of bottom, autoscroll is enabled
 		this.register_size_change()
 		outer.addEventListener('scroll', (e)=>{
 			if (this.ignore_scroll) {
@@ -85,13 +85,13 @@ class Scroller {
 			}
 			if (this.animation)
 				this.cancel_scroll()
-			this.at_bottom = this.scrollBottom < this.outer.clientHeight*this.bottomHeight
+			this.at_bottom = this.scrollBottom < this.outer.clientHeight*this.bottom_height
 		}, {passive: true})
 		
 		let onResize = ()=>{
 			this.register_size_change()
 			if (this.at_bottom && !this.animation) // when message is inserted, it triggers the resize detector, which would interrupt the scroll animation, so we don't force scroll if an animation is playing
-				this.scrollInstant()
+				this.scroll_instant()
 		}
 		track_scroll_resize.add(this.outer, onResize)
 		track_scroll_resize.add(this.inner, onResize)
@@ -112,8 +112,12 @@ class Scroller {
 		// need to round here because it would be reversed otherwise
 		//value = value/window.devicePixelRatio)*window.devicePixelRatio
 		parent.scrollTop = Math.ceil((parent.scrollHeight-parent.clientHeight-value)*window.devicePixelRatio)/window.devicePixelRatio
+		//from chat.js:
+		//value = Math.floor(value*window.devicePixelRatio)/window.devicePixelRatio
+		//let parent = this.messages_outer
+		//parent.scrollTop = parent.scrollHeight-parent.clientHeight-value
 	}
-	scrollInstant() {
+	scroll_instant() {
 		this.cancel_scroll()
 		this.ignore_scroll = true
 		this.scrollBottom = 0

@@ -137,7 +137,7 @@ const Nav = {
 			path: id==null ? [type] : [type, String(id)],
 			query: query,
 		})
-		View.handleView(type, id, query, callback)
+		View.handle_view(type, id, query, callback)
 	},
 	
 	reload() {

@@ -28,12 +28,12 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 			for (let a of activity)
 				if (a.type == 'user') {
 					if (a.content.id == Req.uid)
-						View.updateMyUser(a.content)
+						View.update_my_user(a.content)
 					ChatRoom.update_avatar(a.content)
 				}
 	},
 	on_start(me) {
-		View.updateMyUser(me) //also sets Req.me...
+		View.update_my_user(me) //also sets Req.me...
 	},
 	
 	// this is used in the userlist
@@ -188,7 +188,7 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 			process(e, resp)
 			if (!e) {
 				// I'm not sure this is needed. might be able to just call lp_loop diretcly?
-				let t = setTimeout(()=>{
+				let t = window.setTimeout(()=>{
 					if (cancelled) // should never happen?
 						return
 					lp_loop()
@@ -196,7 +196,7 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 				lp_cancel = ()=>{
 					cancelled = true
 					running = false
-					clearTimeout(t)
+					window.clearTimeout(t)
 				}
 			}
 		})
@@ -249,13 +249,13 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 				Object.for(resp.listeners, (list, id)=>{
 					out[id] = {}
 					Object.for(list, (status, uid)=>{
-						out[id][uid] = {user: c.userMap[uid], status: status}
+						out[id][uid] = {user: c.user_map[uid], status: status}
 					})
 				})
 				/*
 				processed_listeners = Object.map(resp.listeners, (list, id)=>
 					Object.map(list, (status, uid)=>
-						({user: c.userMap[uid], status: status})
+						({user: c.user_map[uid], status: status})
 					)
 				)
 				*/

@@ -42,7 +42,7 @@ add_view('user', {
 				path="editpage?type=userpage&name="+url_escape(user.name)+"'s user page"
 			Nav.link(path, $editUserPage)
 		}
-		setEntityTitle(user)
+		set_entity_title(user)
 		/*$userPageAvatarLink.href = Draw.avatar_url(user)*/
 		$userPageAvatar.src = Draw.avatar_url(user, "size=400&crop=true")
 		//setPath([["users","Users"], [Nav.entityPath(user), user.name]])
@@ -51,7 +51,7 @@ add_view('user', {
 		else
 			$userPageContents.replaceChildren()
 	},
-	cleanUp() {
+	cleanup() {
 		$userPageAvatar.src = ""
 		$userPageContents.replaceChildren()
 	},

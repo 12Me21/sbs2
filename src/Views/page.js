@@ -14,8 +14,8 @@ with (View) (function($) { "use strict" //*/
 
 let room
 let render_page = (page)=>{
-	setEntityTitle(page)
-	setEntityPath(page.parent)
+	set_entity_title(page)
+	set_entity_path(page.parent)
 	flag('canEdit', /u/.test(page.myPerms))
 	$chatTextarea.disabled = !(page.createUserId==Req.uid || /c/.test(page.permissions[Req.uid] || page.permissions[0]));
 	Nav.link("editpage/"+page.id, $pageEditLink)
@@ -70,18 +70,17 @@ add_view('page', {
 		}
 	},
 	className: 'page',
-	splitView: true,
 	render(page, comments, pinned) {
-		Act.newPageComments(page, comments)
+		Act.new_page_comments(page, comments)
 		Act.redraw()
 		//ChatRoom.setViewing([page.id])
 		room = new ChatRoom(page.id, page)
-		room.displayInitialMessages(comments, pinned) //todo: when page is edited, update pinned messages
+		room.display_initial_messages(comments, pinned) //todo: when page is edited, update pinned messages
 		room.show()
 		
 		render_page(page)
 	},
-	cleanUp(type) {
+	cleanup(type) {
 		//$messageList.replaceChildren()
 		room && room.hide() //so it's fucking possible for cleanup to get called TWICE if there's an error, sometimes.
 		room = null

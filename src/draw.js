@@ -75,7 +75,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		//
 		let resize = E`resize-handle`
 		resize.textContent = "↕"
-		View.attachResize(page1, resize, false, 1) // todo: save?
+		View.attach_resize(page1, resize, false, 1) // todo: save?
 		// 
 		let [list1, list2, button] = userlist()
 		// 
@@ -690,13 +690,13 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		let btn = E`button`
 		elem.append(btn)
 		btn.onclick = info
-		btn.tabIndex = "-1"
+		btn.setAttribute('tabindex', "-1")
 		btn.textContent = "⚙"
 		
 		btn = E`button`
 		elem.append(btn)
 		btn.onclick = edit
-		btn.tabIndex = "-1"
+		btn.setAttribute('tabindex', "-1")
 		btn.textContent = "✏"
 		return x
 	},
@@ -752,7 +752,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			
 			let value = Store.get("setting-"+name)
 			if (value != null) {
-				value = JSON.safeParse(value)
+				value = JSON.safe_parse(value)
 				set[name](value)
 				onchange(name, value)
 			}
@@ -870,7 +870,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 							// the new button
 							if (oldButton) {
 								delete oldButton.dataset.selected
-								replaceVote('.voteCount[data-vote="' + oldButton.getAttribute('data-vote') + '"]', -1)
+								replaceVote('.voteCount[data-vote="' + oldButton.dataset.vote + '"]', -1)
 							}
 							button.dataset.selected = ""
 							replaceVote('.voteCount[data-vote="' + state + '"]', 1)

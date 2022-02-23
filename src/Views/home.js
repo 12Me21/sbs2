@@ -22,7 +22,7 @@ add_view('', {
 	},
 	className: 'home',
 	render(gallery, categories, resp) {
-		setTitle("Welcome to SmileBASIC Source 2!")
+		set_title("Welcome to SmileBASIC Source 2!")
 		$homeCategories.replaceChildren()
 		categories.forEach((cat)=>{
 			let bar = Draw.entity_title_link(cat)

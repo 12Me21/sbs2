@@ -19,7 +19,7 @@ View.add_view('template', {
 		// this function is called after the data is recieved, and
 		// should render the page
 	},
-	cleanUp() {
+	cleanup() {
 		// this is called before switching to another page,
 		// to remove any unneeded content that was created by `render`
 	},

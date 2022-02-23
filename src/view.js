@@ -5,8 +5,8 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 	
 	cancel_request: null,
 	// this will always be the currently rendered view
-	// (set before `render` is called, and unset before `cleanUp` is called)
-	// current_view.cleanUp should always be correct!
+	// (set before `render` is called, and unset before `cleanup` is called)
+	// current_view.cleanup should always be correct!
 	current_view: null,
 	
 	init_done: false,
@@ -31,7 +31,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			},
 			className: 'test',
 			render() {
-				setTitle("Testing")
+				set_title("Testing")
 			},
 		},
 		test_error: {
@@ -55,14 +55,14 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			},
 			className: 'users',
 			render(users) {
-				setTitle("Users")
+				set_title("Users")
 				$memberList.childs = users.map((user)=>{
 					let bar = Draw.entity_title_link(user)
 					bar.className += " linkBar bar rem2-3"
 					return bar
 				})
 			},
-			cleanUp() {
+			cleanup() { // clean_up...
 				$memberList.childs = null
 			},
 			init() {
@@ -76,16 +76,16 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 	errorView: {
 		className: 'error',
 		render(message, error) {
-			setTitle(message)
+			set_title(message)
 			$errorMessage.textContent = error ? error+"\n"+error.stack : ""
 		},
-		cleanUp() {
+		cleanup() {
 			$errorMessage.textContent = ""
 		}
 	},
 	
 	// handle redirects
-	getView(name, id, query) {
+	get_view(name, id, query) {
 		let view = views[name]
 		let got = false
 		while (view && view.redirect) {//danger!
@@ -99,25 +99,25 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		return [name, id, query, got]
 	},
 	
-	setEntityTitle(entity) {
+	set_entity_title(entity) {
 		$pageTitle.childs = Draw.icon_title(entity)
 		document.title = entity.name
 		real_title = entity.name
-		changeFavicon(false)
+		change_favicon(null)
 	},
-	setTitle(text) {
+	set_title(text) {
 		$pageTitle.textContent = text
 		document.title = text
 		real_title = text
-		changeFavicon(false)
+		change_favicon(null)
 	},
 	
-	setPath(path) {
+	set_path(path) {
 		$path.childs = Draw.title_path(path)
 	},
-	setEntityPath(page) {
+	set_entity_path(page) {
 		if (!page) {
-			setPath([])
+			set_path([])
 			return
 		}
 		let node = page.Type=='category' ? page : page.parent
@@ -130,13 +130,13 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			path.push(null)
 		else
 			path.push([Nav.entityPath(page), page.name])
-		setPath(path)
+		set_path(path)
 	},
 	
-	loadStart() {
+	load_start() {
 		flag('loading', true)
 	},
-	loadEnd() {
+	load_end() {
 		flag('loading', false)
 	},
 	
@@ -151,7 +151,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		}
 	},
 	
-	updateMyUser(user) {
+	update_my_user(user) {
 		if (user.id != Req.uid)
 			return //uh oh
 		Req.me = user //This probably shouldn't be handled by View...
@@ -162,20 +162,20 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		}
 	},
 	
-	handleView(type, id, query, callback) {
+	handle_view(type, id, query, callback) {
 		if (cancel_request) {
 			cancel_request()
 			cancel_request = null
 		}
 		let view
 		
-		let cleanUp = ()=>{
-			if (current_view && current_view.cleanUp) {
+		let cleanup = ()=>{
+			if (current_view && current_view.cleanup) {
 				try {
-					current_view.cleanUp(type, id, query)
+					current_view.cleanup(type, id, query)
 				} catch(e) {
 					// we ignore this error, because it's probably not important
-					// and also cleanUp gets called during error handling so we don't want to get into a loop of errors
+					// and also cleanup gets called during error handling so we don't want to get into a loop of errors
 					error(e, "error in cleanup function")
 				}
 			}
@@ -189,7 +189,6 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			document.querySelectorAll("v-b").forEach((e)=>{
 				e.hidden = !e.hasAttribute("data-view-"+view.className)
 			})
-			View.flag('splitView', view.splitView==true)
 			View.flag('viewReady', true)
 			View.flag('mobileSidebar', false) //bad (should be function on Sidebar)
 			Lp.set_listening(ChatRoom.listening_rooms())
@@ -200,8 +199,8 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			// todo: scroll to fragment element
 		}
 		
-		let errorRender = (message, error)=>{
-			cleanUp()
+		let error_render = (message, error)=>{
+			cleanup()
 			current_view = view = errorView
 			view.render(message, error)
 			after()
@@ -209,7 +208,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		
 		let cancelled = false
 		
-		let whenPageLoaded = (callback)=>{
+		let when_page_loaded = (callback)=>{
 			if (cancelled)
 				return
 			if (init_done)
@@ -222,7 +221,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		
 		try {
 			let got_redirect
-			;[type, id, query, got_redirect] = getView(type, id, query)
+			;[type, id, query, got_redirect] = get_view(type, id, query)
 			view = views[type]
 			if (got_redirect) {
 				Nav.set_location(type, id, query)
@@ -230,71 +229,71 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		} catch(e) {
 			window.ee=e
 			error(e, "error during redirect")
-			whenPageLoaded(()=>{
-				errorRender("error during redirect", e)
+			when_page_loaded(()=>{
+				error_render("error during redirect", e)
 			})
 			return // ??
 		}
 		
 		let quick= (ren)=>{
-			cleanUp()
+			cleanup()
 			current_view = view
 			try {
 				ren(id, query)
 				after()
 			} catch(e) {
-				errorRender("render failed", e)
+				error_render("render failed", e)
 			}
-			loadEnd()
+			load_end()
 		}
 		
 		let xhr
 		
 		if (!view) {
-			whenPageLoaded(()=>{
-				errorRender("Unknown page type: \""+type+"\"")
+			when_page_loaded(()=>{
+				error_render("Unknown page type: \""+type+"\"")
 			})
 		} else if (view.start) {
-			whenPageLoaded(loadStart)
+			when_page_loaded(load_start)
 			try { // this catches errors in view.start, NOT the callbacks inside here
 				xhr = view.start(id, query, (...args)=>{ // needed because arguments
 					let ok = args[0]
-					whenPageLoaded(()=>{
+					when_page_loaded(()=>{
 						if (cancelled)
 							return
-						cleanUp()
+						cleanup()
 						if (!ok) {
 							let msg = ok==false ? "error 1" : "content not found?"
-							errorRender(msg)
+							error_render(msg)
 						} else {
 							current_view = view
 							try {
 								view.render(...args)
 								after()
 							} catch(e) {
-								errorRender("render failed", e)
+								error_render("render failed", e)
 							}
 						}
-						loadEnd()
+						load_end()
 					})
 				}, (e)=>{
-					whenPageLoaded(()=>{
+					when_page_loaded(()=>{
 						quick(e)
 					})
 				})
 			} catch(e) {
-				errorRender("render failed 1", e)
-				loadEnd()
+				error_render("render failed 1", e)
+				load_end()
 			}
 		} else {
-			whenPageLoaded(()=>{
-				loadStart()
+			when_page_loaded(()=>{
+				load_start()
 				quick(view.render)
 			})
 		}
 		
 		cancel_request = ()=>{
-			loadEnd()
+			load_end()
 			xhr && xhr.abort && xhr.abort()
 			cancelled = true
 		}
@@ -311,7 +310,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			button.replaceWith(container)
 			container.className += " "+button.className
 			button.className = ""
-			if (button.hasAttribute('data-static-link')) {
+			if (button.dataset.staticLink!=undefined) {
 				button.setAttribute('tabindex', "-1")
 				let a = document.createElement('a')
 				container.append(a)
@@ -335,38 +334,38 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		// need to detect when the video is played
 		// using a custom event
 		document.addEventListener('videoclicked', (e)=>{
-			imageFocusClickHandler(e.target, true)
+			image_focus_click_handler(e.target, true)
 		})
 		document.onmousedown = (e)=>{
 			if (!e.button && e.target) // 0 or none (prevent right click etc.)
-				imageFocusClickHandler(e.target)
+				image_focus_click_handler(e.target)
 		}
 		
-		let embiggenedImage
+		let embiggened_image
 		// clicking outside an image shrinks it
 		// maybe could block this if the click is on a link/button?
 		document.onclick = (e)=>{
 			let element = e.target
 			if (!(element instanceof HTMLTextAreaElement)) {
-				if (embiggenedImage && element != embiggenedImage) {
-					embiggenedImage.removeAttribute('data-big')
-					embiggenedImage = null
+				if (embiggened_image && element != embiggened_image) {
+					delete embiggened_image.dataset.big
+					embiggened_image = null
 				}
 			}
 		}
 		
-		function imageFocusClickHandler(element, growOnly) {
-			if (element.hasAttribute('data-shrink')) {
+		function image_focus_click_handler(element, grow_only) {
+			if (element.dataset.shrink!=undefined) {
 				// if click on image that's already big:
-				if (embiggenedImage && embiggenedImage == element) {
-					if (!growOnly) {
-						embiggenedImage.removeAttribute('data-big')
-						embiggenedImage = null
+				if (embiggened_image && embiggened_image == element) {
+					if (!grow_only) {
+						delete embiggened_image.dataset.big
+						embiggened_image = null
 					}
-				} else if (element != embiggenedImage) { // if click on new iamge
-					embiggenedImage && embiggenedImage.removeAttribute('data-big')
-					element.setAttribute('data-big', "")
-					embiggenedImage = element
+				} else if (element != embiggened_image) { // if click on new iamge
+					embiggened_image && delete embiggened_image.dataset.big
+					element.dataset.big = ""
+					embiggened_image = element
 				}
 			}
 		}
@@ -380,19 +379,8 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		init_done && data.init && data.init()
 	},
 	
-	attachPaste(callback) {
-		document.addEventListener('paste', (event)=>{
-			let data = event.clipboardData
-			if (data && data.files) {
-				let file = data.files[0]
-				if (file && (/^image\//).test(file.type))
-					callback(file)
-			}
-		})
-	},
-	
 	// should be a class (actually nevermind the syntax is gross)
-	attachResize(element, tab, horiz, dir, save, callback) {
+	attach_resize(element, tab, horiz, dir, save, callback) {
 		let start_pos, start_size
 		let held = false
 		let size = null
@@ -417,7 +405,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		}
 		function down(e) {
 			e.preventDefault()
-			tab.setAttribute('dragging',"")
+			tab.dataset.dragging = ""
 			held = true
 			start_pos = event_pos(e)
 			start_size = element[horiz?'offsetWidth':'offsetHeight']
@@ -429,7 +417,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			update_size(start_size + v)
 		}
 		function up(e) {
-			tab.removeAttribute('dragging')
+			delete tab.dataset.dragging
 			held = false
 			if (save && size != null)
 				Store.set(save, size)
@@ -441,19 +429,15 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		}
 	},
 	
-	commentTitle(comment) {
-		titleNotification(comment.content, Draw.avatar_url(comment.createUser, "size=120&crop=true"))
-	},
-	
-	titleNotification(text, icon) {
+	title_notification(text, icon) {
 		if (!Req.me)
 			return;
 		if (text == false) {
 			document.title = real_title
-			changeFavicon(false)
+			change_favicon(null)
 		} else {
 			document.title = text
-			changeFavicon(icon || false)
+			change_favicon(icon || null)
 		}
 	},
 	
@@ -467,19 +451,19 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		})
 	},
 	
-	changeFavicon(src) {
+	change_favicon(src) {
 		if (!favicon_element) {
-			if (src == false)
+			if (src == null)
 				return
 			document.head.querySelectorAll("link[data-favicon]").forEach(e=>e.remove())
 			favicon_element = document.createElement('link')
 			favicon_element.rel = "icon"
 			document.head.append(favicon_element)
-		} else if (favicon_element.href == src)
-			return
-		if (src == false)
-			src = "resource/icon16.png"
-		favicon_element.href = src
+		} else if (favicon_element.href != src) {
+			if (src == null)
+				src = "resource/icon16.png"
+			favicon_element.href = src
+		}
 	}
 	
 })<!-- PRIVATE })
