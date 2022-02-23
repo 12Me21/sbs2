@@ -250,34 +250,21 @@ html:not(.f-canEdit) .canEdit {
 /*******************************
  ** content+sidebar container **
  *******************************/
-horizontal-split {
-	display: block;
-	position: relative;
-
-	overflow-x: hidden; /* do we need this anymore? */
-}
-
 .errorPage {
 	padding: 0.2rem;
 	font-family: monospace;
 }
 
-main {
-	height: 100%;
-	overflow: auto; /* ? */
-	/*overflow-y: hidden; /* mmm */
-}
-
 sidebar-container {
-	border-left: 1em solid var(--databarbgcolor);
+	/*border-left: 1em solid var(--databarbgcolor);*/
 	background: var(--mainbgcolor);
 	width: 30vw;
 	min-width: 10vw;
 	z-index: 20;
 }
 
-html:not(.f-sidebar) sidebar-container {
-	display: none;
+.closeSidebar {
+	height: 2.3rem;
 }
 
 /**********
@@ -564,12 +551,6 @@ input::placeholder {
 	color: rgba(128,128,128,0.6);
 	padding-left: 0.3rem;
 }
-select {
-	font-size: 1em;
-}
-input {
-	font-size: 0.8em;
-}
 input:invalid {
 	background: var(--error-bg);
 }
@@ -682,50 +663,10 @@ html:not(.f-fileSelected) .fileSelected {
 /*************
  ** Sidebar **
  *************/
-.closeSidebar {
-	display: none;
-}
-
 .closeSidebar button {
 	width: 100%;
 }
 
-#\$sidebarTop {
-	overflow: auto;
-}
-#\$sidebarBottom {
-	overflow: auto;
-}
-
-/* narrow screen: fullscreen sidebar */
-@media (max-width: 700px) {
-	sidebar-container {
-		width: 100% !important;
-	}
-	.closeSidebar {
-		display: block;
-		height: 2.3rem;
-	}
-	html.f-mobileSidebar body > * {
-	}
-	html.f-mobileSidebar sidebar-container {
-		border-left: none;
-		position: fixed;
-		left: 0;
-		top: 0;
-		bottom: 0;
-		right: 0;
-	}
-	html:not(.f-mobileSidebar) sidebar-container {
-		display: none;
-	}
-	main {
-		max-width: 100% !important;
-	}
-	#\$sidebarActivity {
-		max-height: 100vh;
-	}
-}
 /* TODO: margin should be fullscreen mode by default, then disabled with @media (min-width) */
 
 /* for devices with small screens */
@@ -743,7 +684,6 @@ input, select { /* this is old & probably not needed */
 	min-width: 0; 
 	max-width: 100%;
 }
-
 
 .half {
 	text-align: center;

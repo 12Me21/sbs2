@@ -72,9 +72,6 @@ body {
 	flex-shrink: 1;
 	flex-basis: 0;
 }
-.flex-sized {
-	flex-shrink: 1;
-}
 .justify-between {
 	justify-content: space-between;
 }
@@ -296,6 +293,9 @@ but, then we can't add a border to the image
 	display: flex;
 	flex-direction: column;
 }
+.resize-box.row {
+	flex-direction: row;
+}
 .resize-box > * {
 	flex-shrink: 0;
 }
@@ -304,11 +304,14 @@ but, then we can't add a border to the image
 	flex-shrink: 1;
 	flex-basis: 0;
 }
-.resize-box > .flex-sized {
+.resize-box > .sized {
 	flex-shrink: 1;
-	overflow-y: auto
 }
-resize-handle, .resize {
+.resize-box:not(.row) > .sized {
+	overflow-y: auto; /* do we set x in row? */
+}
+
+.resize-box > resize-handle {
 	-webkit-touch-callout: none;
 	
 	-webkit-user-select: none;
@@ -317,11 +320,64 @@ resize-handle, .resize {
 	cursor: grab;
 	color: var(--databartxtcolor);
 	background: var(--databarbgcolor);
-	height: 1.2em;
-	line-height: 1;
 	overflow: hidden;
 	/*box-shadow: 0 -2px 3px rgba(0,0,0,0.3);*/
 }
-resize-handle[data-dragging], .resize[data-dragging] {
+.resize-box > resize-handle[data-dragging] {
 	cursor: grabbing;
+}
+.resize-box:not(.row) > resize-handle {
+	height: 1.2em;
+}
+.resize-box.row > resize-handle {
+	width: 1.2em;
+	line-height: 1;
+}
+
+
+/* neccesary so safari doesn't zoom in */
+input {
+	font-size: 0.8em;
+}
+select {
+	font-size: 1em;
+}
+
+@media not screen and (max-width: 700px) {
+	.closeSidebar {
+		display: none !important;
+	}
+	html:not(.f-sidebar) .sidebar-element {
+		display: none !important;
+	}
+}
+
+/* narrow screen: fullscreen sidebar */
+@media screen and (max-width: 700px) {
+	/* make it fullscreen */
+	sidebar-container {
+		position: fixed;
+		left: 0;
+		top: 0;
+		bottom: 0;
+		right: 0;
+		width: unset !important;
+	}
+	/* this is kinda a hack. basically what we really want is,
+for horizontal-split to stop acting like a .resize-box
+*/
+	horizontal-split {
+		contain: size !important; /* and maybe some others */
+	}
+	/* hide all sidebar elements except the sidebar itself */
+	.sidebar-element:not(sidebar-container) {
+		display: none;
+	}
+	
+	html.f-mobileSidebar horizontal-split > *:not(sidebar-container) {
+		visibility: hidden; /* hide the stuff behind the sidebar so you don't interact with it */
+	}
+	html:not(.f-mobileSidebar) sidebar-container {
+		visibility: hidden;
+	}
 }

@@ -106,8 +106,8 @@
 	</v-b>
 </header>
 
-<horizontal-split class='grow flex-row'>
-	<main class='flex grow' id=$realMain>
+<horizontal-split class='grow resize-box row'>
+	<main class='flex grow slide-box' id=$realMain>
 		
 		<!--============\
 		|| TOP OF PAGE ||
@@ -208,7 +208,7 @@
 		\================-->
 		
 		<v-b data-view-editpage class='fill resize-box'>
-			<div class='flex-sized' id=$editorPreviewPane>
+			<div class='sized' id=$editorPreviewPane>
 				<div class='editorNotPreview'>
 					<div class='registerBox' id=$editPageForm></div> <!-- really what we want here is a marker, not a container element or a replaced element. I would use <br> and then .replaceWith(form.elem), then set the form's .id back to $editPageForm. but that feels unsafe for something which could be generated many times. plus we have to set it back when cleaning up. -->
 					<label>Markup language:<select id=$markupSelect>
@@ -218,7 +218,7 @@
 					</select></label>
 					<button id=$markupUpdate>Update Preview</button>
 				</div>
-				<div class='editorPreview flex-sized'>
+				<div class='editorPreview'>
 					<div id=$editorPreview class='markup-root'></div>
 				</div>
 			</div>
@@ -244,12 +244,14 @@
 	|| SIDEBAR ||
 	\=========-->
 	
-	<sidebar-container id=$sidebar class='flex-sized resize-box'>
+	<resize-handle class='sidebar-element'>x</resize-handle>
+	
+	<sidebar-container id=$sidebar class='sized resize-box sidebar-element'>
 		<button class='closeSidebar' id=$closeSidebar>Close Sidebar</button>
 		<div class='userlist bar rem1-5'><span id=$sidebarUserList></span><button id=$hideGlobalStatusButton class='item rightAlign loggedIn'>Hide</button></div>
 		<!--<span id=$longPollStatus></span>-->
 		<tab-list id=$sidebar_tabs role="tablist" aria-label="sidebar tab"></tab-list>
-		<div id=$sidebarTop class='flex-sized slide-box'>
+		<div id=$sidebarTop class='sized slide-box'>
 			<sidebar-panel id=$sidebarActivityPanel>
 				<scroll-outer><scroll-inner id=$sidebarActivity class='border-list-2'></scroll-inner></scroll-outer>
 			</sidebar-panel>

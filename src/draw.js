@@ -58,7 +58,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	
 	page_element(page) {
 		let container = E`div`
-		container.className = 'flex-sized page-container'
+		container.className = 'sized page-container'
 		let info = page_info(page)
 		let elem = E`div`
 		elem.className = 'markup-root pageContents'
