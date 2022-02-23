@@ -33,6 +33,8 @@ Node.prototype.fill = function (x) {
 	else if (x!=null)
 		throw "invalid node childs"
 }
+// do not use replaceChildren itself, because it's relatively new
+// and was implemented incorrectly on safari at some point
 
 // custom
 Node.prototype.createChild = function(type) {
