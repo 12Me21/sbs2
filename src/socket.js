@@ -240,7 +240,6 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 				if (use_websocket)
 					ws_refresh(); // not always necessary, depends on timing (is this true?)
 			}
-			//console.log('keeping data: ', resp)
 			
 			if (resp.listeners) {
 				// process listeners (convert uids to user objetcs) (also makes a copy)
@@ -252,13 +251,6 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 						out[id][uid] = {user: c.user_map[uid], status: status}
 					})
 				})
-				/*
-				processed_listeners = Object.map(resp.listeners, (list, id)=>
-					Object.map(list, (status, uid)=>
-						({user: c.user_map[uid], status: status})
-					)
-				)
-				*/
 				processed_listeners = out
 				on_listeners(out)
 			}

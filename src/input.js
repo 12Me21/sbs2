@@ -407,8 +407,6 @@ const INPUTS = (()=>{
 				// todo: fire the input onchange event
 			}
 			_add_row(user, perm) {
-				//ok we really need to fix the problem with null users
-				// one solution is to have a user map lookup function which returns a placeholder object if the user is not found, to store the 2 important (and known) properties, Type and id, just to avoid losing that information.
 				this.body.append(Draw.permission_row(user, perm))
 			}
 			set([perms, users]) {
@@ -416,7 +414,7 @@ const INPUTS = (()=>{
 				let d = false
 				Object.for(perms, (perm, uid) => {
 					uid = +uid
-					this._add_row(users[uid] || {Type:'user', id:uid}, perm)
+					this._add_row(users[uid], perm)
 					if (uid==0)
 						d = true
 				})

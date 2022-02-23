@@ -556,7 +556,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	},
 	
 	permission_row(user, perms) {
-		let id = user ? user.id : -1
+		let id = user.id
 		let row = E`tr`
 		let name
 		if (!id) {

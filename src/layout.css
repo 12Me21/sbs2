@@ -300,9 +300,6 @@ but, then we can't add a border to the image
 .resize-box > .sized {
 	flex-shrink: 1;
 }
-.resize-box:not(.row) > .sized {
-	overflow-y: auto; /* do we set x in row? */
-}
 
 .resize-box > resize-handle {
 	-webkit-touch-callout: none;
