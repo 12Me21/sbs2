@@ -104,7 +104,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 			{label: document.createTextNode("📷"), elem: $sidebarFilePanel},
 			{label: x, elem: $sidebarUserPanel},
 		])
-		$sidebar_tabs.replaceChildren(sidebar_tabs.elem)
+		$sidebar_tabs.fill(sidebar_tabs.elem)
 		sidebar_tabs.select(0)
 		select_tab = sidebar_tabs.select
 		
@@ -112,7 +112,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 			$searchButton.disabled = true
 			Req.search1($searchInput.value, (users, pages)=>{
 				$searchButton.disabled = false
-				$searchResults.replaceChildren()
+				$searchResults.fill()
 				pages.forEach((item)=>{
 					let bar = Draw.page_bar(item)
 					bar.className += " linkBar bar rem1-5"
@@ -146,8 +146,8 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	on_aggregate_change(aggregate) {
 		let items = Object.values(aggregate).filter(a=>a.content) //HACK (what did i mean by this?)
 		items.sort((a, b)=> -(a.lastDate - b.lastDate))
-		$sidebarActivity.childs = null
-		$sidebarWatch.childs = null
+		$sidebarActivity.fill()
+		$sidebarWatch.fill()
 		for (let item of items) {
 			$sidebarActivity.append(Draw.activity_item(item))
 			if (item.watching)
@@ -157,7 +157,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	},
 	
 	redraw_category_tree(cats) {
-		$sidebarCategories.childs = Draw.nav_category(cats[0])
+		$sidebarCategories.fill(Draw.nav_category(cats[0]))
 	},
 	
 	print(...args) {

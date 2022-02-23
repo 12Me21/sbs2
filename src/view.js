@@ -56,14 +56,14 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			className: 'users',
 			render(users) {
 				set_title("Users")
-				$memberList.childs = users.map((user)=>{
+				$memberList.fill(users.map((user)=>{
 					let bar = Draw.entity_title_link(user)
 					bar.className += " linkBar bar rem2-3"
 					return bar
-				})
+				}))
 			},
 			cleanup() { // clean_up...
-				$memberList.childs = null
+				$memberList.fill()
 			},
 			init() {
 				$memberNav.append(Draw.nav_buttons().element)
@@ -100,7 +100,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 	},
 	
 	set_entity_title(entity) {
-		$pageTitle.childs = Draw.icon_title(entity)
+		$pageTitle.fill(Draw.icon_title(entity))
 		document.title = entity.name
 		real_title = entity.name
 		change_favicon(null)
@@ -113,7 +113,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 	},
 	
 	set_path(path) {
-		$path.childs = Draw.title_path(path)
+		$path.fill(Draw.title_path(path))
 	},
 	set_entity_path(page) {
 		if (!page) {
@@ -158,7 +158,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		// if this gets called too early, the sidebar isnt even rendered yet
 		if (Sidebar.my_avatar) { //should always be set ugh..
 			let icon = Draw.icon(user)
-			Sidebar.my_avatar.childs = icon
+			Sidebar.my_avatar.fill(icon)
 		}
 	},
 	

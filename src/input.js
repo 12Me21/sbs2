@@ -91,7 +91,7 @@ class Form {
 		Object.seal(this)
 	}
 	destroy() {
-		this.elem.replaceChildren()
+		this.elem.fill()
 	}
 	reset() {
 		for (let [name, type, opt] of this.fields) {
@@ -412,7 +412,7 @@ const INPUTS = (()=>{
 				this.body.append(Draw.permission_row(user, perm))
 			}
 			set([perms, users]) {
-				this.body.childs = null
+				this.body.fill()
 				let d = false
 				Object.for(perms, (perm, uid) => {
 					uid = +uid
@@ -495,7 +495,7 @@ const INPUTS = (()=>{
 					return x
 				}
 				
-				this.input.childs = option("", "-- Select Category --")
+				this.input.fill(option("", "-- Select Category --"))
 				if (!tree) return // not ready yet :(
 				
 				// recursive function
@@ -565,7 +565,7 @@ const INPUTS = (()=>{
 				this.elem = this.input
 			}
 			set(v) {
-				this.input.childs = v ? Draw.entity_title_link(v) : null
+				this.input.fill(v ? Draw.entity_title_link(v) : null)
 			}
 		},
 	}

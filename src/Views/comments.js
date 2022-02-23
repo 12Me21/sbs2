@@ -51,7 +51,7 @@ View.add_view('comments', {
 			quick(()=>{
 				View.set_title("Comments")
 				comment_form.set(data)
-				$commentSearchResults.replaceChildren()
+				$commentSearchResults.fill()
 			})
 		}
 		
@@ -61,7 +61,7 @@ View.add_view('comments', {
 		View.set_title("Comments")
 		comment_form.set(data)
 		
-		$commentSearchResults.replaceChildren()
+		$commentSearchResults.fill()
 		if (!comments.length) {
 			$commentSearchResults.textContent = "(no result)"
 		} else {
@@ -88,7 +88,7 @@ View.add_view('comments', {
 		}
 	},
 	cleanup() {
-		$commentSearchResults.replaceChildren()
+		$commentSearchResults.fill()
 	},
 })
 

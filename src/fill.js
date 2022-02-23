@@ -19,25 +19,20 @@ String.prototype.split1 = function(sep) {
 		return [this.substr(0,n), this.substr(n+sep.length)]
 }
 
-// update: we need to replace this ALWAYS because ios safari implemented it wrong (fails when 0 arguments are passed)
-//if (!Element.prototype.replaceChildren)
-Element.prototype.replaceChildren = function(...childs) {
+// similar to replaceChildren, except:
+//  - only 0 or 1 args
+//  - can pass null/undefined to empty the node
+//  - accepts an array of items to insert
+//  - doesn't allow strings
+Node.prototype.fill = function (x) {
 	this.textContent = ""
-	if (childs[0] != undefined)
-		this.append(...childs)
+	if (x instanceof Node)
+		this.append(x)
+	else if (x instanceof Array)
+		this.append(...x)
+	else if (x!=null)
+		throw "invalid node childs"
 }
-Object.defineProperty(Node.prototype, 'childs', {
-	set(x) {
-		this.textContent = ""
-		if (x instanceof Node)
-			this.append(x)
-		else if (x instanceof Array && x.length)
-			this.append(...x)
-		else if (x!=null)
-			throw "invalid node childs"
-	}
-})
-
 
 // custom
 Node.prototype.createChild = function(type) {

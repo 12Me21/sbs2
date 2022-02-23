@@ -47,13 +47,13 @@ add_view('user', {
 		$userPageAvatar.src = Draw.avatar_url(user, "size=400&crop=true")
 		//setPath([["users","Users"], [Nav.entityPath(user), user.name]])
 		if (userpage)
-			$userPageContents.replaceChildren(Draw.markup(userpage))
+			$userPageContents.fill(Draw.markup(userpage))
 		else
-			$userPageContents.replaceChildren()
+			$userPageContents.fill()
 	},
 	cleanup() {
 		$userPageAvatar.src = ""
-		$userPageContents.replaceChildren()
+		$userPageContents.fill()
 	},
 })
 

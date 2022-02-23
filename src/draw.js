@@ -626,11 +626,11 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			if (input.value == x.searchText)
 				return
 			x.searchText = input.value
-			dropdown.replaceChildren(placeholder2)
+			dropdown.fill(placeholder2)
 			placeholder2.selected = true
 			results = true
 			Req.searchUsers(x.searchText, (user_map)=>{
-				dropdown.replaceChildren()
+				dropdown.fill()
 				if (!user_map) {
 					x.searchText = null //error
 					return
@@ -659,7 +659,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		let reset = ()=>{
 			if (results) {
 				submit.disabled = true
-				dropdown.replaceChildren(placeholder)
+				dropdown.fill(placeholder)
 				placeholder.selected = true
 				results = null
 				x.searchText = null

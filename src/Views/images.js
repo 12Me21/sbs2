@@ -55,7 +55,7 @@ with (View) (()=>{ "use strict"; {
 					['quantization', 'output', {output: true, label: "Quantization"}],
 				]
 			})
-			$imageForm.replaceChildren(form.elem)
+			$imageForm.fill(form.elem)
 		},
 		start(id, query, render) {
 			currentQuery = query
@@ -82,11 +82,10 @@ with (View) (()=>{ "use strict"; {
 		render(files) {
 			set_title("Files")
 			fileList = files
-			$fileBox.replaceChildren(
-				...files.map(file => Draw.file_thumbnail(file, selectFile)))
+			$fileBox.fill(files.map(file => Draw.file_thumbnail(file, selectFile)))
 		},
 		cleanup() {
-			$fileBox.replaceChildren()
+			$fileBox.fill()
 			selectFile(null)
 			fileList = null
 		},

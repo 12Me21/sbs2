@@ -82,7 +82,7 @@ add_view('editpage', {
 		// todo: display unknown/unhandled properties somewhere
 		// we already preserve them
 		
-		$editPageForm.replaceChildren(form.elem)
+		$editPageForm.fill(form.elem)
 		
 		if (page.id) {
 			set_title("Editing Page")
@@ -97,7 +97,7 @@ add_view('editpage', {
 		}
 	},
 	cleanup() {
-		$editorPreview.replaceChildren()
+		$editorPreview.fill()
 		form && form.destroy()
 		form = null
 		editing_page = null
@@ -117,7 +117,7 @@ function submit_edit(callback) {
 function update_preview() {
 	let parent = $editorPreview
 	let shouldScroll = parent.scrollHeight-parent.clientHeight-parent.scrollTop < 10
-	$editorPreview.replaceChildren(Parse.parseLang($editorTextarea.value, $markupSelect.value, true))
+	$editorPreview.fill(Parse.parseLang($editorTextarea.value, $markupSelect.value, true))
 	// auto scroll down when adding new lines to the end (presumably)
 	if (shouldScroll)
 		parent.scrollTop = parent.scrollHeight-parent.clientHeight

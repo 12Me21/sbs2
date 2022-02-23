@@ -23,7 +23,7 @@ add_view('', {
 	className: 'home',
 	render(gallery, categories, resp) {
 		set_title("Welcome to SmileBASIC Source 2!")
-		$homeCategories.replaceChildren()
+		$homeCategories.fill()
 		categories.forEach((cat)=>{
 			let bar = Draw.entity_title_link(cat)
 			bar.className += " linkBar bar rem1-5"
@@ -34,7 +34,7 @@ add_view('', {
 })
 
 function updateGallery(page) {
-	$galleryTitle.replaceChildren(Draw.gallery_label(page))
+	$galleryTitle.fill(Draw.gallery_label(page))
 	$galleryImage.src = ""
 	let photos = Entity.parse_numbers(page.values.photos)
 	if (photos && photos[0])

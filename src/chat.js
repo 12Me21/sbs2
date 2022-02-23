@@ -168,9 +168,7 @@ class ChatRoom {
 		}
 	}
 	update_userlist(list) {
-		this.userlist_elem.replaceChildren(
-			...Object.values(list).map(item => Draw.userlist_avatar(item))
-		)
+		this.userlist_elem.fill(Object.values(list).map(item => Draw.userlist_avatar(item)))
 	}
 	display_initial_messages(comments, pinned) {
 		comments.forEach(comment => this.display_message(comment, false))
@@ -189,8 +187,7 @@ class ChatRoom {
 	}
 	update_page(page) {
 		this.page = page
-		this.page_contents.childs = 
-			Parse.parseLang(page.content, page.values.markupLang)
+		this.page_contents.fill(Parse.parseLang(page.content, page.values.markupLang))
 	}
 	// 8:10;35
 	show() {
@@ -217,7 +214,7 @@ class ChatRoom {
 		ChatRoom.removeRoom(this)
 		
 		this.chat_pane.remove()
-		this.chat_pane.replaceChildren()
+		this.chat_pane.fill()
 		this.userlist_elem = null
 		this.messages_outer = null
 		

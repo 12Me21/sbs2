@@ -51,8 +51,8 @@ add_view('category', {
 		navButtons.set(pageNum)
 		set_entity_title(category)
 		set_entity_path(category.parent)
-		$categoryDescription.replaceChildren(Parse.parseLang(category.description, category.values.markupLang))
-		$categoryCategories.replaceChildren()
+		$categoryDescription.fill(Parse.parseLang(category.description, category.values.markupLang))
+		$categoryCategories.fill()
 		Nav.link("editpage?cid="+category.id, $createPage.parentNode)
 		Nav.link("editcategory/"+category.id, $editCategory.parentNode)
 		category.children.forEach((child)=>{
@@ -76,9 +76,9 @@ add_view('category', {
 			flag('canEdit', true)
 	},
 	cleanup() {
-		$categoryCategories.replaceChildren()
-		$categoryPages.replaceChildren()
-		$categoryDescription.replaceChildren()
+		$categoryCategories.fill()
+		$categoryPages.fill()
+		$categoryDescription.fill()
 		flag('canEdit', false)
 		currentCategory = null
 	},
