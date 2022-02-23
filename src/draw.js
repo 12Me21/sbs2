@@ -412,14 +412,13 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			select: (i)=>{
 				list.forEach((item, i2)=>{
 					btns[i2].setAttribute('aria-selected', i==i2)
-					item.elem.hidden = i!=i2
+					item.elem.classList.toggle('shown', i==i2)
 				})
 			},
 		}
 		list.forEach((item, i)=>{
 			item.elem.setAttribute('role', "tabpanel")
 			item.elem.setAttribute('aria-labelledby', "sidebar-tab-"+i)
-			item.elem.hidden = true
 			
 			let btn = E`button`
 			btn.setAttribute('role', "tab")

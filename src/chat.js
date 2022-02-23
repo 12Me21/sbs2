@@ -194,13 +194,13 @@ class ChatRoom {
 		let old = ChatRoom.currentRoom
 		if (old && old!=this)
 			old.hide()
-		this.chat_pane.hidden = false
+		this.chat_pane.classList.add('shown')
 		this.visible = true
 		ChatRoom.currentRoom = this
 	}
 	hide() {
 		if (this.pinned) {
-			this.chat_pane.hidden = true
+			this.chat_pane.classList.remove('shown')
 			if (ChatRoom.currentRoom == this)
 				ChatRoom.currentRoom = null
 			this.visible = false

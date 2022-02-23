@@ -267,14 +267,6 @@ sidebar-container {
 	height: 2.3rem;
 }
 
-/**********
- ** main **
- **********/
-main-scrollable {
-	overflow-y: auto;
-	flex-basis: auto;
-}
-
 /*******************
  ** Category Pane **
  *******************/
@@ -827,4 +819,12 @@ message-part, header, .markup-root, message-block {
 	overflow-y: scroll;
 	height: 40vh;
 	min-height: 2.3rem;
+}
+
+main > * {
+	overflow-y: auto;
+}
+
+#\$titlePane [data-view]:not(.shown) {
+	display: none !important;
 }

@@ -19,12 +19,6 @@
 	}
 </script>
 
-<style>
-	html:not(.f-viewReady) v-b {
-		display: none;
-	}
-</style>
-
 <!--<link rel=preload href=resource/roboto-400.woff2 as=font type=font/woff2 crossorigin>
 <link rel=preload href=resource/roboto-400i.woff2 as=font type=font/woff2 crossorigin>
 <link rel=preload href=resource/roboto-700.woff2 as=font type=font/woff2 crossorigin>
@@ -83,43 +77,43 @@
 \========-->
 
 <header class='titlePane bar rem2-3 loadBG' id=$titlePane>
-	<div class='pageCreate textItem rightAlign'>
+	<div class='textItem rightAlign'>
 		<button id=$openSidebar class='item'>|||</button>
 	</div>
 	
 	<a data-static-path="" class='textItem'><img class='item' src=resource/iconbig.png alt="SBS"></a>
 	<noscript>This web-site requires JavaScript</noscript>
-	<v-b data-view-page data-view-category><span id=$path></span></v-b><h1 id=$pageTitle class='textItem pageTitle'></h1>
-	
-	<v-b data-view-user><a class='textItem loggedIn myUserPage' id=$editUserPage>Edit User Page</a></v-b>
-	<div class='item loggedIn myUserPage'>
+	<span data-view=page,category>
+		<span id=$path></span>
+	</span>
+	<h1 id=$pageTitle class='textItem pageTitle'></h1>
+	<span data-view=page>
+		<a data-static-path class='textItem canEdit' id=$pageEditLink>[Edit]</a>
+		<a data-static-path class='textItem' id=$pageCommentsLink>[Logs]</a>
+	</span>
+	<span data-view=user><a class='textItem loggedIn myUserPage' id=$editUserPage>Edit User Page</a></div>
+	<span class='item loggedIn myUserPage'>
 		<div id=$userPageStatus class='textItem'></div>
-	</div>
-	<v-b data-view-editpage data-view-catEditMode>
+	</span>
+	<span data-view=editpage,catEditMode>
 		<input class='item' id=$titleInput placeholder="Title" required>
 		<button class='item' id=$submitEdit>Submit</button>
 		<button class='item' id=$deletePage>DELETE</button>
-	</v-b>
-	<v-b data-view-page>
-		<a data-static-path class='textItem canEdit' id=$pageEditLink>[Edit]</a>
-		<a data-static-path class='textItem' id=$pageCommentsLink>[Logs]</a>
-	</v-b>
+	</span>
 </header>
 
 <horizontal-split class='grow resize-box row'>
-	<main class='flex grow slide-box' id=$realMain>
-		
-		<!--============\
-		|| TOP OF PAGE ||
-		\=============-->
-		
-		<v-b data-view-images>
+	<main class='grow slide-box' id=$main_slides>
+		<!--==============\
+		|| MAIN CONTENTS ||
+		\===========--==-->
+		<div data-slide=images>
 			<div class='rem1-7 bar nav'>
 				<span id=$fileNav></span>
 		  		<label>Bucket:<input id=$fileSearchBucket></label>
 				<div class='rightAlign'>Upload images in sidebar →</div>
 			</div>
-			<div class='fileBox bar' id=$fileBox></div>
+			<div class='bar' id=$fileBox></div>
 			Click an image to select
 			<span class='fileSelected'>
 				<button id=$setAvatarButton class='loggedIn'>Use As Avatar</button>
@@ -127,87 +121,75 @@
 				<button id=$fileUpdateButton class='rightAlign canEdit loggedIn'>Save Settings</button>
 			</span>
 			<div class='fileSelected' id=$imageForm></div>
-		</v-b>
+			<div class='image-box'><img id=$filePageView></div>
+		</div>
 		
-		<v-b data-view-users class='nav bar rem1-7' id=$memberNav></v-b>
+		<div data-slide=users>
+			<div class='nav bar rem1-7' id=$memberNav></div>
+			<div id=$memberList class='border-list-2'></div>
+		</div>
 		
-		<!--=======================\
-		|| MAIN SCROLLING SECTION ||
-		\========================-->
-		
-		<main-scrollable class='flex grow' id=$main>
-			<v-b data-view-user class='userPageBox flex-row'>
+		<div data-slide=user>
+			<div class='userPageBox flex-row'>
 				<a id=$userPageAvatarLink><img id=$userPageAvatar class='userPageAvatar' alt="" src=""></a>
 				<div class='pageContents pre userPageContents markup-root' id=$userPageContents></div>
-			</v-b>
-			<v-b data-view-user class='userActivity' id=$userActivity></v-b>
-			
-			<!-- todo: add category editor page? -->
-			
-			<v-b data-view-images class='image-box fill'><img id=$filePageView></v-b>
-			
-			<v-b data-view-category>
-				<div id=$categoryDescription class='categoryDescription pre pageContents markup-root'></div>
-				<div id=$categoryCategories></div>
-				<div id=$categoryPinned></div>
-				<div class='page-select rem1-7 bar'>
-					<span id=$categoryNav></span>
-					<button id=$createPage class='item' data-static-link>Create Page</button>
-					<button id=$editCategory class='item canEdit' data-static-link>Edit Category</button>
-				</div>
-				<div id=$categoryPages class='categoryPages'></div>
-			</v-b>
-			
-			<v-b data-view-error class='pre errorPage' id=$errorMessage></v-b>			
-			<v-b data-view-comments>
-				<div id=$commentSearch class='nav'>
-					<br id=$commentSearchForm>
-					<button id=$commentSearchButton>Search</button>
-				</div>
-				<div id=$commentSearchResults></div>
-			</v-b>
-			
-			<v-b data-view-home class='border-list'>
-				<div>
-					a
-					<div class='gallery-inner' style="max-width: 400px;">
-						<div>
-							<div class='image-box image-box-large fill'>
-								<img id=$galleryImage>
-							</div>
+			</div>
+			<div class='userActivity' id=$userActivity></div>
+		</div>
+		
+		<div data-slide=category>
+			<div id=$categoryDescription class='categoryDescription pre pageContents markup-root'></div>
+			<div id=$categoryCategories></div>
+			<div id=$categoryPinned></div>
+			<div class='page-select rem1-7 bar'>
+				<span id=$categoryNav></span>
+				<button id=$createPage class='item' data-static-link>Create Page</button>
+				<button id=$editCategory class='item canEdit' data-static-link>Edit Category</button>
+			</div>
+			<div id=$categoryPages class='categoryPages'></div>
+		</div>
+		
+		<div data-slide=error class='pre errorPage' id=$errorMessage></div>
+		
+		<div data-slide=comments>
+			<div id=$commentSearch class='nav'>
+				<br id=$commentSearchForm>
+				<button id=$commentSearchButton>Search</button>
+			</div>
+			<div id=$commentSearchResults></div>
+		</div>
+		
+		<!-- todo: add category editor page? -->
+		<div data-slide=home class='border-list'>
+			<div>
+				a
+				<div class='gallery-inner' style="max-width: 400px;">
+					<div>
+						<div class='image-box image-box-large fill'>
+							<img id=$galleryImage>
 						</div>
-						<canvas width=5 height=3>
-							this canvas makes it so
-							the parent element will
-							have fixed aspect ratio
-						</canvas>
 					</div>
-					<div class='gallery-title' style="max-width: 400px;" id=$galleryTitle></div>
-					a
+					<canvas width=5 height=3>
+						this canvas makes it so
+						the parent element will
+						have fixed aspect ratio
+					</canvas>
 				</div>
-				<div id=$homeCategories class='border-list-2'></div>
-			</v-b>
-			
-			<v-b data-view-users>
-				<div id=$memberList class='border-list-2'></div>
-			</v-b>
-			
-			<v-b data-view-activity id=$activity></v-b>
-			
-			<v-b data-view-test>
-				<textarea id=$testTextarea></textarea><br>
-				<button id=$testButton>Run</button><br>
-				<div id=$testOut class='pre'></div>
-			</v-b>
-			
-			<v-b data-view-users data-view-home class='bottomSpacer'></v-b>
-		</main-scrollable>
+				<div class='gallery-title' style="max-width: 400px;" id=$galleryTitle></div>
+				a
+			</div>
+			<div id=$homeCategories class='border-list-2'></div>
+		</div>
 		
-		<!--===============\
-		|| BOTTOM OF PAGE ||
-		\================-->
+		<div data-slide=activity id=$activity></div>
 		
-		<v-b data-view-editpage class='fill resize-box'>
+		<div data-slide=test>
+			<textarea id=$testTextarea></textarea><br>
+			<button id=$testButton>Run</button><br>
+			<div id=$testOut class='pre'></div>
+		</div>
+		
+		<div data-slide=editpage class='fill resize-box'>
 			<div class='sized' id=$editorPreviewPane>
 				<div class='editorNotPreview'>
 					<div class='registerBox' id=$editPageForm></div> <!-- really what we want here is a marker, not a container element or a replaced element. I would use <br> and then .replaceWith(form.elem), then set the form's .id back to $editPageForm. but that feels unsafe for something which could be generated many times. plus we have to set it back when cleaning up. -->
@@ -226,9 +208,9 @@
 			<div class='grow editorTextarea'>
 				<textarea id=$editorTextarea minlength=2 required class='fill'></textarea>
 			</div>
-		</v-b>
+		</div>
 		
-		<v-b data-view-page id=$chatContainer class='fill flex'>
+		<div data-slide=page id=$chatContainer class='fill flex'>
 			<div id=$chatPaneBox class='grow slide-box'></div>
 			<div class='inputPane loggedIn flex-row'>
 				<button class='showWhenEdit' id=$chatCancelEdit>Cancel Edit</button>
@@ -237,7 +219,7 @@
 					<label class='no-select'>Markup:<input type=checkbox checked autocomplete=off id=$chatMarkupSelect></label>
 				</div>
 			</div>
-		</v-b>
+		</div>
 	</main>
 	
 	<!--========\

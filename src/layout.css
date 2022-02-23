@@ -224,30 +224,24 @@ scroll-inner {
 	display: block;
 }
 
-
-
 .image-box {
 	overflow: hidden;
+	
 	position: relative;
 }
 
 .image-box > img {
+	max-width: 100%;
+	max-height: 100%;
+	/* would be nice to replace all this with object-fit: scale-down; but then we couldn't get a border and etc. */
 	position: absolute;
 	left: -10000%;
 	right: -10000%;
 	top: -10000%;
 	bottom: -10000%;
 	margin: auto auto;
-	max-width: 100%;
-	max-height: 100%;
 	box-sizing: border-box;
-
-	/*padding: 1px;
-	background: black;
-	border: 5px solid white;*/
-	/* transform: scale(1); //this should be the inverse of the max-width/height value (5% -> 20, etc.)*/
 }
-
 
 /*
 would be nice to use something like this
@@ -257,14 +251,12 @@ but, then we can't add a border to the image
 }
 
 .image-box > img {
-	object-fit: scale-down;
+	
 	// important: .image-box must have some size constraints otherwise it will infinitely big. idk how to fix this
 	width: 100%;
 	height: 100%;
 	border: 1px solid black;
-}
-*/
-
+} */
 
 /****************
  ** Slides Box **
@@ -279,9 +271,9 @@ but, then we can't add a border to the image
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	/*display: block;*/ /* override this */
 }
-.slide-box > *[hidden] {
+.slide-box > :not(.shown),
+.slide-box > .shown ~ .shown { /* in case there are multiple */
 	visibility: hidden;
 }
 
@@ -343,7 +335,7 @@ select {
 	font-size: 1em;
 }
 
-@media not screen and (max-width: 700px) {
+@media not all and (max-width: 700px) {
 	.closeSidebar {
 		display: none !important;
 	}
@@ -353,7 +345,7 @@ select {
 }
 
 /* narrow screen: fullscreen sidebar */
-@media screen and (max-width: 700px) {
+@media all and (max-width: 700px) {
 	/* make it fullscreen */
 	sidebar-container {
 		position: fixed;

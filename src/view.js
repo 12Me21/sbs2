@@ -180,15 +180,23 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 				}
 			}
 			current_view = null
-			$main.scrollTop = 0
+			//$main.scrollTop = 0 TODO, scroll the correct element here
 		}
 		
 		let after = ()=>{
 			// goal: instead of hiding things, we should
 			// use the .slide system for all pages etc.
-			document.querySelectorAll("v-b").forEach((e)=>{
-				e.hidden = !e.hasAttribute("data-view-"+view.className)
-			})
+			
+			// children instead of childNodes, because we only want elements (real)
+			for (let elem of $main_slides.children)
+				elem.classList.toggle('shown', elem.dataset.slide == view.className)
+			
+			for (let elem of $titlePane.children) {
+				let list = elem.dataset.view
+				if (list)
+					elem.classList.toggle('shown', list.split(",").includes(view.className))
+			}
+			
 			View.flag('viewReady', true)
 			View.flag('mobileSidebar', false) //bad (should be function on Sidebar)
 			Lp.set_listening(ChatRoom.listening_rooms())
