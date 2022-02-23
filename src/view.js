@@ -156,9 +156,9 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			return //uh oh
 		Req.me = user //This probably shouldn't be handled by View...
 		// if this gets called too early, the sidebar isnt even rendered yet
-		if (Sidebar.myAvatar) {
+		if (Sidebar.my_avatar) { //should always be set ugh..
 			let icon = Draw.icon(user)
-			Sidebar.myAvatar.childs = icon
+			Sidebar.my_avatar.childs = icon
 		}
 	},
 	
