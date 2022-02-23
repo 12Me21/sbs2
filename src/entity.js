@@ -9,7 +9,7 @@
 function entity_map(map, fake) {
 	return new Proxy({map, fake}, {
 		get({map, fake}, id) {
-			return map[id] || fake(id, map)
+			return map[id] || fake(+id, map)
 		}
 	})
 }
