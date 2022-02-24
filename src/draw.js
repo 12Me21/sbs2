@@ -278,6 +278,8 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			element.className += " edited"
 		
 		element.x_data = comment // mm  was going to use dataset but this is more efficent, and the attribute was taking up tons of space in the html inspector lol
+		// NO IT"S nOT YOU_IDIOT YOU'RE STORING USER OBJECTS THERE!
+		
 		element.dataset.id = comment.id
 		element.dataset.time = comment.createDate.getTime()
 		element.append(Parse.parseLang(comment.content, comment.meta.m, false))
