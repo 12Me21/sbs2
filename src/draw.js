@@ -277,8 +277,17 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		if (comment.createDate.getTime() != comment.editDate.getTime())
 			element.className += " edited"
 		
-		element.x_data = comment // mm  was going to use dataset but this is more efficent, and the attribute was taking up tons of space in the html inspector lol
-		// NO IT"S nOT YOU_IDIOT YOU'RE STORING USER OBJECTS THERE!
+		// this is a hack.
+		// we set as few properties as possible for what is needed
+		// don't want to set too many to avoid memory usage
+		element.x_data = {
+			createUserId: comment.createUserId,
+			editUserId: comment.editUserId,
+			id: comment.id,
+			parentId: comment.parentId,
+			content: comment.content,
+			meta: comment.meta,
+		}
 		
 		element.dataset.id = comment.id
 		element.dataset.time = comment.createDate.getTime()
