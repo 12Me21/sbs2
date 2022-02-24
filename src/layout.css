@@ -217,6 +217,7 @@ scroll-outer {
 	display: block;
 	height: 100%;
 	overflow-y: scroll;
+	contain: strict;
 }
 
 scroll-inner {
@@ -262,6 +263,7 @@ but, then we can't add a border to the image
  ****************/
 .slide-box {
 	position: relative;
+	contain: strict;
 	display: block;
 	overflow: unset; /* ?? */
 }
@@ -271,7 +273,7 @@ but, then we can't add a border to the image
 	height: 100%;
 	overflow: auto;
 }
-.slide-box > :not(.shown)
+.slide-box > :not(.shown),
 /*.slide-box > .shown ~ .shown*/ { /* in case there are multiple */
 	visibility: hidden;
 }
@@ -280,6 +282,7 @@ but, then we can't add a border to the image
  ** Resize **
  ************/
 .resize-box {
+	contain: strict;
 	display: flex;
 	flex-direction: column;
 }
@@ -354,6 +357,7 @@ select {
 for horizontal-split to stop acting like a .resize-box
 */
 	horizontal-split {
+		contain: size !important; /* and maybe some others */
 	}
 	/* hide all sidebar elements except the sidebar itself */
 	.sidebar-element:not(sidebar-container) {
@@ -365,8 +369,5 @@ for horizontal-split to stop acting like a .resize-box
 	}
 	html:not(.f-mobileSidebar) sidebar-container {
 		visibility: hidden;
-	}
-	sidebar-container {
-		width: 100% !important;
 	}
 }
