@@ -118,6 +118,10 @@ let Entity = {
 			data[i].Type = type
 		})
 	},
+	// editUserId -> editUser
+	// createUserId -> createUser
+	// editDate
+	// createDate
 	process_editable(data, users) {
 		if (data.editUserId) // checking both null and 0
 			data.editUser = users[data.editUserId]
@@ -130,6 +134,9 @@ let Entity = {
 		return data
 	},
 	process_type: {
+		// date
+		// contentId -> content
+		// userId -> user
 		activity(data, users) {
 			if (data.date)
 				data.date = this.parse_date(data.date)
@@ -139,6 +146,8 @@ let Entity = {
 				data.user = users[data.userId]
 			return data
 		},
+		// createDate
+		// username -> name
 		user(data, users) {
 			if (data.createDate)
 				data.createDate = this.parse_date(data.createDate)
@@ -146,6 +155,7 @@ let Entity = {
 			data.name = data.name || data.username
 			return data
 		},
+		// update category map?
 		category(data, users) {
 			let cat = this.category_map[data.id]
 			if (!cat) {
@@ -157,13 +167,17 @@ let Entity = {
 			data = this.process_editable(data, users)
 			return data
 		},
+		// parentId -> parent
+		// ?? -> users
 		content(data, users) {
 			data = this.process_editable(data, users)
 			if (data.parentId != null)
 				data.parent = this.category_map[data.parentId]
-			data.users = users //hack for permissions users. TODO: what?
+			data.users = users //hack for permissions users. TODO: why?
 			return data
 		},
+		// content
+		// content -> meta, nickname, realname, name, avatar, bigAvatar
 		comment(data, users) {
 			data = this.process_editable(data, users)
 			if (data.content) {
@@ -171,16 +185,16 @@ let Entity = {
 				data.content = m.t
 				delete m.t //IMPORTANT
 				data.meta = m
+				
+				let override = {}
 				// avatar override
-				let av = +data.meta.a
-				if (av)
-					data.createUser = Object.create(data.createUser, {
-						avatar: {value: av},
-						bigAvatar: {value: +data.meta.big}
-					})
+				if (+data.meta.a)
+					override.avatar = {value: +data.meta.a}
+				if (+data.meta.big)
+					override.bigAvatar = {value: +data.meta.big}
 				// nicknames
-				let nick = undefined
-				let bridge = undefined
+				let nick = null
+				let bridge = null
 				if (typeof data.meta.b == 'string') {
 					nick = data.meta.b
 					bridge = nick
@@ -191,23 +205,18 @@ let Entity = {
 				if (typeof data.meta.n == 'string')
 					nick = data.meta.n
 				if (nick != undefined) {
+					override.nickname = {value: this.filter_nickname(nick)}
+					override.realname = {value: data.createUser.name}
 					// if the bridge name is set, we set the actual .name property to that, so it will render as the true name in places where nicknames aren't handled (i.e. in the sidebar)
-					// todo: clean this up..
 					// and it's kinda dangerous that .b property is trusted so much..
 					if (bridge != undefined)
-						data.createUser = Object.create(data.createUser, {
-							name: {value: bridge},
-							nickname: {value: this.filter_nickname(nick)},
-							realname: {value: data.createUser.name},
-						})
-					else
-						data.createUser = Object.create(data.createUser, {
-							nickname: {value: this.filter_nickname(nick)},
-							realname: {value: data.createUser.name},
-						})
+						override.name = {value: bridge}
 				}
 				// todo: we should render the nickname in other places too (add this to the title() etc. functions.
 				// and then put like, some icon or whatever to show that they're nicked, I guess.
+				
+				if (Object.first_key(override) != undefined)
+					data.createUser = Object.create(data.createUser, override)
 				
 			} else { // deleted comment usually
 				data.meta = {}
@@ -221,10 +230,14 @@ let Entity = {
 		watch(data) {
 			return data //TODO
 		},
+		// userIds -> users
 		activityaggregate(data, users) {
 			data.users = data.userIds /*.filter(id=>id)*/ .map(id=>users[id])
 			return data
 		},
+		// userIds -> users
+		// firstDate
+		// lastDate
 		commentaggregate(data, users) {
 			// need to filter out uid 0 (I think this comes from deleted comments)
 			data.users = data.userIds.filter(id=>id).map(id=>users[id])
