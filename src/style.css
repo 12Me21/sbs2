@@ -4,6 +4,11 @@
 	min-height: 0; /* fixes weird ios safari bug with sidebar bottom panel expanding forever. maybe we need to apply this to all .grow elements? */
 	height: 0;
 	max-height: 100vh;
+	overflow: auto;
+}
+
+#\$sidebarTop {
+	
 }
 
 
