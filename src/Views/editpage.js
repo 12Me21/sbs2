@@ -59,6 +59,10 @@ add_view('editpage', {
 		}
 		function done() {
 			render({
+				// todo: this is kinda gross
+				// maybe it would be better to set the form directly
+				// rather than construct this weird fake page
+				parentId: query.cid || 0,
 				parent: Entity.category_map[query.cid || 0],
 				name: query.name || "",
 				type: query.type || "chat",
@@ -67,6 +71,12 @@ add_view('editpage', {
 				values: {
 					markup: "12y",
 				},
+				users: entity_map({}, (id)=>({
+					Type: 'user',
+					name: `{user: ${id}}`,
+					id: id,
+					fake: true,
+				})), // todo: this is a really bad hack
 			})
 		}
 	},
@@ -128,6 +138,8 @@ function update_preview() {
 	let shouldScroll = parent.scrollHeight-parent.clientHeight-parent.scrollTop < 10
 	$editorPreview.fill(Parse.parseLang($editorTextarea.value, $markupSelect.value, true))
 	// auto scroll down when adding new lines to the end (presumably)
+	
+	// TODO: this doesn't work, probably because of layout changes
 	if (shouldScroll)
 		parent.scrollTop = parent.scrollHeight-parent.clientHeight
 }
