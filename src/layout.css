@@ -273,8 +273,8 @@ but, then we can't add a border to the image
 	height: 100%;
 	overflow: auto;
 }
-.slide-box > :not(.shown),
-.slide-box > .shown ~ .shown { /* in case there are multiple */
+.slide-box > :not(.shown)
+/*.slide-box > .shown ~ .shown*/ { /* in case there are multiple */
 	visibility: hidden;
 }
 
