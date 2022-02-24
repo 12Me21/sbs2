@@ -769,6 +769,7 @@ textarea-container, textarea-container > textarea {
 activity-users {
 	white-space: pre;
 	overflow-x: visible;
+	padding-right: 0.2rem;
 }
 
 .inputPane {
