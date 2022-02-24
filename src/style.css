@@ -1,13 +1,5 @@
 /* main stuff */
 
-#\$sidebarBottom {
-	overflow: auto;
-}
-
-#\$sidebarTop {
-	overflow: auto;
-}
-
 html {
 	background-color: #FEE; /* for debug */
 	font-family: roboto, sans-serif;
@@ -826,4 +818,8 @@ message-part, header, .markup-root, message-block {
 	border-top: 1px solid white;
 	padding-left: 0.2rem;
 	padding-bottom: 1px;
+}
+
+#\$sidebarBottom {
+	min-height: 0; /* fixes weird ios safari bug with sidebar bottom panel expanding forever. maybe we need to apply this to all .grow elements? */
 }
