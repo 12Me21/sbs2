@@ -27,6 +27,14 @@ if (document.readyState == 'loading')
 else
 	ready()
 function ready() {
+	// whitespace between nodes in html (due to line breaks, indentation, etc.) creates text nodes which need to be stripped:
+	let walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {acceptNode: node=>/^\s+$/.test(node.textContent)});
+	let hit_list = []
+	while (walker.nextNode())
+		hit_list.push(walker.currentNode)
+	console.log("removed "+hit_list.length+" blank text nodes")
+	hit_list.forEach(node=>node.remove())
+	
 	console.log("ONLOAD!")
 	Req.try_load_cached_auth() // moved this here
 	// does this still work

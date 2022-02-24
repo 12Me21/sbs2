@@ -271,7 +271,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	// return: Element
 	message_part(comment) {
 		let element = E`message-part`
-		element.className = "markup-root"
+		element.className = 'markup-root'
 		element.setAttribute('tabindex', "0")
 		
 		if (comment.createDate.getTime() != comment.editDate.getTime())
@@ -280,6 +280,10 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		// this is a hack.
 		// we set as few properties as possible for what is needed
 		// don't want to set too many to avoid memory usage
+		
+		// the real issue here is, we use too many methods of referring to displayed messages
+		// sometimes id, indexed in message_parts, sometimes the comment data, sometimes the element, etc.
+		// need to be more consistent.
 		element.x_data = {
 			createUserId: comment.createUserId,
 			editUserId: comment.editUserId,
@@ -448,10 +452,10 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	
 	activity_item(item) {
 		let outer = entity_link(item.content)
-		outer.className += " linkBar"
+		outer.className += " activity-page"
 		
 		let bar = E`div`
-		bar.className += " ellipsis bar rem1-5"
+		bar.className += " bar rem1-5 ellipsis"
 		bar.append(icon_title(item.content))
 		
 		let bar2 = E`div`

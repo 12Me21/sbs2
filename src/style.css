@@ -639,8 +639,8 @@ html:not(.f-fileSelected) .fileSelected {
 	background-repeat: no-repeat;
 	background-size: contain;
 	background-position: center;
-	/*margin-right: 0.3rem;*/
 	margin-left: 0.1rem;
+	margin-right: 0.1rem;
 }
 
 /*************
@@ -809,4 +809,13 @@ message-part, header, .markup-root, message-block {
 
 #\$editorPreviewPane {
 	height: 50%;
+}
+
+.activity-page {
+	display: block;
+	background: var(--mainbgcolor);
+	border-bottom: 1px solid var(--border-color);
+	border-top: 1px solid white;
+	padding-left: 0.2rem;
+	padding-bottom: 1px;
 }
