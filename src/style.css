@@ -766,12 +766,6 @@ textarea-container, textarea-container > textarea {
 	padding: 2px 3px;
 }
 
-activity-users {
-	white-space: pre;
-	overflow-x: visible;
-	padding-right: 0.2rem;
-}
-
 .inputPane {
 	background: var(--bar-bg);
 	align-items: end;
@@ -819,7 +813,19 @@ message-part, header, .markup-root, message-block {
 	border-top: 1px solid white;
 	padding-left: 0.2rem;
 	padding-bottom: 1px;
+	/*border: 3px solid  #CDBC8A;
+	border-bottom-color: #EAD9A7;
+	border-right-color: #EAD9A7;*/
+	/*border-width: 3px;*/
 }
+
+
+activity-users {
+	white-space: pre;
+	overflow-x: visible;
+	padding-right: 0.2rem;
+}
+
 
 #\$sidebarBottom {
 	min-height: 0; /* fixes weird ios safari bug with sidebar bottom panel expanding forever. maybe we need to apply this to all .grow elements? */
