@@ -85,7 +85,8 @@ add_view('editpage', {
 	className: 'editpage',
 	render(page) {
 		set_editor_preview(false)
-		
+		// do we need to create a new form each time? ideally not.
+		// it's safer though, for now
 		form = new Form({
 			fields: [
 				['category', 'category', {label: "Category", default: [0, null]}],

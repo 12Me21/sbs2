@@ -63,6 +63,7 @@ JSON.safe_parse = function(json) { // should be function() not => yeah?
 
 // creating our own storage system, to deal with compatibility + exceptions
 let Store = {
+	// value: string
 	set(name, value) {
 		try {
 			localStorage.setItem(name, value)
@@ -71,12 +72,13 @@ let Store = {
 		}
 		return true
 	},
+	// returns a string if the value exists, otherwise null
 	get(name) {
 		return localStorage.getItem(name)
 	},
 	remove(name) {
 		localStorage.removeItem(name)
-	}
+	},
 }
 
 Object.for = (obj, callback)=>{

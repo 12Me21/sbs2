@@ -403,7 +403,6 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		
 		if (save) {
 			let s = Store.get(save)
-			console.log('loading size', s, 'from', save)
 			if (s) {
 				update_size(+s)
 				return
