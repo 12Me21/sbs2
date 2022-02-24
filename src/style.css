@@ -794,10 +794,8 @@ activity-users {
 
 /* contain */
 main, sidebar-container, #\$sidebarTop, #\$sidebarBottom, .resize, .sidebarComment, $sidebarActivity > .linkBar {
-	contain: strict;
 }
 message-part, header, .markup-root, message-block {
-	contain: content;
 }
 /* this might be bad */
 .chatScroller > scroll-inner, #\$sidebarScroller, $sidebarActivity {
