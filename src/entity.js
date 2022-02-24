@@ -6,15 +6,8 @@
 // functions for processing recieved entities/
 // DATA PROCESSOR
 
-function entity_map(map, fake) {
-	return new Proxy({map, fake}, {
-		get({map, fake}, id) {
-			return map[id] || fake(+id, map)
-		}
-	})
-}
-
 let Entity = {
+	
 	onCategoryUpdate(cats) {
 		Sidebar.redraw_category_tree(cats)
 	},
@@ -32,6 +25,14 @@ let Entity = {
 	CONTENT_TYPES: [
 		'resource', 'chat', 'program', 'tutorial', 'documentation', 'userpage'
 	],
+	
+	safe_map(map, fake) {
+		return new Proxy({map, fake}, {
+			get({map, fake}, id) {
+				return map[id] || fake(+id, map)
+			}
+		})
+	},
 	
 	has_perm(perms, uid, perm) {
 		return perms && perms[uid] && perms[uid].includes(perm)
@@ -59,7 +60,7 @@ let Entity = {
 		//let x = performance.now()
 		// build user map first
 		let map = {}
-		let users = entity_map(map, (id)=>({
+		let users = this.safe_map(map, (id)=>({
 			Type: 'user',
 			name: `{user: ${id}}`,
 			id: id,
@@ -238,7 +239,7 @@ let Entity = {
 	page_map(pages) {
 		let map = {}
 		pages && pages.forEach(p => map[p.id] = p)
-		return entity_map(map, (id)=>({
+		return this.safe_map(map, (id)=>({
 			Type: 'content',
 			name: `{content: ${id}}`,
 			id: id,

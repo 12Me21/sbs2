@@ -58,10 +58,11 @@ add_view('editpage', {
 			}
 		}
 		function done() {
+			// todo: this is kinda gross
+			// maybe it would be better to set the form directly
+			// rather than construct this weird fake page
+			// at least maybe we should call process_list instead...
 			render({
-				// todo: this is kinda gross
-				// maybe it would be better to set the form directly
-				// rather than construct this weird fake page
 				parentId: query.cid || 0,
 				parent: Entity.category_map[query.cid || 0],
 				name: query.name || "",
@@ -71,7 +72,7 @@ add_view('editpage', {
 				values: {
 					markup: "12y",
 				},
-				users: entity_map({}, (id)=>({
+				users: Entity.safe_map({}, (id)=>({
 					Type: 'user',
 					name: `{user: ${id}}`,
 					id: id,
