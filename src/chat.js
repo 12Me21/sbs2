@@ -107,11 +107,6 @@ class ChatRoom {
 		l && this.update_userlist(l)
 		ChatRoom.addRoom(this)
 		
-		if (this.page.type == 'resource')
-			this.page_outer.style.height = "1000px" //whatever
-		else if (this.page.type == 'chat')
-			this.page_outer.style.height = "0"
-		
 		Object.seal(this)
 	}
 	

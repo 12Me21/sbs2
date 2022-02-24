@@ -75,7 +75,15 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		//
 		let resize = E`resize-handle`
 		resize.textContent = "↕"
-		View.attach_resize(page1, resize, false, 1) // todo: save?
+		let height = null
+		if (page.type == 'resource')
+			height = 1000 //whatever
+		else if (page.type == 'chat')
+			height = 0
+
+		View.attach_resize(page1, resize, false, 1, 'setting--divider-pos-'+page.id, null, height) // todo: save?
+		
+
 		// 
 		let [list1, list2, button] = userlist()
 		// 

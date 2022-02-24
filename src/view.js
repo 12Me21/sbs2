@@ -389,7 +389,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 	},
 	
 	// should be a class (actually nevermind the syntax is gross)
-	attach_resize(element, tab, horiz, dir, save, callback) {
+	attach_resize(element, tab, horiz, dir, save, callback, def) {
 		let start_pos, start_size
 		let held = false
 		let size = null
@@ -403,8 +403,15 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		
 		if (save) {
 			let s = Store.get(save)
-			s && update_size(+s)
+			console.log('loading size', s, 'from', save)
+			if (s) {
+				update_size(+s)
+				return
+			}
 		}
+		if (def!=null)
+			update_size(def)
+		return
 		
 		function event_pos(e) {
 			if (e.touches)
