@@ -70,7 +70,7 @@ add_view('editpage', {
 				content: "",
 				permissions: {'0': "rc"},
 				values: {
-					markup: "12y",
+					markupLang: "12y",
 				},
 				users: Entity.safe_map({}, (id)=>({
 					Type: 'user',
