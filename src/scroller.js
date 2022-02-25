@@ -111,19 +111,9 @@ class Scroller {
 		this.inner_height = this.inner.getBoundingClientRect().height
 		this.outer_height = this.outer.getBoundingClientRect().height
 	}
-	get_max_scroll() {
-		let top = this.outer.scrollTop
-		this.outer.scrollTop = 1e9
-		let max = this.outer.scrollTop
-		this.outer.scrollTop = top
-		return max
-	}
 	get scrollBottom() {
 		let parent = this.outer
 		return parent.scrollHeight-parent.clientHeight-parent.scrollTop
-	}
-	get scrollBottom2() {
-		return this.get_max_scroll() - this.outer.scrollTop
 	}
 	set scrollBottom(value) {
 		let parent = this.outer
