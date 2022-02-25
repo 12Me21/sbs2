@@ -97,6 +97,9 @@ class Scroller {
 			if (this.at_bottom && !this.animation) // when message is inserted, it triggers the resize detector, which would interrupt the scroll animation, so we don't force scroll if an animation is playing
 				this.scroll_instant()
 		}
+		// todo: if multiple chat rooms are loaded,
+		// the outer elements should all bbbe the same size?
+		// - no, because of the userlist and page resizing
 		track_scroll_resize.add(this.outer, onResize)
 		track_scroll_resize.add(this.inner, onResize)
 		Object.seal(this)
@@ -108,9 +111,19 @@ class Scroller {
 		this.inner_height = this.inner.getBoundingClientRect().height
 		this.outer_height = this.outer.getBoundingClientRect().height
 	}
+	get_max_scroll() {
+		let top = this.outer.scrollTop
+		this.outer.scrollTop = 1e9
+		let max = this.outer.scrollTop
+		this.outer.scrollTop = top
+		return max
+	}
 	get scrollBottom() {
 		let parent = this.outer
 		return parent.scrollHeight-parent.clientHeight-parent.scrollTop
+	}
+	get scrollBottom2() {
+		return this.get_max_scroll() - this.outer.scrollTop
 	}
 	set scrollBottom(value) {
 		let parent = this.outer

@@ -1,5 +1,4 @@
-window.onerror = (message, source, line, col, error)=>{
-	console.log('window onerror')
+window.onerror = function(message, source, line, col, error) {
 	try {
 		console.error(arguments)
 		if (!error)
