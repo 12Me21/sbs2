@@ -14,11 +14,14 @@ class Scroller {
 		this.outer.classList.add('bottom')
 		this.inner = inner
 		
+		this.anim_id = null
+		this.anim_pos = 0
+		
 		this.rate = 0.25 //autoscroll rate: amount of remaining distance to scroll per 1/60 second
 		this.bottom_height = 0.25 //if within this distance of bottom, autoscroll is enabled
 		
 		outer.addEventListener('scroll', (e)=>{
-			this.cancel_scroll()
+			//
 		}, {passive: true})
 		
 		Object.seal(this)
@@ -26,26 +29,12 @@ class Scroller {
 	scroll_height() {
 		return this.inner.getBoundingClientRect().height
 	}
-	get scrollBottom() {
-		return -this.outer.scrollTop
-	}
-	set scrollBottom(value) {
-		this.outer.scrollTop = -value
-	}
 	scroll_instant() {
-		this.cancel_scroll()
-		this.scrollBottom = -3
+		this.cancel_animation()
+		this.outer.scrollTop = 3
 	}
 	at_bottom() {
-		return this.scrollBottom < this.outer.clientHeight*this.bottom_height
-		//return this.scrollBottom <3
-	}
-	autoscroll() {
-		this.scrollBottom = -3
-		// todo: 
-	}
-	cancel_scroll() {
-		// todo: 
+		return -this.outer.scrollTop < this.outer.clientHeight*this.bottom_height
 	}
 	//if you want to insert an element into the scroller, do something like:
 	// scroller.print(function() {
@@ -56,23 +45,57 @@ class Scroller {
 	
 	print(callback, autoscroll) {
 		let at_bottom = this.at_bottom()
-		let height1
-		if (!at_bottom)
-			height1 = this.scroll_height()
+		let height1 = this.scroll_height()
 		
 		try {
 			let elem = callback()
 			elem && this.inner.append(elem)
 		} finally {
+			let height2 = this.scroll_height()
+			let diff = height2 - height1
 			if (at_bottom) {
 				if (autoscroll)
-					this.autoscroll()
+					this.start_animation(diff)
 			} else {
-				let height2 = this.scroll_height()
-				let diff = height2 - height1
-				this.scrollBottom = this.scrollBottom + ydiff
+				this.outer.scrollTop = this.outer.scrollTop - diff
 			}
 		}
+	}
+	start_animation(dist) {
+		window.cancelAnimationFrame(this.anim_id)
+		this.anim_id = null
+		console.log("new dist:", dist, " leftover dist:" ,this.anim_pos)
+		this.animate_insertion(this.anim_pos + dist)
+	}
+	
+	cancel_animation() {
+		if (this.anim_id != null) {
+			this.anim_pos = 0
+			this.inner.style.transform = ""
+			window.cancelAnimationFrame(this.anim_id)
+			this.anim_id = null
+		}
+	}
+	animate_insertion(dist, prev_time = performance.now()) {
+		if (dist <= 1) {
+			this.anim_id = null
+			this.anim_pos = 0
+			this.inner.style.transform = ""
+			return
+		}
+		this.inner.style.transform = `translate(0, ${dist}px)`
+		this.anim_pos = dist
+		let id = window.requestAnimationFrame((time)=>{
+			// if the animation was cancelled or another was started
+			if (this.anim_id != id)
+				return
+			// relative to 60fps (ex: 60fps = 1, 120fps = 0.5) limited to 30fps
+			let dt = Math.min((time-prev_time) / (1000/60), 2)
+			// reduce `dist` by `this.rate` every 1/60 of a second
+			let new_dist = dist * Math.pow(1-this.rate, dt)
+			this.animate_insertion(new_dist, time)
+		})
+		this.anim_id = id
 	}
 	print_top(callback) {
 		let elem = callback()
