@@ -14,7 +14,9 @@ class ChatRoom {
 		}
 		
 		let btn
-		([this.chat_pane, this.page_outer, this.page_contents, this.messages_outer, this.messageList, this.userlist_elem, btn] = Draw.chat_pane(page))
+		([this.chat_pane, this.page_outer, this.page_contents, this.messages_outer, this.scroll_inner, this.userlist_elem, btn] = Draw.chat_pane(page))
+		this.messageList = document.createElement('div')
+		this.scroll_inner.append(this.messageList)
 		
 		btn.onclick = ()=>{
 			this.toggle_hiding(()=>{
@@ -29,10 +31,6 @@ class ChatRoom {
 		this.max_messages = 500
 		this.total_messages = 0
 		
-		let extra = document.createElement('div')
-		this.extra = extra
-		this.messageList.prepend(extra)
-		
 		let label = document.createElement('label')
 		let checkbox = label.createChild('input')
 		checkbox.type = 'checkbox'
@@ -40,7 +38,7 @@ class ChatRoom {
 		let text = document.createTextNode('disable limit')
 		label.append(text)
 		
-		extra.prepend(label)
+		this.scroll_inner.prepend(label)
 		
 		{
 			let b = Draw.button()
@@ -52,19 +50,18 @@ class ChatRoom {
 				btn.disabled = true
 				this.load_older(50, ()=>{btn.disabled = false}) //todo: lock
 			}
-			extra.prepend(b[0])
+			this.scroll_inner.prepend(b[0])
 		}
 		
 		if (page.values.pinned) { //todo: check if actually we have any real pinned messages
 			let pinnedSeparator = document.createElement('div')
 			pinnedSeparator.className = "messageGap"
-			extra.prepend(pinnedSeparator)
+			this.scroll_inner.prepend(pinnedSeparator)
 			
-			this.pinnedList = document.createElement('scroll-inner')
-			extra.prepend(this.pinnedList)
+			this.pinnedList = document.createElement('div')
+			this.scroll_inner.prepend(this.pinnedList)
 		}
 		
-		this.messages_outer.dataset.id = page.id
 		$chatPaneBox.append(this.chat_pane)
 		
 		///////////
@@ -138,14 +135,12 @@ class ChatRoom {
 		
 		let parent = message.parentNode
 		
-		//var x = this.scroller.scrollBottom
 		message.remove()
 		delete this.message_parts[id]
 		this.total_messages--
 		
 		if (!parent.firstChild)
 			parent.parentNode.remove()
-		//this.scroller.scrollBottom = x
 		
 		return true
 	}
@@ -215,7 +210,6 @@ class ChatRoom {
 		this.chat_pane.remove()
 		this.chat_pane.fill()
 		this.userlist_elem = null
-		this.messages_outer = null
 		
 		this.scroller.destroy()
 		this.scroller = null

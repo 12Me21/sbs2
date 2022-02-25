@@ -224,6 +224,11 @@ scroll-inner {
 	display: block;
 }
 
+/* only allow one child
+scroll-outer > :not(:first-child) {
+	display: none;
+}*/
+
 scroll-outer.bottom {
 	display: flex; /* necessary, otherwise the inner element width is wrong sometimes, after the outer element width changes */
 	direction: rtl;

@@ -1,3 +1,89 @@
+//let track_scroll_resize = new ResizeTracker('height')
+
+// todo:
+// if not at bottom, we need to adjust the scroll position backwards
+// upon resize of the inner element
+
+// we could use the scrolltop max trick here again...
+// alternatively:
+// *switch the scroller direction depending on whether the user is near the bottom*
+// hmmm
+
+class Scroller {
+	constructor(outer, inner) { // constructor todo. take outer element only. create inner element here.
+		this.outer = outer
+		this.outer.classList.add('bottom')
+		this.inner = inner
+		
+		this.rate = 0.25 //autoscroll rate: amount of remaining distance to scroll per 1/60 second
+		this.bottom_height = 0.25 //if within this distance of bottom, autoscroll is enabled
+		
+		outer.addEventListener('scroll', (e)=>{
+			this.cancel_scroll()
+		}, {passive: true})
+		
+		Object.seal(this)
+	}
+	scroll_height() {
+		return this.inner.getBoundingClientRect().height
+	}
+	get scrollBottom() {
+		return -this.outer.scrollTop
+	}
+	set scrollBottom(value) {
+		this.outer.scrollTop = -value
+	}
+	scroll_instant() {
+		this.cancel_scroll()
+		this.scrollBottom = -3
+	}
+	at_bottom() {
+		return this.scrollBottom < this.outer.clientHeight*this.bottom_height
+		//return this.scrollBottom <3
+	}
+	autoscroll() {
+		this.scrollBottom = -3
+		// todo: 
+	}
+	cancel_scroll() {
+		// todo: 
+	}
+	//if you want to insert an element into the scroller, do something like:
+	// scroller.print(function() {
+	//    return document.createElement('div')
+	// }, true) // (or `false` to disable scrolling (for example, when inserting the initial elements, you might disable scrolling here and then run scroller.autoScroll(true) afterwards, to scroll to the bottom instantly)
+	//(the reason it's inside a function is because it needs to run code
+	// before AND after inserting the element)
+	
+	print(callback, autoscroll) {
+		let at_bottom = this.at_bottom()
+		let height1
+		if (!at_bottom)
+			height1 = this.scroll_height()
+		
+		try {
+			let elem = callback()
+			elem && this.inner.append(elem)
+		} finally {
+			if (at_bottom) {
+				if (autoscroll)
+					this.autoscroll()
+			} else {
+				let height2 = this.scroll_height()
+				let diff = height2 - height1
+				this.scrollBottom = this.scrollBottom + ydiff
+			}
+		}
+	}
+	print_top(callback) {
+		let elem = callback()
+		elem && this.inner.prepend(elem)
+	}
+	destroy() {
+	}
+}
+
+
 class ResizeTracker {
 	constructor(measure) {
 		this.measure = measure
@@ -56,137 +142,4 @@ class ResizeTracker {
 	}
 }
 
-let track_scroll_resize = new ResizeTracker('height')
-
-// goal:
-// any unnatural resize -> scroll to bottom if atbottom set
-// human scrolling -> update atbottom flag
-// message insert -> smooth scroll
-
-// what is human scrolling?
-//  scroll position changes without the element size changing or a message being inserted
-
-class Scroller {
-	constructor(outer, inner) {
-		this.outer = outer
-		this.outer.classList.add('bottom')
 		
-		this.inner = inner
-		
-		this.animation = null
-		this.animation_start = null
-		
-		this.at_bottom = true
-		this.ignore_scroll = false
-		this.old_scroll_bottom = null
-		
-		this.rate = 0.25 //autoscroll rate: amount of remaining distance to scroll per 1/60 second
-		this.bottom_height = 0.25 //if within this distance of bottom, autoscroll is enabled
-		
-		this.register_size_change()
-		outer.addEventListener('scroll', (e)=>{
-			if (this.ignore_scroll) {
-				this.ignore_scroll = false
-				return
-			}
-			if (this.animation)
-				this.cancel_scroll()
-			this.at_bottom = this.scrollBottom < this.outer.clientHeight*this.bottom_height
-		}, {passive: true})
-		
-		Object.seal(this)
-	}
-	register_size_change() {
-		this.inner_height = this.inner.getBoundingClientRect().height
-		this.outer_height = this.outer.getBoundingClientRect().height
-	}
-	get scrollBottom() {
-		return -this.outer.scrollTop
-	}
-	set scrollBottom(value) {
-		this.outer.scrollTop = value
-	}
-	scroll_instant() {
-		this.cancel_scroll()
-		this.ignore_scroll = true
-		this.scrollBottom = 0
-		this.at_bottom = true
-	}
-	autoscroll() {
-		if (1 || !window.requestAnimationFrame) {
-			this.ignore_scroll = true
-			this.scrollBottom = 0
-			this.at_bottom = true
-			return
-		}
-		if (this.animation)
-			return
-		/*this.animation = null
-		  var now = performance.now()
-		  this.animation_start = now - 1000/60 //assume 60fps on first frame..
-		  this.scroll_animation(now)
-		  // edited to start animation la-a-a-ater*/
-		this.animation = window.requestAnimationFrame((time)=>{
-			let now = performance.now()
-			//assume 60fps on first frame..
-			//this.animation_start = now - 1000/60
-			this.scroll_animation(now)
-		})
-	}
-	cancel_scroll() {
-		if (this.animation) {
-			window.cancelAnimationFrame(this.animation)
-			this.animation = false
-		}
-	}
-	scroll_animation(time) {
-		let dt = 1//(time - this.animation_start) / (1000/60)
-		//this.animation_start = time // unused
-		
-		this.at_bottom = true
-		this.ignore_scroll = true
-		
-		// if we are more than 1 page up, just start scrolling at half a page
-		if (this.scrollBottom > this.outer.clientHeight)
-			this.scrollBottom = this.outer.clientHeight
-		
-		if (this.scrollBottom == this.old_scroll_bottom) {
-			this.animation = null
-			return
-		} // PLEASE
-		this.old_scroll_bottom = this.scrollBottom
-		
-		this.scrollBottom = Math.ceil(this.scrollBottom * Math.pow(1-this.rate, dt))
-		if (this.scrollBottom <= 0.5) {
-			this.animation = null
-			return
-		}
-		
-		this.animation = window.requestAnimationFrame((time)=>{
-			if (!this.animation) // was cancelled. i JUST added this check and i bet it fixes something...
-				return
-			this.scroll_animation(time)
-		})
-	}
-	//if you want to insert an element into the scroller, do something like:
-	// scroller.print(function() {
-	//    return document.createElement('div')
-	// }, true) // (or `false` to disable scrolling (for example, when inserting the initial elements, you might disable scrolling here and then run scroller.autoScroll(true) afterwards, to scroll to the bottom instantly)
-	//(the reason it's inside a function is because it needs to run code
-	// before AND after inserting the element)
-	print(callback, autoscroll) {
-		let should = autoscroll && this.at_bottom
-		try {
-			let elem = callback()
-			elem && this.inner.append(elem)
-		} finally {
-			should && this.autoscroll()
-		}
-	}
-	print_top(callback) {
-		let elem = callback()
-		elem && this.inner.prepend(elem)
-	}
-	destroy() {
-	}
-}
