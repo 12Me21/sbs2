@@ -7,7 +7,6 @@
 // we could use the scrolltop max trick here again...
 // alternatively:
 // *switch the scroller direction depending on whether the user is near the bottom*
-// hmmm
 
 class Scroller {
 	constructor(outer, inner) { // constructor todo. take outer element only. create inner element here.
