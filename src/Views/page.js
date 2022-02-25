@@ -178,15 +178,15 @@ add_view('page', {
 		
 		let textarea_resize = ()=>{
 			$chatTextarea.style.height = ''
-			let oldBottom
+			//let oldBottom
 			let room = ChatRoom.currentRoom
-			if (room)
-				oldBottom = room.scroller.scrollBottom
+			//if (room)
+			//	oldBottom = room.scroller.scrollBottom
 			let height = $chatTextarea.scrollHeight
 			$chatTextarea.parentNode.style.height = $chatTextarea.style.height = height+1+"px"
 			if (room) {
 				room.scroller.ignore_scroll = true
-				room.scroller.scrollBottom = oldBottom
+				//room.scroller.scrollBottom = oldBottom
 			}
 		}
 		textarea_resize()

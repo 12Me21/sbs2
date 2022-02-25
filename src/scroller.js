@@ -69,22 +69,24 @@ let track_scroll_resize = new ResizeTracker('height')
 class Scroller {
 	constructor(outer, inner) {
 		this.outer = outer
+		this.outer.classList.add('bottom')
+		
 		this.inner = inner
+		
 		this.animation = null
 		this.animation_start = null
+		
 		this.at_bottom = true
 		this.ignore_scroll = false
 		this.old_scroll_bottom = null
+		
 		this.rate = 0.25 //autoscroll rate: amount of remaining distance to scroll per 1/60 second
 		this.bottom_height = 0.25 //if within this distance of bottom, autoscroll is enabled
+		
 		this.register_size_change()
 		outer.addEventListener('scroll', (e)=>{
 			if (this.ignore_scroll) {
 				this.ignore_scroll = false
-				return
-			}
-			if (this.size_changed()) {
-				// should I do $.register_size_change() here?
 				return
 			}
 			if (this.animation)
@@ -92,38 +94,17 @@ class Scroller {
 			this.at_bottom = this.scrollBottom < this.outer.clientHeight*this.bottom_height
 		}, {passive: true})
 		
-		let onResize = ()=>{
-			this.register_size_change()
-			if (this.at_bottom && !this.animation) // when message is inserted, it triggers the resize detector, which would interrupt the scroll animation, so we don't force scroll if an animation is playing
-				this.scroll_instant()
-		}
-		// todo: if multiple chat rooms are loaded,
-		// the outer elements should all bbbe the same size?
-		// - no, because of the userlist and page resizing
-		track_scroll_resize.add(this.outer, onResize)
-		track_scroll_resize.add(this.inner, onResize)
 		Object.seal(this)
-	}
-	size_changed() {
-		return this.inner_height!=this.inner.getBoundingClientRect().height || this.outer_height!=this.outer.getBoundingClientRect().height
 	}
 	register_size_change() {
 		this.inner_height = this.inner.getBoundingClientRect().height
 		this.outer_height = this.outer.getBoundingClientRect().height
 	}
 	get scrollBottom() {
-		let parent = this.outer
-		return parent.scrollHeight-parent.clientHeight-parent.scrollTop
+		return -this.outer.scrollTop
 	}
 	set scrollBottom(value) {
-		let parent = this.outer
-		// need to round here because it would be reversed otherwise
-		//value = value/window.devicePixelRatio)*window.devicePixelRatio
-		parent.scrollTop = Math.ceil((parent.scrollHeight-parent.clientHeight-value)*window.devicePixelRatio)/window.devicePixelRatio
-		//from chat.js:
-		//value = Math.floor(value*window.devicePixelRatio)/window.devicePixelRatio
-		//let parent = this.messages_outer
-		//parent.scrollTop = parent.scrollHeight-parent.clientHeight-value
+		this.outer.scrollTop = value
 	}
 	scroll_instant() {
 		this.cancel_scroll()
@@ -132,7 +113,7 @@ class Scroller {
 		this.at_bottom = true
 	}
 	autoscroll() {
-		if (!window.requestAnimationFrame) {
+		if (1 || !window.requestAnimationFrame) {
 			this.ignore_scroll = true
 			this.scrollBottom = 0
 			this.at_bottom = true
@@ -175,7 +156,7 @@ class Scroller {
 		} // PLEASE
 		this.old_scroll_bottom = this.scrollBottom
 		
-		this.scrollBottom = Math.floor(this.scrollBottom * Math.pow(1-this.rate, dt))
+		this.scrollBottom = Math.ceil(this.scrollBottom * Math.pow(1-this.rate, dt))
 		if (this.scrollBottom <= 0.5) {
 			this.animation = null
 			return
@@ -203,18 +184,9 @@ class Scroller {
 		}
 	}
 	print_top(callback) {
-		let height = this.outer.scrollHeight
-		let scroll = this.outer.scrollTop
-		try {
-			let elem = callback()
-			elem && this.inner.prepend(elem)
-		} finally {
-			this.outer.scrollTop = scroll + (this.outer.scrollHeight-height)
-		}
+		let elem = callback()
+		elem && this.inner.prepend(elem)
 	}
 	destroy() {
-		//disable resize tracking
-		track_scroll_resize.remove(this.inner)
-		track_scroll_resize.remove(this.outer)
 	}
 }

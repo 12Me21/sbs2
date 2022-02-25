@@ -224,6 +224,17 @@ scroll-inner {
 	display: block;
 }
 
+scroll-outer.bottom {
+	display: flex; /* necessary, otherwise the inner element width is wrong sometimes, after the outer element width changes */
+	direction: rtl;
+	writing-mode: vertical-rl;
+	width: 100%; /* why? */
+}
+scroll-outer.bottom > * {
+	direction: initial;
+	writing-mode: initial;
+}
+
 .image-box {
 	overflow: hidden;
 	

@@ -29,6 +29,10 @@ class ChatRoom {
 		this.max_messages = 500
 		this.total_messages = 0
 		
+		let extra = document.createElement('div')
+		this.extra = extra
+		this.messageList.prepend(extra)
+		
 		let label = document.createElement('label')
 		let checkbox = label.createChild('input')
 		checkbox.type = 'checkbox'
@@ -36,7 +40,7 @@ class ChatRoom {
 		let text = document.createTextNode('disable limit')
 		label.append(text)
 		
-		this.messages_outer.prepend(label)
+		extra.prepend(label)
 		
 		{
 			let b = Draw.button()
@@ -48,16 +52,16 @@ class ChatRoom {
 				btn.disabled = true
 				this.load_older(50, ()=>{btn.disabled = false}) //todo: lock
 			}
-			this.messages_outer.prepend(b[0])
+			extra.prepend(b[0])
 		}
 		
 		if (page.values.pinned) { //todo: check if actually we have any real pinned messages
 			let pinnedSeparator = document.createElement('div')
 			pinnedSeparator.className = "messageGap"
-			this.messages_outer.prepend(pinnedSeparator)
+			extra.prepend(pinnedSeparator)
 			
 			this.pinnedList = document.createElement('scroll-inner')
-			this.messages_outer.prepend(this.pinnedList)
+			extra.prepend(this.pinnedList)
 		}
 		
 		this.messages_outer.dataset.id = page.id
