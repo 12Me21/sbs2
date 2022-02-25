@@ -64,34 +64,35 @@ class Scroller {
 	start_animation(dist) {
 		window.cancelAnimationFrame(this.anim_id)
 		this.anim_id = null
-		console.log("new dist:", dist, " leftover dist:" ,this.anim_pos)
-		this.animate_insertion(this.anim_pos + dist)
+		this.animate_insertion(this.anim_pos + dist,)
 	}
-	
 	cancel_animation() {
 		if (this.anim_id != null) {
-			this.anim_pos = 0
-			this.inner.style.transform = ""
 			window.cancelAnimationFrame(this.anim_id)
-			this.anim_id = null
+			this.end_animation()
 		}
+	}
+	end_animation() {
+		this.anim_id = null
+		this.anim_pos = 0
+		this.inner.style.transform = ""
 	}
 	animate_insertion(dist, prev_time = performance.now()) {
 		if (dist <= 1) {
-			this.anim_id = null
-			this.anim_pos = 0
-			this.inner.style.transform = ""
+			this.end_animation()
 			return
 		}
 		this.inner.style.transform = `translate(0, ${dist}px)`
 		this.anim_pos = dist
 		let id = window.requestAnimationFrame((time)=>{
+			// the argument passed by animationframe is wrong in Chromium browsers
+			time = performance.now()
 			// if the animation was cancelled or another was started
 			if (this.anim_id != id)
-				return
-			// relative to 60fps (ex: 60fps = 1, 120fps = 0.5) limited to 30fps
+				return 
+			// delta time adjusted version of
+			// new_dist = dist * (1-this.rate) @ 60fps
 			let dt = Math.min((time-prev_time) / (1000/60), 2)
-			// reduce `dist` by `this.rate` every 1/60 of a second
 			let new_dist = dist * Math.pow(1-this.rate, dt)
 			this.animate_insertion(new_dist, time)
 		})
