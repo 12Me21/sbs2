@@ -426,7 +426,7 @@ html:not(.f-chatEditing) .showWhenEdit {
 	margin: 0.3rem 0;
 }
 
-.chatScroller > scroll-inner {
+.chatScroller {
 	padding-bottom: 0.5rem;
 }
 
@@ -771,8 +771,8 @@ message-part, header, .markup-root, message-block {
 	contain: content;
 }
 /* this might be bad */
-.chatScroller > scroll-inner, #\$sidebarScroller, $sidebarActivity {
-	will-change: contents;
+.chatScroller, #\$sidebarScroller, $sidebarActivity {
+	will-change: contents; /* might need to change .chatScroller ? */
 }
 
 /*   idk   */

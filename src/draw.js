@@ -95,8 +95,9 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	
 	chat_message_pane() {
 		let outer = E`scroll-outer`
-		outer.className = 'grow chatScroller'
+		outer.className = 'grow'
 		let inner = outer.child`scroll-inner`
+		inner.className = 'chatScroller'
 		return [outer, inner]
 	},
 	

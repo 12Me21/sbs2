@@ -62,7 +62,7 @@ class ChatRoom {
 			pinnedSeparator.className = "messageGap"
 			extra.prepend(pinnedSeparator)
 			
-			this.pinnedList = document.createElement('scroll-inner')
+			this.pinnedList = document.createElement('div')
 			extra.prepend(this.pinnedList)
 		}
 		
