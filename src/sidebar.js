@@ -150,14 +150,13 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 				else
 					registerError(resp, "Failed:") //todo: this doesn't work?
 			})
-			let d = Draw.settings(Settings.fields, (name, value)=>{
-				Settings.change(name, value)
-			})
-			$localSettings.appendChild(d.elem)
-			$localSettingsSave.onclick = ()=>{
-				d.saveAll()
-			}
-			
+		}
+		let d = Draw.settings(Settings.fields, (name, value)=>{
+			Settings.change(name, value)
+		})
+		$localSettings.append(d.elem)
+		$localSettingsSave.onclick = ()=>{
+			d.saveAll()
 		}
 	},
 	
