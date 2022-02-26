@@ -287,23 +287,11 @@
 					<div class='registerBox'>
 						<h3>Change account settings</h3>
 						<form id=$changeForm method=dialog>
-							<form-table>
-								<div class='label'>Old Password:</div>
-								<div class='field'><input placeholder="Old Password" name=oldPassword minlength=8 type=password></div>
-								<div class='label wide'>Only fill out the fields you want to change:</div>
-								<div class='label'>New Username:</div>
-								<div class='field'><input placeholder="2 to 20 chars, no spaces" name=username minlength=2 maxlength=20></div>
-								<div class='label'>New Password:</div>
-								<div class='field'>
-									<input placeholder="at least 8 chars" name=password type=password minlength=8><br>
-									<input placeholder="(repeat password)" name=password2 type=password minlength=8>
-								</div>
-								<div class='label'>New Email:</div>
-								<div class='field'>
-									<input placeholder="" name=email type=email><br>
-									<input placeholder="(repeat email)" name=email2 type=email>
-								</div>
-							</form-table>
+							<input placeholder="Old Password" name=oldPassword minlength=8 type=password><br>
+							Only fill out the fields you want to change:<br>
+							<input placeholder="New Username" name=username minlength=2 maxlength=20> 2 to 20 characters, no spaces<br>
+							<input placeholder="New Password" name=password type=password minlength=8><input placeholder="Confirm New Password" name=password2 type=password minlength=8> At least 8 characters<br>
+							<input placeholder="New Email" name=email type=email><input placeholder="Confirm New Email" name=email2 type=email><br>
 							<button>Save</button>
 						</form>
 						<div id=$userSettingsError class='pre'></div>
