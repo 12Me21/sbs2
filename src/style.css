@@ -697,31 +697,16 @@ user-select {
 }
 
 textarea-container {
-	position: relative;
-	display: block;
-	box-sizing: content-box;
 	border: 2px solid #00C8B4;
 	padding: 5px;
-	/* overflow: hidden; this was needed only because of the vertical-align bug */
 	background: var(--mainbgcolor);
-	vertical-align: top; /* idk if needed but there was a sizing bug when opening the console so mmm*/
 }
 
 textarea-container > textarea {
-	resize: none;
+	border-radius: 0;
 	height: 2.5em;
 	min-height: 2.5em;
-		/*position: absolute;*/
-	box-sizing: content-box;
-	resize: none;
-	width: 100%;
-	border: none;
-	padding: 0;
-	margin: 0;
-	border-radius: 0;
 	box-shadow: none;
-	overflow-y: scroll;
-	vertical-align: top;
 }
 
 textarea-container > textarea:focus {

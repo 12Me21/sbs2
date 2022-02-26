@@ -1,7 +1,5 @@
 window.onerror = function(message, source, line, col, error) {
 	try {
-		if (message == "ResizeObserver loop limit exceeded")
-			return // shut up
 		console.error(arguments)
 		if (!error)
 			return

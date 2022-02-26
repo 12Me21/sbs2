@@ -212,7 +212,10 @@
 			<div id=$chatPaneBox class='grow slide-box'></div>
 			<div class='inputPane loggedIn flex-row'>
 				<button class='showWhenEdit' id=$chatCancelEdit>Cancel Edit</button>
-				<textarea-container class='grow'><textarea class='chatTextarea' id=$chatTextarea accesskey="z"></textarea></textarea-container>
+				<textarea-container class='grow'>
+					<div id=$chatTextareaWidth></div>
+					<textarea class='chatTextarea' id=$chatTextarea accesskey="z"></textarea>
+				</textarea-container>
 				<div>
 					<label class='no-select'>Markup:<input type=checkbox checked autocomplete=off id=$chatMarkupSelect></label>
 				</div>

@@ -183,7 +183,9 @@ add_view('page', {
 		}
 		textarea_resize()
 		$chatTextarea.addEventListener('input', textarea_resize)
-		track_resize_2.add($chatTextarea, textarea_resize)
+		track_resize_2.add($chatTextarea, ()=>{
+			window.setTimeout(textarea_resize, 0)
+		})
 	}
 })
 

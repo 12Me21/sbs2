@@ -384,3 +384,23 @@ for horizontal-split to stop acting like a .resize-box
 		visibility: hidden;
 	}
 }
+
+textarea-container {
+	position: relative;
+	display: block;
+	box-sizing: content-box;
+	/* overflow: hidden; this was needed only because of the vertical-align bug */
+	vertical-align: top; /* idk if needed but there was a sizing bug when opening the console so mmm*/
+}
+
+textarea-container > textarea {
+	resize: none;
+	box-sizing: content-box;
+	width: 100%;
+	border: none;
+	padding: 0;
+	margin: 0;
+	overflow-y: scroll;
+	vertical-align: top;
+	/*position: absolute;*/
+}
