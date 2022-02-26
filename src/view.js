@@ -207,8 +207,11 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			// todo: scroll to fragment element
 		}
 		
-		let error_render = (message, e)=>{
-			error(e, message)
+		let error_render = (message, e=null)=>{
+			if (e)
+				error(e, message)
+			else
+				console.error(message) //eh
 			cleanup()
 			current_view = view = errorView
 			view.render(message, e)

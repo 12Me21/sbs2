@@ -270,35 +270,6 @@
 						</form>
 						<div id=$loginError></div>
 					</div>
-					<div class='registerBox'>
-						<h2>Register</h2>
-						<form id=$registerForm autocomplete=off method=dialog> <!-- I set method=dialog so the form can't be submitted -->
-							<input placeholder=Username name=username minlength=2 maxlength=20> 2 to 20 characters, no spaces<br>
-							<input placeholder=Password name=password type=passwordminlength=8><input placeholder="Confirm Password" name=password2 type=password minlength=8> At least 8 characters<br>
-							<input placeholder=Email name=email type=email><input placeholder="Confirm Email" name=email2 type=email> Confirmation code will be sent<br>
-							<button>Register</button>
-						</form>
-						<button id=$registerResend>Resend Email</button>
-						<div id=$registerError class='pre'></div>
-						<h3>Confirm Registration</h3>
-						<form id=$confirmForm method=dialog>
-							<input placeholder="Confirmation Code" name=code>
-							<button>Confirm</button>
-						</form>
-					</div>
-					<div class='registerBox'>
-						<h2>Password Reset</h2>
-						<form id=$passwordForm method=dialog>
-							<input placeholder="Email" type=email name=email><br>
-							<button>Send Email</button>
-						</form>
-						<form id=$passwordForm2 method=dialog>
-							<input placeholder="reset code" name=key><br>
-							<input placeholder="new password" name=password>
-							<input placeholder="confirm new password" name=password2><br>
-							<button>Reset Password</button>
-						</form>
-					</div>
 				</div>
 				<div class='loggedIn border-list'>
 					<div class='registerBox'>

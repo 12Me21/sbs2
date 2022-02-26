@@ -131,7 +131,7 @@ function error(e, ...rest) {
 			e.stack = old
 		}
 	} catch (e2) {
-		console.error(...rest, "\n", e)
+		console.error(...rest, "\n", e, e2)
 	}
 }
 

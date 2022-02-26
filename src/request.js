@@ -140,14 +140,6 @@ const Req = {
 		return x
 	},
 	
-	sendResetEmail(email, callback) {
-		return this.request("User/passwordreset/sendemail", "POST", callback, {email: email})
-	},
-	
-	resetPassword(key, password, callback) {
-		return this.request("User/passwordreset", "POST", callback, {resetKey: key, password: password})
-	},
-	
 	query_string(obj) {
 		if (!obj)
 			return ""
@@ -226,24 +218,6 @@ const Req = {
 	
 	put_file(file, callback) {
 		return this.request("File/"+file.id, 'PUT', callback, file)
-	},
-	
-	register(username, password, email, callback) {
-		return this.request("User/register", 'POST', callback, {
-			username: username,
-			password: password,
-			email: email
-		})
-	},
-	
-	confirmRegister(key, callback) {
-		return this.request("User/register/confirm", 'POST', callback, {
-			confirmationKey: key
-		})
-	},
-	
-	sendEmail(email, callback) {
-		return this.request("User/register/sendemail", 'POST', callback, {email: email})
 	},
 	
 	read(requests, filters, callback, need_cats) {
