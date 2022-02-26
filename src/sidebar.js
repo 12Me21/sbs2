@@ -137,7 +137,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		}
 		$changeForm.onsubmit = function(e) {
 			e.preventDefault()
-			registerError("Updating data...", undefined, $userSettingsError)
+			registerError("Updating data...", undefined)
 			let data = readChangeFields()
 			if (data.error) {
 				registerError(data.error)
@@ -146,9 +146,9 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 			delete data.error
 			Req.set_sensitive(data, (e, resp)=>{
 				if (!e)
-					registerError("Updated", undefined, $userSettingsError)
+					registerError("Updated", undefined)
 				else
-					registerError(resp, "Failed:", $userSettingsError) //todo: this doesn't work?
+					registerError(resp, "Failed:") //todo: this doesn't work?
 			})
 			let d = Draw.settings(Settings.fields, (name, value)=>{
 				Settings.change(name, value)
@@ -310,8 +310,8 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 })<!-- PRIVATE })
 
 //todo: clean this up
-function registerError(message, title, element) {
-	var text = ""
+function registerError(message, title) {
+	let text = ""
 	if (message == undefined)
 		text = ""
 	else if (message instanceof Array)
@@ -321,18 +321,17 @@ function registerError(message, title, element) {
 	} else {
 		//todo: this tells us which fields are invalid
 		// so we can use this to highlight them in red or whatever
-		for (var key in message) {
+		for (let key in message)
 			text += key+": "+message[key]+"\n"
-		}
 	}
 	if (title)
 		text = title+"\n"+text
-	;(element||$registerError).textContent = text
+	$userSettingsError.textContent = text
 }
-
+// this all needs to be replaced with the new input system but I don't trust it enough yet.
 function readChangeFields() {
-	var form = $changeForm
-	var data = {
+	let form = $changeForm
+	let data = {
 		oldPassword: form.oldPassword.value,
 		username: form.username.value,
 		password: form.password.value,

@@ -291,14 +291,38 @@ const INPUTS = (()=>{
 				this.input = elem('input')
 				this.input.id = this.html_id
 				this.input.placeholder = "text"
+				if (p.type == 'password')
+					this.input.type = 'password'
+				else if (p.type == 'email')
+					this.input.type = 'email'
 				this.elem = this.input
 				this.input.onchange = this._onchange.bind(this)
+				if (p.confirm == true) {
+					this.confirm = true
+					this.elem = document.createElement('div')
+					this.input2 = elem('input')
+					this.input2.placeholder = "(repeat)"
+					this.input2.type = this.input.type
+					this.elem.append(this.input, this.input2)
+				}
 			}
 			get() {
-				return this.input.value || null
+				if (this.confirm) {
+					let v1 = this.input.value
+					let v2 = this.input2.value
+					if (v1 == v2)
+						return v1 || null
+					else
+						return null // failed (todo: different return value?)
+				} else {
+					return this.input.value || null
+				}
 			}
 			set(v) {
 				this.input.value = v || ""
+				if (this.confirm) {
+					this.input2.value = ""
+				}
 			}
 		},
 		// type: {min: Number/null, max: Number/null} / {ids: [Number...]} / null
@@ -543,6 +567,7 @@ const INPUTS = (()=>{
 					throw 'cant set file like that'
 			}
 		},
+		
 		// type: String/null
 		output: class extends GenericInput {
 			constructor(p) {
