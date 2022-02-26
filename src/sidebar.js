@@ -264,7 +264,6 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	},
 	
 	limit_messages() {
-		//var x = scroller.scrollBottom
 		while (message_count > 500) {
 			let n = scroller.inner.firstChild
 			let id = n.dataset.id
@@ -273,7 +272,6 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 			n.remove()
 			message_count--
 		}
-		//scroller.scrollBottom = x
 	}
 	
 })<!-- PRIVATE })

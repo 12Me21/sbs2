@@ -224,6 +224,23 @@ scroll-inner {
 	display: block;
 }
 
+/* only allow one child
+scroll-outer > :not(:first-child) {
+	display: none;
+}*/
+
+scroll-outer.bottom {
+	display: flex; /* necessary, otherwise the inner element width is wrong sometimes, after the outer element width changes (safari) */
+	direction: rtl;
+	writing-mode: vertical-lr;
+	width: 100%; /* why? */
+}
+scroll-outer.bottom > * {
+	direction: initial;
+	writing-mode: initial;
+	width: 100%; /* required to prevent strange overflow bug (safari) */
+}
+
 .image-box {
 	overflow: hidden;
 	

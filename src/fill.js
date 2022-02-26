@@ -11,6 +11,15 @@ if (!window.devicePixelRatio)
 
 delete window.sidebar // obsolete firefox global variable
 
+if (!Array.prototype.findLast)
+	Array.prototype.findLast = function(filter) {
+		for (let i=this.length-1; i>=0; i--) {
+			if (filter(this[i], i, this))
+				return this[i]
+		}
+		return undefined
+	}
+
 String.prototype.split1 = function(sep) {
 	let n = this.indexOf(sep)
 	if (n == -1)

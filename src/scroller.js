@@ -1,3 +1,116 @@
+//let track_scroll_resize = new ResizeTracker('height')
+
+// todo:
+// if not at bottom, we need to adjust the scroll position backwards
+// upon resize of the inner element
+
+// we could use the scrolltop max trick here again...
+
+class Scroller {
+	constructor(outer, inner) { // constructor todo. take outer element only. create inner element here.
+		this.outer = outer
+		this.outer.classList.add('bottom')
+		this.inner = inner
+		
+		this.anim_id = null
+		this.anim_pos = 0
+		
+		this.rate = 0.25 //autoscroll rate: amount of remaining distance to scroll per 1/60 second
+		this.bottom_region = 0.25 //if within this distance of bottom, autoscroll is enabled
+		
+		//outer.addEventListener('scroll', (e)=>{
+		//}, {passive: true})
+		
+		Object.seal(this)
+	}
+	scroll_height() {
+		return this.inner.getBoundingClientRect().height
+	}
+	at_bottom() {
+		return -this.outer.scrollTop < this.outer.clientHeight*this.bottom_region
+	}
+	scroll_hack(st = this.outer.scrollTop) {
+		this.outer.scrollTop = st-9999
+		this.outer.scrollTop = st
+	}
+	print(callback, animate) {
+		let at_bottom = this.at_bottom()
+		// skip height calculation in simplest case
+		let height1 = (at_bottom && !animate) ? null : this.scroll_height()
+		try {
+			let elem = callback()
+			elem && this.inner.append(elem)
+		} finally {
+			if (at_bottom && !animate) { // simplest case
+				this.scroll_instant()
+			} else { // otherwise we need to calculate new height
+				let height2 = this.scroll_height()
+				let diff = height2 - height1
+				if (at_bottom) {
+					this.scroll_hack(3)
+					this.start_animation(diff)
+				} else {
+					// adjust scroll position so contents don't jump when you're not at the bottom
+					this.scroll_hack(this.outer.scrollTop - diff)
+				}
+			}
+		}
+	}
+	scroll_instant() {
+		this.cancel_animation()
+		this.scroll_hack(3)
+	}
+	start_animation(dist) {
+		window.cancelAnimationFrame(this.anim_id)
+		this.anim_id = null
+		this.animate_insertion(this.anim_pos + dist)
+	}
+	cancel_animation() {
+		if (this.anim_id != null) {
+			window.cancelAnimationFrame(this.anim_id)
+			this.end_animation()
+		}
+	}
+	end_animation() {
+		this.anim_id = null
+		this.anim_pos = 0
+		this.inner.style.transform = ""
+		this.scroll_hack()
+	}
+	animate_insertion(dist, prev_time = performance.now()) {
+		// abs allows animation to play backwards (for deleting comments)
+		if (Math.abs(dist) <= 1) {
+			this.end_animation()
+			return
+		}
+		this.inner.style.transform = `translate(0, ${dist}px)`
+		this.scroll_hack()
+		this.anim_pos = dist
+		let id = window.requestAnimationFrame((time)=>{
+			// the argument passed by animationframe is wrong in Chromium browsers
+			time = performance.now()
+			// if the animation was cancelled or another was started
+			if (this.anim_id != id)
+				return
+			// delta time adjusted version of
+			// new_dist = dist * (1-this.rate) @ 60fps
+			let dt = Math.min((time-prev_time) / (1000/60), 2)
+			let new_dist = dist * Math.pow(1-this.rate, dt)
+			this.animate_insertion(new_dist, time)
+		})
+		this.anim_id = id
+	}
+	// todo: this should be used instead of print() if you're making changes
+	// to elements above the current scroll position
+	print_top(callback) {
+		let elem = callback()
+		elem && this.inner.prepend(elem)
+	}
+	destroy() {
+	}
+}
+
+
 class ResizeTracker {
 	constructor(measure) {
 		this.measure = measure
@@ -56,165 +169,17 @@ class ResizeTracker {
 	}
 }
 
-let track_scroll_resize = new ResizeTracker('height')
 
-// goal:
-// any unnatural resize -> scroll to bottom if atbottom set
-// human scrolling -> update atbottom flag
-// message insert -> smooth scroll
 
-// what is human scrolling?
-//  scroll position changes without the element size changing or a message being inserted
+// todo: we only want to animate if an element is inserted/removed/resized at the BOTTOM of the screen. but how to detect this? probably best, I suppose, if the chat room handles it?
 
-class Scroller {
-	constructor(outer, inner) {
-		this.outer = outer
-		this.inner = inner
-		this.animation = null
-		this.animation_start = null
-		this.at_bottom = true
-		this.ignore_scroll = false
-		this.old_scroll_bottom = null
-		this.rate = 0.25 //autoscroll rate: amount of remaining distance to scroll per 1/60 second
-		this.bottom_height = 0.25 //if within this distance of bottom, autoscroll is enabled
-		this.register_size_change()
-		outer.addEventListener('scroll', (e)=>{
-			if (this.ignore_scroll) {
-				this.ignore_scroll = false
-				return
-			}
-			if (this.size_changed()) {
-				// should I do $.register_size_change() here?
-				return
-			}
-			if (this.animation)
-				this.cancel_scroll()
-			this.at_bottom = this.scrollBottom < this.outer.clientHeight*this.bottom_height
-		}, {passive: true})
-		
-		let onResize = ()=>{
-			this.register_size_change()
-			if (this.at_bottom && !this.animation) // when message is inserted, it triggers the resize detector, which would interrupt the scroll animation, so we don't force scroll if an animation is playing
-				this.scroll_instant()
-		}
-		// todo: if multiple chat rooms are loaded,
-		// the outer elements should all bbbe the same size?
-		// - no, because of the userlist and page resizing
-		track_scroll_resize.add(this.outer, onResize)
-		track_scroll_resize.add(this.inner, onResize)
-		Object.seal(this)
-	}
-	size_changed() {
-		return this.inner_height!=this.inner.getBoundingClientRect().height || this.outer_height!=this.outer.getBoundingClientRect().height
-	}
-	register_size_change() {
-		this.inner_height = this.inner.getBoundingClientRect().height
-		this.outer_height = this.outer.getBoundingClientRect().height
-	}
-	get scrollBottom() {
-		let parent = this.outer
-		return parent.scrollHeight-parent.clientHeight-parent.scrollTop
-	}
-	set scrollBottom(value) {
-		let parent = this.outer
-		// need to round here because it would be reversed otherwise
-		//value = value/window.devicePixelRatio)*window.devicePixelRatio
-		parent.scrollTop = Math.ceil((parent.scrollHeight-parent.clientHeight-value)*window.devicePixelRatio)/window.devicePixelRatio
-		//from chat.js:
-		//value = Math.floor(value*window.devicePixelRatio)/window.devicePixelRatio
-		//let parent = this.messages_outer
-		//parent.scrollTop = parent.scrollHeight-parent.clientHeight-value
-	}
-	scroll_instant() {
-		this.cancel_scroll()
-		this.ignore_scroll = true
-		this.scrollBottom = 0
-		this.at_bottom = true
-	}
-	autoscroll() {
-		if (!window.requestAnimationFrame) {
-			this.ignore_scroll = true
-			this.scrollBottom = 0
-			this.at_bottom = true
-			return
-		}
-		if (this.animation)
-			return
-		/*this.animation = null
-		  var now = performance.now()
-		  this.animation_start = now - 1000/60 //assume 60fps on first frame..
-		  this.scroll_animation(now)
-		  // edited to start animation la-a-a-ater*/
-		this.animation = window.requestAnimationFrame((time)=>{
-			let now = performance.now()
-			//assume 60fps on first frame..
-			//this.animation_start = now - 1000/60
-			this.scroll_animation(now)
-		})
-	}
-	cancel_scroll() {
-		if (this.animation) {
-			window.cancelAnimationFrame(this.animation)
-			this.animation = false
-		}
-	}
-	scroll_animation(time) {
-		let dt = 1//(time - this.animation_start) / (1000/60)
-		//this.animation_start = time // unused
-		
-		this.at_bottom = true
-		this.ignore_scroll = true
-		
-		// if we are more than 1 page up, just start scrolling at half a page
-		if (this.scrollBottom > this.outer.clientHeight)
-			this.scrollBottom = this.outer.clientHeight
-		
-		if (this.scrollBottom == this.old_scroll_bottom) {
-			this.animation = null
-			return
-		} // PLEASE
-		this.old_scroll_bottom = this.scrollBottom
-		
-		this.scrollBottom = Math.floor(this.scrollBottom * Math.pow(1-this.rate, dt))
-		if (this.scrollBottom <= 0.5) {
-			this.animation = null
-			return
-		}
-		
-		this.animation = window.requestAnimationFrame((time)=>{
-			if (!this.animation) // was cancelled. i JUST added this check and i bet it fixes something...
-				return
-			this.scroll_animation(time)
-		})
-	}
-	//if you want to insert an element into the scroller, do something like:
-	// scroller.print(function() {
-	//    return document.createElement('div')
-	// }, true) // (or `false` to disable scrolling (for example, when inserting the initial elements, you might disable scrolling here and then run scroller.autoScroll(true) afterwards, to scroll to the bottom instantly)
-	//(the reason it's inside a function is because it needs to run code
-	// before AND after inserting the element)
-	print(callback, autoscroll) {
-		let should = autoscroll && this.at_bottom
-		try {
-			let elem = callback()
-			elem && this.inner.append(elem)
-		} finally {
-			should && this.autoscroll()
-		}
-	}
-	print_top(callback) {
-		let height = this.outer.scrollHeight
-		let scroll = this.outer.scrollTop
-		try {
-			let elem = callback()
-			elem && this.inner.prepend(elem)
-		} finally {
-			this.outer.scrollTop = scroll + (this.outer.scrollHeight-height)
-		}
-	}
-	destroy() {
-		//disable resize tracking
-		track_scroll_resize.remove(this.inner)
-		track_scroll_resize.remove(this.outer)
-	}
-}
+// idea:
+
+// imagine a message is inserted/deleted/edited in the MIDDLE of the visible area
+// you want to only shift the content above it, not everything
+// but how on earth would this even be implemented...
+
+// could do something like
+// have a list of all modified elements
+// measure their heights before/after
+// animate the height changes of those elements by setting their style.height
