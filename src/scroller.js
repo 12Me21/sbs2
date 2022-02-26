@@ -29,7 +29,7 @@ class Scroller {
 	}
 	scroll_instant() {
 		this.cancel_animation()
-		this.outer.scrollTop = 3
+		this.scroll_hack(3)
 	}
 	at_bottom() {
 		return -this.outer.scrollTop < this.outer.clientHeight*this.bottom_height
@@ -55,11 +55,11 @@ class Scroller {
 				let height2 = this.scroll_height()
 				let diff = height2 - height1
 				if (at_bottom) {
-					this.outer.scrollTop = 3
+					this.scroll_hack(3)
 					this.start_animation(diff)
 				} else {
 					// adjust scroll position so contents don't jump when you're not at the bottom
-					this.outer.scrollTop -= diff
+					this.scroll_hack(this.outer.scrollTop - diff)
 				}
 			}
 		}
@@ -79,6 +79,11 @@ class Scroller {
 		this.anim_id = null
 		this.anim_pos = 0
 		this.inner.style.transform = ""
+		this.scroll_hack()
+	}
+	scroll_hack(st = this.outer.scrollTop) {
+		this.outer.scrollTop = st-99999
+		this.outer.scrollTop = st
 	}
 	animate_insertion(dist, prev_time = performance.now()) {
 		// abs allows animation to play backwards (for deleting comments)
@@ -87,6 +92,7 @@ class Scroller {
 			return
 		}
 		this.inner.style.transform = `translate(0, ${dist}px)`
+		this.scroll_hack()
 		this.anim_pos = dist
 		let id = window.requestAnimationFrame((time)=>{
 			// the argument passed by animationframe is wrong in Chromium browsers
