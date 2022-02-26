@@ -310,5 +310,9 @@ let Entity = {
 	encode_comment(text, metadata) {
 		return JSON.stringify(metadata || {})+"\n"+text
 	},
+	
+	is_new_comment(c) {
+		return !c.deleted && (+c.editDate == +c.createDate)
+	},
 }
 Object.seal(Entity)

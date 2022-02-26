@@ -41,28 +41,33 @@ class Scroller {
 	//(the reason it's inside a function is because it needs to run code
 	// before AND after inserting the element)
 	
-	print(callback, autoscroll) {
+	print(callback, animate) {
 		let at_bottom = this.at_bottom()
-		let height1 = this.scroll_height()
+		// skip height calculation in simplest case
+		let height1 = (at_bottom && !animate) ? null : this.scroll_height()
 		
 		try {
 			let elem = callback()
 			elem && this.inner.append(elem)
 		} finally {
-			let height2 = this.scroll_height()
-			let diff = height2 - height1
-			if (at_bottom) {
-				if (autoscroll)
+			if (at_bottom && !animate) { // simplest case
+				this.scroll_instant()
+			} else { // otherwise we need to calculate new height
+				let height2 = this.scroll_height()
+				let diff = height2 - height1
+				if (at_bottom) {
 					this.start_animation(diff)
-			} else {
-				this.outer.scrollTop = this.outer.scrollTop - diff
+				} else {
+					// adjust scroll position so contents don't jump when you're not at the bottom
+					this.outer.scrollTop -= diff
+				}
 			}
 		}
 	}
 	start_animation(dist) {
 		window.cancelAnimationFrame(this.anim_id)
 		this.anim_id = null
-		this.animate_insertion(this.anim_pos + dist,)
+		this.animate_insertion(this.anim_pos + dist)
 	}
 	cancel_animation() {
 		if (this.anim_id != null) {
@@ -76,7 +81,8 @@ class Scroller {
 		this.inner.style.transform = ""
 	}
 	animate_insertion(dist, prev_time = performance.now()) {
-		if (dist <= 1) {
+		// abs allows animation to play backwards (for deleting comments)
+		if (Math.abs(dist) <= 1) {
 			this.end_animation()
 			return
 		}
@@ -96,6 +102,8 @@ class Scroller {
 		})
 		this.anim_id = id
 	}
+	// todo: this should be used instead of print() if you're making changes
+	// to elements above the current scroll position
 	print_top(callback) {
 		let elem = callback()
 		elem && this.inner.prepend(elem)

@@ -118,7 +118,7 @@ class ChatRoom {
 	load_older(num, callback) {
 		let firstId = Object.first_key(this.message_parts)
 		Req.get_older_comments(this.id, +firstId, num, (comments)=>{
-			comments && comments.forEach(c => this.display_old_message(c))
+			comments && this.display_old_messages(comments)
 			callback()
 		})
 	}
@@ -169,19 +169,17 @@ class ChatRoom {
 		this.userlist_elem.fill(Object.values(list).map(item => Draw.userlist_avatar(item)))
 	}
 	display_initial_messages(comments, pinned) {
-		comments.forEach(comment => this.display_message(comment, false))
+		this.display_messages(comments, false)
+		// show pinned comments
 		if (pinned instanceof Array && this.pinnedList) {
-			this.pinnedList.append(...pinned.map((comment)=>{
-				let b = Draw.message_block(comment)
-				b[1].append(Draw.message_part(comment))
-				return b[0]
-			}))
+			this.scroller.print_top(()=>{
+				this.pinnedList.childs = pinned.map((comment)=>{
+					let b = Draw.message_block(comment)
+					b[1].append(Draw.message_part(comment))
+					return b[0]
+				})
+			})
 		}
-		// ugh why do we need this?
-		window.setTimeout(()=>{
-			// todo: this can be called after the page is destroyed
-			this.scroller.scroll_instant()
-		}, 0)
 	}
 	update_page(page) {
 		this.page = page
@@ -228,20 +226,22 @@ class ChatRoom {
 		Draw.insert_comment_merge(this.messageList, part, comment, time, backwards)
 		this.total_messages++
 		this.message_parts[comment.id] = part
-		this.limit_messages()
 	}
 	// "should be called in reverse order etc. etc. you know
 	// times will be incorrect oh well"
-	display_old_message(comment) {
+	display_old_messages(comments) {
 		this.scroller.print_top(()=>{
-			let old = this.message_parts[comment.id]
-			if (comment.deleted) {
-				this.remove_message(comment.id)
-			} else {
-				// `old` should never be set here, I think...
-				let node = Draw.message_part(comment)
-				this.insert_merge(comment, null, true)
+			for (let comment of comments) {
+				let old = this.message_parts[comment.id]
+				if (comment.deleted) {
+					this.remove_message(comment.id)
+				} else {
+					// `old` should never be set here, I think...
+					let node = Draw.message_part(comment)
+					this.insert_merge(comment, null, true)
+				}
 			}
+			this.limit_messages()
 		})
 	}
 	my_last_message() {
@@ -249,27 +249,30 @@ class ChatRoom {
 			return msg && msg.x_data.createUserId == Req.uid
 		})
 	}
-	comment_title(comment) {
-		View.title_notification(comment.content, Draw.avatar_url(comment.createUser, "size=120&crop=true"))
-		// todo: also call if the current comment being shown in the title is edited
-	}
-	display_message(comment, autoscroll) {
+	// display a list of messages
+	// DON'T call this unless you know what you're doing
+	
+	// comments: [Comment]
+	// animate: Boolean - whether to play the scrolling animation
+	display_messages(comments, animate=true) {
 		this.scroller.print(()=>{
-			let old = this.message_parts[comment.id]
-			if (comment.deleted) {
-				this.remove_message(comment.id)
-			} else {
-				if (old) { // edited
-					let part = Draw.message_part(comment)
-					this.message_parts[comment.id] = part
-					old.parentNode.replaceChild(part, old)
-				} else { // new comment
-					this.insert_merge(comment, this.last_time, false)
-					this.last_time = comment.createDate //todo: improve
-					this.comment_title(comment)
+			for (let comment of comments) {
+				if (comment.deleted) {
+					this.remove_message(comment.id)
+				} else {
+					let old = this.message_parts[comment.id]
+					if (old) { // edited
+						let part = Draw.message_part(comment)
+						this.message_parts[comment.id] = part
+						old.parentNode.replaceChild(part, old)
+					} else { // new comment
+						this.insert_merge(comment, this.last_time, false)
+						this.last_time = comment.createDate //todo: improve
+					}
 				}
 			}
-		}, autoscroll != false)
+			this.limit_messages()
+		}, animate)
 	}
 	
 	show_controls(elem) {
@@ -349,15 +352,28 @@ ChatRoom.update_userlists = function(a) {
 	}
 }
 
+// display a list of messages from multiple rooms
 ChatRoom.display_messages = function(comments) {
-	let displayedIn = {} // unused?
-	comments.forEach((comment)=>{
-		let room = this.rooms[comment.parentId]
-		if (room) {
-			room.display_message(comment)
-			displayedIn[room.id] = true
-		}
-	})
+	// for each room, display all of the new comments for that room
+	for (let room of Object.values(this.rooms)) {
+		let c = comments.filter(c => c.parentId==room.id)
+		if (c.length)
+			room.display_messages(c, room == this.currentRoom) // whether to animate
+	}
+	// display comment in title
+	// does this belong here, or in the room displaycomments message?
+	// I feel like here is better so each room doesn't need to be checking if it's current.. idk
+	if (this.currentRoom) {
+		let last = comments.findLast((c)=>
+			c.parentId==this.currentRoom.id && Entity.is_new_comment(c))
+		if (last)
+			this.title_notification(last)
+	}
+}
+
+ChatRoom.title_notification = function(comment) {
+	View.title_notification(comment.content, Draw.avatar_url(comment.createUser, "size=120&crop=true"))
+	// todo: also call if the current comment being shown in the title is edited
 }
 
 Object.seal(ChatRoom)
