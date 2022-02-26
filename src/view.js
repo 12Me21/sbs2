@@ -476,6 +476,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			document.head.querySelectorAll("link[data-favicon]").forEach(e=>e.remove())
 			favicon_element = document.createElement('link')
 			favicon_element.rel = "icon"
+			favicon_element.href = src
 			document.head.append(favicon_element)
 		} else if (favicon_element.href != src) {
 			if (src == null)
