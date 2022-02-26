@@ -217,7 +217,8 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 		// try/catch here so the long poller won't fail when there's an error in the callbacks
 		try {
 			// most important stuff:
-			lastId = resp.lastId
+			if (resp.lastId)
+				lastId = resp.lastId
 			if (resp.listeners)
 				lastListeners = resp.listeners
 			
