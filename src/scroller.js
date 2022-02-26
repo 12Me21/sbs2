@@ -16,34 +16,24 @@ class Scroller {
 		this.anim_pos = 0
 		
 		this.rate = 0.25 //autoscroll rate: amount of remaining distance to scroll per 1/60 second
-		this.bottom_height = 0.25 //if within this distance of bottom, autoscroll is enabled
+		this.bottom_region = 0.25 //if within this distance of bottom, autoscroll is enabled
 		
-		outer.addEventListener('scroll', (e)=>{
-			//
-		}, {passive: true})
+		//outer.addEventListener('scroll', (e)=>{
+		//}, {passive: true})
 		
 		Object.seal(this)
 	}
 	scroll_height() {
 		return this.inner.getBoundingClientRect().height
 	}
-	scroll_instant() {
-		this.cancel_animation()
-		this.scroll_hack(3)
-	}
 	at_bottom() {
-		return -this.outer.scrollTop < this.outer.clientHeight*this.bottom_height
+		return -this.outer.scrollTop < this.outer.clientHeight*this.bottom_region
 	}
-	//if you want to insert an element into the scroller, do something like:
-	// scroller.print(function() {
-	//    return document.createElement('div')
-	// }, true) // (or `false` to disable scrolling (for example, when inserting the initial elements, you might disable scrolling here and then run scroller.autoScroll(true) afterwards, to scroll to the bottom instantly)
-	//(the reason it's inside a function is because it needs to run code
-	// before AND after inserting the element)
-	
+	scroll_hack(st = this.outer.scrollTop) {
+		this.outer.scrollTop = st-9999
+		this.outer.scrollTop = st
+	}
 	print(callback, animate) {
-		// todo: we only want to animate if an element is inserted/removed/resized at the BOTTOM of the screen. but how to detect this? probably best, I suppose, if the chat room handles it?
-		
 		let at_bottom = this.at_bottom()
 		// skip height calculation in simplest case
 		let height1 = (at_bottom && !animate) ? null : this.scroll_height()
@@ -66,6 +56,10 @@ class Scroller {
 			}
 		}
 	}
+	scroll_instant() {
+		this.cancel_animation()
+		this.scroll_hack(3)
+	}
 	start_animation(dist) {
 		window.cancelAnimationFrame(this.anim_id)
 		this.anim_id = null
@@ -82,10 +76,6 @@ class Scroller {
 		this.anim_pos = 0
 		this.inner.style.transform = ""
 		this.scroll_hack()
-	}
-	scroll_hack(st = this.outer.scrollTop) {
-		this.outer.scrollTop = st-99999
-		this.outer.scrollTop = st
 	}
 	animate_insertion(dist, prev_time = performance.now()) {
 		// abs allows animation to play backwards (for deleting comments)
@@ -178,6 +168,10 @@ class ResizeTracker {
 		}
 	}
 }
+
+
+
+// todo: we only want to animate if an element is inserted/removed/resized at the BOTTOM of the screen. but how to detect this? probably best, I suppose, if the chat room handles it?
 
 // idea:
 
