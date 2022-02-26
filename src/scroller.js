@@ -42,6 +42,8 @@ class Scroller {
 	// before AND after inserting the element)
 	
 	print(callback, animate) {
+		// todo: we only want to animate if an element is inserted/removed/resized at the BOTTOM of the screen. but how to detect this? probably best, I suppose, if the chat room handles it?
+		
 		let at_bottom = this.at_bottom()
 		// skip height calculation in simplest case
 		let height1 = (at_bottom && !animate) ? null : this.scroll_height()
@@ -176,3 +178,14 @@ class ResizeTracker {
 		}
 	}
 }
+
+// idea:
+
+// imagine a message is inserted/deleted/edited in the MIDDLE of the visible area
+// you want to only shift the content above it, not everything
+// but how on earth would this even be implemented...
+
+// could do something like
+// have a list of all modified elements
+// measure their heights before/after
+// animate the height changes of those elements by setting their style.height
