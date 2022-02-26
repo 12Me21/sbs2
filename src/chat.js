@@ -173,11 +173,11 @@ class ChatRoom {
 		// show pinned comments
 		if (pinned instanceof Array && this.pinnedList) {
 			this.scroller.print_top(()=>{
-				this.pinnedList.childs = pinned.map((comment)=>{
+				this.pinnedList.fill(pinned.map((comment)=>{
 					let b = Draw.message_block(comment)
 					b[1].append(Draw.message_part(comment))
 					return b[0]
-				})
+				}))
 			})
 		}
 	}
