@@ -238,6 +238,7 @@ scroll-outer.bottom {
 scroll-outer.bottom > * {
 	direction: initial;
 	writing-mode: initial;
+	width: 100%; /* why? */
 }
 
 .image-box {
