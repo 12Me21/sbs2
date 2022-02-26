@@ -163,8 +163,11 @@ class Scroller {
 			let elem = callback()
 			elem && this.inner.prepend(elem)
 		} finally {
-			let diff = this.scroll_height()-height1
-			this.outer.scrollTop += diff
+			// problem: the resize detection gets triggered here, I think
+			// and.. idk it causes you to jump downwards sometimes if I set the scrollTop here
+			
+			//let diff = this.scroll_height()-height1
+			//this.outer.scrollTop = scroll + diff
 		}
 	}
 	destroy() {
