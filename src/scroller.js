@@ -45,11 +45,14 @@ class Scroller {
 		let at_bottom = this.at_bottom()
 		// skip height calculation in simplest case
 		let height1 = (at_bottom && !animate) ? null : this.scroll_height()
+		let st = this.outer.scrollTop
 		
 		try {
 			let elem = callback()
 			elem && this.inner.append(elem)
 		} finally {
+			this.outer.scrollTop = st // should never change, but in case there's scroll anchoring shit going on...
+			
 			if (at_bottom && !animate) { // simplest case
 				this.scroll_instant()
 			} else { // otherwise we need to calculate new height
