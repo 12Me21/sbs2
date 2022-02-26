@@ -232,7 +232,7 @@ scroll-outer > :not(:first-child) {
 scroll-outer.bottom {
 	display: flex; /* necessary, otherwise the inner element width is wrong sometimes, after the outer element width changes */
 	direction: rtl;
-	writing-mode: vertical-rl;
+	writing-mode: vertical-lr;
 	width: 100%; /* why? */
 }
 scroll-outer.bottom > * {
