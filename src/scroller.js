@@ -93,7 +93,7 @@ class Scroller {
 			time = performance.now()
 			// if the animation was cancelled or another was started
 			if (this.anim_id != id)
-				return 
+				return
 			// delta time adjusted version of
 			// new_dist = dist * (1-this.rate) @ 60fps
 			let dt = Math.min((time-prev_time) / (1000/60), 2)
@@ -170,5 +170,3 @@ class ResizeTracker {
 		}
 	}
 }
-
-		

@@ -204,7 +204,6 @@ class ChatRoom {
 			this.destroy()
 	}
 	destroy() {
-		console.log("DESTROY")
 		if (ChatRoom.currentRoom == this)
 			ChatRoom.currentRoom = null
 		ChatRoom.removeRoom(this)
@@ -358,7 +357,7 @@ ChatRoom.display_messages = function(comments) {
 	for (let room of Object.values(this.rooms)) {
 		let c = comments.filter(c => c.parentId==room.id)
 		if (c.length)
-			room.display_messages(c, room == this.currentRoom) // whether to animate
+			room.display_messages(c, room==this.currentRoom)
 	}
 	// display comment in title
 	// does this belong here, or in the room displaycomments message?
