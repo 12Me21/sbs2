@@ -313,24 +313,6 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 	},
 	
 	init() {
-		document.querySelectorAll("a[data-static-path]").forEach((elem)=>{
-			Nav.link(elem.dataset.staticPath, elem)
-		})
-		document.querySelectorAll("button:not([data-noreplace])").forEach((button)=>{
-			let container = document.createElement("div")
-			container.className = "buttonContainer"
-			button.replaceWith(container)
-			container.className += " "+button.className
-			button.className = ""
-			if (button.dataset.staticLink!=undefined) {
-				button.setAttribute('tabindex', "-1")
-				let a = document.createElement('a')
-				container.append(a)
-				container = a
-			}
-			container.append(button)
-		})
-		
 		Object.for(views, (view)=>{
 			view.name = name
 			view.init && view.init()

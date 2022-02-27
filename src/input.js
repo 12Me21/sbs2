@@ -248,22 +248,34 @@ const INPUTS = (()=>{
 					o.append(opt[1])
 					return o
 				}))
+				this.default = p.default
 				this.extra = elem('option')
 				this.options = p.options.map(opt=>opt[0])
 				this.elem = this.input
 				this.input.onchange = this._onchange.bind(this)
 			}
 			get() {
-				return this.input.value
+				let v = this.input.value
+				if (this.options.includes(v))
+					return v
+				if (this.default !== undefined)
+					return this.default
+				return null
 			}
 			// todo: proper null
 			set(v) {
 				if (!this.options.includes(v)) {
-					this.extra.value = v==null ? "" : v
-					this.extra.textContent = "Unknown value: "+v
-					this.input.prepend(this.extra)
-				} else
-					this.extra.remove()
+					if (this.default !== undefined)
+						v = this.default
+					else {
+						this.extra.value = v==null ? "" : v
+						this.extra.textContent = "Unknown value: "+v
+						this.input.prepend(this.extra)
+						this.input.value = this.extra.value
+						return
+					}
+				}
+				this.extra.remove()
 				this.input.value = v
 			}
 		},

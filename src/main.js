@@ -28,11 +28,33 @@ else
 function ready() {
 	// whitespace between nodes in html (due to line breaks, indentation, etc.) creates text nodes which need to be stripped:
 	let walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {acceptNode: node=>/^\s+$/.test(node.textContent)});
-	let hit_list = []
+	let blank_nodes = []
 	while (walker.nextNode())
-		hit_list.push(walker.currentNode)
-	console.log("removed "+hit_list.length+" blank text nodes")
-	hit_list.forEach(node=>node.remove())
+		blank_nodes.push(walker.currentNode)
+	document.createElement('gay-baby-jail').append(...blank_nodes)
+	console.log("removed "+blank_nodes.length+" blank text nodes")
+	//hit_list.forEach(node=>node.remove())
+	
+	// draw links
+	document.querySelectorAll("a[data-static-path]").forEach((elem)=>{
+		Nav.link(elem.dataset.staticPath, elem)
+	})
+	// draw buttons
+	// i really don't like this
+	document.querySelectorAll("button:not([data-noreplace])").forEach((button)=>{
+		let container = document.createElement("div")
+		container.className = "buttonContainer"
+		button.replaceWith(container)
+		container.className += " "+button.className
+		button.className = ""
+		if (button.dataset.staticLink != undefined) {
+			button.setAttribute('tabindex', "-1")
+			let a = document.createElement('a')
+			container.append(a)
+			container = a
+		}
+		container.append(button)
+	})
 	
 	console.log("ONLOAD!")
 	Req.try_load_cached_auth() // moved this here
