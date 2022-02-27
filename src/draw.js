@@ -43,85 +43,19 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	},
 	
 	title(entity) {
-		let element = E`span`
+		let element = EC('span', 'textItem pre entity-title')
 		element.textContent = entity ? entity.name : "MISSINGNO." // todo: this should be like, "user 14" (we should always know the uid)
-		element.className = 'textItem pre entity-title'
 		return element
 	},
 	
 	text_item(text) {
-		let element = E`span`
+		let element = EC('span', 'textItem pre')
 		element.textContent = text
-		element.className = 'textItem pre'
 		return element
 	},
 	
-	page_element(page) {
-		let container = E`div`
-		container.className = 'sized page-container'
-		let info = page_info(page)
-		let elem = E`div`
-		elem.className = 'markup-root pageContents'
-		container.append(info, elem)
-		return [container, elem]
-	},
-	
-	chat_pane(page) {
-		let box = E`chat-pane`
-		box.hidden = true
-		box.className = 'chatPane resize-box'
-		//
-		let [page1, page2] = page_element(page)
-		//
-		let resize = E`resize-handle`
-		resize.textContent = "↕"
-		let height = null
-		if (page.type == 'resource')
-			height = 1000 //whatever
-		else if (page.type == 'chat')
-			height = 0
-
-		View.attach_resize(page1, resize, false, 1, 'setting--divider-pos-'+page.id, null, height) // todo: save?
-		
-
-		// 
-		let [list1, list2, button] = userlist()
-		// 
-		let [outer, inner] = chat_message_pane()
-		//
-		box.append(page1, resize, list1, outer)
-		return [box, page1, page2, outer, inner, list2, button]
-	},
-	
-	chat_message_pane() {
-		let outer = E`scroll-outer`
-		outer.className = 'grow'
-		let inner = outer.child`scroll-inner`
-		inner.className = 'chatScroller'
-		return [outer, inner]
-	},
-	
-	userlist() {
-		let outer = E`div`
-		outer.className = "bar rem2-3 userlist"
-		let inner = outer.child`span`
-		let b = button()
-		b[1].textContent = "Hide"
-		b[0].className += " rightAlign item loggedIn"
-		outer.append(b[0])
-		return [outer, inner, b[1]]
-	},
-	
-	userlist_avatar(status) {
-		let a = link_avatar(status.user)
-		if (status.status == "idle")
-			a.className += ' status-idle'
-		return a
-	},
-	
 	sidebar_debug(text) {
-		let x = E`div`
-		x.className = 'debugMessage pre'
+		let x = EC('div', 'debugMessage pre')
 		x.textContent = text
 		return x
 	},
@@ -134,8 +68,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	},
 	
 	avatar(user) {
-		let element = E`img`
-		element.className += "item avatar"
+		let element = EC('img', 'item avatar')
 		element.src = avatar_url(user, "size=100&crop=true")
 		element.width = element.height = 100
 		element.alt = ""
@@ -143,23 +76,20 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	},
 	
 	file_thumbnail(file, onclick) {
-		let div = E`div`
-		div.className = 'fileThumbnail item'
+		let div = EC('div', 'fileThumbnail item')
 		div.dataset.id = file.id
-		let img = E`img`
+		let img = div.child('img')
 		img.src = Req.file_url(file.id, "size=50")
 		img.alt = file.name
 		img.title = file.name
-		div.append(img)
 		if (onclick)
 			div.onclick = (e)=>{ onclick(file, e) }
 		return div
 	},
 	
 	bg_icon(url) {
-		let element = E`span`
+		let element = EC('span', 'item icon iconBg')
 		element.setAttribute('role', 'img')
-		element.className = "item icon iconBg"
 		element.style.backgroundImage = 'url("'+url+'")'
 		element.alt = "" // todo
 		return element
@@ -169,8 +99,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		let element
 		let type = entity && entity.Type
 		if (type == 'user') {
-			element = E`img`
-			element.className += ' item icon avatar'
+			element = EC('img', 'item icon avatar')
 			element.src = avatar_url(entity, "size=100&crop=true")
 			element.width = element.height = 100
 		} else if (type=='content') {
@@ -209,13 +138,55 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 				element.append(link)
 			}
 			if (i < path.length-1) {
-				let slash = E`span`
+				let slash = element.child('span', 'pathSeparator textItem')
 				slash.textContent = "/"
-				slash.className = 'pathSeparator textItem'
-				element.append(slash)
 			}
 		})
 		return element
+	},
+	
+	chat_pane(page) {
+		// outer box element
+		let box = EC('chat-pane', 'chatPane resize-box')
+		// page element
+		let page1 = box.child('div', 'sized page-container')
+		let info = page_info(page)
+		page1.append(info)
+		let page2 = page1.child('div', 'markup-root pageContents')
+		// resize handle
+		let resize = box.child('resize-handle')
+		resize.textContent = "↕"
+		let height = null
+		if (page.type == 'resource')
+			height = 1000 //whatever
+		else if (page.type == 'chat')
+			height = 0
+		View.attach_resize(page1, resize, false, 1, 'setting--divider-pos-'+page.id, null, height) // todo: save?
+		// 
+		let [list1, list2, button] = userlist()
+		box.append(list1)
+		// 
+		let outer = box.child('scroll-outer', 'grow')
+		let inner = outer.child('scroll-inner', 'chatScroller')
+		//
+		return [box, page1, page2, outer, inner, list2, button]
+	},
+	
+	userlist() {
+		let outer = EC('div', 'bar rem2-3 userlist')
+		let inner = outer.child('span')
+		let b = button()
+		b[1].textContent = "Hide"
+		b[0].className += " rightAlign item loggedIn"
+		outer.append(b[0])
+		return [outer, inner, b[1]]
+	},
+	
+	userlist_avatar(status) {
+		let a = link_avatar(status.user)
+		if (status.status == "idle")
+			a.className += ' status-idle'
+		return a
 	},
 	
 	message_block(comment) {
@@ -225,53 +196,39 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		let div = E`message-block`
 		// avatar
 		if (user.bigAvatar) {
-			let d = E`div`
+			let d = div.child('div', 'bigAvatar')
 			d.style.backgroundImage = "url("+Req.file_url(user.bigAvatar, "size=500")+")"
-			d.className += " bigAvatar"
-			div.append(d)
 		} else {
 			div.append(avatar(user))
 		}
 		// username
-		let label = E`message-header`
-		div.append(label)
+		let label = div.child('message-header')
 		
-		let name = E`span`
-		label.append(name)
-		//let link = entity_link(user)
-		//name.append(link)
-		let link = name
+		let name = label.child('span')
 		
-		let n = E`span`
-		n.className = "pre username"
-		link.append(n)
+		let n = name.child('span', 'pre username')
 		// if nickname is set, render as "nickname (realname):"
 		if (user.nickname !== undefined) { // why !== here?
 			n.textContent = user.nickname
-			link.append(":")
-			let ns = link.createChild('span')
-			ns.className = "real-name-label"
+			name.append(":")
+			let ns = name.child('span', 'real-name-label')
 			ns.append(" (")
-			let real = E`span`
-			real.className = "pre"
+			let real = ns.child('span', 'pre')
 			real.textContent = user.realname
-			ns.append(real)
 			ns.append(")")
 		} else {
 			// otherwise render as "name:"
 			n.textContent = user.name
-			link.append(":")
+			name.append(":")
 		}
 		
 		// time
-		let timeStamp = E`time`
+		let timeStamp = label.child('time')
 		timeStamp.setAttribute("datetime", date+"")
 		timeStamp.textContent = timeString(date)
-		label.append(timeStamp)
 		
 		// contents
-		let contentBox = E`message-contents`
-		div.append(contentBox)
+		let contentBox = div.child('message-contents')
 		div.dataset.uid = comment.createUserId
 		div.dataset.merge = Entity.comment_merge_hash(comment)
 		return [div, contentBox]
@@ -279,8 +236,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	// comment: Comment
 	// return: Element
 	message_part(comment) {
-		let element = E`message-part`
-		element.className = 'markup-root'
+		let element = EC('message-part', 'markup-root')
 		element.setAttribute('tabindex', "0")
 		
 		if (comment.createDate.getTime() != comment.editDate.getTime())
@@ -350,8 +306,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	},
 	// this needs to be improved
 	search_comment(comment) {
-		let outer = E`div`
-		outer.className += " bottomBorder"
+		let outer = EC('div', 'bottomBorder')
 		let pg = entity_title_link(comment.parent)
 		pg.className += " bar rem1-5 linkBar"
 		outer.append(pg)
@@ -405,26 +360,20 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	},
 	
 	button() {
-		let container = E`div`
-		container.className = "buttonContainer"
-		let button = E`button`
-		container.append(button)
+		let container = EC('div', 'buttonContainer')
+		let button = container.child('button')
 		return [container, button]
 	}, // BAD ↕
 	// unused also
 	linkButton() {
-		let container = E`div`
-		container.className = "buttonContainer"
-		let a = E`a`
-		container.append(a)
-		let button = E`button`
-		a.append(button)
+		let container = EC('div', 'buttonContainer')
+		let a = container.child('a')
+		let button = a.child('button')
 		return [container, button]
 	},
 	
 	page_info(page) {
-		let e = E`div`
-		e.className = "pageInfoPane rem2-3 bar"
+		let e = EC('div', 'pageInfoPane rem2-3 bar')
 		e.append(author_box(page), vote_box(page))
 		return e
 	},
@@ -444,17 +393,16 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			item.elem.setAttribute('role', "tabpanel")
 			item.elem.setAttribute('aria-labelledby', "sidebar-tab-"+i)
 			
-			let btn = E`button`
+			let btn = frag.child('button')
 			btn.setAttribute('role', "tab")
 			btn.setAttribute('aria-selected', "false")
 			btn.id = "sidebar-tab-"+i
 			btn.setAttribute('aria-controls', "sidebar-panel-"+i)
-			frag.append(btn)
-			btn.append(item.label)
 			btns[i] = btn
 			btn.onclick = ()=>{
 				x.select(i)
 			}
+			btn.append(item.label)
 		})
 		return x
 	},
@@ -463,16 +411,12 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		let outer = entity_link(item.content)
 		outer.className += " activity-page"
 		
-		let bar = E`div`
-		bar.className += " bar rem1-5 ellipsis"
+		let bar = outer.child('div', 'bar rem1-5 ellipsis')
 		bar.append(icon_title(item.content))
 		
-		let bar2 = E`div`
-		bar2.className += " bar rem1-5"
-		outer.append(bar, bar2)
+		let bar2 = outer.child('div', 'bar rem1-5')
 		
-		let userContainer = bar2.child`activity-users`
-		userContainer.className = "rightAlign"
+		let userContainer = bar2.child('activity-users', 'rightAlign')
 		
 		let time = time_ago(item.lastDate)
 		time.className += " textItem"
@@ -537,23 +481,19 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	},
 	
 	page_edited_time(label, time) {
-		let b = E`span`
-		b.className = "item"
+		let b = EC('span', 'item')
 		
-		let a = E`div`
-		a.className = "half half-label"
+		let a = b.child('div', 'half half-label')
 		a.textContent = label
-		b.append(a)
 		
 		a = time_ago(time)
-		a.className += " half"
 		b.append(a)
+		a.className += " half"
 		return b
 	},
 	
 	time_ago(time) {
-		let t = E`time`
-		t.className += " time-ago"
+		let t = EC('time', 'time-ago')
 		t.setAttribute('datetime', time.toISOString())
 		t.textContent = time_ago_string(time)
 		t.title = time.toString()
@@ -592,12 +532,12 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			let b = button()
 			b[1].textContent = "remove"
 			b[1].onclick = ()=>{ row.remove() }
-			row.child`td`.append(b[0])
+			row.child('td').append(b[0])
 		} else
-			row.child`td`
-		row.child`th`.append(name)
+			row.child('td')
+		row.child('th').append(name)
 		;['r','c','u','d'].forEach((p)=>{
-			let inp = row.child`td`.child`input`
+			let inp = row.child('td').child('input')
 			inp.type = 'checkbox'
 			inp.checked = perms.indexOf(p)>=0
 			inp.value = p
@@ -607,13 +547,10 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	},
 	
 	user_selector() {
-		let elem = E`user-select`
-		elem.className = "bar rem1-5"
-		let input = E`input`
+		let elem = EC('user-select', 'bar rem1-5')
+		let input = elem.child('input', 'item')
 		input.placeholder = "Search Username"
-		input.className = "item"
-		let dropdown = E`select`
-		dropdown.className = "item"
+		let dropdown = elem.child('select', 'item')
 		let placeholder = E`option`
 		placeholder.textContent = "select user..."
 		placeholder.disabled = true
@@ -624,10 +561,9 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		placeholder2.disabled = true
 		placeholder2.hidden = true
 		
-		let submit = E`button`
+		let submit = elem.child('button', 'item')
 		submit.textContent = "select"
 		submit.disabled = true
-		submit.className = "item"
 		
 		let results = null
 		
@@ -662,18 +598,16 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 				submit.disabled = false
 				let found = false
 				Object.for(user_map, (user)=>{
-					let option = E`option`
+					let option = dropdown.child('option')
 					option.value = user.id
 					option.textContent = user.name
-					dropdown.append(option)
 					found = true
 				})
 				if (!found) {
-					let option = E`option`
+					let option = dropdown.child('option')
 					option.value = "0"
 					option.textContent = "(no results)"
 					option.disabled = true
-					dropdown.append(option)
 					dropdown.value = "0"
 					input.focus()
 				}
@@ -697,9 +631,6 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 				reset()
 			}
 		}
-		elem.append(input)
-		elem.append(dropdown)
-		elem.append(submit)
 		results = true
 		reset()
 		return x
@@ -710,14 +641,12 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		let x = {
 			elem: elem
 		}
-		let btn = E`button`
-		elem.append(btn)
+		let btn = elem.child('button')
 		btn.onclick = info
 		btn.setAttribute('tabindex', "-1")
 		btn.textContent = "⚙"
 		
-		btn = E`button`
-		elem.append(btn)
+		btn = elem.child('button')
 		btn.onclick = edit
 		btn.setAttribute('tabindex', "-1")
 		btn.textContent = "✏"
@@ -749,14 +678,13 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		}
 		Object.for(settings, (data, name)=>{
 			let type = data.type
-			let label = E`label`
+			let label = x.elem.child('label')
 			label.textContent = data.name+": "
-			x.elem.append(label)
 			let elem
 			if (type=='select') {
 				elem = E`select`
 				data.options.forEach((option)=>{
-					let opt = elem.child`option`
+					let opt = elem.child('option')
 					opt.value = option
 					opt.textContent = option
 				})
@@ -786,7 +714,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			}
 			
 			elem && x.elem.append(elem)
-			x.elem.child`br`
+			x.elem.child('br')
 		})
 		return x
 	},
@@ -802,8 +730,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	},
 	
 	sidebar_comment(comment) {
-		let d = E`div`
-		d.className += " bar rem1-5 sidebarComment ellipsis"
+		let d = EC('div', 'bar rem1-5 sidebarComment ellipsis')
 		if (comment.editUserId != comment.createUserId) {
 			d.append(entity_title_link(comment.editUser))
 			d.append(" edited ")
@@ -836,22 +763,18 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			b[1].dataset.selected = ""
 		b[1].dataset.vote = state
 		
-		let label = E`div`
+		let label = b[1].child('div')
 		label.textContent = disptext
-		b[1].append(label)
 		
-		let count = E`div`
-		count.className = ' voteCount'
+		let count = b[1].child('div', 'voteCount')
 		count.dataset.vote = state
 		count.textContent = page.about.votes[state].count
-		b[1].append(count)
 		
 		return b[0]
 	},
 	
 	vote_box(page) {
-		let element = E`div`
-		element.className += ' item rightAlign'
+		let element = EC('div', 'item rightAlign')
 		
 		if (!page)
 			return element
@@ -918,9 +841,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		let label = entity_title_link(cat)
 		label.className += " bar rem1-5 linkBar"
 		elem.append(label)
-		let elem2 = E`div`
-		elem.append(elem2)
-		elem2.className += " category-childs"
+		let elem2 = elem.child('div', 'category-childs')
 		cat.children && cat.children.forEach((c)=>{
 			elem2.append(nav_category(c))
 		})
@@ -933,6 +854,11 @@ Object.seal(Draw)
 let F = document.createDocumentFragment.bind(document)
 function E(name) {
 	return document.createElement(name[0])
+}
+function EC(name, classes) {
+	let elem = document.createElement(name)
+	elem.className = classes
+	return elem
 }
 
 0<!-- Draw ({

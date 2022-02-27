@@ -51,9 +51,13 @@ Node.prototype.createChild = function(type) {
 	this.append(elem)
 	return elem
 }
-Node.prototype.child = function(t) {
-	let elem = this.ownerDocument.createElement(t[0])
+// type - tag name of element to create
+// classes (optional) - assigned to className
+Node.prototype.child = function(type, classes) {
+	let elem = this.ownerDocument.createElement(type)
 	this.append(elem)
+	if (classes)
+		elem.className = classes
 	return elem
 }
 /*Node.prototype.class = function(t) {
