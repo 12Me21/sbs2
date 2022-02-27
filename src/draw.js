@@ -134,7 +134,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			if (item) { //todo: use entities here instead
 				let link = Nav.link(item[0])
 				link.textContent = item[1]
-				link.className = 'textItem pre entity-title'
+				link.className += ' textItem pre entity-title'
 				element.append(link)
 			}
 			if (i < path.length-1) {
@@ -147,7 +147,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	
 	chat_pane(page) {
 		// outer box element
-		let box = EC('chat-pane', 'chatPane resize-box')
+		let box = EC('chat-pane', 'resize-box')
 		// page element
 		let page1 = box.child('div', 'sized page-container')
 		let info = page_info(page)
@@ -422,13 +422,14 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		time.className += " textItem"
 		userContainer.append(time, " ")
 		
-		item.users.forEach((u)=>{
+		for (let u of item.users) {
 			if (u && u.user) {
 				let l = entity_link(u.user)
 				l.append(icon(u.user))
 				userContainer.append(l)
 			}
-		})
+		}
+		
 		return outer
 	},
 	// todo: create a special system for pagination
@@ -536,12 +537,14 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		} else
 			row.child('td')
 		row.child('th').append(name)
-		;['r','c','u','d'].forEach((p)=>{
+		
+		for (let p of ['r','c','u','d']) {
 			let inp = row.child('td').child('input')
 			inp.type = 'checkbox'
 			inp.checked = perms.indexOf(p)>=0
 			inp.value = p
-		})
+		}
+		
 		row.dataset.id = id
 		return row
 	},
@@ -683,11 +686,11 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			let elem
 			if (type=='select') {
 				elem = E`select`
-				data.options.forEach((option)=>{
+				for (let option of data.options) {
 					let opt = elem.child('option')
 					opt.value = option
 					opt.textContent = option
-				})
+				}
 			} else if (type=='textarea') {
 				elem = E`textarea`
 			} else {
@@ -732,12 +735,16 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	sidebar_comment(comment) {
 		let d = EC('div', 'bar rem1-5 sidebarComment ellipsis')
 		if (comment.editUserId != comment.createUserId) {
-			d.append(entity_title_link(comment.editUser))
-			d.append(" edited ")
+			d.append(
+				entity_title_link(comment.editUser),
+				" edited ",
+			)
 		}
-		d.append(entity_title_link(comment.createUser))
-		d.append(": ")
-		d.append(comment.content.replace(/\n/g, "  "))
+		d.append(
+			entity_title_link(comment.createUser),
+			": ",
+			comment.content.replace(/\n/g, "  "),
+		)
 		d.dataset.id = comment.id
 		d.title = comment.createUser.name+" in "+comment.parentId+":\n"+comment.content
 		return d
@@ -782,7 +789,8 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		let buttonStates = [['-', 'b'], ['~', 'o'], ['+', 'g']]
 		let buttons = buttonStates.map(x => vote_button(x[0], x[1], page))
 		
-		buttons.forEach((x)=>{
+		for (let x of buttons) {
+			element.append(x)
 			x.onclick = (e)=>{
 				if (!Req.auth)
 					return
@@ -825,15 +833,13 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 					button.disabled = false
 				})
 			}
-			element.append(x)
-		})
+		}
 		return element
 	},
 	
 	update_timestamps(element) {
-		element.querySelectorAll("time.time-ago").forEach((e)=>{
+		for (let e of element.querySelectorAll("time.time-ago"))
 			e.textContent = time_ago_string(new Date(e.getAttribute('datetime')))
-		})
 	},
 	
 	nav_category(cat) {
@@ -842,9 +848,9 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		label.className += " bar rem1-5 linkBar"
 		elem.append(label)
 		let elem2 = elem.child('div', 'category-childs')
-		cat.children && cat.children.forEach((c)=>{
-			elem2.append(nav_category(c))
-		})
+		cat.children && elem2.fill(
+			cat.children.map((c) => nav_category(c))
+		)
 		return elem
 	}
 	
