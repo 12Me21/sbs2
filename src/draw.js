@@ -175,11 +175,11 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	userlist() {
 		let outer = EC('div', 'bar rem2-3 userlist')
 		let inner = outer.child('span')
-		let b = button()
-		b[1].textContent = "Hide"
-		b[0].className += " rightAlign item loggedIn"
-		outer.append(b[0])
-		return [outer, inner, b[1]]
+		let [b0,b1] = button()
+		b1.textContent = "Hide"
+		b0.className += " rightAlign item loggedIn"
+		outer.append(b0)
+		return [outer, inner, b1]
 	},
 	
 	userlist_avatar(status) {
@@ -298,9 +298,9 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		if (can_merge_comment(block, comment, time))
 			contents = block.getElementsByTagName('message-contents')[0]// not great...
 		if (!contents) {
-			let b = message_block(comment)
-			elem[backwards?'prepend':'append'](b[0])
-			contents = b[1]
+			let block
+			([block, contents] = message_block(comment))
+			elem[backwards?'prepend':'append'](block)
 		}
 		contents[backwards?'prepend':'append'](part)
 	},
