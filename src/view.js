@@ -147,7 +147,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 				flags[flag] = true
 			else
 				delete flags[flag]
-			document.documentElement.classList[state?'add':'remove']("f-"+flag)
+			document.documentElement.classList.toggle("f-"+flag, state)
 		}
 	},
 	
