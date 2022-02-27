@@ -27,10 +27,18 @@ let Entity = {
 	],
 	
 	safe_map(map, fake) {
-		return new Proxy({map, fake}, {
-			get({map, fake}, id) {
+		// `fake` accessed as nonlocal
+		return new Proxy(map, {
+			get(map, id) {
+				if (id == Symbol.iterator) {
+					let e = Object.entries(map)
+					return e[Symbol.iterator].bind(e)
+				}
 				return map[id] || fake(+id, map)
-			}
+			},
+			has(map, id) {
+				return map[id]!=undefined
+			},
 		})
 	},
 	

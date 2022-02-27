@@ -600,12 +600,12 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 				results = user_map
 				submit.disabled = false
 				let found = false
-				Object.for(user_map, (user)=>{
+				for (let [id, user] of user_map) {
 					let option = dropdown.child('option')
 					option.value = user.id
 					option.textContent = user.name
 					found = true
-				})
+				}
 				if (!found) {
 					let option = dropdown.child('option')
 					option.value = "0"
@@ -626,11 +626,11 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			}
 		}
 		submit.onclick = ()=>{
-			let uid = dropdown.value
+			let uid = +dropdown.value
 			if (uid) {
 				x.onchange(results[uid])
 				input.focus()
-				input.value=""
+				input.value = ""
 				reset()
 			}
 		}
