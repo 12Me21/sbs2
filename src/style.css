@@ -103,17 +103,17 @@ button {
 	
 	background: var(--button-bg);
 }
-.buttonContainer {
+button-container {
 	padding: 1px;
 	display: inline-block;
 }
-.buttonContainer button {
+button-container button {
 	margin: 0;
 	height: 100%;
 	overflow-y: hidden;
 }
 
-.buttonContainer > a[href] {
+button-container > a[href] {
 	width: 100%;
 	height: 100%;
 	display: inline-block;

@@ -19,7 +19,7 @@ html {
 
 /* this fixes a weird positioning bug in html/css */
 /* may need more things here */
-.textItem, .item, .buttonContainer button, .avatar,
+.textItem, .item, button-container button, .avatar,
 tbody, img, canvas, button {
 	vertical-align: top;
 }

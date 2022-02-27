@@ -360,13 +360,13 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	},
 	
 	button() {
-		let container = EC('div', 'buttonContainer')
+		let container = EC('button-container')
 		let button = container.child('button')
 		return [container, button]
 	}, // BAD ↕
 	// unused also
 	linkButton() {
-		let container = EC('div', 'buttonContainer')
+		let container = EC('button-container')
 		let a = container.child('a')
 		let button = a.child('button')
 		return [container, button]
