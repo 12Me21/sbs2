@@ -25,7 +25,7 @@ let Entity = {
 	CONTENT_TYPES: [
 		'resource', 'chat', 'program', 'tutorial', 'documentation', 'userpage'
 	],
-	
+	// I don't like the way the iterator works here...
 	safe_map(map, fake) {
 		// `fake` accessed as nonlocal
 		return new Proxy(map, {
