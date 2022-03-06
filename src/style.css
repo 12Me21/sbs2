@@ -312,8 +312,10 @@ chat-pane .userlist {
 message-block {
 	--chat-gutter: 4rem;
 	--chat-avatar-size: calc(var(--chat-gutter) - 0.5rem);
+	--chat-message-gap: 0.8rem;
 	font-size: 1em;
-	padding: 0.4rem 0.5rem;
+	padding: 0 0.5rem;
+	padding-top: var(--chat-message-gap);
 	white-space: pre-wrap;
 	/*border-left-width: 0.5em;
 	border-left-style: solid;
@@ -334,15 +336,18 @@ message-block > img.avatar {
 	margin-right: calc(var(--chat-gutter) - var(--chat-avatar-size));
 	position: absolute;
 }
+
 message-block > message-header {
 	margin-left: var(--chat-gutter);
 	display: flex;
+	/* make the timestamp go into margins if there's not enough space */
+	min-height: calc(var(--chat-message-gap) + 1.1875rem); /* 1.1875 = text line height */
+	margin-top: calc(0rem - var(--chat-message-gap)); /* the units on 0rem are required? */
+	align-items: flex-start;
 	flex-wrap: wrap-reverse;
-	align-items: center;
 }
 message-block > message-header > time {
 	font-weight: normal;
-	padding-right: 0.5em;
 	color: var(--chat-dim-color);
 	flex-grow: 1;
 	text-align: right;
@@ -366,17 +371,15 @@ message-contents img {
 
 message-part {
 	display: block;
-	padding-top: 0;
 	padding-bottom: 0.2rem;
 	padding-left: calc(var(--chat-gutter) + 0.2rem);
-	padding-right: 0.2rem;
 	min-height: 1rem; /* this is so the message controls always have somewhere to be shown */
 }
 message-part.edited {
 	/* todo: fix this styling */
 	/* we may just need an extra container for message-parts... */
 	padding-left: calc(var(--chat-gutter) + 0.2rem - 1px);
-	border-left: 1px solid var(--chat-gutter);
+	border-left: 1px solid gray;
 }
 message-part[editing] {
 	background: yellow;
