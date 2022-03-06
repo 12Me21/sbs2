@@ -260,8 +260,11 @@
 				<a data-static-path=images>Uploaded Images</a> <!-- I want to move this into the upper bar so it takes up less space... -->
 			</sidebar-panel>
 			<sidebar-panel id=$sidebarUserPanel>
-				<button onclick="window.location+=''">Reload Page</button>
-				<a id=$haloopdyLink>H</a>
+				<div class='registerBox'>
+					<button onclick="window.location+=''">Reload Page</button>
+					<a id=$haloopdyLink>H</a>
+					<button class='rightAlign' id=$logOut>Log out</button>
+				</div>
 				<div class='loggedOut'>
 					<div class='registerBox'>
 						<h2>Log In</h2>
@@ -274,9 +277,6 @@
 					</div>
 				</div>
 				<div class='loggedIn border-list'>
-					<div class='registerBox'>
-						<button id=$logOut>Log out</button><br>
-					</div>
 					<div class='registerBox'>
 						<a data-static-path=images>Change your avatar here</a>
 					</div>
