@@ -36,7 +36,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		file_cancel()
 		
 		$openSidebar.onclick = $closeSidebar.onclick = toggle
-		View.attach_resize($sidebar, $sidebarResize, true, -1, "sidebarWidth")
+		View.attach_resize($sidebar, $horizontalResize, true, -1, "sidebarWidth")
 		View.attach_resize($sidebarTop, $sidebarResize, false, 1, "sidebarPinnedHeight")
 		View.flag('sidebar', true)
 		

@@ -155,7 +155,6 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		let page2 = page1.child('div', 'markup-root pageContents')
 		// resize handle
 		let resize = box.child('resize-handle')
-		resize.textContent = "↕"
 		let height = null
 		if (page.type == 'resource')
 			height = 1000 //whatever

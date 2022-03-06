@@ -295,6 +295,7 @@ but, then we can't add a border to the image
  ** Resize **
  ************/
 .resize-box {
+	--handle-width: 1.2em;
 	contain: strict;
 	display: flex;
 	flex-direction: column;
@@ -320,7 +321,6 @@ but, then we can't add a border to the image
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	user-select: none;
-	cursor: grab;
 	color: var(--databartxtcolor);
 	background: var(--databarbgcolor);
 	overflow: hidden;
@@ -330,13 +330,22 @@ but, then we can't add a border to the image
 	cursor: grabbing;
 }
 .resize-box:not(.row) > resize-handle {
-	height: 1.2em;
+	height: var(--handle-width);
+	line-height: var(--handle-width);
+	cursor: ns-resize;
 }
 .resize-box.row > resize-handle {
-	width: 1.2em;
-	line-height: 1;
+	width: var(--handle-width);
+	cursor: ew-resize;
 }
-
+.resize-box:not(.row) > resize-handle::before {
+	content: "↕︎";
+}
+.resize-box.row > resize-handle::before {
+	content: "↔︎";
+	display: block;
+	text-align: center;
+}
 
 /* neccesary so safari doesn't zoom in */
 input {
@@ -346,6 +355,7 @@ select {
 	font-size: 1em;
 }
 
+/* normal */
 @media not all and (max-width: 700px) {
 	.closeSidebar {
 		display: none !important;
