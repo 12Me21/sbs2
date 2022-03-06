@@ -724,6 +724,7 @@ textarea-container, textarea-container > textarea {
 }
 
 .no-select {
+	-webkit-user-select: none;
 	user-select: none;
 }
 
