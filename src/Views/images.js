@@ -5,7 +5,7 @@ with (View) (()=>{ "use strict"; {
 	let form = null
 	let selectedFile = null
 	let navButtons
-	let currentQuery
+	let currentQuery // hack
 	
 	// todo:
 	// - page selector input type
@@ -57,10 +57,9 @@ with (View) (()=>{ "use strict"; {
 			})
 			$imageForm.fill(form.elem)
 		},
-		start(id, query, render) {
+		start(id, query) {
 			currentQuery = query
 			let page = +query.page || 1
-			navButtons.set(page)
 			
 			let search = {
 				limit: 20,
@@ -68,18 +67,20 @@ with (View) (()=>{ "use strict"; {
 				reverse: true,
 			}
 			query.bucket && (search.bucket = query.bucket)
-			return [0, Req.read([
-				['file', search],
-				['user.0createUserId'],
-			], {}, (e, resp)=>{
-				if (!e)
-					render(resp.file)
-				else
-					render(null)
-			}, false)] //mm
+			return [1, {
+				chains: [
+					['file', search],
+					['user.0createUserId'],
+				],
+				fields: {},
+				ext: {page: page},
+				check() { return true },
+			}]
 		},
 		className: 'images',
-		render(files) {
+		render(resp, ext) {
+			navButtons.set(ext.page)
+			let files = resp.file
 			set_title("Files")
 			fileList = files
 			$fileBox.fill(files.map(file => Draw.file_thumbnail(file, selectFile)))

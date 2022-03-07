@@ -32,7 +32,7 @@ add_view('page', {
 	// the function passed to quick will act like a simple view
 	// with no `start` method (is called immediately)
 	// DO NOT CALL BOTH FUNCTIONS!
-	start(id, query, render) {
+	start(id, query) {
 		let room = ChatRoom.rooms[id]
 		if (room) {
 			let z = room.pinned
@@ -49,28 +49,31 @@ add_view('page', {
 		// the problem is, if we create the room early,
 		// we might get messages from long polling before
 		// loading the initial messages :(
-		return [0, Req.read([
-			['content', {ids: [id], IncludeAbout: ["votes","watches"]}],
-			['comment', {parentIds: [id], limit: 30, reverse: true}],
-			['comment.0values_pinned~Mpinned'],//: {parentIds: [id]}},
-			['user.0createUserId.0editUserId.1createUserId.1editUserId.2createUserId.2editUserId'],
-		], {
-			//content: "name,parentId,type,createUserId,editUserId,createDate,editDate,permissions,id"
-		}, (e, resp)=>{
-			// todo: ok so we have 2 levels of error here
-			// either the request fails somehow (e is set)
-			// or, the page/whatever we're trying to access doesn't exist
-			// this exists for pretty much every view/request type
-			// so it would be good to handle it consistently
-			if (!e && resp.content[0]) {
-				resp.comment.reverse()
-				render(resp.content[0], resp.comment, resp.Mpinned)
-			} else
-				render(null)
-		}, true)]
+		return [1, {
+			chains: [
+				['content', {ids: [id], IncludeAbout: ["votes","watches"]}],
+				['comment', {parentIds: [id], limit: 30, reverse: true}],
+				['comment.0values_pinned~Mpinned'],//: {parentIds: [id]}},
+				['user.0createUserId.0editUserId.1createUserId.1editUserId.2createUserId.2editUserId'],
+			],
+			fields: {
+				//content: "name,parentId,type,createUserId,editUserId,createDate,editDate,permissions,id"
+			},
+			ext: {},
+			check(resp) {
+				if (resp.content[0])
+					return true
+				return null
+			},
+		}]
 	},
 	className: 'page',
-	render(page, comments, pinned) {
+	render(resp, ext) {
+		let comments = resp.comment
+		comments.reverse()
+		let page = resp.content[0]
+		let pinned = resp.Mpinned
+		
 		Act.new_page_comments(page, comments)
 		Act.redraw()
 		//ChatRoom.setViewing([page.id])

@@ -14,7 +14,7 @@ add_view('category', {
 		}
 	},
 	
-	start(id, query, render) {
+	start(id, query) {
 		currentQuery = query
 		let page = +query.page || 1
 		navButtons.set(page)

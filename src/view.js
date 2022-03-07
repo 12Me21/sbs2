@@ -45,16 +45,19 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		// .render will be called IF everything succeeds
 		// the first parameter will always exist.
 		users: {
-			start(id, query, render) {
-				return [0, Req.read([
-					['user'],
-				], {}, (e, resp)=>{
-					if (!e)
-						render(resp.user)
-				}, true)]
+			start(id, query) {
+				return [1, {
+					chains: [
+						['user'],
+					],
+					fields: {},
+					ext: {},
+					check() { return true },
+				}]
 			},
 			className: 'users',
-			render(users) {
+			render(resp) {
+				let users = resp.user
 				set_title("Users")
 				$memberList.fill(users.map((user)=>{
 					let bar = Draw.entity_title_link(user)
@@ -261,6 +264,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		
 		let xhr
 		
+		//
 		when_page_loaded(()=>{
 			if (view) {
 				load_start()
@@ -270,30 +274,11 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 				error_render("Unknown page type: \""+type+"\"")
 			}
 		})
+		
 		if (view && view.start) {
 			try { // this catches errors in view.start, NOT the callbacks inside here
-				let [need, data] = view.start(id, query, (...args)=>{
-					console.log('legacy page load ready.')
-					let ok = args[0]
-					when_page_loaded(()=>{
-						if (cancelled)
-							return
-						cleanup()
-						if (!ok) {
-							let msg = ok==false ? "error 1" : "content not found?"
-							error_render(msg)
-						} else {
-							current_view = view
-							try {
-								view.render(...args)
-								after()
-							} catch(e) {
-								error_render("render failed", e)
-							}
-						}
-						load_end()
-					})
-				})
+				let [need, data] = view.start(id, query)
+				
 				if (need==2) {
 					when_page_loaded(()=>{
 						quick(data, view.render)
@@ -325,8 +310,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 						})
 					}, true)
 				} else {
-					xhr = data
-					console.log('legacy page load...')
+					alert("OLD PAGE FORMAT NICE TRY")
 				}
 			} catch(e) {
 				error_render("render failed 1", e)

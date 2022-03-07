@@ -31,7 +31,7 @@ View.add_view('comments', {
 		}
 		View.bind_enter($commentSearch, $commentSearchButton.onclick)
 	},
-	start(id, query, render) {
+	start(id, query) {
 		let data = comment_form.from_query(query)
 		if (id)
 			data.pages = [id]

@@ -2,7 +2,7 @@
 with (View) (function($) { "use strict" //*/
 
 add_view('user', {
-	start(id, query, render) {
+	start(id, query) {
 		if (typeof id == 'string' && id[0] == "@")
 			id = id.substr(1)
 		// todo: maybe username without @ should be invalid?
@@ -24,12 +24,11 @@ add_view('user', {
 			],
 			fields: {},
 			check(resp) {
-				if (!resp.user[0])
-					return null
-				else
+				if (resp.user[0])
 					return true
+				return null
 			},
-			ext: null,
+			ext: {},
 		}]
 	},
 	className: 'user',
