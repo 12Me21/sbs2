@@ -213,7 +213,6 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 		id = +id
 		if (id) {
 			lastId = id
-			console.log("got lastid: ", id)
 		}
 	},
 	
