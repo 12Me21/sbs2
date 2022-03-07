@@ -23,7 +23,7 @@ add_view('user', {
 				['content.2contentId.3id'],
 			],
 			fields: {},
-			check: (resp)=>{
+			check(resp) {
 				if (!resp.user[0])
 					return null
 				else

@@ -28,42 +28,51 @@ add_view('editpage', {
 		}
 		View.attach_resize($editorPreviewPane, $editorPreviewResize, false, 1)
 	},
-	start(id, query, render) {
+	start(id, query) {
 		if (id) { //edit existing page
 			id = +id
-			return [0, Req.read([
-				['content', {ids: [id]}],
-				['user.0createUserId.0editUserId.0permissions'],
-			], {user: 'id,username,avatar'}, (e, resp)=>{
-				if (!e) {
-					let page = resp.content[0]
-					if (page)
-						render(page, resp.user_map)
-					else
-						render(null)
-				} else
-					render(false)
-			}, true)]
+			return [1, {
+				chains: [
+					['content', {ids: [id]}],
+					['user.0createUserId.0editUserId.0permissions'],
+				],
+				fields: {user: 'id,username,avatar'},
+				ext: {query: query},
+				check(resp) {
+					if (resp.content[0])
+						return true
+					return null
+				},
+			}]
+			// resp.content[0]
+			// resp.user_map
 		}
 		//otherwise create new page
 		if (Req.got_categories) {
-			done() // no we can't just..
-			return [0, {abort: ()=>{}}]
+			return [2, (data, render)=>{
+				render({}, {query: query})
+			}]
 		}
 		//need to request category tree for page editor
-		return [0, Req.read([], {}, (e, resp)=>{
-			if (!e)
-				done()
-			else
-				render(false)
-		}, true)]
-		
-		function done() {
+		return [1, {
+			chains: [],
+			fields: {},
+			ext: {query: query},
+			check() { return true },
+		}]
+	},
+	
+	className: 'editpage',
+	render(resp, ext) {
+		let page = resp.content && resp.content[0]
+		let users = resp.user_map
+		let query = ext.query
+		if (!page) // create new
 			// todo: this is kinda gross
 			// maybe it would be better to set the form directly
 			// rather than construct this weird fake page
 			// at least maybe we should call process_list instead...
-			render({
+			page = {
 				parentId: query.cid || 0,
 				parent: Entity.category_map[query.cid || 0],
 				name: query.name || "",
@@ -73,18 +82,15 @@ add_view('editpage', {
 				values: {
 					markupLang: "12y",
 				},
-				users: Entity.safe_map({}, (id)=>({
-					Type: 'user',
-					name: `{user: ${id}}`,
-					id: id,
-					fake: true,
-				})), // todo: this is a really bad hack
-			})
-		}
-	},
-	
-	className: 'editpage',
-	render(page) {
+			}
+		if (!users)
+			users = Entity.safe_map({}, (id)=>({
+				Type: 'user',
+				name: `{user: ${id}}`,
+				id: id,
+				fake: true,
+			}))
+		
 		set_editor_preview(false)
 		// do we need to create a new form each time? ideally not.
 		// it's safer though, for now
@@ -108,12 +114,12 @@ add_view('editpage', {
 		
 		if (page.id) {
 			set_title("Editing Page")
-			fill_fields(page)
+			fill_fields(page, users)
 			editing_page = {id: page.id, values: page.values, permissions: page.permissions}
 			set_entity_path(page)
 		} else {
 			set_title("Creating Page")
-			fill_fields(page)
+			fill_fields(page, users)
 			editing_page = {}
 			set_entity_path(page.parent)
 		}
@@ -168,7 +174,7 @@ function readFields(page) {
 		page.values.thumbnail = fields.thumbnail
 }
 
-function fill_fields(page) {
+function fill_fields(page, users) {
 	$titleInput.value = page.name
 	let markup
 	if (page.values)
@@ -186,7 +192,7 @@ function fill_fields(page) {
 		photos: Entity.parse_numbers(page.values.photos),
 		category: [page.parentId, Entity.category_map[0]],
 		pinned: Entity.parse_numbers(page.values.pinned),
-		permissions: [page.permissions, page.users],
+		permissions: [page.permissions, users],
 	})
 }
 

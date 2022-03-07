@@ -296,7 +296,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 				})
 				if (need==2) {
 					when_page_loaded(()=>{
-						quick(data)
+						quick(data, view.render)
 					})
 				} else if (need==1) {
 					xhr = Req.read(data.chains, data.fields, (e, resp)=>{
@@ -304,7 +304,11 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 							if (cancelled)
 								return
 							cleanup()
-							let ok = data.check(resp, data.ext)
+							let ok
+							if (e)
+								ok = false
+							else
+								ok = data.check(resp, data.ext)
 							if (!ok) {
 								let msg = ok==false ? "error 1" : "content not found?"
 								error_render(msg)
@@ -318,8 +322,8 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 								}
 							}
 							load_end()
-						})						
-					})
+						})
+					}, true)
 				} else {
 					xhr = data
 					console.log('legacy page load...')

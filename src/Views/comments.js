@@ -38,14 +38,16 @@ View.add_view('comments', {
 		let [search, merge] = build_search(data)
 		
 		if (search) {
-			return [0, Req.read([
-				['comment', search],
-				['content.0parentId'],
-				['user.0createUserId'],
-			], {}, (e, resp)=>{
-				if (e) return render(null)
-				render(resp.comment, resp.content, data, merge)
-			})]
+			return [1, {
+				chains: [
+					['comment', search],
+					['content.0parentId'],
+					['user.0createUserId'],
+				],
+				fields: {},
+				ext: {data: data, merge: merge},
+				check() { return true },
+			}]
 		} else {
 			// if no search, just display the form right away
 			return [2, ()=>{
@@ -56,7 +58,12 @@ View.add_view('comments', {
 		}
 	},
 	className: 'comments',
-	render(comments, pages, data, merge) {
+	render(resp, ext) {
+		let comments = resp.comment
+		let pages = resp.content
+		let data = ext.data
+		let merge = ext.merge
+		
 		View.set_title("Comments")
 		comment_form.set(data)
 		

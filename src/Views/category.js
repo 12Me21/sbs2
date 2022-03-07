@@ -26,26 +26,38 @@ add_view('category', {
 			sort: 'editDate',
 			reverse: true
 		}
-		return [0, Req.read([
-			['category~Cmain', {ids: [id]}],
-			['content', search],
-			['category', {parentIds: [id]}],
-			['content.0values_pinned~Ppinned'],
-			['user.1createUserId.3createUserId'],
-		], {
-			content: 'id,name,parentId,createUserId,editDate,permissions',
-			/*category: "id,name,description,parentId,values",*/
-			user: 'id,username,avatar',
-		}, (e, resp)=>{
-			if (!e) {
-				let category = id==0 ? Entity.category_map[0] : resp.Cmain[0]
-				render(category, resp.category, resp.content, resp.Ppinned, page)
-			} else
-				render(null)
-		}, true)]
+		return [1, {
+			chains: [
+				['category~Cmain', {ids: [id]}],
+				['content', search],
+				['category', {parentIds: [id]}],
+				['content.0values_pinned~Ppinned'],
+				['user.1createUserId.3createUserId'],
+			],
+			fields: {
+				content: 'id,name,parentId,createUserId,editDate,permissions',
+				/*category: "id,name,description,parentId,values",*/
+				user: 'id,username,avatar',
+			},
+			ext: {
+				page: page,
+				id: id,
+			},
+			check(resp, ext) {
+				if (ext.id==0 ? Entity.category_map[0] : resp.Cmain[0])
+					return true
+				return null
+			}
+		}]
 	},
 	className: 'category',
-	render(category, cats, pages, pinned, pageNum) {
+	render(resp, ext) {
+		let category = ext.id==0 ? Entity.category_map[0] : resp.Cmain[0]
+		let cats = resp.category
+		let pages = resp.content
+		let pinned = resp.Ppinned
+		let pageNum = ext.page
+		
 		currentCategory = category.id
 		navButtons.set(pageNum)
 		set_entity_title(category)
