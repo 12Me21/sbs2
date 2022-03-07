@@ -79,7 +79,8 @@ time {
 }
 
 #\$categoryDescription.markup-root { /* make sure this is before most things */
-	padding: .75rem 1rem;
+	padding-inline: 1rem;
+	padding-block: .75rem;
 }
 
 .username {
@@ -99,7 +100,8 @@ button {
 	
 	border: 1px solid black;
 	border-radius: 0px;
-	padding: 0 0.5rem;
+	padding-block: 0;
+	padding-inline: 0.5rem;
 	
 	background: var(--button-bg);
 }
@@ -145,13 +147,7 @@ html.f-error .loadBG {
 }
 
 .pathSeparator {
-	padding: 0 0.2rem;
-}
-
-.pathBar {
-	font-weight: bold;
-	padding: 0 0.2rem;
-	/*box-shadow: inset 0 -2px 3px rgba(0,0,0,0.3);*/
+	padding-inline: 0.2rem;
 }
 
 .bottomBorder {
@@ -273,11 +269,12 @@ sidebar-container {
 .linkBar {
 	display: block;
 	background: var(--mainbgcolor);
+	
 	padding: 0.2rem;
+	padding-top: 0.15rem;
 	
 	border-bottom: 1px solid var(--border-color);
 	border-top: 1px solid white;
-	padding: 0.15rem 0.2rem 0.2rem 0.2rem;
 }
 .linkBar:focus {
 	background: var(--bar-bg);
@@ -314,7 +311,7 @@ message-block {
 	--chat-avatar-size: calc(var(--chat-gutter) - 0.5rem);
 	--chat-message-gap: 0.8rem;
 	font-size: 1em;
-	padding: 0 0.5rem;
+	padding-inline: 0.5rem;
 	padding-top: var(--chat-message-gap);
 	white-space: pre-wrap;
 	/*border-left-width: 0.5em;
@@ -431,7 +428,7 @@ html:not(.f-chatEditing) .showWhenEdit {
 
 .messageGap {
 	border: 1px dashed gray; /*♥*/
-	margin: 0.3rem 0;
+	margin-block: 0.3rem;
 }
 
 .chatScroller {
@@ -552,7 +549,7 @@ table {
 	border-collapse: collapse;
 }
 th {
-	padding: 0 0.3rem;
+	padding-inline: 0.3rem;
 }
 .permissionRow > th {
 	padding: 0;
@@ -563,7 +560,7 @@ th {
 	padding: 0;
 }
 .permission-table thead th {
-	padding: 0 0.5rem
+	padding-inline: 0.5rem
 }
 .permission-table td {
 	text-align: center;
@@ -602,7 +599,7 @@ button.voteButton[data-selected][data-vote="o"] {
 
 .pageInfoPane {
 	background: var(--bar-bg);
-	padding: 0 0.3rem;
+	padding-inline: 0.3rem;
 	box-shadow: var(--normal-shadow);
 	border-bottom: 1px solid var(--border-color);
 }
@@ -647,8 +644,7 @@ html:not(.f-fileSelected) .fileSelected {
 	background-repeat: no-repeat;
 	background-size: contain;
 	background-position: center;
-	margin-left: 0.1rem;
-	margin-right: 0.1rem;
+	margin-inline: 0.1rem;
 }
 
 /*************
@@ -668,7 +664,8 @@ html:not(.f-fileSelected) .fileSelected {
 }
 
 .registerBox {
-	padding: 0.3rem 0.5rem;
+	padding-inline: 0.5rem;
+	padding-block: 0.3rem;
 }
 
 input, select { /* this is old & probably not needed */
@@ -738,7 +735,7 @@ textarea-container, textarea-container > textarea {
 ************/
 
 .gallery-inner {
-	margin: 0 auto;
+	margin-inline: auto;
 	position: relative;
 }
 .gallery-inner canvas {
@@ -756,14 +753,15 @@ textarea-container, textarea-container > textarea {
 }
 .gallery-title {
 	text-align: center;
-	margin: 0 auto;
+	margin-inline: auto;
 	background: var(--bar-bg);
 }
 
 
 .debugMessage {
 	background: var(--bar-bg);
-	padding: 2px 3px;
+	padding-inline: 3px;
+	padding-block: 2px;
 }
 
 .category-childs {
