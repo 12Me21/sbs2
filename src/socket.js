@@ -227,7 +227,7 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 		try {
 			// most important stuff:
 			if (resp.lastId)
-				update_lastid(lastId)
+				update_lastid(resp.lastId)
 			if (resp.listeners)
 				lastListeners = resp.listeners
 			
