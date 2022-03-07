@@ -17,7 +17,7 @@ html {
 	word-break: break-word;
 }
 
-/* this fixes a weird positioning bug in html/css */
+/* this fixes a weird positioning bug with inline elements */
 /* may need more things here */
 .textItem, .item, button-container button, .avatar,
 tbody, img, canvas, button {
@@ -29,10 +29,13 @@ img {
 	object-fit: contain;
 }
 
-/* nyehhhh */
-*:not(.slide-box) > [hidden] {
+[hidden] {
 	display: none !important;
 }
+
+/****************
+** Positioning **
+****************/
 
 html {
 	position: fixed;
@@ -286,8 +289,7 @@ but, then we can't add a border to the image
 	height: 100%;
 	overflow: auto;
 }
-.slide-box > :not(.shown)
-/*.slide-box > .shown ~ .shown*/ { /* in case there are multiple */
+.slide-box > :not(.shown) {
 	visibility: hidden;
 }
 
@@ -347,13 +349,9 @@ but, then we can't add a border to the image
 	text-align: center;
 }
 
-/* neccesary so safari doesn't zoom in */
-input {
-	font-size: 0.8em;
-}
-select {
-	font-size: 1em;
-}
+/************
+** Sidebar **
+************/
 
 /* normal */
 @media not all and (max-width: 700px) {
@@ -364,7 +362,6 @@ select {
 		display: none !important;
 	}
 }
-
 /* narrow screen: fullscreen sidebar */
 @media all and (max-width: 700px) {
 	/* make it fullscreen */
@@ -395,22 +392,23 @@ for horizontal-split to stop acting like a .resize-box
 	}
 }
 
+/***********************
+** expanding textarea **
+***********************/
+
 textarea-container {
-	position: relative;
 	display: block;
 	box-sizing: content-box;
-	/* overflow: hidden; this was needed only because of the vertical-align bug */
-	vertical-align: top; /* idk if needed but there was a sizing bug when opening the console so mmm*/
 }
-
 textarea-container > textarea {
-	resize: none;
+	display: block;
 	box-sizing: content-box;
+	overflow-y: scroll;
+	
+	resize: none;
 	width: 100%;
+	
 	border: none;
 	padding: 0;
 	margin: 0;
-	overflow-y: scroll;
-	vertical-align: top;
-	/*position: absolute;*/
 }

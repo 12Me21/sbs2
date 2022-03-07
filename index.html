@@ -104,7 +104,7 @@
 		<!--==============\
 		|| MAIN CONTENTS ||
 		\===========--==-->
-		<div data-slide=images>
+		<div data-slide=images class='flex'>
 			<div class='rem1-7 bar nav'>
 				<span id=$fileNav></span>
 		  		<label>Bucket:<input id=$fileSearchBucket></label>
@@ -118,7 +118,7 @@
 				<button id=$fileUpdateButton class='rightAlign canEdit loggedIn'>Save Settings</button>
 			</span>
 			<div class='fileSelected' id=$imageForm></div>
-			<div class='image-box'><img id=$filePageView></div>
+			<div class='image-box grow'><img id=$filePageView></div>
 		</div>
 		
 		<div data-slide=users>
@@ -187,7 +187,7 @@
 			<div id=$testOut class='pre'></div>
 		</div>
 		
-		<div data-slide=editpage class='fill resize-box'>
+		<div data-slide=editpage class='resize-box'>
 			<div class='sized slide-box' id=$editorPreviewPane>
 				<div data-slide=form>
 					<div class='registerBox' id=$editPageForm></div> <!-- really what we want here is a marker, not a container element or a replaced element. I would use <br> and then .replaceWith(form.elem), then set the form's .id back to $editPageForm. but that feels unsafe for something which could be generated many times. plus we have to set it back when cleaning up. -->
@@ -205,10 +205,10 @@
 				</select></label>
 				<button id=$markupUpdate>Update Preview</button>
 			</div>
-			<textarea id=$editorTextarea minlength=2 required class='fill grow'></textarea>
+			<textarea id=$editorTextarea minlength=2 required class='grow'></textarea>
 		</div>
 		
-		<div data-slide=page id=$chatContainer class='fill flex'>
+		<div data-slide=page id=$chatContainer class='flex'>
 			<div id=$chatPaneBox class='grow slide-box'></div>
 			<div class='inputPane loggedIn flex-row'>
 				<button class='showWhenEdit' id=$chatCancelEdit>Cancel Edit</button>
@@ -246,7 +246,6 @@
 				<div id=$searchResults></div>
 				<div id=$sidebarCategories></div>
 			</sidebar-panel>
-			<!--<div id=$sidebarWatchingPanel class='fill'></div>-->
 			<sidebar-panel id=$sidebarFilePanel class='flex'>
 				<div class='rem1-5 flex-row justify-between'>
 					<input type=file accept="image/*" id=$file_browse class='grow item'>

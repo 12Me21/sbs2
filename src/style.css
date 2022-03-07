@@ -413,6 +413,11 @@ message-controls:hover + message-part {
 	background: silver;
 }
 
+.inputPane {
+	background: var(--bar-bg);
+	align-items: stretch;
+}
+
 html.f-chatEditing #\$chatTextarea {
 	background: var(--edit-textarea-bg);
 }
@@ -430,7 +435,7 @@ html:not(.f-chatEditing) .showWhenEdit {
 }
 
 .chatScroller {
-	padding-bottom: 0.5rem;
+	padding-bottom: 0.9rem; /* increased to 0.9rem because we moved message-block padding to top of element */
 }
 
 .bigAvatar {
@@ -728,39 +733,37 @@ textarea-container, textarea-container > textarea {
 	user-select: none;
 }
 
+/************
+** Gallery **
+************/
+
 .gallery-inner {
 	margin: 0 auto;
 	position: relative;
 }
-
 .gallery-inner canvas {
 	width: 100%;
 }
-
 .gallery-inner > div {
 	position: absolute;
 	width: 100%;
 	height: 100%;
 	background: var(--bar-bg);
 }
-
+.gallery-inner > div > div {
+	width: 100%;
+	height: 100%;
+}
 .gallery-title {
 	text-align: center;
 	margin: 0 auto;
 	background: var(--bar-bg);
 }
 
+
 .debugMessage {
 	background: var(--bar-bg);
 	padding: 2px 3px;
-}
-
-.inputPane {
-	background: var(--bar-bg);
-	align-items: end;
-}
-.inputPane > * {
-	height: 100%;
 }
 
 .category-childs {
@@ -776,7 +779,7 @@ message-part, header, .markup-root, message-block {
 }
 /* this might be bad */
 .chatScroller, #\$sidebarScroller, $sidebarActivity {
-	will-change: contents; /* might need to change .chatScroller ? */
+	/*will-change: contents; /* might need to change .chatScroller ? */
 }
 
 /*   idk   */
@@ -818,4 +821,12 @@ activity-users {
 
 #\$sidebarBottom {
 	min-height: 0; /* fixes weird ios safari bug with sidebar bottom panel expanding forever. maybe we need to apply this to all .grow elements? */
+}
+
+/* neccesary so safari doesn't zoom in */
+input {
+	font-size: 0.8em;
+}
+select {
+	font-size: 1em;
 }
