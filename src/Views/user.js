@@ -14,7 +14,7 @@ add_view('user', {
 		else
 			userSearch = {usernames: [id], limit: 1}
 		
-		return Req.read([
+		return [0, Req.read([
 			['user', userSearch],
 			['content.0id$createUserIds~Puserpage', {type: 'userpage', limit: 1}],
 			['activity.0id$userIds', {limit: 20, reverse: true}],
@@ -29,7 +29,7 @@ add_view('user', {
 					render(null)
 			} else
 				render(null)
-		}, true)
+		}, true)]
 	},
 	className: 'user',
 	render(user, userpage, activity, ca, content) {

@@ -26,7 +26,7 @@ add_view('category', {
 			sort: 'editDate',
 			reverse: true
 		}
-		return Req.read([
+		return [0, Req.read([
 			['category~Cmain', {ids: [id]}],
 			['content', search],
 			['category', {parentIds: [id]}],
@@ -42,9 +42,8 @@ add_view('category', {
 				render(category, resp.category, resp.content, resp.Ppinned, page)
 			} else
 				render(null)
-		}, true)
+		}, true)]
 	},
-	
 	className: 'category',
 	render(category, cats, pages, pinned, pageNum) {
 		currentCategory = category.id

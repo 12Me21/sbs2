@@ -31,30 +31,29 @@ View.add_view('comments', {
 		}
 		View.bind_enter($commentSearch, $commentSearchButton.onclick)
 	},
-	start(id, query, render, quick) {
+	start(id, query, render) {
 		let data = comment_form.from_query(query)
 		if (id)
 			data.pages = [id]
 		let [search, merge] = build_search(data)
 		
 		if (search) {
-			return Req.read([
+			return [0, Req.read([
 				['comment', search],
 				['content.0parentId'],
 				['user.0createUserId'],
 			], {}, (e, resp)=>{
 				if (e) return render(null)
 				render(resp.comment, resp.content, data, merge)
-			})
+			})]
 		} else {
 			// if no search, just display the form right away
-			quick(()=>{
+			return [2, ()=>{
 				View.set_title("Comments")
 				comment_form.set(data)
 				$commentSearchResults.fill()
-			})
+			}]
 		}
-		
 	},
 	className: 'comments',
 	render(comments, pages, data, merge) {

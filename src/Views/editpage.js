@@ -31,7 +31,7 @@ add_view('editpage', {
 	start(id, query, render) {
 		if (id) { //edit existing page
 			id = +id
-			return Req.read([
+			return [0, Req.read([
 				['content', {ids: [id]}],
 				['user.0createUserId.0editUserId.0permissions'],
 			], {user: 'id,username,avatar'}, (e, resp)=>{
@@ -43,20 +43,21 @@ add_view('editpage', {
 						render(null)
 				} else
 					render(false)
-			}, true)
-		} else { //create new page
-			if (Req.got_categories) {
-				done()
-				return {abort: ()=>{}}
-			} else { //need to request category tree for page editor
-				return Req.read([], {}, (e, resp)=>{
-					if (!e)
-						done()
-					else
-						render(false)
-				}, true)
-			}
+			}, true)]
 		}
+		//otherwise create new page
+		if (Req.got_categories) {
+			done() // no we can't just..
+			return [0, {abort: ()=>{}}]
+		}
+		//need to request category tree for page editor
+		return [0, Req.read([], {}, (e, resp)=>{
+			if (!e)
+				done()
+			else
+				render(false)
+		}, true)]
+		
 		function done() {
 			// todo: this is kinda gross
 			// maybe it would be better to set the form directly

@@ -46,12 +46,12 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		// the first parameter will always exist.
 		users: {
 			start(id, query, render) {
-				return Req.read([
+				return [0, Req.read([
 					['user'],
 				], {}, (e, resp)=>{
 					if (!e)
 						render(resp.user)
-				}, true)
+				}, true)]
 			},
 			className: 'users',
 			render(users) {
@@ -261,14 +261,20 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		
 		let xhr
 		
-		if (!view) {
-			when_page_loaded(()=>{
+		when_page_loaded(()=>{
+			if (view) {
+				load_start()
+				if (!view.start)
+					quick(view.render)
+			} else {
 				error_render("Unknown page type: \""+type+"\"")
-			})
-		} else if (view.start) {
-			when_page_loaded(load_start)
+			}
+		})
+		if (view && view.start) {
 			try { // this catches errors in view.start, NOT the callbacks inside here
-				xhr = view.start(id, query, (...args)=>{ // needed because arguments
+				let need
+				;[need, xhr] = view.start(id, query, (...args)=>{
+					console.log('legacy page load ready.')
 					let ok = args[0]
 					when_page_loaded(()=>{
 						if (cancelled)
@@ -288,20 +294,20 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 						}
 						load_end()
 					})
-				}, (e)=>{
-					when_page_loaded(()=>{
-						quick(e)
-					})
 				})
+				if (need==2) {
+					when_page_loaded(()=>{
+						quick(xhr)
+					})
+				} else if (need==1) {
+					console.log('UNFINISHED!...')
+				} else {
+					console.log('legacy page load...')
+				}
 			} catch(e) {
 				error_render("render failed 1", e)
 				load_end()
 			}
-		} else {
-			when_page_loaded(()=>{
-				load_start()
-				quick(view.render)
-			})
 		}
 		
 		cancel_request = ()=>{

@@ -32,43 +32,42 @@ add_view('page', {
 	// the function passed to quick will act like a simple view
 	// with no `start` method (is called immediately)
 	// DO NOT CALL BOTH FUNCTIONS!
-	start(id, query, render, quick) {
+	start(id, query, render) {
 		let room = ChatRoom.rooms[id]
 		if (room) {
 			let z = room.pinned
 			room.pinned = true
-			quick(()=>{
+			return [2, ()=>{
 				let page = room.page
 				//ChatRoom.setViewing([page.id])
 				room.show()
 				room.pinned = z
 				render_page(page)
-			})
-		} else {
-			//todo: maybe we can request the user list early too?
-			// the problem is, if we create the room early,
-			// we might get messages from long polling before
-			// loading the initial messages :(
-			return Req.read([
-				['content', {ids: [id], IncludeAbout: ["votes","watches"]}],
-				['comment', {parentIds: [id], limit: 30, reverse: true}],
-				['comment.0values_pinned~Mpinned'],//: {parentIds: [id]}},
-				['user.0createUserId.0editUserId.1createUserId.1editUserId.2createUserId.2editUserId'],
-			], {
-				//content: "name,parentId,type,createUserId,editUserId,createDate,editDate,permissions,id"
-			}, (e, resp)=>{
-				// todo: ok so we have 2 levels of error here
-				// either the request fails somehow (e is set)
-				// or, the page/whatever we're trying to access doesn't exist
-				// this exists for pretty much every view/request type
-				// so it would be good to handle it consistently
-				if (!e && resp.content[0]) {
-					resp.comment.reverse()
-					render(resp.content[0], resp.comment, resp.Mpinned)
-				} else
-					render(null)
-			}, true)
+			}]
 		}
+		//todo: maybe we can request the user list early too?
+		// the problem is, if we create the room early,
+		// we might get messages from long polling before
+		// loading the initial messages :(
+		return [0, Req.read([
+			['content', {ids: [id], IncludeAbout: ["votes","watches"]}],
+			['comment', {parentIds: [id], limit: 30, reverse: true}],
+			['comment.0values_pinned~Mpinned'],//: {parentIds: [id]}},
+			['user.0createUserId.0editUserId.1createUserId.1editUserId.2createUserId.2editUserId'],
+		], {
+			//content: "name,parentId,type,createUserId,editUserId,createDate,editDate,permissions,id"
+		}, (e, resp)=>{
+			// todo: ok so we have 2 levels of error here
+			// either the request fails somehow (e is set)
+			// or, the page/whatever we're trying to access doesn't exist
+			// this exists for pretty much every view/request type
+			// so it would be good to handle it consistently
+			if (!e && resp.content[0]) {
+				resp.comment.reverse()
+				render(resp.content[0], resp.comment, resp.Mpinned)
+			} else
+				render(null)
+		}, true)]
 	},
 	className: 'page',
 	render(page, comments, pinned) {

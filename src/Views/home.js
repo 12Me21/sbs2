@@ -5,7 +5,7 @@ add_view('', {
 	init() {
 	},
 	start(id, query, render) {
-		return Req.read([
+		return [0, Req.read([
 			['content~Pgallery', {
 				type: 'program',
 				limit: 1, sort: 'random',
@@ -18,7 +18,7 @@ add_view('', {
 				render(null)
 			else
 				render(resp.Pgallery, resp.category, resp)
-		}, true)
+		}, true)]
 	},
 	className: 'home',
 	render(gallery, categories, resp) {
