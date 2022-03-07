@@ -125,7 +125,7 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 			new_listeners[id] = lastListeners[id] || {'0':""}
 		
 		let actions = {
-			lastId: lastId,
+			lastId: lastId, // todo: make sure this is ALWAYS set (not 0) except for the initial request where we get lastid
 			statuses: statuses,
 			chains: [
 				'comment.0id',
