@@ -14,25 +14,32 @@ add_view('user', {
 		else
 			userSearch = {usernames: [id], limit: 1}
 		
-		return [0, Req.read([
-			['user', userSearch],
-			['content.0id$createUserIds~Puserpage', {type: 'userpage', limit: 1}],
-			['activity.0id$userIds', {limit: 20, reverse: true}],
-			['commentaggregate.0id$userIds', {limit: 100, reverse: true}],
-			['content.2contentId.3id'],
-		], {}, (e, resp)=>{
-			if (!e) {
-				let user = resp.user[0]
-				if (user)
-					render(user, resp.Puserpage[0], resp.activity, resp.commentaggregate, resp.content)
+		return [1, {
+			chains: [
+				['user', userSearch],
+				['content.0id$createUserIds~Puserpage', {type: 'userpage', limit: 1}],
+				['activity.0id$userIds', {limit: 20, reverse: true}],
+				['commentaggregate.0id$userIds', {limit: 100, reverse: true}],
+				['content.2contentId.3id'],
+			],
+			fields: {},
+			check: (resp)=>{
+				if (!resp.user[0])
+					return null
 				else
-					render(null)
-			} else
-				render(null)
-		}, true)]
+					return true
+			},
+			ext: null,
+		}]
 	},
 	className: 'user',
-	render(user, userpage, activity, ca, content) {
+	render(resp, ext) {
+		let user = resp.user[0]
+		let userpage = resp.Puserpage[0]
+		let activity = resp.activity
+		let ca = resp.commentaggregate
+		let content = resp.content
+		
 		if (user.id == Req.uid) {
 			flag('myUserPage', true)
 			let path

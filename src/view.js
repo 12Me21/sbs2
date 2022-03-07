@@ -272,8 +272,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		})
 		if (view && view.start) {
 			try { // this catches errors in view.start, NOT the callbacks inside here
-				let need
-				;[need, xhr] = view.start(id, query, (...args)=>{
+				let [need, data] = view.start(id, query, (...args)=>{
 					console.log('legacy page load ready.')
 					let ok = args[0]
 					when_page_loaded(()=>{
@@ -297,11 +296,32 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 				})
 				if (need==2) {
 					when_page_loaded(()=>{
-						quick(xhr)
+						quick(data)
 					})
 				} else if (need==1) {
-					console.log('UNFINISHED!...')
+					xhr = Req.read(data.chains, data.fields, (e, resp)=>{
+						when_page_loaded(()=>{
+							if (cancelled)
+								return
+							cleanup()
+							let ok = data.check(resp, data.ext)
+							if (!ok) {
+								let msg = ok==false ? "error 1" : "content not found?"
+								error_render(msg)
+							} else {
+								current_view = view
+								try {
+									view.render(resp, data.ext)
+									after()
+								} catch(e) {
+									error_render("render failed", e)
+								}
+							}
+							load_end()
+						})						
+					})
 				} else {
+					xhr = data
 					console.log('legacy page load...')
 				}
 			} catch(e) {
