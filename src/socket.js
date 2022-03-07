@@ -133,20 +133,22 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 				'watch.0id', //new stuff //changed
 				'content.1parentId.2contentId.3contentId', //pages
 				'user.1createUserId.2userId.1editUserId.2contentId', //users for comment and activity
-				'category.2contentId' //todo: handle values returned by this
+				'category.2contentId', //todo: handle values returned by this
 			]
 		}
 		let listeners = {
 			lastListeners: new_listeners,
 			chains: [
-				'user.0listeners'
+				'user.0listeners',
 			]
 		}
 		if (get_me) {
 			// TODO: make sure lastListeners is something that will never occur so you'll always get the update
-			listeners.chains.push(
-				"user~Ume-"+JSON.stringify({ids:[Req.uid],limit:1})
-			)
+			listeners.chains = [
+				'systemaggregate',
+				"user~Ume-"+JSON.stringify({ids:[Req.uid],limit:1}),
+				'user.0listeners',
+			]
 		}
 		
 		return {
@@ -207,6 +209,14 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 		}
 	},
 	
+	update_lastid(id) {
+		id = +id
+		if (id) {
+			lastId = id
+			console.log("got lastid: ", id)
+		}
+	},
+	
 	process(e, resp) {
 		if (e) {
 			alert("LONG POLLER FAILED:"+resp)
@@ -218,7 +228,7 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 		try {
 			// most important stuff:
 			if (resp.lastId)
-				lastId = resp.lastId
+				update_lastid(lastId)
 			if (resp.listeners)
 				lastListeners = resp.listeners
 			
@@ -227,6 +237,11 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 			let me = c && c.Ume
 			
 			if (init || me) {
+				let x = c.systemaggregate.find(x=>x.type=='actionMax')
+				if (x)
+					update_lastid(x.id)
+				else
+					alert("lp sequence error!!!")
 				print("got initial lp response!")
 				init = false
 				if (me && me[0]) {
