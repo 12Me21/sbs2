@@ -200,12 +200,12 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 				Nav.set_location(type, id, query)
 		} catch(e) {
 			error(e, "error during redirect")
-			return handle_early_error("error during redirect", e)
+			return handle_error("error during redirect", e)
 		}
 		
 		// NO VIEW
 		if (!view) {
-			return handle_early_error("Unknown page type: \""+type+"\"")
+			return handle_error("Unknown page type: \""+type+"\"")
 		}
 		
 		load_start()
@@ -219,7 +219,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			try {
 				;[need, data] = view.start(id, query)
 			} catch(e) {
-				return handle_early_error("render failed in view.start", e)
+				return handle_error("render failed in view.start", e)
 			}
 			if (need==2) {
 				handle_quick(data)
@@ -231,12 +231,19 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 					cancelled = true
 				}
 				xhr = Req.read(data.chains, data.fields, (e, resp)=>{
-					handle_resp(e, resp)
+					if (e) {
+						handle_error("error 1")
+					} else if (!data.check(resp, data.ext)) {
+						handle_error("content not found?")
+					} else {
+						handle_resp(e, resp)
+					}
 				}, true)
 			}
 		}
 		
-		function handle_error(message, e=null) {
+		// to be called inside a handler function
+		function render_error(message, e=null) {
 			if (e)
 				error(e, message)
 			else
@@ -248,10 +255,9 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		// one of these Handler functions gets called no matter what
 		// they should all call `after()` at the end
 		
-		function handle_early_error(message, e=null) {
-			cancel_request = ()=>{}
+		function handle_error(message, e=null) {
 			when_page_loaded(()=>{
-				handle_error(message, e)
+				render_error(message, e)
 			})
 		}
 		
@@ -261,24 +267,18 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 				try {
 					func(view.render)
 				} catch(e) {
-					handle_error("render failed in view.quick", e)
+					render_error("render failed in view.quick", e)
 				}
 			})
 		}
 		
 		function handle_resp(e, resp) {
 			when_page_loaded(()=>{
-				if (e) {
-					handle_error("error 1")
-				} else if (!data.check(resp, data.ext)) {
-					handle_error("content not found?")
-				} else {
-					current_view = view
-					try {
-						view.render(resp, data.ext)
-					} catch(e) {
-						handle_error("render failed in view.render", e)
-					}
+				current_view = view
+				try {
+					view.render(resp, data.ext)
+				} catch(e) {
+					render_error("render failed in view.render", e)
 				}
 			})
 		}		
