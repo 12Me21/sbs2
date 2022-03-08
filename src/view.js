@@ -176,11 +176,19 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		let when_page_loaded = (callback)=>{
 			if (cancelled)
 				return
-			if (init_done)
+			if (init_done) {
+				cleanup()
 				callback()
-			else {
+				after()
+			} else {
 				console.log("deferring render")
-				run_on_load.push(callback)
+				run_on_load.push(()=>{
+					if (cancelled)
+						return
+					cleanup()
+					callback()
+					after()
+				})
 			}
 		}
 		
@@ -204,9 +212,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		
 		// SIMPLE VIEW (no request needed)
 		if (!view.start) {
-			when_page_loaded(()=>{
-				handle_quick(view.render)
-			})
+			handle_quick(view.render)
 		// NORMAL VIEW
 		} else {
 			let need, data
@@ -216,9 +222,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 				return handle_early_error("render failed in view.start", e)
 			}
 			if (need==2) {
-				when_page_loaded(()=>{
-					handle_quick(data)
-				})
+				handle_quick(data)
 			} else if (need==1) {
 				let xhr
 				cancel_request = ()=>{
@@ -227,9 +231,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 					cancelled = true
 				}
 				xhr = Req.read(data.chains, data.fields, (e, resp)=>{
-					when_page_loaded(()=>{
-						handle_resp(e, resp)
-					})
+					handle_resp(e, resp)
 				}, true)
 			}
 		}
@@ -249,42 +251,36 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		function handle_early_error(message, e=null) {
 			cancel_request = ()=>{}
 			when_page_loaded(()=>{
-				cleanup()
 				handle_error(message, e)
-				after()
 			})
 		}
 		
 		function handle_quick(func) {
-			if (cancelled)
-				return
-			cleanup()
-			current_view = view
-			try {
-				func(view.render)
-			} catch(e) {
-				handle_error("render failed in view.quick", e)
-			}
-			after()
+			when_page_loaded(()=>{
+				current_view = view
+				try {
+					func(view.render)
+				} catch(e) {
+					handle_error("render failed in view.quick", e)
+				}
+			})
 		}
 		
 		function handle_resp(e, resp) {
-			if (cancelled)
-				return
-			cleanup()
-			if (e) {
-				handle_error("error 1")
-			} else if (!data.check(resp, data.ext)) {
-				handle_error("content not found?")
-			} else {
-				current_view = view
-				try {
-					view.render(resp, data.ext)
-				} catch(e) {
-					handle_error("render failed in view.render", e)
+			when_page_loaded(()=>{
+				if (e) {
+					handle_error("error 1")
+				} else if (!data.check(resp, data.ext)) {
+					handle_error("content not found?")
+				} else {
+					current_view = view
+					try {
+						view.render(resp, data.ext)
+					} catch(e) {
+						handle_error("render failed in view.render", e)
+					}
 				}
-			}
-			after()
+			})
 		}		
 	},
 	
