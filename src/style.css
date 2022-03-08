@@ -822,7 +822,7 @@ activity-users {
 }
 
 /* neccesary so safari doesn't zoom in */
-input {
+input, output {
 	font-size: 0.8em;
 }
 select {
