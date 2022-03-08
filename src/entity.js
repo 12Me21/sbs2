@@ -255,6 +255,10 @@ let Entity = {
 				data.lastDate = this.parse_date(data.lastDate)
 			return data
 		},
+		systemaggregate(data, users) {
+			return data
+			// rip recv'd unknown :(
+		},
 	},
 	
 	page_map(pages) {

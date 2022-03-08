@@ -224,7 +224,7 @@ const Req = {
 			console.log("Req: doing first request!")
 			offset = 1
 			requests = [
-				['systemaggregate'],
+				['systemaggregate'], //~💖
 				...requests,
 				['category~Ctree'],
 				['user~Ume', {ids:[Req.uid], limit:1}],
