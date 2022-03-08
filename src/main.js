@@ -67,9 +67,11 @@ function dom_ready() {
 		container.append(button)
 	})
 	
-	Req.try_load_cached_auth() // moved this here
-	// does this still work
+	Req.try_load_cached_auth() // moved this here (bad)
+	
 	View.init()
+	
+	Sidebar.init()
 	
 	Nav.initial()
 }

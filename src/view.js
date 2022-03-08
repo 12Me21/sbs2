@@ -34,16 +34,6 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 				set_title("Testing")
 			},
 		},
-		test_error: {
-			render() {
-				throw new Error("heck")
-			}
-		},
-		// alright, so, the way this works
-		// first, .start is called. this will usually make an API request.
-		// if this fails or something bad happens, it should be handled I think
-		// .render will be called IF everything succeeds
-		// the first parameter will always exist.
 		users: {
 			start(id, query) {
 				return [1, {
@@ -100,40 +90,6 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			got = true
 		}
 		return [name, id, query, got]
-	},
-	
-	set_entity_title(entity) {
-		$pageTitle.fill(Draw.icon_title(entity))
-		document.title = entity.name
-		real_title = entity.name
-		change_favicon(null)
-	},
-	set_title(text) {
-		$pageTitle.textContent = text
-		document.title = text
-		real_title = text
-		change_favicon(null)
-	},
-	
-	set_path(path) {
-		$path.fill(Draw.title_path(path))
-	},
-	set_entity_path(page) {
-		if (!page) {
-			set_path([])
-			return
-		}
-		let node = page.Type=='category' ? page : page.parent
-		let path = []
-		while (node) {
-			path.unshift([Nav.entityPath(node), node.name])
-			node = node.parent
-		}
-		if (page.Type == 'category')
-			path.push(null)
-		else
-			path.push([Nav.entityPath(page), page.name])
-		set_path(path)
 	},
 	
 	load_start() {
@@ -264,18 +220,22 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		
 		let xhr
 		
-		//
-		when_page_loaded(()=>{
-			if (view) {
-				load_start()
-				if (!view.start)
-					quick(view.render)
-			} else {
+		// NO VIEW
+		if (!view) {
+			when_page_loaded(()=>{
 				error_render("Unknown page type: \""+type+"\"")
-			}
-		})
-		
-		if (view && view.start) {
+			})
+		// SIMPLE VIEW (no request needed)
+		} else if (!view.start) {
+			when_page_loaded(()=>{
+				load_start()
+				quick(view.render)
+			})
+		// NORMAL VIEW
+		} else {
+			when_page_loaded(()=>{
+				load_start()
+			})
 			try { // this catches errors in view.start, NOT the callbacks inside here
 				let [need, data] = view.start(id, query)
 				
@@ -286,36 +246,34 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 				} else if (need==1) {
 					xhr = Req.read(data.chains, data.fields, (e, resp)=>{
 						when_page_loaded(()=>{
-							if (cancelled)
-								return
-							cleanup()
-							let ok
-							if (e)
-								ok = false
-							else
-								ok = data.check(resp, data.ext)
-							if (!ok) {
-								let msg = ok==false ? "error 1" : "content not found?"
-								error_render(msg)
-							} else {
-								current_view = view
-								try {
-									view.render(resp, data.ext)
-									after()
-								} catch(e) {
-									error_render("render failed", e)
-								}
-							}
-							load_end()
+							handle_resp.bind(e, resp)
 						})
 					}, true)
-				} else {
-					alert("OLD PAGE FORMAT NICE TRY")
 				}
 			} catch(e) {
 				error_render("render failed 1", e)
 				load_end()
 			}
+		}
+		
+		function handle_resp(e, resp) {
+			if (cancelled)
+				return
+			cleanup()
+			if (e) {
+				error_render("error 1")
+			} else if (!data.check(resp, data.ext)) {
+				error_render("content not found?")
+			} else {
+				current_view = view
+				try {
+					view.render(resp, data.ext)
+					after()
+				} catch(e) {
+					error_render("render failed", e)
+				}
+			}
+			load_end()
 		}
 		
 		cancel_request = ()=>{
@@ -327,6 +285,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 	},
 	
 	init() {
+		// initialize all views
 		Object.for(views, (view)=>{
 			view.name = name
 			view.init && view.init()
@@ -337,6 +296,8 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		init_done = true
 		run_on_load.forEach((f)=>f())
 		run_on_load = null
+		
+		// set up event handlers:
 		
 		// video player does not fire 'click' events so instead
 		// need to detect when the video is played
@@ -377,8 +338,6 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 				}
 			}
 		}
-		
-		Sidebar.init()
 	},
 	
 	add_view(name, data) {
@@ -386,6 +345,9 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		views[name] = data
 		init_done && data.init && data.init()
 	},
+	
+	/// HELPER FUNCTIONS ///
+	// kinda should move these into like, draw.js idk
 	
 	// should be a class (actually nevermind the syntax is gross)
 	attach_resize(element, tab, horiz, dir, save, callback, def) {
@@ -455,16 +417,6 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		}
 	},
 	
-	// this shouldnt be here i think
-	bind_enter(block, action) {
-		block.addEventListener('keypress', (e)=>{
-			if (!e.shiftKey && e.keyCode == 13) {
-				e.preventDefault()
-				action()
-			}
-		})
-	},
-	
 	change_favicon(src) {
 		if (!favicon_element) {
 			if (src == null)
@@ -479,7 +431,53 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 				src = "resource/icon16.png"
 			favicon_element.href = src
 		}
-	}
+	},
+	
+	// this shouldnt be here i think
+	bind_enter(block, action) {
+		block.addEventListener('keypress', (e)=>{
+			if (!e.shiftKey && e.keyCode == 13) {
+				e.preventDefault()
+				action()
+			}
+		})
+	},
+	
+	// set tab <title>
+	set_entity_title(entity) {
+		$pageTitle.fill(Draw.icon_title(entity))
+		document.title = entity.name
+		real_title = entity.name
+		change_favicon(null)
+	},
+	set_title(text) {
+		$pageTitle.textContent = text
+		document.title = text
+		real_title = text
+		change_favicon(null)
+	},
+	
+	// set path (in header)
+	set_path(path) {
+		$path.fill(Draw.title_path(path))
+	},
+	set_entity_path(page) {
+		if (!page) {
+			set_path([])
+			return
+		}
+		let node = page.Type=='category' ? page : page.parent
+		let path = []
+		while (node) {
+			path.unshift([Nav.entityPath(node), node.name])
+			node = node.parent
+		}
+		if (page.Type == 'category')
+			path.push(null)
+		else
+			path.push([Nav.entityPath(page), page.name])
+		set_path(path)
+	},
 	
 })<!-- PRIVATE })
 
