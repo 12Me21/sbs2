@@ -49,7 +49,7 @@ add_view('editpage', {
 		}
 		//otherwise create new page
 		if (Req.got_categories) {
-			return [2, (data, render)=>{
+			return [2, (render)=>{
 				render({}, {query: query})
 			}]
 		}

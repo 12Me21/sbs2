@@ -128,23 +128,23 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		}
 		let view
 		
-		let cleanup = ()=>{
-			if (current_view && current_view.cleanup) {
-				try {
+		function cleanup() {
+			if (!current_view)
+				return
+			try {
+				if (current_view.cleanup)
 					current_view.cleanup(type, id, query)
-				} catch(e) {
-					// we ignore this error, because it's probably not important
-					// and also cleanup gets called during error handling so we don't want to get into a loop of errors
-					error(e, "error in cleanup function")
-				}
+			} catch(e) {
+				// we ignore this error, because it's probably not important
+				// and also cleanup gets called during error handling so we don't want to get into a loop of errors
+				error(e, "error in cleanup function")
 			}
 			current_view = null
 			//$main.scrollTop = 0 TODO, scroll the correct element here
 		}
 		
-		let after = ()=>{
-			// goal: instead of hiding things, we should
-			// use the .slide system for all pages etc.
+		function after() {
+			load_end()
 			
 			// children instead of childNodes, because we only want elements (real)
 			for (let elem of $main_slides.children)
@@ -166,18 +166,12 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			// todo: scroll to fragment element
 		}
 		
-		let error_render = (message, e=null)=>{
-			if (e)
-				error(e, message)
-			else
-				console.error(message) //eh
-			cleanup()
-			current_view = view = errorView
-			view.render(message, e)
-			after()
-		}
-		
 		let cancelled = false
+		
+		cancel_request = ()=>{
+			load_end()
+			cancelled = true
+		}
 		
 		let when_page_loaded = (callback)=>{
 			if (cancelled)
@@ -194,66 +188,84 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			let got_redirect
 			;[type, id, query, got_redirect] = get_view(type, id, query)
 			view = views[type]
-			if (got_redirect) {
+			if (got_redirect)
 				Nav.set_location(type, id, query)
-			}
 		} catch(e) {
-			window.ee=e
 			error(e, "error during redirect")
-			when_page_loaded(()=>{
-				error_render("error during redirect", e)
-			})
-			return // ??
+			return handle_early_error("error during redirect", e)
 		}
-		
-		let quick= (ren)=>{
-			cleanup()
-			current_view = view
-			try {
-				ren(id, query)
-				after()
-			} catch(e) {
-				error_render("render failed", e)
-			}
-			load_end()
-		}
-		
-		let xhr
 		
 		// NO VIEW
 		if (!view) {
-			when_page_loaded(()=>{
-				error_render("Unknown page type: \""+type+"\"")
-			})
+			return handle_early_error("Unknown page type: \""+type+"\"")
+		}
+		
+		load_start()
+		
 		// SIMPLE VIEW (no request needed)
-		} else if (!view.start) {
+		if (!view.start) {
 			when_page_loaded(()=>{
-				load_start()
-				quick(view.render)
+				handle_quick(view.render)
 			})
 		// NORMAL VIEW
 		} else {
-			when_page_loaded(()=>{
-				load_start()
-			})
-			try { // this catches errors in view.start, NOT the callbacks inside here
-				let [need, data] = view.start(id, query)
-				
-				if (need==2) {
-					when_page_loaded(()=>{
-						quick(data, view.render)
-					})
-				} else if (need==1) {
-					xhr = Req.read(data.chains, data.fields, (e, resp)=>{
-						when_page_loaded(()=>{
-							handle_resp.bind(e, resp)
-						})
-					}, true)
-				}
+			let need, data
+			try {
+				;[need, data] = view.start(id, query)
 			} catch(e) {
-				error_render("render failed 1", e)
-				load_end()
+				return handle_early_error("render failed in view.start", e)
 			}
+			if (need==2) {
+				when_page_loaded(()=>{
+					handle_quick(data)
+				})
+			} else if (need==1) {
+				let xhr
+				cancel_request = ()=>{
+					load_end()
+					xhr && xhr.abort && xhr.abort()
+					cancelled = true
+				}
+				xhr = Req.read(data.chains, data.fields, (e, resp)=>{
+					when_page_loaded(()=>{
+						handle_resp(e, resp)
+					})
+				}, true)
+			}
+		}
+		
+		function handle_error(message, e=null) {
+			if (e)
+				error(e, message)
+			else
+				console.error(message) //eh
+			current_view = view = errorView
+			view.render(message, e)
+		}
+		
+		// one of these Handler functions gets called no matter what
+		// they should all call `after()` at the end
+		
+		function handle_early_error(message, e=null) {
+			cancel_request = ()=>{}
+			when_page_loaded(()=>{
+				cleanup()
+				handle_error(message, e)
+				after()
+			})
+		}
+		
+		function handle_quick(func) {
+			if (cancelled)
+				return
+			cleanup()
+			current_view = view
+			try {
+				func(view.render)
+			} catch(e) {
+				handle_error("render failed in view.quick", e)
+			}
+			after()
 		}
 		
 		function handle_resp(e, resp) {
@@ -261,27 +273,19 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 				return
 			cleanup()
 			if (e) {
-				error_render("error 1")
+				handle_error("error 1")
 			} else if (!data.check(resp, data.ext)) {
-				error_render("content not found?")
+				handle_error("content not found?")
 			} else {
 				current_view = view
 				try {
 					view.render(resp, data.ext)
-					after()
 				} catch(e) {
-					error_render("render failed", e)
+					handle_error("render failed in view.render", e)
 				}
 			}
-			load_end()
-		}
-		
-		cancel_request = ()=>{
-			load_end()
-			xhr && xhr.abort && xhr.abort()
-			cancelled = true
-		}
-		
+			after()
+		}		
 	},
 	
 	init() {
