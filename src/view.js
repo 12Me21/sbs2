@@ -156,7 +156,9 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		// todo: scroll to fragment element
 	},
 	
-	// rn this callback is never used
+	// rn the `after2` callback is never used, but it's meant to be like, 
+	// called after rendering, to handle scrolling down to fragment links and whatever, I think
+	
 	handle_view(type, id, query, after2) {
 		if (cancel_request) {
 			cancel_request()
@@ -173,10 +175,14 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		
 		let view
 		
+		// must call this exactly once
+		// and must be the last call made
 		function handle(callback) {
 			if (cancelled)
 				return
 			function go() {
+				if (cancelled)
+					return
 				cleanup()
 				callback()
 				current_view = view
@@ -196,12 +202,13 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			try {
 				func()
 			} catch(e) {
-				handle(error_render.bind(null, msg, e))
+				handle_error(msg, e)
 				return true
 			}
 			return false
 		}
 		
+		// handle view redirects
 		if (attempt("error during redirect", ()=>{
 			let got_redirect
 			;[type, id, query, got_redirect] = get_view(type, id, query)
@@ -213,20 +220,22 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		
 		// NO VIEW
 		if (!view)
-			return handle(error_render.bind(null, "Unknown page type: \""+type+"\""))
+			return handle_error("Unknown page type: \""+type+"\"")
 		
+		// call view.start
 		let data
 		if (attempt("render failed in view.start", ()=>{
 			data = view.start(id, query)
 		}))
 			return
 		
+		// if we can render the page immediately
 		if (data.quick)
-			return handle(()=>{
-				attempt(
-					"render failed in view.quick", 
-					view.quick.bind(view, data.ext, view.render))
-			})
+			return handle(attempt.bind(
+				null,
+				"render failed in view.quick", 
+				view.quick.bind(view, data.ext, view.render)))
+		// otherwise prepare to make an api request
 		let xhr
 		cancel_request = ()=>{
 			load_end()
@@ -234,29 +243,30 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			cancelled = true
 		}
 		xhr = Req.read(data.chains, data.fields, (e, resp)=>{
+			// handle the response
 			if (e)
-				return handle(error_render.bind(null, "error 1"))
+				return handle_error("error 1")
 			if (data.check && !data.check(resp, data.ext)) // try/catch here?
-				return handle(error_render.bind(null, "content not found?"))
-			return handle(()=>{
-				attempt(
-					"render failed in view.render",
-					view.render.bind(view, resp, data.ext))
-			})
+				return handle_error("content not found?")
+			return handle(attempt.bind(
+				null,
+				"render failed in view.render",
+				view.render.bind(view, resp, data.ext)))
 		}, true)
 		
-		// call these using `handle`
-		
-		function error_render(message, e=null) {
-			view = errorView
-			if (e)
-				error(e, message)
-			else
-				console.error(message) //eh
-			// RENDER
-			set_title(message)
-			$errorMessage.textContent = e ? e+"\n"+e.stack : ""
+		function handle_error(message, e=null) {
+			handle(()=>{
+				view = errorView
+				if (e)
+					error(e, message)
+				else
+					console.error(message) //eh
+				// RENDER
+				set_title(message)
+				$errorMessage.textContent = e ? e+"\n"+e.stack : ""
+			})
 		}
+		
 	},
 	
 	init() {
