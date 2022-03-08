@@ -255,7 +255,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 				console.error(message) //eh
 			// RENDER
 			set_title(message)
-			$errorMessage.textContent = error ? error+"\n"+error.stack : ""
+			$errorMessage.textContent = e ? e+"\n"+e.stack : ""
 		}
 	},
 	

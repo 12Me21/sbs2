@@ -37,13 +37,13 @@ add_view('page', {
 		if (room) {
 			let z = room.pinned
 			room.pinned = true
-			return [2, {ext: {room}}]
+			return {quick: true, ext: {room}}
 		}
 		//todo: maybe we can request the user list early too?
 		// the problem is, if we create the room early,
 		// we might get messages from long polling before
 		// loading the initial messages :(
-		return [1, {
+		return {
 			chains: [
 				['content', {ids: [id], IncludeAbout: ["votes","watches"]}],
 				['comment', {parentIds: [id], limit: 30, reverse: true}],
@@ -55,21 +55,17 @@ add_view('page', {
 			},
 			ext: {},
 			check(resp) {
-				if (resp.content[0])
-					return true
-				return null
+				return resp.content[0]
 			},
-		}]
+		}
 	},
-	quick(ext, render) {
-		let room = ext.room
-		
+	quick({room}, render) {
 		let page = room.page
 		//ChatRoom.setViewing([page.id])
 		room.show()
 		room.pinned = z
 		render_page(page)
-	}
+	},
 	className: 'page',
 	render(resp, ext) {
 		let comments = resp.comment
