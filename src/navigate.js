@@ -133,9 +133,11 @@ const Nav = {
 		Nav.current_path = path
 		path = Nav.decodePath(String(path))
 		let {type, id, query} = path
-		$haloopdyLink.href = this.haloopdy_path({
-			path: id==null ? [type] : [type, String(id)],
-			query: query,
+		View.do_when_ready(()=>{
+			$haloopdyLink.href = this.haloopdy_path({
+				path: id==null ? [type] : [type, String(id)],
+				query: query,
+			})
 		})
 		View.handle_view(type, id, query, callback)
 	},

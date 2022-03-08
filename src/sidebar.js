@@ -21,7 +21,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		}, 1000*30)
 	},
 	
-	init() {
+	onload() {
 		file_upload_form = new Form({
 			fields: [
 				['size', 'output', {output: true, label: "Size"}], //todo: separate set of output fields?

@@ -7,33 +7,36 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 	
 	// interfacing with other systems
 	on_listeners(map) {
-		ChatRoom.update_userlists(map)
+		View.do_when_ready(()=>{
+			ChatRoom.update_userlists(map)
+		})
 	},
 	on_data({comment, commentdelete, activity, content}) {
-		function comments(c) {
-			if (c) {
-				ChatRoom.display_messages(c)
-				Sidebar.display_messages(c)
-			}
-		}
-		comments(comment)
-		comments(commentdelete)
-		
-		//todo: properly link activity with contents?
-		// todo: do we want to pass commentdelete here?
-		Act.process_stuff(activity, comment, null, content)
-		
-		// I dont think user edits are broadcast anymore, but
-		if (activity)
-			for (let a of activity)
-				if (a.type == 'user') {
-					if (a.content.id == Req.uid)
-						View.update_my_user(a.content)
-					ChatRoom.update_avatar(a.content)
+		View.do_when_ready(()=>{
+			function comments(c) {
+				if (c) {
+					ChatRoom.display_messages(c)
+					// URGENT TODO: this needs to run
+					// AFTER AFTER AFTER the initial sidebar messages are shown
+					Sidebar.display_messages(c)
 				}
-	},
-	on_start(me) {
-		View.update_my_user(me) //also sets Req.me...
+			}
+			comments(comment)
+			comments(commentdelete)
+			
+			//todo: properly link activity with contents?
+			// todo: do we want to pass commentdelete here?
+			Act.process_stuff(activity, comment, null, content)
+			
+			// I dont think user edits are broadcast anymore, but
+			if (activity)
+				for (let a of activity)
+					if (a.type == 'user') {
+						if (a.content.id == Req.uid)
+							View.update_my_user(a.content)
+						ChatRoom.update_avatar(a.content)
+					}
+		})
 	},
 	
 	// this is used in the userlist
@@ -54,7 +57,6 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 	
 	// status
 	running: false,
-	init: true, // waiting for initial response
 	// websocket exclusive
 	use_websocket: false,
 	websocket: null,
@@ -67,9 +69,8 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 	// public methods //
 	////////////////////
 	
-	start(ws) {
+	start() {
 		if (!running) {
-			use_websocket = ws
 			if (use_websocket) {
 				print('starting lp: websocket')
 				ws_refresh(true)
@@ -104,13 +105,15 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 	
 	// call this after setting the parameters
 	refresh() {
-		if (running && !init) {
+		if (running) {
 			if (use_websocket) {
 				ws_refresh()
 			} else {
 				lp_cancel()
 				lp_loop()
 			}
+		} else {
+			console.log("ws refresh fail, too early")
 		}
 	},
 	
@@ -119,7 +122,7 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 	/////////////////////////
 	
 	// output is in websocket format
-	make_request(get_me) {
+	make_request() {
 		let new_listeners = {}
 		for (let id of listening)
 			new_listeners[id] = lastListeners[id] || {'0':""}
@@ -142,14 +145,6 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 				'user.0listeners',
 			]
 		}
-		if (get_me) {
-			// TODO: make sure lastListeners is something that will never occur so you'll always get the update
-			listeners.chains = [
-				'systemaggregate',
-				"user~Ume-"+JSON.stringify({ids:[Req.uid],limit:1}),
-				'user.0listeners',
-			]
-		}
 		
 		return {
 			actions: actions,
@@ -158,14 +153,14 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 		}
 	},
 	
-	ws_refresh(get_me) {
+	ws_refresh() {
 		running = true
-		ws_message = make_request(get_me)
+		ws_message = make_request()
 		websocket_flush()
 	},
 	
-	lp_listen(get_me, callback) {
-		let {actions, listeners, fields} = make_request(get_me)
+	lp_listen(callback) {
+		let {actions, listeners, fields} = make_request()
 		// convert make_request output to long poller format
 		let query = {
 			actions: JSON.stringify(actions),
@@ -178,11 +173,11 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 	},
 	
 	// if
-	lp_loop(get_me) {
+	lp_loop() {
 		running = true
 		//make sure only one instance of this is running
 		let cancelled
-		let x = lp_listen(get_me, (e, resp)=>{
+		let x = lp_listen((e, resp)=>{
 			if (cancelled) { // should never happen (but I think it does sometimes..)
 				console.log("OH HECK, request called callback after being cancelled?")
 				//return //removing this for consistency since websocket doesn't have cancelling
@@ -233,28 +228,6 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 			
 			let c = resp.chains // this SHOULD always be set, yeah?
 			c && Entity.process(c)
-			let me = c && c.Ume
-			
-			if (init || me) {
-				let x = c.systemaggregate.find(x=>x.type=='actionMax')
-				if (x)
-					update_lastid(x.id)
-				else
-					alert("lp sequence error!!!")
-				print("got initial lp response!")
-				init = false
-				if (me && me[0]) {
-					on_start(me[0])
-				} else {
-					alert("lp sequence error!!!")
-					// what this means:
-					// the first websocket/longpoll response is ALWAYS supposed to contain your own user data
-					// if not, it means that something went very wrong
-					console.error("couldn't get your user in initial lp request")
-				}
-				if (use_websocket)
-					ws_refresh(); // not always necessary, depends on timing (is this true?)
-			}
 			
 			if (resp.listeners) {
 				// process listeners (convert uids to user objetcs) (also makes a copy)
@@ -277,9 +250,11 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 	},
 	
 	websocket_flush() {
-		if (websocket && websocket.readyState == 0)
-			return;
-		else if (websocket && websocket.readyState == 1) {
+		if (!running)
+			return // hack idk
+		if (websocket && websocket.readyState == 0) {
+			return
+		} else if (websocket && websocket.readyState == 1) {
 			if (ws_token) {
 				if (ws_message.listeners) {
 					ws_message.auth = ws_token
@@ -291,7 +266,24 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 		}
 	},
 	
-	// todo: we need to be 100% sure that the initial websocket config is NEVER changed until the ws returns initially, I think
+	do_early() {
+		if (use_websocket) {
+			open_websocket()
+		}
+	},
+	
+	get_ws_auth(callback) {
+		Req.request("Read/wsauth", 'GET', (e, resp)=>{
+			if (!e) {
+				ws_token = resp
+				print("got ws token!")
+				callback()
+			} else {
+				print('websocket auth failed:'+e)
+			}
+		})
+	},
+	
 	open_websocket() {
 		if (websocket && websocket.readyState<2) {
 			print('multiple websocket tried to open!')
@@ -305,19 +297,13 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 		}
 		last_open = now
 		ws_token = null
-		websocket = new WebSocket("wss://"+Req.server+"/read/wslisten")
 		// todo: we don't know whether the websocket will open before or after the auth token is gotten.
 		// make sure we don't flush twice.
-		Req.request("Read/wsauth", 'GET', (e, resp)=>{
-			if (!e) {
-				ws_token = resp
-				print("got ws token!")
-				websocket_flush()
-				//this.ws_refresh(callback)
-			} else {
-				print('websocket auth failed:'+e)
-			}
+		get_ws_auth(()=>{
+			websocket_flush()
 		})
+		websocket = new WebSocket("wss://"+Req.server+"/read/wslisten")
+		
 		websocket.onopen = (e)=>{
 			print("websocket open!")
 			websocket_flush()

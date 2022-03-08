@@ -9,29 +9,10 @@ function arrayToggle(array, value) {
 }
 
 const Req = {
-	on_login() {
-		console.log("login")
-		View.flag('loggedIn', true)
-		
-		// display user info etc.
-		// start long poller
-		console.log("staring long poller")
-		if (Store.get('websocket'))
-			Lp.start(true)
-		else
-			Lp.start(false)
-		
-		Act.pull_recent()
-		//TODO
-		// update currently viewed page (in case page was hidden)
-	},
 	on_logout() {
 		View.flag('loggedIn', false)
 		//this is all messy
 		window.location.reload()
-	},
-	on_guest_load() {
-		Act.pull_recent()
 	},
 	
 	auth: null,
@@ -196,9 +177,8 @@ const Req = {
 	authenticate(username, password, callback) {
 		return this.request("User/authenticate", 'POST', (e, resp)=>{
 			if (!e) {
-				if (this.got_auth(resp))
-					this.on_login()
 				Store.set(this.storage_key, resp, true)
+				window.location.reload()
 			}
 			callback(e, resp)
 		}, {username: username, password: password})
@@ -225,12 +205,10 @@ const Req = {
 		let offset = null
 		if (first) {
 			console.log("Req: doing first request!")
-			offset = 1
+			//offset = 0
 			requests = [
-				['systemaggregate'], //~💖
 				...requests,
 				['category~Ctree'],
-				['user~Ume', {ids:[Req.uid], limit:1}],
 			]
 		}
 		let query = {

@@ -1,5 +1,13 @@
 // todo: View class (oops name collision though...)
 
+// TODO:!!!!!!!!
+// idea: the run_on_load system can have multiple event types
+// (onload, after initial activity, after lastid, etc)
+// 
+// ex: we can call .start immediately
+// if it does a request, we need to wait for lastId before doing the requst (on SOME page types)
+// then we wait for onload, before displaying
+
 let View = Object.create(null)
 with(View)((window)=>{"use strict";Object.assign(View,{
 	
@@ -114,12 +122,8 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 	update_my_user(user) {
 		if (user.id != Req.uid)
 			return //uh oh
-		Req.me = user //This probably shouldn't be handled by View...
-		// if this gets called too early, the sidebar isnt even rendered yet
-		if (Sidebar.my_avatar) { //should always be set ugh..
-			let icon = Draw.icon(user)
-			Sidebar.my_avatar.fill(icon)
-		}
+		let icon = Draw.icon(user)
+		Sidebar.my_avatar.fill(icon)
 	},
 	
 	cleanup() {
@@ -139,6 +143,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 	
 	after() {
 		load_end()
+		console.log("after")
 		
 		// children instead of childNodes, because we only want elements (real)
 		for (let elem of $main_slides.children)
@@ -158,9 +163,17 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		// todo: scroll to fragment element
 	},
 	
-	// rn the `after2` callback is never used, but it's meant to be like, 
-	// called after rendering, to handle scrolling down to fragment links and whatever, I think
+	do_when_ready(go) {
+		if (init_done) {
+			go()
+		} else {
+			console.log("deferring render")
+			run_on_load.push(go)
+		}
+	},
 	
+	// rn the `after2` callback is never used, but it's meant to be like,
+	// called after rendering, to handle scrolling down to fragment links and whatever, I think
 	handle_view(type, id, query, after2) {
 		if (cancel_request) {
 			cancel_request()
@@ -182,7 +195,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		function handle(callback) {
 			if (cancelled)
 				return
-			function go() {
+			do_when_ready(()=>{
 				if (cancelled)
 					return
 				cleanup()
@@ -190,13 +203,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 				current_view = view
 				after()
 				after2 && after2()
-			}
-			if (init_done) {
-				go()
-			} else {
-				console.log("deferring render")
-				run_on_load.push(go)
-			}
+			})
 		}
 		
 		// returns true if failed
@@ -279,7 +286,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		
 	},
 	
-	init() {
+	onload() {
 		// initialize all views
 		Object.for(views, (view)=>{
 			view.name = name

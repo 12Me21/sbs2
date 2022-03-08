@@ -21,12 +21,40 @@ else
 	dom_ready()
 
 function immediate() {
-	Req.try_load_cached_auth()
-	Req.get_initial(()=>{
-		console.log('Potentially got initial!')
-	})
-	
 	Sidebar.print("hi!\ncommit: "+window.commit)
+	
+	Req.try_load_cached_auth()
+	
+	if (Req.auth) {
+		console.log("login")
+		View.flag('loggedIn', true)
+		
+		Req.get_initial((e, resp)=>{
+			if (e) {
+				alert("INITIAL DATA FAILED!")
+				return
+			}
+			console.log('got initial!')
+			let lastid = resp.systemaggregate.find(x=>x.type=='actionMax').id
+			got_lastid(lastid)
+			
+			let me = resp.Ume[0]
+			if (me && me.id == Req.uid) {
+				Req.me = me
+			} else {
+				alert('invalid own user')
+			}
+			View.do_when_ready(()=>{
+				View.update_my_user(me)
+			})
+		})
+		if (Store.get('websocket'))
+			Lp.use_websocket = true
+		else
+			Lp.use_websocket = false
+		Lp.do_early()
+	}
+	
 	// we can access this even if DOMContentLoaded hasn't occurred yet
 	let root = document.documentElement
 	// dark theme
@@ -37,7 +65,17 @@ function immediate() {
 	dark.onchange(dark)
 	// detect chromium browsers (broken image downscaling)
 	if (navigator.vendor=="Google Inc.")
-		root.style.imageRendering = "-webkit-optimize-contrast"	
+		root.style.imageRendering = "-webkit-optimize-contrast"
+}
+
+function got_lastid(id) {
+	console.log("staring long poller")
+	Lp.update_lastid(id)
+	Lp.start()
+	Nav.initial()
+	Act.pull_recent() // TODO: I'd like to run this before lastid
+	// we can do this probably, AS LONG AS
+	// maybe we decrement lastid by like 10 or something just in case
 }
 
 function dom_ready() {
@@ -72,14 +110,7 @@ function dom_ready() {
 		container.append(button)
 	})
 	
-	if (Req.auth)
-		Req.on_login()
-	else
-		Req.on_guest_load()
+	View.onload()
 	
-	View.init()
-	
-	Sidebar.init()
-	
-	Nav.initial()
+	Sidebar.onload()
 }
