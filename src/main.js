@@ -21,6 +21,11 @@ else
 	dom_ready()
 
 function immediate() {
+	Req.try_load_cached_auth()
+	Req.get_initial(()=>{
+		console.log('Potentially got initial!')
+	})
+	
 	Sidebar.print("hi!\ncommit: "+window.commit)
 	// we can access this even if DOMContentLoaded hasn't occurred yet
 	let root = document.documentElement
@@ -67,7 +72,10 @@ function dom_ready() {
 		container.append(button)
 	})
 	
-	Req.try_load_cached_auth() // moved this here (bad)
+	if (Req.auth)
+		Req.on_login()
+	else
+		Req.on_guest_load()
 	
 	View.init()
 	

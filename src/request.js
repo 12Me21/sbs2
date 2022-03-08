@@ -188,14 +188,16 @@ const Req = {
 		}
 		this.auth = new_auth
 		this.uid = new_uid
-		this.on_login()
+		//this.on_login()
 		return true
 	},
 	
+	// log in using username/password
 	authenticate(username, password, callback) {
 		return this.request("User/authenticate", 'POST', (e, resp)=>{
 			if (!e) {
-				this.got_auth(resp)
+				if (this.got_auth(resp))
+					this.on_login()
 				Store.set(this.storage_key, resp, true)
 			}
 			callback(e, resp)
@@ -203,19 +205,20 @@ const Req = {
 	},
 	
 	// try to load cached auth token from localstorage
-	// triggers on_login and returns true if successful
 	// (doesn't check if auth is expired though)
+	// also doesn't DO anything else. (important, can be called at time 0)
 	// return: Boolean
 	try_load_cached_auth() {
 		let auth = Store.get(this.storage_key)
 		let ok = auth ? this.got_auth(auth) : false
-		if (!ok)
-			this.on_guest_load()
 		return ok
 	},
 	
-	put_file(file, callback) {
-		return this.request("File/"+file.id, 'PUT', callback, file)
+	get_initial(callback) {
+		return this.read([
+			['systemaggregate'], //~💖
+			['user~Ume', {ids:[Req.uid], limit:1}],
+		], {}, callback, false)
 	},
 	
 	read(requests, filters, callback, first) {
@@ -277,6 +280,9 @@ const Req = {
 		return this,request("User/sensitive", 'POST', callback, data)
 	},
 	
+	put_file(file, callback) {
+		return this.request("File/"+file.id, 'PUT', callback, file)
+	},
 	// this should accept as many types as possible
 	// unused!
 	upload_image(thing, callback) {

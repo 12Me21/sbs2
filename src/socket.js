@@ -129,7 +129,7 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 			statuses: statuses,
 			chains: [
 				'comment.0id',
-				"activity.0id-"+JSON.stringify({includeAnonymous:true}),
+				'activity.0id-{"includeAnonymous":true}',
 				'watch.0id', //new stuff //changed
 				'content.1parentId.2contentId.3contentId', //pages
 				'user.1createUserId.2userId.1editUserId.2contentId', //users for comment and activity
