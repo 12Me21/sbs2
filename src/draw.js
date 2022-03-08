@@ -325,6 +325,8 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 					if (!comments) return
 					comments.forEach((c)=>{
 						firstId = c.id
+						if (c.deleted)
+							return
 						let d = message_block(c)
 						d[1].append(message_part(c))
 						outer.insertBefore(d[0], firstElem)
@@ -348,6 +350,8 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 					if (!comments) return
 					comments.forEach((c)=>{
 						lastId = c.id
+						if (c.deleted)
+							return
 						let d = message_block(c)
 						d[1].append(message_part(c))
 						outer.insertBefore(d[0], b[0]) // yes
