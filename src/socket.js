@@ -127,6 +127,9 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 		for (let id of listening)
 			new_listeners[id] = lastListeners[id] || {'0':""}
 		
+		if (!lastId)
+			alert("missing lastid!")
+		
 		let actions = {
 			lastId: lastId, // todo: make sure this is ALWAYS set (not 0) except for the initial request where we get lastid
 			statuses: statuses,
