@@ -45,7 +45,8 @@ add_view('editpage', {
 			}
 		}
 		//otherwise create new page
-		if (Req.got_categories) {
+		throw 'hey'
+		if (Req.got_categories) { // TODO: WE DON'T USE THAT ANYMORE!
 			return {quick: true, ext: ext}
 		}
 		//need to request category tree for page editor

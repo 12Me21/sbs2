@@ -42,8 +42,6 @@ const Req = {
 	
 	uid: null,
 	
-	got_categories: false,
-	
 	me: null,
 	
 	locked: false, // for testing
@@ -220,24 +218,36 @@ const Req = {
 		return this.request("File/"+file.id, 'PUT', callback, file)
 	},
 	
-	read(requests, filters, callback, need_cats) {
-		let query = {}
-		query.requests = requests.map((line)=>{
-			if (line.length==1)
-				return line[0]
-			return line[0]+"-"+JSON.stringify(line[1])
-		})
-		Object.assign(query, filters)
-		need_cats = need_cats && !this.got_categories
-		if (need_cats)
-			query.requests.push('category~Ctree')
+	read(requests, filters, callback, first) {
+		let offset = null
+		if (first) {
+			console.log("Req: doing first request!")
+			offset = 1
+			requests = [
+				['systemaggregate'],
+				...requests,
+				['category~Ctree'],
+				['user~Ume', {ids:[Req.uid], limit:1}],
+			]
+		}
+		let query = {
+			requests: requests.map(([thing, data])=>{
+				// if we're injecting something at the start
+				if (offset)
+					thing = thing.replace(/\d+/g, (d)=> +d + offset)
+				
+				if (data)
+					thing += "-"+JSON.stringify(data)
+				return thing
+			}),
+		}
+		Object.assign(query, filters) // we're not ready for {...} syntax yet
+		
 		return this.request("Read/chain"+this.query_string(query), 'GET', (e, resp)=>{
 			if (!e) {
 				Entity.process(resp)
-				if (need_cats)
-					this.got_categories = true
 			}
-			callback(e, resp)
+			callback(e, resp, first && !e)
 		})
 	},
 	
