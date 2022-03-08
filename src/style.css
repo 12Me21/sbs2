@@ -654,7 +654,14 @@ html:not(.f-fileSelected) .fileSelected {
 	width: 100%;
 }
 
-/* TODO: margin should be fullscreen mode by default, then disabled with @media (min-width) */
+/* TODO: margin should be fullscreen mode by default, then disabled with @media (min-width) */ /* ? */
+
+input, output {
+	font-size: 0.8em;
+}
+select {
+	font-size: 1em;
+}
 
 /* for devices with small screens */
 @media (max-width: 700px), (max-height: 500px) {
@@ -819,12 +826,4 @@ activity-users {
 
 #\$sidebarBottom {
 	min-height: 0; /* fixes weird ios safari bug with sidebar bottom panel expanding forever. maybe we need to apply this to all .grow elements? */
-}
-
-/* neccesary so safari doesn't zoom in */
-input, output {
-	font-size: 0.8em;
-}
-select {
-	font-size: 1em;
 }
