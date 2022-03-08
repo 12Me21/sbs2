@@ -174,6 +174,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	userlist() {
 		let outer = EC('div', 'bar rem2-3 userlist')
 		let inner = outer.child('span')
+		inner.textContent = "..."
 		let [b0,b1] = button()
 		b1.textContent = "Hide"
 		b0.className += " rightAlign item loggedIn"

@@ -157,6 +157,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		
 		View.flag('viewReady', true)
 		View.flag('mobileSidebar', false) //bad (should be function on Sidebar)
+		// todo: why are we doing this NOW instead of preemptively?
 		Lp.set_listening(ChatRoom.listening_rooms())
 		Lp.set_statuses(ChatRoom.generateStatus())
 		Lp.refresh()
