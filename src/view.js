@@ -121,27 +121,28 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		}
 	},
 	
+	cleanup() {
+		if (!current_view)
+			return
+		try {
+			if (current_view.cleanup)
+				current_view.cleanup(type, id, query)
+		} catch(e) {
+			// we ignore this error, because it's probably not important
+			// and also cleanup gets called during error handling so we don't want to get into a loop of errors
+			error(e, "error in cleanup function")
+		}
+		current_view = null
+		//$main.scrollTop = 0 TODO, scroll the correct element here
+	},
+	
 	handle_view(type, id, query, callback) {
 		if (cancel_request) {
 			cancel_request()
 			cancel_request = null
 		}
-		let view
 		
-		function cleanup() {
-			if (!current_view)
-				return
-			try {
-				if (current_view.cleanup)
-					current_view.cleanup(type, id, query)
-			} catch(e) {
-				// we ignore this error, because it's probably not important
-				// and also cleanup gets called during error handling so we don't want to get into a loop of errors
-				error(e, "error in cleanup function")
-			}
-			current_view = null
-			//$main.scrollTop = 0 TODO, scroll the correct element here
-		}
+		let view
 		
 		function after() {
 			load_end()
@@ -173,22 +174,20 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			cancelled = true
 		}
 		
-		let when_page_loaded = (callback)=>{
+		function handle(callback, args) {
 			if (cancelled)
 				return
-			if (init_done) {
+			function go() {
 				cleanup()
-				callback()
+				callback(...args)
+				current_view = view
 				after()
+			}
+			if (init_done) {
+				go()
 			} else {
 				console.log("deferring render")
-				run_on_load.push(()=>{
-					if (cancelled)
-						return
-					cleanup()
-					callback()
-					after()
-				})
+				run_on_load.push(go)
 			}
 		}
 		
@@ -200,88 +199,73 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 				Nav.set_location(type, id, query)
 		} catch(e) {
 			error(e, "error during redirect")
-			return handle_error("error during redirect", e)
+			return handle(render_error, ["error during redirect", e])
 		}
 		
 		// NO VIEW
 		if (!view) {
-			return handle_error("Unknown page type: \""+type+"\"")
+			return handle(render_error, ["Unknown page type: \""+type+"\""])
 		}
 		
 		load_start()
 		
 		// SIMPLE VIEW (no request needed)
-		if (!view.start) {
-			handle_quick(view.render)
+		if (!view.start)
+			return handle(handle_quick, [view.render])
 		// NORMAL VIEW
-		} else {
-			let need, data
-			try {
-				;[need, data] = view.start(id, query)
-			} catch(e) {
-				return handle_error("render failed in view.start", e)
+		let need, data
+		try {
+			;[need, data] = view.start(id, query)
+		} catch(e) {
+			return handle(render_error, ["render failed in view.start", e])
+		}
+		if (need==2)
+			return handle(handle_quick, [data])
+		if (need==1) {
+			let xhr
+			cancel_request = ()=>{
+				load_end()
+				xhr && xhr.abort && xhr.abort()
+				cancelled = true
 			}
-			if (need==2) {
-				handle_quick(data)
-			} else if (need==1) {
-				let xhr
-				cancel_request = ()=>{
-					load_end()
-					xhr && xhr.abort && xhr.abort()
-					cancelled = true
-				}
-				xhr = Req.read(data.chains, data.fields, (e, resp)=>{
-					if (e) {
-						handle_error("error 1")
-					} else if (!data.check(resp, data.ext)) {
-						handle_error("content not found?")
-					} else {
-						handle_resp(e, resp)
-					}
-				}, true)
-			}
+			xhr = Req.read(data.chains, data.fields, (e, resp)=>{
+				if (e)
+					return handle(render_error, ["error 1"])
+				if (!data.check(resp, data.ext))
+					return handle(render_error, ["content not found?"])
+				return handle(handle_resp, [e, resp])
+			}, true)
+			return
 		}
 		
 		// to be called inside a handler function
 		function render_error(message, e=null) {
+			view = errorView
 			if (e)
 				error(e, message)
 			else
 				console.error(message) //eh
-			current_view = view = errorView
 			view.render(message, e)
 		}
 		
 		// one of these Handler functions gets called no matter what
 		// they should all call `after()` at the end
 		
-		function handle_error(message, e=null) {
-			when_page_loaded(()=>{
-				render_error(message, e)
-			})
-		}
-		
 		function handle_quick(func) {
-			when_page_loaded(()=>{
-				current_view = view
-				try {
-					func(view.render)
-				} catch(e) {
-					render_error("render failed in view.quick", e)
-				}
-			})
+			try {
+				func(view.render)
+			} catch(e) {
+				render_error("render failed in view.quick", e)
+			}
 		}
 		
 		function handle_resp(e, resp) {
-			when_page_loaded(()=>{
-				current_view = view
-				try {
-					view.render(resp, data.ext)
-				} catch(e) {
-					render_error("render failed in view.render", e)
-				}
-			})
-		}		
+			try {
+				view.render(resp, data.ext)
+			} catch(e) {
+				render_error("render failed in view.render", e)
+			}
+		}
 	},
 	
 	init() {
