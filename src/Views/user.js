@@ -14,7 +14,7 @@ add_view('user', {
 		else
 			userSearch = {usernames: [id], limit: 1}
 		
-		return [1, {
+		return {
 			chains: [
 				['user', userSearch],
 				['content.0id$createUserIds~Puserpage', {type: 'userpage', limit: 1}],
@@ -24,12 +24,10 @@ add_view('user', {
 			],
 			fields: {},
 			check(resp) {
-				if (resp.user[0])
-					return true
-				return null
+				return resp.user[0]
 			},
 			ext: {},
-		}]
+		}
 	},
 	className: 'user',
 	render(resp, ext) {

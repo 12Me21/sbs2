@@ -29,44 +29,40 @@ add_view('editpage', {
 		View.attach_resize($editorPreviewPane, $editorPreviewResize, false, 1)
 	},
 	start(id, query) {
+		let ext = {query}
 		if (id) { //edit existing page
 			id = +id
-			return [1, {
+			return {
 				chains: [
 					['content', {ids: [id]}],
 					['user.0createUserId.0editUserId.0permissions'],
 				],
 				fields: {user: 'id,username,avatar'},
-				ext: {query: query},
+				ext: ext,
 				check(resp) {
-					if (resp.content[0])
-						return true
-					return null
+					return resp.content[0]
 				},
-			}]
-			// resp.content[0]
-			// resp.user_map
+			}
 		}
 		//otherwise create new page
 		if (Req.got_categories) {
-			return [2, (render)=>{
-				render({}, {query: query})
-			}]
+			return {quick: true, ext: ext}
 		}
 		//need to request category tree for page editor
-		return [1, {
+		return {
 			chains: [],
 			fields: {},
-			ext: {query: query},
-			check() { return true },
-		}]
+			ext: ext,
+		}
 	},
-	
+	quick(ext, render) {
+		render({}, ext)
+	},
 	className: 'editpage',
-	render(resp, ext) {
+	render(resp, {query}) {
 		let page = resp.content && resp.content[0]
 		let users = resp.user_map
-		let query = ext.query
+		
 		if (!page) // create new
 			// todo: this is kinda gross
 			// maybe it would be better to set the form directly

@@ -67,19 +67,18 @@ with (View) (()=>{ "use strict"; {
 				reverse: true,
 			}
 			query.bucket && (search.bucket = query.bucket)
-			return [1, {
+			return {
 				chains: [
 					['file', search],
 					['user.0createUserId'],
 				],
 				fields: {},
-				ext: {page: page},
-				check() { return true },
-			}]
+				ext: {page},
+			}
 		},
 		className: 'images',
-		render(resp, ext) {
-			navButtons.set(ext.page)
+		render(resp, {page}) {
+			navButtons.set(page)
 			let files = resp.file
 			set_title("Files")
 			fileList = files

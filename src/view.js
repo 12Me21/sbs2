@@ -30,7 +30,10 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 				}
 			},
 			className: 'test',
-			render() {
+			start() {
+				return [2, {}]
+			},
+			quick() {
 				set_title("Testing")
 			},
 		},
@@ -42,7 +45,6 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 					],
 					fields: {},
 					ext: {},
-					check() { return true },
 				}]
 			},
 			className: 'users',
@@ -66,12 +68,9 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			redirect: (id, query) => ['page', id, query]
 		},
 	},
+	// fake-ish
 	errorView: {
 		className: 'error',
-		render(message, error) {
-			set_title(message)
-			$errorMessage.textContent = error ? error+"\n"+error.stack : ""
-		},
 		cleanup() {
 			$errorMessage.textContent = ""
 		}
@@ -136,52 +135,53 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		//$main.scrollTop = 0 TODO, scroll the correct element here
 	},
 	
-	handle_view(type, id, query, callback) {
+	after() {
+		load_end()
+		
+		// children instead of childNodes, because we only want elements (real)
+		for (let elem of $main_slides.children)
+			elem.classList.toggle('shown', elem.dataset.slide == current_view.className)
+		
+		for (let elem of $titlePane.children) {
+			let list = elem.dataset.view
+			if (list)
+				elem.classList.toggle('shown', list.split(",").includes(current_view.className))
+		}
+		
+		View.flag('viewReady', true)
+		View.flag('mobileSidebar', false) //bad (should be function on Sidebar)
+		Lp.set_listening(ChatRoom.listening_rooms())
+		Lp.set_statuses(ChatRoom.generateStatus())
+		Lp.refresh()
+		// todo: scroll to fragment element
+	},
+	
+	// rn this callback is never used
+	handle_view(type, id, query, after2) {
 		if (cancel_request) {
 			cancel_request()
 			cancel_request = null
 		}
 		
-		let view
-		
-		function after() {
-			load_end()
-			
-			// children instead of childNodes, because we only want elements (real)
-			for (let elem of $main_slides.children)
-				elem.classList.toggle('shown', elem.dataset.slide == view.className)
-			
-			for (let elem of $titlePane.children) {
-				let list = elem.dataset.view
-				if (list)
-					elem.classList.toggle('shown', list.split(",").includes(view.className))
-			}
-			
-			View.flag('viewReady', true)
-			View.flag('mobileSidebar', false) //bad (should be function on Sidebar)
-			Lp.set_listening(ChatRoom.listening_rooms())
-			Lp.set_statuses(ChatRoom.generateStatus())
-			Lp.refresh()
-			
-			callback && callback()
-			// todo: scroll to fragment element
-		}
+		load_start()
 		
 		let cancelled = false
-		
 		cancel_request = ()=>{
 			load_end()
 			cancelled = true
 		}
 		
-		function handle(callback, args) {
+		let view
+		
+		function handle(callback) {
 			if (cancelled)
 				return
 			function go() {
 				cleanup()
-				callback(...args)
+				callback()
 				current_view = view
 				after()
+				after2 && after2()
 			}
 			if (init_done) {
 				go()
@@ -191,80 +191,71 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			}
 		}
 		
-		try {
+		// returns true if failed
+		function attempt(msg, func) {
+			try {
+				func()
+			} catch(e) {
+				handle(error_render.bind(null, msg, e))
+				return true
+			}
+			return false
+		}
+		
+		if (attempt("error during redirect", ()=>{
 			let got_redirect
 			;[type, id, query, got_redirect] = get_view(type, id, query)
 			view = views[type]
 			if (got_redirect)
 				Nav.set_location(type, id, query)
-		} catch(e) {
-			error(e, "error during redirect")
-			return handle(render_error, ["error during redirect", e])
-		}
+		}))
+			return
 		
 		// NO VIEW
-		if (!view) {
-			return handle(render_error, ["Unknown page type: \""+type+"\""])
-		}
+		if (!view)
+			return handle(error_render.bind(null, "Unknown page type: \""+type+"\""))
 		
-		load_start()
-		
-		// SIMPLE VIEW (no request needed)
-		if (!view.start)
-			return handle(handle_quick, [view.render])
-		// NORMAL VIEW
-		let need, data
-		try {
-			;[need, data] = view.start(id, query)
-		} catch(e) {
-			return handle(render_error, ["render failed in view.start", e])
-		}
-		if (need==2)
-			return handle(handle_quick, [data])
-		if (need==1) {
-			let xhr
-			cancel_request = ()=>{
-				load_end()
-				xhr && xhr.abort && xhr.abort()
-				cancelled = true
-			}
-			xhr = Req.read(data.chains, data.fields, (e, resp)=>{
-				if (e)
-					return handle(render_error, ["error 1"])
-				if (!data.check(resp, data.ext))
-					return handle(render_error, ["content not found?"])
-				return handle(handle_resp, [e, resp])
-			}, true)
+		let data
+		if (attempt("render failed in view.start", ()=>{
+			data = view.start(id, query)
+		}))
 			return
-		}
 		
-		// to be called inside a handler function
-		function render_error(message, e=null) {
+		if (data.quick)
+			return handle(()=>{
+				attempt(
+					"render failed in view.quick", 
+					view.quick.bind(view, data.ext, view.render))
+			})
+		let xhr
+		cancel_request = ()=>{
+			load_end()
+			xhr && xhr.abort && xhr.abort()
+			cancelled = true
+		}
+		xhr = Req.read(data.chains, data.fields, (e, resp)=>{
+			if (e)
+				return handle(error_render.bind(null, "error 1"))
+			if (data.check && !data.check(resp, data.ext)) // try/catch here?
+				return handle(error_render.bind(null, "content not found?"))
+			return handle(()=>{
+				attempt(
+					"render failed in view.render",
+					view.render.bind(view, resp, data.ext))
+			})
+		}, true)
+		
+		// call these using `handle`
+		
+		function error_render(message, e=null) {
 			view = errorView
 			if (e)
 				error(e, message)
 			else
 				console.error(message) //eh
-			view.render(message, e)
-		}
-		
-		// one of these Handler functions gets called no matter what
-		// they should all call `after()` at the end
-		
-		function handle_quick(func) {
-			try {
-				func(view.render)
-			} catch(e) {
-				render_error("render failed in view.quick", e)
-			}
-		}
-		
-		function handle_resp(e, resp) {
-			try {
-				view.render(resp, data.ext)
-			} catch(e) {
-				render_error("render failed in view.render", e)
-			}
+			// RENDER
+			set_title(message)
+			$errorMessage.textContent = error ? error+"\n"+error.stack : ""
 		}
 	},
 	
@@ -272,13 +263,19 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		// initialize all views
 		Object.for(views, (view)=>{
 			view.name = name
-			view.init && view.init()
+			try {
+				view.init && view.init()
+			} catch(e) {
+				print("error in view init! ", view.name)
+				console.error("Error in view init!", e)
+			}
 			// maybe we can just call these the first time the view is visited instead of right away,
 			// though none of them should really take a significant amount of time, so whatver
 		})
 		
 		init_done = true
-		run_on_load.forEach((f)=>f())
+		for (let f of run_on_load)
+			f()
 		run_on_load = null
 		
 		// set up event handlers:

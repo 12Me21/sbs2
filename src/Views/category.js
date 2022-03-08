@@ -26,7 +26,7 @@ add_view('category', {
 			sort: 'editDate',
 			reverse: true
 		}
-		return [1, {
+		return {
 			chains: [
 				['category~Cmain', {ids: [id]}],
 				['content', search],
@@ -44,11 +44,9 @@ add_view('category', {
 				id: id,
 			},
 			check(resp, ext) {
-				if (ext.id==0 ? Entity.category_map[0] : resp.Cmain[0])
-					return true
-				return null
+				return ext.id==0 ? Entity.category_map[0] : resp.Cmain[0]
 			}
-		}]
+		}
 	},
 	className: 'category',
 	render(resp, ext) {

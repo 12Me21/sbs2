@@ -5,7 +5,7 @@ add_view('', {
 	init() {
 	},
 	start(id, query) {
-		return [1, {
+		return {
 			chains: [
 				['content~Pgallery', {
 					type: 'program',
@@ -17,13 +17,13 @@ add_view('', {
 			],
 			fields: {},
 			ext: {},
-			check() { return true },
-		}]
+		}
 	},
 	className: 'home',
 	render(resp, ext) {
 		let gallery = resp.Pgallery
 		let categories = resp.category
+		
 		set_title("Welcome to SmileBASIC Source 2!")
 		$homeCategories.fill()
 		categories.forEach((cat)=>{

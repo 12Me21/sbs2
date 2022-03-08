@@ -37,13 +37,7 @@ add_view('page', {
 		if (room) {
 			let z = room.pinned
 			room.pinned = true
-			return [2, ()=>{
-				let page = room.page
-				//ChatRoom.setViewing([page.id])
-				room.show()
-				room.pinned = z
-				render_page(page)
-			}]
+			return [2, {ext: {room}}]
 		}
 		//todo: maybe we can request the user list early too?
 		// the problem is, if we create the room early,
@@ -67,6 +61,15 @@ add_view('page', {
 			},
 		}]
 	},
+	quick(ext, render) {
+		let room = ext.room
+		
+		let page = room.page
+		//ChatRoom.setViewing([page.id])
+		room.show()
+		room.pinned = z
+		render_page(page)
+	}
 	className: 'page',
 	render(resp, ext) {
 		let comments = resp.comment
