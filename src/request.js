@@ -51,6 +51,7 @@ const Req = {
 			
 			// OK
 			if (code==200) callback.ok(resp)
+			
 			// Permission denied
 			else if (code==403) callback.fail('permission', resp)
 			// 404
@@ -58,9 +59,10 @@ const Req = {
 			// Banned
 			else if (code==418) callback.fail('ban', resp)
 			// Invalid Request
-			else if (code==400) callback.fail('error', JSON.safe_parse(resp))
+			else if (code==400) callback.fail('error', resp)
 			// Bad Auth
 			else if (code==401) callback.auth(resp)
+			
 			// Server Error
 			else if (code==500) {
 				print("got 500 error! "+resp)
