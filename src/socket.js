@@ -312,7 +312,9 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 			websocket_flush()
 		}
 		websocket.onerror = (e)=>{
-			if (!e.startsWith("System.InvalidOperationException: Invalid token"))
+			window.ee = e // what are u?
+			console.log(e)
+			if (!String(e).startsWith("System.InvalidOperationException: Invalid token"))
 				print("websocket error!"+e)
 		}
 		websocket.onclose = (e)=>{
