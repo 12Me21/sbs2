@@ -1,10 +1,14 @@
 // this file runs first (probably lol)
 
+// relatively safe
 delete Array.prototype.toString
 delete Object.prototype.toString
+// ⚠ DANGER! ⚠ //
+window.hasOwnProperty = Object.prototype.hasOwnProperty // firefox dev tools break otherwise
 for (let key of Object.getOwnPropertyNames(Object.prototype))
 	delete Object.prototype[key]
 Object.freeze(Object.prototype)
+/////////////////
 
 if (!window.devicePixelRatio)
 	window.devicePixelRatio = 1
@@ -120,7 +124,7 @@ RegExp.prototype.rmatch = function(str) {
 }
 
 function error(e, ...rest) {
-	console.error(...rest, "\n", e, e2)
+	console.error(...rest, "\n", e)
 }
 
 //talking excitedly about javasscript getters and setters for an hour and then crying

@@ -126,7 +126,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		Sidebar.my_avatar.fill(icon)
 	},
 	
-	cleanup() {
+	cleanup(type) {
 		if (!current_view)
 			return
 		try {
@@ -199,7 +199,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			do_when_ready(()=>{
 				if (cancelled)
 					return
-				cleanup()
+				cleanup(type)
 				callback()
 				current_view = view
 				after()

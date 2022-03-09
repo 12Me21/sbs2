@@ -42,16 +42,12 @@ const Req = {
 		}
 		
 		x.onload = ()=>{
-			
 			let type = x.getResponseHeader('Content-Type')
 			let resp
 			if (/^application\/json\b/.test(type))
 				resp = JSON.safe_parse(x.responseText)
 			else
 				resp = x.responseText
-			let code = x.status
-			if (JSON.stringify(x.response)!=JSON.stringify(resp))
-				console.log("xhr response differ!", x, x.response, x.responseText)
 			
 			// OK
 			if (code==200) callback.ok(resp)
