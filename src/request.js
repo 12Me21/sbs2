@@ -21,7 +21,7 @@ const Req = {
 	
 	locked: false, // for testing
 	
-	raw_request(url, method, callback, data) {
+	raw_request(url, method, data, ok, fail) {
 		let x = new XMLHttpRequest()
 		x.open(method, url)
 		let start = Date.now()
@@ -35,7 +35,7 @@ const Req = {
 			let id = window.setTimeout(()=>{
 				console.log("retrying request", reason)
 				// this is not recursion: we're in an async callback function!
-				let x2 = this.raw_request(url, method, callback, data)
+				let x2 = this.raw_request(url, method, data, ok, fail)
 				x.abort = x2.abort
 			}, time)
 			x.abort = ()=>{window.clearTimeout(id)}
@@ -43,31 +43,34 @@ const Req = {
 		
 		x.onload = ()=>{
 			let type = x.getResponseHeader('Content-Type')
-			let resp
-			if (/^application\/json\b/.test(type))
-				resp = JSON.safe_parse(x.responseText)
-			else
-				resp = x.responseText
+			let resp = x.responseText
+			if (/^application\/json\b/i.test(type))
+				resp = JSON.safe_parse(resp)
+			let code = x.status
 			
 			// OK
-			if (code==200) callback.ok(resp)
+			if (code==200) ok(resp)
 			
 			// Permission denied
-			else if (code==403) callback.fail('permission', resp)
+			else if (code==403) fail('permission', resp)
 			// 404
-			else if (code==404) callback.fail('404', resp)
+			else if (code==404) fail('404', resp)
 			// Banned
-			else if (code==418) callback.fail('ban', resp)
+			else if (code==418) fail('ban', resp)
 			// Invalid Request
-			else if (code==400) callback.fail('error', resp)
+			else if (code==400) fail('error', resp)
 			// Bad Auth
-			else if (code==401) callback.auth(resp)
+			else if (code==401) {
+				alert("AUTHENTICATION ERROR!?\nif this is real, you must log out!\n"+resp)
+				// this.log_out()
+				fail('auth', resp)
+			}
 			
 			// Server Error
 			else if (code==500) {
 				print("got 500 error! "+resp)
 				console.warn('got 500 error', x, resp)
-				callback.fail('error', JSON.safe_parse(resp))
+				fail('error', JSON.safe_parse(resp))
 			}
 			// Connection Error
 			else if (code==502)
@@ -86,7 +89,7 @@ const Req = {
 				alert("Request failed! "+code+" "+url)
 				console.log("REQUEST FAILED", x)
 				resp = JSON.safe_parse(resp) || resp
-				callback.fail('error', resp, code)
+				fail('error', resp, code)
 			}
 		}
 		x.onerror = ()=>{
@@ -143,14 +146,11 @@ const Req = {
 	},
 	// idk having all brackets bold + dimgray was kinda nice...
 	request(url, method, callback, data) {
-		return this.raw_request(`https://${this.server}/${url}`, method, {
-			ok: callback.bind(null, null), //ok: resp => callback(null, resp)
-			fail: callback,
-			auth: (resp)=>{
-				alert("AUTHENTICATION ERROR!?\nif this is real, you must log out!\n"+resp)
-				// this.log_out()
-			},
-		}, data)
+		return this.raw_request(`https://${this.server}/${url}`, method, data, callback.bind(null, null), callback)
+	},
+	//
+	request2(url, method, data) {
+		return new Promise(this.raw_request.bind(this, `https://${this.server}/${url}`, method, data))
 	},
 	
 	// logs the user out and clears the cached token
@@ -163,13 +163,17 @@ const Req = {
 	
 	// log in using username/password
 	authenticate(username, password, callback) {
-		return this.request("User/authenticate", 'POST', (e, resp)=>{
+		/*return this.request("User/authenticate", 'POST', (e, resp)=>{
 			if (!e) {
 				Store.set(this.storage_key, resp, true)
 				window.location.reload()
 			}
 			callback(e, resp)
-		}, {username: username, password: password})
+		}, {username: username, password: password})*/
+		return this.request2('User/authenticate', 'POST', {username: username, password: password}).then(resp=>{
+			Store.set(this.storage_key, resp, true)
+			window.location.reload()
+		})
 	},
 	
 	// try to load cached auth token from localstorage
@@ -203,10 +207,8 @@ const Req = {
 	},
 	
 	read(requests, filters, callback, first) {
-		let offset = null
+		//let offset = null
 		if (first) {
-			console.log("Req: doing first request!")
-			//offset = 0
 			requests = [
 				...requests,
 				['category~Ctree'],
@@ -215,8 +217,8 @@ const Req = {
 		let query = {
 			requests: requests.map(([thing, data])=>{
 				// if we're injecting something at the start
-				if (offset)
-					thing = thing.replace(/\d+/g, (d)=> +d + offset)
+				//if (offset)
+				//	thing = thing.replace(/\d+/g, (d)=> +d + offset)
 				
 				if (data)
 					thing += "-"+JSON.stringify(data)

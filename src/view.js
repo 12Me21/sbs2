@@ -126,24 +126,8 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		Sidebar.my_avatar.fill(icon)
 	},
 	
-	cleanup(type) {
-		if (!current_view)
-			return
-		try {
-			if (current_view.cleanup)
-				current_view.cleanup(type, id, query)
-		} catch(e) {
-			// we ignore this error, because it's probably not important
-			// and also cleanup gets called during error handling so we don't want to get into a loop of errors
-			error(e, "error in cleanup function")
-		}
-		current_view = null
-		//$main.scrollTop = 0 TODO, scroll the correct element here
-	},
-	
 	after() {
 		load_end()
-		console.log("after")
 		
 		// children instead of childNodes, because we only want elements (real)
 		for (let elem of $main_slides.children)
@@ -190,6 +174,21 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		}
 		
 		let view
+		
+		function cleanup() {
+			if (!current_view)
+				return
+			try {
+				if (current_view.cleanup)
+					current_view.cleanup(type, id, query)
+			} catch(e) {
+				// we ignore this error, because it's probably not important
+				// and also cleanup gets called during error handling so we don't want to get into a loop of errors
+				error(e, "error in cleanup function")
+			}
+			current_view = null
+			//$main.scrollTop = 0 TODO, scroll the correct element here
+		}
 		
 		// must call this exactly once
 		// and must be the last call made
@@ -259,7 +258,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 				return handle_error("error 1")
 			
 			if (first) {
-				console.log("View: got first!")
+				console.log("🌅 got first page's data")
 				initial_data = true
 			}
 			

@@ -27,10 +27,10 @@ let Act = {
 	},
 	
 	pull_recent() {
-		console.log('pulling recent activity')
+		//console.log('pulling recent activity')
 		// bad arguments :(
 		Req.get_recent_activity(({activity, Mall, Awatching, content, comment})=>{
-			console.log('GOT ACT')
+			console.log('🌅 got initial activity')
 			View.do_when_ready(()=>{
 				this.process_stuff(activity, Mall, Awatching, content)
 				Sidebar.display_messages(comment.reverse(), true)

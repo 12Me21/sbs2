@@ -26,7 +26,7 @@ function immediate() {
 	Req.try_load_auth()
 	
 	if (Req.auth) {
-		console.log("login")
+		console.log("🌅 got auth")
 		View.flag('loggedIn', true)
 		
 		Req.get_initial((e, resp)=>{
@@ -34,7 +34,6 @@ function immediate() {
 				alert("INITIAL DATA FAILED!")
 				return
 			}
-			console.log('got initial!')
 			let lastid = resp.systemaggregate.find(x=>x.type=='actionMax').id
 			got_lastid(lastid)
 			
@@ -53,6 +52,8 @@ function immediate() {
 		else
 			Lp.use_websocket = false
 		Lp.do_early()
+	} else {
+		console.warn("🌅 Not logged in!")
 	}
 	
 	// we can access this even if DOMContentLoaded hasn't occurred yet
@@ -69,7 +70,7 @@ function immediate() {
 }
 
 function got_lastid(id) {
-	console.log("staring long poller")
+	console.log("🌅 got lastId, staring long poller etc.")
 	Lp.update_lastid(id)
 	Lp.start()
 	Nav.initial()
@@ -79,7 +80,7 @@ function got_lastid(id) {
 }
 
 function dom_ready() {
-	console.log("ONLOAD!")
+	console.log("🌅 DOM ready")
 	
 	// whitespace between nodes in html (due to line breaks, indentation, etc.) creates text nodes which need to be stripped:
 	let walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {acceptNode: node=>/^\s+$/.test(node.textContent)});
@@ -88,7 +89,7 @@ function dom_ready() {
 		blank_nodes.push(walker.currentNode)
 	// remove in 1 step rather than calling .remove() one at a time
 	document.createElement('gay-baby-jail').append(...blank_nodes)
-	console.log("removed "+blank_nodes.length+" blank text nodes")
+	//console.log("removed "+blank_nodes.length+" blank text nodes")
 	
 	// draw links
 	document.querySelectorAll("a[data-static-path]").forEach((elem)=>{
