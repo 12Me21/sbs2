@@ -21,9 +21,73 @@ const Req = {
 	
 	locked: false, // for testing
 	
+	JSONData(obj) {
+		return new Blob([JSON.stringify(data)], {type: "application/json;charset=UTF-8"})
+	},
+	
+	wait(time) {
+		return new Promise(y => window.setTimeout(y, time))
+	},
+	
+	raw_request2(url, method='GET', data=null) {
+		let options = {method, data, cache: 'no-store', headers: {}}
+		
+		if (this.auth)
+			options.headers.Authorization = "Bearer "+this.auth
+		
+		let retry = (time, reason)=>{
+			console.log("will retry", reason, "in "+time/1000+" sec")
+			return wait(time).then(this.raw_request2.bind(this, url, method, data))
+		}
+		
+		let err = (msg, datap) => datap.then(x=>{throw [msg, x]})
+		
+		let start = Date.now()
+		
+		return fetch(`https://${this.server}/${url}`, options).then((resp)=>{
+			// onload
+			let type = resp.headers.get('Content-Type')
+			let datap = /^application\/json\b/i.test(type) ? resp.json() : resp.text()
+			let status = resp.status
+			if (status==200) return datap
+			if (status==403) return err('permission', datap)
+			if (status==404) throw ['404', datap]
+			if (status==418) throw ['ban', datap]
+			if (status==400) throw ['invalid', datap]
+			if (status==401) {
+				alert("AUTHENTICATION ERROR!?\nif this is real, you must log out!\n"+resp)
+				// this.log_out()
+				throw ['auth', datap]
+			}
+			if (status==500) { // Server Error
+				print("got 500 error! "+resp)
+				console.warn('got 500 error', x, resp)
+				throw ['server', datap]
+			}
+			if (status==502) return retry(5000, 'bad gateway')
+			// (record says server uses 408, testing showed only 204. idk)
+			if (status==408 || status==204 || status==524) return retry(0, 'timeout')
+			if (status==429) { // Rate Limit
+				let after = +(resp.headers.get('Retry-After') || 1)
+				return retry(after*1000+500, "rate limited "+after+"sec")
+			}
+			// OTHER
+			alert("Request failed! "+status+" "+url)
+			console.log("REQUEST FAILED", resp)
+			throw ['unknown', datap, status]
+		}, (resp)=>{
+			// onerror
+			let time = Date.now()-start
+			if (time > 18*1000)
+				return retry(0, "3ds timeout")
+			print("Request failed!")
+			return retry(5000, "request error")
+		})
+	},
+	
 	raw_request(url, method, data, ok, fail) {
 		let x = new XMLHttpRequest()
-		x.open(method, url)
+		x.open(method, `https://${this.server}/${url}`)
 		let start = Date.now()
 		
 		let retry = (time, reason)=>{
@@ -122,13 +186,11 @@ const Req = {
 		// (note that .abort is modified by retry())
 		return x
 	},
-	
 	query_string(obj) {
 		if (!obj)
 			return ""
 		let params = []
-		for (let key in obj) {
-			let val = obj[key]
+		for (let [key, val] of Object.entries(obj)) {
 			if (val == undefined) // I changed this to == so null is ignored too. I think that's fine? better than turning it into a string, at least. perhaps it should map to "key=" or "key" instead
 				continue
 			let item = encodeURIComponent(key)+"="
@@ -146,12 +208,61 @@ const Req = {
 	},
 	// idk having all brackets bold + dimgray was kinda nice...
 	request(url, method, callback, data) {
-		return this.raw_request(`https://${this.server}/${url}`, method, data, callback.bind(null, null), callback)
+		return this.raw_request(url, method, data, callback.bind(null, null), callback)
 	},
 	//
 	request2(url, method, data) {
-		return new Promise(this.raw_request.bind(this, `https://${this.server}/${url}`, method, data))
+		return new Promise(this.raw_request.bind(this, url, method, data))
 	},
+	
+	// new version of read()
+	chain(requests, fields) {
+		let query = {}
+		query.requests = requests.map(([thing, data])=>{
+			if (data)
+				thing += "-"+JSON.stringify(data)
+			return thing
+		})
+		if (fields)
+			Object.assign(query, fields)
+		return new Promise(this.raw_request.bind(this, "Read/chain"+this.query_string(query), 'GET', null)).then((resp)=>{
+			Entity.process(resp)
+			return resp
+		})
+	},
+	
+	read(requests, filters, callback, first) {
+		//let offset = null
+		if (first) {
+			requests = [
+				...requests,
+				['category~Ctree'],
+			]
+		}
+		let query = {
+			requests: requests.map(([thing, data])=>{
+				// if we're injecting something at the start
+				//if (offset)
+				//	thing = thing.replace(/\d+/g, (d)=> +d + offset)
+				
+				if (data)
+					thing += "-"+JSON.stringify(data)
+				return thing
+			}),
+		}
+		Object.assign(query, filters) // we're not ready for {...} syntax yet
+		
+		return this.request("Read/chain"+this.query_string(query), 'GET', (e, resp)=>{
+			if (!e) {
+				Entity.process(resp)
+			}
+			callback(e, resp, first && !e)
+		})
+	},
+	
+	/////////////////////////
+	//                     //
+	/////////////////////////
 	
 	// logs the user out and clears the cached token
 	log_out() {
@@ -162,15 +273,8 @@ const Req = {
 	},
 	
 	// log in using username/password
-	authenticate(username, password, callback) {
-		/*return this.request("User/authenticate", 'POST', (e, resp)=>{
-			if (!e) {
-				Store.set(this.storage_key, resp, true)
-				window.location.reload()
-			}
-			callback(e, resp)
-		}, {username: username, password: password})*/
-		return this.request2('User/authenticate', 'POST', {username: username, password: password}).then(resp=>{
+	authenticate(username, password) {
+		return this.request2('User/authenticate', 'POST', {username, password}).then(resp=>{
 			Store.set(this.storage_key, resp, true)
 			window.location.reload()
 		})
@@ -204,35 +308,6 @@ const Req = {
 			['systemaggregate'], //~💖
 			['user~Ume', {ids:[Req.uid], limit:1}],
 		], {}, callback, false)
-	},
-	
-	read(requests, filters, callback, first) {
-		//let offset = null
-		if (first) {
-			requests = [
-				...requests,
-				['category~Ctree'],
-			]
-		}
-		let query = {
-			requests: requests.map(([thing, data])=>{
-				// if we're injecting something at the start
-				//if (offset)
-				//	thing = thing.replace(/\d+/g, (d)=> +d + offset)
-				
-				if (data)
-					thing += "-"+JSON.stringify(data)
-				return thing
-			}),
-		}
-		Object.assign(query, filters) // we're not ready for {...} syntax yet
-		
-		return this.request("Read/chain"+this.query_string(query), 'GET', (e, resp)=>{
-			if (!e) {
-				Entity.process(resp)
-			}
-			callback(e, resp, first && !e)
-		})
 	},
 	
 	get_me(callback) {

@@ -26,7 +26,7 @@ function immediate() {
 	Req.try_load_auth()
 	
 	if (Req.auth) {
-		console.log("🌅 got auth")
+		console.log("🌄 got auth")
 		View.flag('loggedIn', true)
 		
 		Req.get_initial((e, resp)=>{
@@ -53,7 +53,7 @@ function immediate() {
 			Lp.use_websocket = false
 		Lp.do_early()
 	} else {
-		console.warn("🌅 Not logged in!")
+		console.warn("🌄 Not logged in!")
 	}
 	
 	// we can access this even if DOMContentLoaded hasn't occurred yet
@@ -70,7 +70,7 @@ function immediate() {
 }
 
 function got_lastid(id) {
-	console.log("🌅 got lastId, staring long poller etc.")
+	console.log("🌄 got lastId, staring long poller etc.")
 	Lp.update_lastid(id)
 	Lp.start()
 	Nav.initial()
@@ -80,7 +80,7 @@ function got_lastid(id) {
 }
 
 function dom_ready() {
-	console.log("🌅 DOM ready")
+	console.log("🌄 DOM ready")
 	
 	// whitespace between nodes in html (due to line breaks, indentation, etc.) creates text nodes which need to be stripped:
 	let walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {acceptNode: node=>/^\s+$/.test(node.textContent)});

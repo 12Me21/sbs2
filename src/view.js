@@ -258,7 +258,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 				return handle_error("error 1")
 			
 			if (first) {
-				console.log("🌅 got first page's data")
+				console.log("🌄 got first page's data")
 				initial_data = true
 			}
 			
