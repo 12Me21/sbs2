@@ -9,12 +9,6 @@ function arrayToggle(array, value) {
 }
 
 const Req = {
-	on_logout() {
-		View.flag('loggedIn', false)
-		//this is all messy
-		window.location.reload()
-	},
-	
 	auth: null,
 	storage_key: "auth",
 	//storage_key = "devauth"
@@ -27,83 +21,90 @@ const Req = {
 	
 	locked: false, // for testing
 	
-	raw_request(url, method, callback, data, auth) {
+	raw_request(url, method, callback, data) {
 		let x = new XMLHttpRequest()
 		x.open(method, url)
-		let args = arguments
-		
 		let start = Date.now()
 		
 		let retry = (time, reason)=>{
-			// this is not recursion because retry is called in async callback functions only!
-			if (time) {
-				console.log("will retry", reason, "in "+time/1000+" sec")
-				if (time > 2000)
-					try {
-						print("Warning: request was rate limited with extremely long wait time: "+time/1000+" seconds")
-					} catch(e) {}
-				let id = setTimeout(()=>{retry(null, reason)}, time)
-				x.abort = ()=>{clearTimeout(id)}
-			} else {
+			console.log("will retry", reason, "in "+time/1000+" sec")
+			if (time > 2000)
+				try { // messy. why don't we have a print func which never fails?
+					print("Warning: request was rate limited with extremely long wait time: "+time/1000+" seconds")
+				} catch(e) {}
+			let id = window.setTimeout(()=>{
 				console.log("retrying request", reason)
-				x.abort = this.raw_request.apply(this, args).abort
-			}
+				// this is not recursion: we're in an async callback function!
+				let x2 = this.raw_request(url, method, callback, data)
+				x.abort = x2.abort
+			}, time)
+			x.abort = ()=>{window.clearTimeout(id)}
 		}
 		
 		x.onload = ()=>{
+			
 			let type = x.getResponseHeader('Content-Type')
 			let resp
-			if (/^application\/json(?!=\w)/.test(type))
+			if (/^application\/json\b/.test(type))
 				resp = JSON.safe_parse(x.responseText)
 			else
 				resp = x.responseText
 			let code = x.status
+			if (JSON.stringify(x.response)!=JSON.stringify(resp))
+				console.log("xhr response differ!", x, x.response, x.responseText)
 			
-			if (code==200) //this should maybe check other 2xx responses, but I think 204 is (was?) used for timeouts...
-				callback(null, resp)
-			else if (code==502)
-				retry(5000, 'bad gateway')
-			else if (code==408 || code==204 || code==524)
-				// record says server uses 408, testing showed only 204. idk
-				retry(null, 'timeout')
-			else if (code == 429) { // rate limit
-				let after = +(x.getResponseHeader('Retry-After') || 1)
-				retry((after+0.5)*1000, "rate limited "+after+"sec")
-			} else if (code==400)
-				callback('error', JSON.safe_parse(resp))
-			else if (code==401)
-				callback('auth', resp)
-			else if (code==403)
-				callback('permission', resp)
-			else if (code==404)
-				callback('404', resp)
-			else if (code==418)
-				callback('ban', resp)
+			// OK
+			if (code==200) callback.ok(resp)
+			// Permission denied
+			else if (code==403) callback.fail('permission', resp)
+			// 404
+			else if (code==404) callback.fail('404', resp)
+			// Banned
+			else if (code==418) callback.fail('ban', resp)
+			// Invalid Request
+			else if (code==400) callback.fail('error', JSON.safe_parse(resp))
+			// Bad Auth
+			else if (code==401) callback.auth(resp)
+			// Server Error
 			else if (code==500) {
 				print("got 500 error! "+resp)
 				console.warn('got 500 error', x, resp)
-				callback('error', JSON.safe_parse(resp))
-				//retry(1000, '500 error')
-			} else { // other
+				callback.fail('error', JSON.safe_parse(resp))
+			}
+			// Connection Error
+			else if (code==502)
+				retry(5000, 'bad gateway')
+			// Timeout
+			// (record says server uses 408, testing showed only 204. idk)
+			else if (code==408 || code==204 || code==524)
+				retry(0, 'timeout')
+			// Rate Limit
+			else if (code == 429) {
+				let after = +(x.getResponseHeader('Retry-After') || 1)
+				retry((after+0.5)*1000, "rate limited "+after+"sec")
+			}
+			// OTHER
+			else {
 				alert("Request failed! "+code+" "+url)
 				console.log("REQUEST FAILED", x)
-				resp = JSON.safe_parse(resp)
-				callback('error', resp, code)
+				resp = JSON.safe_parse(resp) || resp
+				callback.fail('error', resp, code)
 			}
 		}
 		x.onerror = ()=>{
 			let time = Date.now()-start
-			//console.log("xhr onerror after ms:"+time)
 			if (time > 18*1000)
-				retry(null, "3ds timeout") // i think other browsers do this too now?
+				retry(0, "3ds timeout") // i think other browsers do this too now?
 			else {
 				print("Request failed!")
 				retry(5000, "request error")
 			}
 		}
+		
+		// idk which of these is still necessary, but cache issues are so scary that I don't want to mess with it. hopefully none of them causes actual PROBLEMS
 		x.setRequestHeader('Cache-Control', "no-cache, no-store, must-revalidate")
 		x.setRequestHeader('Pragma', "no-cache") // for internet explorer
-		auth && x.setRequestHeader('Authorization', "Bearer "+auth)
+		this.auth && x.setRequestHeader('Authorization', "Bearer "+this.auth)
 		
 		// no data
 		if (data == undefined)
@@ -116,6 +117,8 @@ const Req = {
 		} else
 			x.send(data)
 		
+		// the only thing we use here is .abort
+		// (note that .abort is modified by retry())
 		return x
 	},
 	
@@ -142,35 +145,22 @@ const Req = {
 	},
 	// idk having all brackets bold + dimgray was kinda nice...
 	request(url, method, callback, data) {
-		return this.raw_request(`https://${this.server}/${url}`, method, (e, resp)=>{
-			if (e == 'auth')
-				this.log_out()
-			else
-				callback(e, resp)
-		}, data, this.auth)
+		return this.raw_request(`https://${this.server}/${url}`, method, {
+			ok: callback.bind(null, null), //ok: resp => callback(null, resp)
+			fail: callback,
+			auth: (resp)=>{
+				alert("AUTHENTICATION ERROR!?\nif this is real, you must log out!\n"+resp)
+				// this.log_out()
+			},
+		}, data)
 	},
 	
 	// logs the user out and clears the cached token
 	log_out() {
 		Store.remove(this.storage_key)
+		window.location.reload()
 		Lp.stop()
 		this.auth = null
-		this.on_logout()
-	},
-	// call to set the current auth token
-	// should only be called once (triggers login event)
-	got_auth(new_auth) {
-		let new_uid
-		try {
-			new_uid = Number(JSON.parse(window.atob(new_auth.split(".")[1])).uid) //yeah
-		} catch(e) {
-			this.log_out()
-			return false
-		}
-		this.auth = new_auth
-		this.uid = new_uid
-		//this.on_login()
-		return true
 	},
 	
 	// log in using username/password
@@ -188,10 +178,23 @@ const Req = {
 	// (doesn't check if auth is expired though)
 	// also doesn't DO anything else. (important, can be called at time 0)
 	// return: Boolean
-	try_load_cached_auth() {
+	try_load_auth() {
+		this.auth = null
+		this.uid = null
 		let auth = Store.get(this.storage_key)
-		let ok = auth ? this.got_auth(auth) : false
-		return ok
+		if (!auth)
+			return false
+		let uid
+		try {
+			uid = +JSON.parse(window.atob(auth.split(".")[1])).uid //yeah
+		} catch(e) {
+			return false
+		}
+		if (!uid)
+			return false
+		this.auth = auth
+		this.uid = uid
+		return true
 	},
 	
 	get_initial(callback) {
@@ -255,7 +258,7 @@ const Req = {
 	},
 	
 	set_sensitive(data, callback) {
-		return this,request("User/sensitive", 'POST', callback, data)
+		return this.request("User/sensitive", 'POST', callback, data)
 	},
 	
 	put_file(file, callback) {
@@ -369,7 +372,7 @@ const Req = {
 	},
 	
 	setVote(id, state, callback) {
-		return this.request("Vote/"+id+"/"+(state||"delete"), 'POST', callback)
+		this.request("Vote/"+id+"/"+(state||"delete"), 'POST', callback)
 	},
 	
 	editPage(page, callback) {
@@ -416,21 +419,21 @@ const Req = {
 	},
 	
 	send_message(room, text, meta, callback) {
-		return this.request("Comment", 'POST', callback, {parentId: room, content: Entity.encode_comment(text, meta)})
+		this.request("Comment", 'POST', callback, {parentId: room, content: Entity.encode_comment(text, meta)})
 	},
 	
 	edit_message(id, room, text, meta, callback) {
-		return this.request("Comment/"+id, 'PUT', callback, {parentId: room, content: Entity.encode_comment(text, meta)})
+		this.request("Comment/"+id, 'PUT', callback, {parentId: room, content: Entity.encode_comment(text, meta)})
 	},
 	
 	delete_message(id, callback) {
-		return this.request("Comment/"+id+"/delete", 'POST', callback)
+		this.request("Comment/"+id+"/delete", 'POST', callback)
 	},
 	
 	file_url(id, query) {
 		if (query)
-			return "https://"+this.server+"/File/raw/"+id+"?"+query
-		return "https://"+this.server+"/File/raw/"+id
+			return `https://${this.server}/File/raw/${id}?${query}`
+		return `https://${this.server}/File/raw/${id}`
 	},
 }
 Object.seal(Req)

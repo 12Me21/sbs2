@@ -185,8 +185,12 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 				console.log("OH HECK, request called callback after being cancelled?")
 				//return //removing this for consistency since websocket doesn't have cancelling
 			}
-			process(e, resp)
-			if (!e) {
+			if (e) {
+				console.log("LONG POLLER FAILED", e, resp)
+				print("LONG POLLER FAILED:"+resp)
+				alert("LONG POLLER FAILED:"+resp)
+			} else {
+				process(resp)
 				// I'm not sure this is needed. might be able to just call lp_loop diretcly?
 				let t = window.setTimeout(()=>{
 					if (cancelled) // should never happen?
@@ -214,13 +218,7 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 		}
 	},
 	
-	process(e, resp) {
-		if (e) {
-			alert("LONG POLLER FAILED:"+resp)
-			console.log("LONG POLLER FAILED", e, resp)
-			return
-		}
-		
+	process(resp) {
 		// try/catch here so the long poller won't fail when there's an error in the callbacks
 		try {
 			// most important stuff:
@@ -276,7 +274,7 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 	},
 	
 	get_ws_auth(callback) {
-		Req.request("Read/wsauth", 'GET', (e, resp)=>{
+		Req.request('Read/wsauth', 'GET', (e, resp)=>{
 			if (!e) {
 				ws_token = resp
 				print("got ws token!")
@@ -289,14 +287,14 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 	
 	open_websocket() {
 		if (websocket && websocket.readyState<2) {
-			print('multiple websocket tried to open!')
-			return;
+			print("multiple websocket tried to open!")
+			return
 		}
 		let now = Date.now()
 		if (now - last_open < 4000) {
-			print('websocket loop too fast! delaying 5 seconds.\nThis is probably caused by an invalid websocket token. please report this')
-			setTimeout(open_websocket, 5000);
-			return;
+			print("websocket loop too fast! delaying 5 seconds.\nThis is probably caused by an invalid websocket token. please report this")
+			setTimeout(open_websocket, 5000)
+			return
 		}
 		last_open = now
 		ws_token = null
@@ -305,41 +303,36 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 		get_ws_auth(()=>{
 			websocket_flush()
 		})
-		websocket = new WebSocket("wss://"+Req.server+"/read/wslisten")
+		websocket = new WebSocket(`wss://${Req.server}/read/wslisten`)
 		
 		websocket.onopen = (e)=>{
 			print("websocket open!")
 			websocket_flush()
 		}
 		websocket.onerror = (e)=>{
-			window.ee = e // what are u?
-			console.log(e)
-			if (!String(e).startsWith("System.InvalidOperationException: Invalid token"))
-				print("websocket error!"+e)
+			print("websocket error!")
 		}
 		websocket.onclose = (e)=>{
 			print("websocket close!")
 			open_websocket()
 		}
 		websocket.onmessage = (e)=>{
-			let match = String(e.data).match(/^(\w+):/)
+			let msg = e.data // will e.data always be a string?
+			let [match, type] = /^(\w+):/.rmatch(msg)
 			if (!match) {
-				let resp
-				try {
-					resp = JSON.parse(e.data)
-				} catch (e) {
-					print("mystery websocket message:"+e.data)
+				let resp = JSON.safe_parse(msg)
+				if (resp !== undefined) {
+					process(resp)
 					return
 				}
-				
-				process(null, resp)
-			} else if (match[1]=="accepted") {
-				//print("websocket accepted")
-			} else if (match[1]=="error") {
-				print("websocket error: "+e.data)
-			} else {
-				print("websocket unknown message: "+e.data)
+			} else if (type=='accepted') {
+				return //print("websocket accepted")
+			} else if (type=='error') {
+				if (!/^error:System.InvalidOperationException: Invalid token/.test(msg))
+					print("websocket error:", msg)
+				return
 			}
+			print("websocket unknown message:", msg)
 		}
 	},
 	

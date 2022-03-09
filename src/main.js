@@ -23,7 +23,7 @@ else
 function immediate() {
 	Sidebar.print("hi!\ncommit: "+window.commit)
 	
-	Req.try_load_cached_auth()
+	Req.try_load_auth()
 	
 	if (Req.auth) {
 		console.log("login")
