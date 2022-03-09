@@ -293,14 +293,18 @@ let Entity = {
 			console.log("got weird date:", str)
 			return new Date(NaN)
 		}
-		let data = str.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d+)?)/)
+		let data = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d+)?)/.rmatch(str)
 		if (!data) {
 			console.error("couldn't parse date:", str)
 			return new Date(NaN)
 		}
+		let off = new Date(str)
 		let sec = Math.floor(+data[6])
 		let ms = +data[6] - sec
-		return new Date(Date.UTC(+data[1], +data[2]-1, +data[3], +data[4], +data[5], sec, ms)) // yes you NEED to call Date.UTC, otherwise the timezone is wrong!
+		let ours = new Date(Date.UTC(+data[1], +data[2]-1, +data[3], +data[4], +data[5], sec, ms)) // yes you NEED to call Date.UTC, otherwise the timezone is wrong!
+		if (off.getDate() != ours.getDate())
+			console.error('date parsing differ!', str)
+		return ours
 	},
 	decode_comment(content) {
 		let newline = content.indexOf("\n")

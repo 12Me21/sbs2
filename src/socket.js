@@ -318,7 +318,7 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 		}
 		websocket.onmessage = (e)=>{
 			let msg = String(e.data) // will e.data always be a string?
-			let [match, type] = msg.match(/^(\w+):/) || []
+			let [match, type] = /^(\w+):/.rmatch(msg)
 			if (!match) {
 				let resp = JSON.safe_parse(msg)
 				if (resp !== undefined) {
