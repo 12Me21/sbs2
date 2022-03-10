@@ -49,12 +49,14 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return element
 	},
 	
+	// <span class='textItem pre'>...</span>
 	text_item(text) {
 		let element = EC('span', 'textItem pre')
 		element.textContent = text
 		return element
 	},
 	
+	// <div class='debugMessage pre'>...</div>
 	sidebar_debug(text) {
 		let x = EC('div', 'debugMessage pre')
 		x.textContent = text
@@ -101,6 +103,8 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return element
 	},
 	
+	// ? <img class='item icon avatar' src=... width=100 height=100>
+	// ? [bg-icon]
 	icon(entity) {
 		let element
 		let type = entity && entity.Type
@@ -127,6 +131,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return element
 	},
 	
+	// returns a documentFragment
 	markup(page) {
 		let lang = page.values ? page.values.markupLang : null
 		return Parse.parseLang(page.content, lang, true)
@@ -604,12 +609,11 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			row.child('td')
 		// name label
 		let name
-		if (!id) {
+		if (!id)
 			name = text_item("Default")
-		} else {
+		else
 			name = entity_title_link(user, true)
-			name.className += " bar rem1-5"
-		}
+		name.className += " bar rem1-5"
 		row.child('th').append(name)
 		// checkboxes
 		for (let p of ['r','c','u','d']) {
@@ -806,8 +810,15 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return element
 	},
 	
+	// <div class='bar rem1-5 sidebarComment ellipsis'>
+	//   ? [entity-title-link] edited
+	//   [entity-title-link] : ...
+	// </div>
 	sidebar_comment(comment) {
 		let d = EC('div', 'bar rem1-5 sidebarComment ellipsis')
+		d.dataset.id = comment.id
+		d.title = `${comment.createUser.name} in ${comment.parentId}:\n${comment.content}` // todo: page name 🥺  oh︕ emojis render in italic? don't remember adding that...
+		
 		if (comment.editUserId != comment.createUserId) {
 			d.append(
 				entity_title_link(comment.editUser),
@@ -819,8 +830,6 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			": ",
 			comment.content.replace(/\n/g, "  "),
 		)
-		d.dataset.id = comment.id
-		d.title = comment.createUser.name+" in "+comment.parentId+":\n"+comment.content
 		return d
 	},
 	
@@ -854,6 +863,9 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return b[0]
 	},
 	
+	// <div class='item rightAlign'>
+	//   [vote-button] [vote-button] [vote-button]
+	// </div>
 	vote_box(page) {
 		let element = EC('div', 'item rightAlign')
 		
@@ -918,6 +930,12 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			e.textContent = time_ago_string(new Date(e.getAttribute('datetime')))
 	},
 	
+	// <div>
+	//   [entity title link]
+	//   <div class='category-childs'>
+	//     ...
+	//   </div>
+	// </div>
 	nav_category(cat) {
 		let elem = E`div`
 		let label = entity_title_link(cat)
