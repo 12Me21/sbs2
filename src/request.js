@@ -9,20 +9,14 @@ function arrayToggle(array, value) {
 }
 
 const Req = {
-	auth: null,
+	server: "smilebasicsource.com/api",
+	
 	storage_key: "auth",
-	
-	server: "smilebasicsource.com/api", // no you can't add "https://" to this string, because we need to use wss:// in another place
-	
+	auth: null,
 	uid: null,
-	
 	me: null,
 	
 	locked: false, // for testing
-	
-	JSONData(obj) {
-		return new Blob([JSON.stringify(obj)], {type: "application/json;charset=UTF-8"})
-	},
 	
 	// `proc` is a function that gets called after the data is recieved
 	// of course, you could handle this in the `ok` callback, but then
@@ -124,24 +118,27 @@ const Req = {
 			return ""
 		return "?"+params.join("&")
 	},
-	
+	// if `data` is a plain object
 	is_object(data) {
 		return data && Object.getPrototypeOf(data)==Object.prototype
 	},
+	// convert obj into a json Blob for xhr
+	JSONData(obj) {
+		return new Blob([JSON.stringify(obj)], {type: "application/json;charset=UTF-8"})
+	},
 	
 	// idk having all brackets bold + dimgray was kinda nice...
-	request(url, method, callback, data) {
+	request(url, method, callback, data, proc) {
 		if (this.is_object(data))
 			data = this.JSONData(data)
-		return this.raw_request(url, method, data, null, callback.bind(null, null), callback)
+		return this.raw_request(url, method, data, proc, callback.bind(null, null), callback)
 	},
-	//
+	// i dont like how proc is required but h
 	request2(url, proc, method='GET', data=null) {
 		if (this.is_object(data))
 			data = this.JSONData(data)
 		return new Promise(this.raw_request.bind(this, url, method, data, proc))
 	},
-	
 	// new version of read()
 	chain(requests, fields) {
 		let query = {}
@@ -152,38 +149,19 @@ const Req = {
 		})
 		if (fields)
 			Object.assign(query, fields)
-		return this.request2("Read/chain"+this.query_string(query), (resp)=>{
-			Entity.process(resp)
-		})
+		return this.request2("Read/chain"+this.query_string(query), Entity.process.bind(Entity))
 	},
-	
-	read(requests, filters, callback, first) {
-		//let offset = null
-		if (first) {
-			requests = [
-				...requests,
-				['category~Ctree'],
-			]
-		}
-		let query = {
-			requests: requests.map(([thing, data])=>{
-				// if we're injecting something at the start
-				//if (offset)
-				//	thing = thing.replace(/\d+/g, (d)=> +d + offset)
-				
-				if (data)
-					thing += "-"+JSON.stringify(data)
-				return thing
-			}),
-		}
-		Object.assign(query, filters) // we're not ready for {...} syntax yet
-		
-		return this.request("Read/chain"+this.query_string(query), 'GET', (e, resp)=>{
-			if (!e) {
-				Entity.process(resp)
-			}
-			callback(e, resp, first && !e)
+	// chain
+	read(requests, filters, callback) {
+		let query = {}
+		// i suppose we could like, processs this AND convert to query string at the same time hmm?
+		query.requests = requests.map(([thing, data])=>{
+			if (data)
+				thing += "-"+JSON.stringify(data)
+			return thing
 		})
+		Object.assign(query, filters) // we're not ready for {...} syntax yet
+		return this.request("Read/chain"+this.query_string(query), 'GET', callback, null, Entity.process.bind(Entity))
 	},
 	
 	/////////////////////////

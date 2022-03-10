@@ -251,25 +251,29 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			xhr && xhr.abort && xhr.abort()
 			cancelled = true
 		}
+		let chains = data.chains
 		let do_first = !initial_data
-		xhr = Req.read(data.chains, data.fields, (e, resp, first)=>{
+		if (do_first) {
+			chains.push(['category~Ctree'])
+		}
+		xhr = Req.read(chains, data.fields, (e, resp)=>{
 			// handle the response
 			if (e)
 				return handle_error("error 1")
 			
-			if (first) {
+			if (do_first) {
 				console.log("🌄 got first page's data")
 				initial_data = true
 			}
 			
 			if (data.check && !data.check(resp, data.ext)) // try/catch here?
 				return handle_error("content not found?")
+			
 			return handle(attempt.bind(
 				null,
 				"render failed in view.render",
 				view.render.bind(view, resp, data.ext)))
-			
-		}, do_first)
+		})
 		
 		function handle_error(message, e=null) {
 			handle(()=>{
