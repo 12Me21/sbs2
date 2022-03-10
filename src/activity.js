@@ -8,9 +8,23 @@ let Act = {
 	// i.e. pages with recent activity, displayed in the sidebar
 	items: {},
 	
+	// might be worth speeding up in entity.js (100ms)
 	pull_recent() {
 		//console.log('pulling recent activity')
-		Req.get_recent_activity().then(({activity, Mall, Awatching, content, comment})=>{
+		let day = 1000*60*60*24
+		let start = new Date(Date.now() - day).toISOString()
+		// "except no that won't work if site dies lol"
+		Req.chain([
+			['activity', {createStart: start}],
+			['comment~Mall', {reverse: true, limit: 1000}],
+			['activity~Awatching', {contentLimit:{watches:true}}],
+			['content.0contentId.1parentId.2contentId'],
+			['comment', {limit: 50, reverse: true, createStart: start}],
+			['user.0userId.1editUserId.2userId.4createUserId'],
+		], {
+			content: 'name,id,permissions,type',
+			Mall: 'parentId,editUserId,editDate',
+		}).then(({activity, Mall, Awatching, content, comment})=>{
 			console.log('🌄 got initial activity')
 			View.do_when_ready(()=>{
 				this.process_stuff(activity, Mall, Awatching, content)
@@ -88,9 +102,9 @@ let Act = {
 	},
 	
 	new_activity(activity, pageMap, watch) {
-		for (let {contentId:id, date, user, type} of activity)
+		for (let {contentId, date, user, type} of activity)
 			if (type == '')
-			this.new_thing(id, date, user, pageMap, watch, true)
+			this.new_thing(contentId, date, user, pageMap, watch, true)
 	},
 	
 	//todo: somewhere we are getting Fake users with uid 0/
@@ -100,6 +114,9 @@ let Act = {
 	// perhaps just filter those out immediately
 	
 	// add or move+update user to start of list
+	// todo: this is probably really bad when called a lot of times
+	// for the initial comments.
+	// would maybe be better to just sort the list after that
 	user_update(item, user, date) {
 		if (!user) return // just in case
 		// i really hate this code

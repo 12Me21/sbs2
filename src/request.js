@@ -303,24 +303,6 @@ const Req = {
 		})
 	},
 	
-	// might be worth speeding up in entity.js (100ms)
-	get_recent_activity() {
-		let day = 1000*60*60*24
-		let start = new Date(Date.now() - day).toISOString()
-		// "except no that won't work if site dies lol"
-		return this.chain([
-			['activity', {createStart: start}],
-			['comment~Mall', {reverse: true, limit: 1000}],
-			['activity~Awatching', {contentLimit:{watches:true}}],
-			['content.0contentId.1parentId.2contentId'],
-			['comment', {limit: 50, reverse: true, createStart: start}],
-			['user.0userId.1editUserId.2userId.4createUserId'],
-		], {
-			content: 'name,id,permissions,type',
-			Mall: 'parentId,editUserId,editDate',
-		})
-	},
-	
 	setVote(id, state, callback) {
 		this.request("Vote/"+id+"/"+(state||"delete"), 'POST', callback)
 	},

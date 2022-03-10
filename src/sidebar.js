@@ -175,7 +175,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	// TODO
 	// TODO TODO
 	on_aggregate_change(aggregate) {
-		let items = Object.values(aggregate).filter(a=>a.content) //HACK (what did i mean by this?)
+		let items = Object.values(aggregate)//.filter(a=>a.content) //HACK (what did i mean by this?)
 		items.sort((a, b)=> -(a.lastDate - b.lastDate))
 		$sidebarActivity.fill()
 		$sidebarWatch.fill()
