@@ -252,9 +252,8 @@ html:not(.f-canEdit) .canEdit {
 }
 
 sidebar-container {
-	/*border-left: 1em solid var(--databarbgcolor);*/
 	background: var(--mainbgcolor);
-	width: 30vw;
+	width: 30vw; /* just a default */
 	min-width: 10vw;
 	z-index: 20;
 }
@@ -332,6 +331,18 @@ message-block > img.avatar {
 	/*background-color: #AAB;*/
 	margin-right: calc(var(--chat-gutter) - var(--chat-avatar-size));
 	position: absolute;
+}
+message-block > .bigAvatar {
+	width: calc(--chat-gutter + 0.5rem);
+	height: 100%;
+	position: absolute;
+	background-size: cover;
+	background-position-x: center;
+	background-position-y: top;
+	background-repeat: no-repeat;
+	left: 0;
+	top: 0;
+	z-index: -10;
 }
 
 message-block > message-header {
@@ -433,19 +444,6 @@ html:not(.f-chatEditing) .showWhenEdit {
 
 .chatScroller {
 	padding-bottom: 0.9rem; /* increased to 0.9rem because we moved message-block padding to top of element */
-}
-
-.bigAvatar {
-	width: 4.5rem;
-	height: 100%;
-	position: absolute;
-	background-size: cover;
-	background-position-x: center;
-	background-position-y: top;
-	background-repeat: no-repeat;
-	left: 0;
-	top: 0;
-	z-index: -10;
 }
 
 .real-name-label {
