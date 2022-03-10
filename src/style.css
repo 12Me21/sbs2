@@ -189,8 +189,8 @@ button[aria-selected="true"] {
 .titlePane {
 	background: var(--databarbgcolor);
 	color: var(--databartxtcolor);
-	/*box-shadow: 0 2px 3px rgba(0,0,0,0.3);*/
-	z-index: 10;
+	/*box-shadow: var(--normal-shadow);
+	z-index: 10;*/
 	padding: 1px;
 	/*transition: background-color 0.1s ease;*/
 }
@@ -257,6 +257,14 @@ sidebar-container {
 
 .closeSidebar {
 	height: 2.3rem;
+}
+
+#\$sidebarResize {
+	box-shadow: var(--normal-shadow);
+}
+#\$sidebar_tabs {
+	box-shadow: var(--normal-shadow);
+	z-index: 30;
 }
 
 /*******************

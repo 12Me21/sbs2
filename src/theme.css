@@ -38,7 +38,7 @@ html {
 	/* inverted bg colors (black) */
 	--databarbgcolor: #222;
 	--light-invert-bg: #333;
-	--loading-invert-bg: #225450;
+	--loading-invert-bg: #327070; /*linear-gradient(#225450, #327070); removed because of flicker ? i think we need to animate to another gradient or? */
 	--error-invert-bg: #800;
 }
 
@@ -76,8 +76,6 @@ html[data-theme="dark"], html.f-dark:not([data-theme]) {
 	
 	--databarbgcolor: #000;
 	--light-invert-bg: #111;
-	--loading-invert-bg: #225450;
+	--loading-invert-bg: #327070;
 	--error-invert-bg: #800;
-	
-	
 }
