@@ -100,6 +100,7 @@ let Entity = {
 				this.onCategoryUpdate && this.onCategoryUpdate(this.category_map)
 			}, 0)
 		}
+		return resp // for convenienece
 		//console.log('process took:', performance.now()-x, resp)
 	},
 	key_type(key) {
@@ -111,6 +112,11 @@ let Entity = {
 			M: 'comment', // "message"
 			G: 'commentaggregate', // ran out of letters
 		}[key[0]] || key
+	},
+	process_type(type, data) {
+		let l = [data]
+		Entity.process_list(type, l, {})
+		return l[0]
 	},
 	process_list(type, data, users) {
 		let proc = this.process_type[type]

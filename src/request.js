@@ -51,7 +51,7 @@ const Req = {
 			
 			if (code==200) {
 				if (proc)
-					proc(resp)
+					resp = proc(resp)
 				return ok(resp)
 			}
 			
@@ -211,29 +211,19 @@ const Req = {
 		return this.read([
 			['systemaggregate'], //~💖
 			['user~Ume', {ids:[Req.uid], limit:1}],
-		], {}, callback, false)
+		], {}, callback)
 	},
 	
 	get_me(callback) {
 		return this.request("User/me", 'GET', (e, resp)=>{
-			if (!e) {
-				let l = [resp]
-				Entity.process_list('user',l,{})
-				callback(l[0])
-			} else
-				callback(null)
-		})
+			callback(e ? null: resp)
+		}, null, Entity.process_type.bind(Entity, 'user'))
 	},
 	
 	set_basic(data, callback) {
 		return this.request("User/basic", 'PUT', (e, resp)=>{
-			if (!e) {
-				let l = [resp]
-				Entity.process_list('user',l,{})
-				callback(l[0])
-			} else
-				callback(null)
-		}, data)
+			callback(e ? null : resp)
+		}, data, Entity.process_type.bind(Entity, 'user'))
 	},
 	
 	set_sensitive(data, callback) {
@@ -264,18 +254,9 @@ const Req = {
 	},
 	
 	upload_file(file, params, callback) {
-		let form = new FormData()
+		let form = new FormData() // no you can't just pass fields to the constructor
 		form.append('file', file)
-		
-		this.request("File"+this.query_string(params), 'POST', (e, resp)=>{
-			if (e)
-				callback(e, resp)
-			else {
-				let l = [resp]
-				Entity.process_list('file',l,{})
-				callback(e, l[0])
-			}
-		}, form)
+		this.request("File"+this.query_string(params), 'POST', callback, form, Entity.process_type.bind(Entity, 'file'))
 	},
 	
 	toggle_hiding(id, callback) {
@@ -283,11 +264,8 @@ const Req = {
 			if (me) {
 				let hiding = me.hidelist
 				let hidden = arrayToggle(hiding, id)
-				this.set_basic({hidelist:hiding}, (e)=>{
-					if (e)
-						callback(null)
-					else
-						callback(hidden)
+				this.set_basic({hidelist:hiding}, (e, resp)=>{
+					callback(e ? null : hidden)
 				})
 			} else
 				callback(null)
@@ -300,10 +278,7 @@ const Req = {
 		return this.read([
 			['user', {limit: count, usernameLike: "%"+like+"%", sort: 'editDate', reverse: true}],
 		], {}, (e, resp)=>{
-			if (!e)
-				callback(resp.user_map)
-			else
-				callback(null)
+			callback(e ? null : resp.user_map)
 		})
 	},
 	
@@ -342,7 +317,7 @@ const Req = {
 		], {
 			content: 'name,id,permissions,type',
 			Mall: 'parentId,editUserId,editDate',
-		}, (e,resp)=>{
+		}, (e, resp)=>{
 			if (e)
 				fail(e, resp)
 			else
