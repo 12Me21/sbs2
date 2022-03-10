@@ -28,7 +28,6 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 			// todo: do we want to pass commentdelete here?
 			Act.process_stuff(activity, comment, null, content)
 			
-			// I dont think user edits are broadcast anymore, but
 			if (activity)
 				for (let a of activity)
 					if (a.type == 'user') {

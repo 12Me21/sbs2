@@ -108,4 +108,12 @@ function dom_ready() {
 	View.onload()
 	
 	Sidebar.onload()
+	
+	// do these ever really happen?
+	print("running "+View.run_on_load.length+" deferred items")
+	View.init_done = true
+	for (let f of View.run_on_load)
+		f()
+	View.run_on_load = null
+	
 }

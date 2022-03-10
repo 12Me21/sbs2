@@ -304,11 +304,6 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			// though none of them should really take a significant amount of time, so whatver
 		})
 		
-		init_done = true
-		for (let f of run_on_load)
-			f()
-		run_on_load = null
-		
 		// set up event handlers:
 		
 		// video player does not fire 'click' events so instead
