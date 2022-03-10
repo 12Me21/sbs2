@@ -110,82 +110,45 @@ body {
 	display: block;
 	overflow: hidden;
 	box-sizing: content-box;
-	/* set min-height */
+	min-height: var(--bar-height);
+	line-height: var(--bar-height);
 }
 .textItem { /* basically anything within a .bar */
 	display: inline;
 	max-width: 100%;
-	/* set min-height, line-height */
+	min-height: var(--bar-height);
+	line-height: var(--bar-height);
 }
 .item { /* for images and other blocks that can't wrap */
 	display: inline-block;
 	max-width: 100%;
-	/* set height */
+	height: var(--bar-height);
+	line-height: var(--bar-height);
 }
-
-.rem1-7 {
-	min-height: 1.7rem;
-	line-height: 1.7rem;
+.bar .avatar {
+	width: var(--bar-height);
 }
-.rem1-7 .item {
-	height: 1.7rem;
-	line-height: 1.7rem;
-}
-.rem1-7 .textItem {
-	min-height: 1.7rem;
-	line-height: 1.7rem;
-}
-.rem1-7 .avatar {
-	width: 1.7rem;
-}
-.rem1-7 .iconBg {
+.bar .iconBg {
 	width: 1rem;
 	/*margin-right: 0.2rem;*/
-}
-
-.linkBar.rem1-5 {
-	padding: 0;
-}
-
-.rem1-5 {
-	min-height: 1.5rem;
-	line-height: 1.5rem;
-}
-.rem1-5 .item {
-	height: 1.5rem;
-	line-height: 1.5rem;
-}
-.rem1-5 .textItem {
-	min-height: 1.5rem;
-	line-height: 1.5rem;
-}
-.rem1-5 .avatar {
-	width: 1.5rem;
-}
-.rem1-5 .iconBg {
-	width: 1rem;
-	/*margin-right: 0.2rem;*/
-}
-
-.rem2-3 {
-	min-height: 2.3rem;
-	line-height: 2.3rem;
-}
-.rem2-3 .item {
-	height: 2.3rem;
-	line-height: 2.3rem;
-}
-.rem2-3 .textItem {
-	min-height: 2.3rem;
-	line-height: 2.3rem;
-}
-.rem2-3 .avatar {
-	width: 2.3rem;
 }
 .rem2-3 .iconBg {
 	width: 1.5rem;
 }
 
+.rem1-7 {
+	--bar-height: 1.7rem;
+}
+.rem1-5 {
+	--bar-height: 1.5rem;
+}
+.rem2-3 {
+	--bar-height: 2.3rem;
+}
+
+.linkBar.rem1-5 {
+	padding: 0;
+}
 
 /*****************
  ** Form Tables **
@@ -196,17 +159,14 @@ form-table {
 	grid-template-columns: auto auto;
 	grid-auto-flow: row;
 }
-
 form-table > .label {
 	grid-column: 1;
 	grid-row: auto;
 }
-
 form-table > .field {
 	grid-column: 2;
 	grid-row: auto;
 }
-
 form-table > .wide {
 	grid-column: 1 / 3;
 }
@@ -221,16 +181,6 @@ scroll-outer {
 	overflow-y: scroll;
 	contain: strict;
 }
-
-scroll-inner {
-	display: block;
-}
-
-/* only allow one child
-scroll-outer > :not(:first-child) {
-	display: none;
-}*/
-
 scroll-middle {
 	display: flex;
 	flex-direction: column;
@@ -238,24 +188,26 @@ scroll-middle {
 	min-height: 100%;
 	justify-content: flex-end;
 }
+scroll-inner {
+	display: block;
+}
 
 .image-box {
-	overflow: hidden;
-	
 	position: relative;
+	overflow: hidden;
 }
 
 .image-box > img {
+	position: absolute;
+	box-sizing: border-box;
 	max-width: 100%;
 	max-height: 100%;
 	/* would be nice to replace all this with object-fit: scale-down; but then we couldn't get a border and etc. */
-	position: absolute;
 	left: -10000%;
 	right: -10000%;
 	top: -10000%;
 	bottom: -10000%;
 	margin: auto;
-	box-sizing: border-box;
 }
 
 /*
@@ -279,8 +231,8 @@ but, then we can't add a border to the image
 .slide-box {
 	display: block;
 	position: relative;
-	contain: strict;
 	overflow: unset; /* ?? */
+	contain: strict;
 }
 .slide-box > * {
 	position: absolute;

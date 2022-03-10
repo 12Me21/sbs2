@@ -65,7 +65,7 @@ sup {vertical-align: super;}
 sub {vertical-align: sub;}
 
 .avatar {
-	height: 1rem; /*default*/
+	/*height: 1rem;*/ /*default*/
 	/*border: 1px solid var(--image-border-color);*/
 	border-radius: 3px;
 	background: var(--avatar-bg);
