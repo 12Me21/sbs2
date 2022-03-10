@@ -15,10 +15,13 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	// icon + name
 	icon_title(entity, reverse) {
 		let elem = F()
+		let title = EC('span', 'textItem pre entity-title')
+		title.textContent = entity ? entity.name : "MISSINGNO."
+		let i = icon(entity)
 		if (reverse)
-			elem.append(title(entity), icon(entity))
+			elem.append(title, i)
 		else
-			elem.append(icon(entity), title(entity))
+			elem.append(i, title)
 		return elem
 	},
 	
@@ -46,12 +49,6 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return element
 	},
 	
-	title(entity) {
-		let element = EC('span', 'textItem pre entity-title')
-		element.textContent = entity ? entity.name : "MISSINGNO."
-		return element
-	},
-	
 	text_item(text) {
 		let element = EC('span', 'textItem pre')
 		element.textContent = text
@@ -71,6 +68,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return a
 	},
 	
+	// <img class='item avatar' width=100 height=100 alt="" src=...>
 	avatar(user) {
 		let element = EC('img', 'item avatar')
 		element.src = avatar_url(user, "size=100&crop=true")
@@ -79,6 +77,9 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return element
 	},
 	
+	// <div class='fileThumbnail item' data-id=...>
+	//  <img src=... alt=... title=...>
+	// </div>
 	file_thumbnail(file, onclick) {
 		let div = EC('div', 'fileThumbnail item')
 		div.dataset.id = file.id
@@ -91,6 +92,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return div
 	},
 	
+	// <span class='item icon iconBg' role=img style="background-image: url(...);" alt="">
 	bg_icon(url) {
 		let element = EC('span', 'item icon iconBg')
 		element.setAttribute('role', 'img')
@@ -149,6 +151,20 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return element
 	},
 	
+	// <chat-pane class='resize-box'>
+	//   <div class='sized page-container'>
+	//     [page info]
+	//     <div class='markup-root pageContents'></div>
+	//   </div>
+	//   <resize-handle></resize-handle>
+	//   <div class='bar rem2-3 userlist'>
+	//     <span></span>
+	//     [button]
+	//   </div>
+	//   <scroll-outer class='grow'>
+	//     <scroll-inner class='chatScroller'></scroll-inner>
+	//   </scroll-outer>
+	// </chat-pane>
 	chat_pane(page) {
 		// outer box element
 		let box = EC('chat-pane', 'resize-box')
@@ -165,25 +181,19 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		else if (page.type == 'chat')
 			height = 0
 		View.attach_resize(page1, resize, false, 1, 'setting--divider-pos-'+page.id, null, height) // todo: save?
-		// 
-		let [list1, list2, button] = userlist()
-		box.append(list1)
-		// 
-		let outer = box.child('scroll-outer', 'grow')
-		let inner = outer.child('scroll-inner', 'chatScroller')
-		//
-		return [box, page1, page2, outer, inner, list2, button]
-	},
-	
-	userlist() {
-		let outer = EC('div', 'bar rem2-3 userlist')
-		let inner = outer.child('span')
-		inner.textContent = "..."
+		// userlist
+		let list1 = box.child('div', 'bar rem2-3 userlist')
+		let list2 = list1.child('span')
+		list2.textContent = "..."
 		let [b0,b1] = button()
 		b1.textContent = "Hide"
 		b0.className += " rightAlign item loggedIn"
-		outer.append(b0)
-		return [outer, inner, b1]
+		list1.append(b0)
+		// scroller
+		let outer = box.child('scroll-outer', 'grow')
+		let inner = outer.child('scroll-inner', 'chatScroller')
+		//
+		return [box, page1, page2, outer, inner, list2, b1]
 	},
 	
 	userlist_avatar(status) {
@@ -193,11 +203,25 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return a
 	},
 	
+	// <message-block data-uid=... data-merge="...">
+	//   ? <div class='bigAvatar' style="background-image: ..."></div>
+	//   ? [avatar]
+	//   <message-header>
+	//     <span>
+	//       ? <span class='pre username'>...</span>: 
+	//       ? <span class='pre username'>...</span>: <span class='real-name-label'>(<span class='pre'>...</span>)</span>
+	//     </span>
+	//     <time datetime=...>...</time>
+	//   </message-header>
+	//   <message-contents></message-contents>
+	// </message-block>
 	message_block(comment) {
 		let user = comment.createUser
 		let date = comment.createDate
-		
+		//outer
 		let div = E`message-block`
+		div.dataset.uid = comment.createUserId
+		div.dataset.merge = Entity.comment_merge_hash(comment)
 		// avatar
 		if (user.bigAvatar) {
 			let d = div.child('div', 'bigAvatar')
@@ -207,38 +231,34 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		}
 		// username
 		let label = div.child('message-header')
-		
 		let name = label.child('span')
-		
 		let n = name.child('span', 'pre username')
 		// if nickname is set, render as "nickname (realname):"
 		if (user.nickname !== undefined) { // why !== here?
 			n.textContent = user.nickname
-			name.append(":")
-			let ns = name.child('span', 'real-name-label')
-			ns.append(" (")
-			let real = ns.child('span', 'pre')
+			let ns = EC('span', 'real-name-label')
+			name.append(":", ns)
+			let real = EC('span', 'pre')
 			real.textContent = user.realname
-			ns.append(")")
+			ns.append(" (", real, ")")
 		} else {
 			// otherwise render as "name:"
 			n.textContent = user.name
 			name.append(":")
 		}
-		
 		// time
 		let timeStamp = label.child('time')
 		timeStamp.setAttribute("datetime", date+"")
 		timeStamp.textContent = timeString(date)
-		
 		// contents
 		let contentBox = div.child('message-contents')
-		div.dataset.uid = comment.createUserId
-		div.dataset.merge = Entity.comment_merge_hash(comment)
+		//
 		return [div, contentBox]
 	},
-	// comment: Comment
-	// return: Element
+	
+	// <message-part class='markup-root ...' tab-index=0 data-id=... data-time=...>
+	//   ...
+	// </message-part>
 	message_part(comment) {
 		let element = EC('message-part', 'markup-root')
 		element.setAttribute('tabindex', "0")
@@ -367,6 +387,9 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return outer
 	},
 	
+	// <button-container>
+	//   <button></button>
+	// </button-container>
 	button() {
 		let container = EC('button-container')
 		let button = container.child('button')
@@ -380,11 +403,18 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return [container, button]
 	},
 	
+	// <div class='pageInfoPane rem2-3 bar'>
+	//   [author box] [vote box]
+	// </div>
 	page_info(page) {
 		let e = EC('div', 'pageInfoPane rem2-3 bar')
 		e.append(author_box(page), vote_box(page))
 		return e
 	},
+	
+	// <button role=tab aria-selected=false id=... aria-controls=...>
+	//   ...
+	// </button>
 	sidebar_tabs(list, callback) {
 		let btns = []
 		let frag = F();
@@ -415,6 +445,18 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return x
 	},
 	
+	// <??? class='... activity-page'>
+	//   <div class='bar rem1-5 ellipsis'>
+	//      ???
+	//   </div>
+	//   <div class='bar rem1-5'> 
+	//     <activity-users class='rightAlign'>
+	//       <??? class='... textItem'>...</???>
+	//         
+	//       ...
+	//     </activity-users>
+	//   </div>
+	// <???>
 	activity_item(item) {
 		let outer = entity_link(item.content)
 		outer.className += " activity-page"
@@ -472,6 +514,9 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return x
 	},
 	
+	// [page_edited_time] [entity_title_link]
+	// ? [page_edited_time] [entity_title_link]
+	// ? [page_edited_time]
 	author_box(page) {
 		let elem = F()
 		if (!page)
@@ -489,6 +534,10 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return elem
 	},
 	
+	// <span class='item'>
+	//   <div class='half half-label'>...</div>
+	//   <??? class='... half'>???<???>
+	// </span>
 	page_edited_time(label, time) {
 		let b = EC('span', 'item')
 		
@@ -501,6 +550,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return b
 	},
 	
+	// <time class='time-ago' datetime=... title="...">...</time>
 	time_ago(time) {
 		let t = EC('time', 'time-ago')
 		t.setAttribute('datetime', time.toISOString())
@@ -528,15 +578,23 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		  return Math.round(seconds) + " seconds ago"*/
 	},
 	
+	// todo: switch to grid layout here?
+	// <tr data-id=...>
+	//   <td>...</td>
+	//   <th>
+	//     ? Default
+	//     ? [entity title link]
+	//   </th>
+	//   <td><input type=checkbox checked=... value=r></td>
+	//   <td><input type=checkbox checked=... value=c></td>
+	//   <td><input type=checkbox checked=... value=u></td>
+	//   <td><input type=checkbox checked=... value=d></td>
+	// </tr>
 	permission_row(user, perms) {
 		let id = user.id
 		let row = E`tr`
-		let name
-		if (!id) {
-			name = text_item("Default")
-		} else
-			name = entity_title_link(user, true)
-		name.className += " bar rem1-5"
+		row.dataset.id = id
+		// remove button
 		if (id) {
 			let b = button()
 			b[1].textContent = "remove"
@@ -544,19 +602,27 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			row.child('td').append(b[0])
 		} else
 			row.child('td')
+		// name label
+		let name
+		if (!id) {
+			name = text_item("Default")
+		} else {
+			name = entity_title_link(user, true)
+			name.className += " bar rem1-5"
+		}
 		row.child('th').append(name)
-		
+		// checkboxes
 		for (let p of ['r','c','u','d']) {
 			let inp = row.child('td').child('input')
 			inp.type = 'checkbox'
 			inp.checked = perms.indexOf(p)>=0
 			inp.value = p
 		}
-		
-		row.dataset.id = id
+		//
 		return row
 	},
 	
+	//
 	user_selector() {
 		let elem = EC('user-select', 'bar rem1-5')
 		let input = elem.child('input', 'item')
