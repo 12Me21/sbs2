@@ -8,6 +8,19 @@ let Act = {
 	// i.e. pages with recent activity, displayed in the sidebar
 	items: {},
 	
+	pull_recent() {
+		//console.log('pulling recent activity')
+		Req.get_recent_activity().then(({activity, Mall, Awatching, content, comment})=>{
+			console.log('🌄 got initial activity')
+			View.do_when_ready(()=>{
+				this.process_stuff(activity, Mall, Awatching, content)
+				Sidebar.display_messages(comment.reverse(), true)
+			})
+		}, (e, resp)=>{
+			print("initial activity failed!")
+		})
+	},
+	
 	// if an item exists for that id, return it
 	// otherwise create a new one and return it
 	get_item(id, pageMap, date) {
@@ -24,19 +37,6 @@ let Act = {
 	
 	redraw() {
 		Sidebar.on_aggregate_change(this.items)
-	},
-	
-	pull_recent() {
-		//console.log('pulling recent activity')
-		Req.get_recent_activity().then(({activity, Mall, Awatching, content, comment})=>{
-			console.log('🌄 got initial activity')
-			View.do_when_ready(()=>{
-				this.process_stuff(activity, Mall, Awatching, content)
-				Sidebar.display_messages(comment.reverse(), true)
-			})
-		}, (e, resp)=>{
-			print("initial activity failed!")
-		})
 	},
 	
 	process_stuff(act, comments, watching, pages) {
@@ -88,7 +88,8 @@ let Act = {
 	},
 	
 	new_activity(activity, pageMap, watch) {
-		for (let {contentId:id, date, user} of activity)
+		for (let {contentId:id, date, user, type} of activity)
+			if (type == '')
 			this.new_thing(id, date, user, pageMap, watch, true)
 	},
 	
