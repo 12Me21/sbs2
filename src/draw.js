@@ -8,6 +8,10 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return Req.file_url(user.avatar, params)
 	},
 	
+	// todo: these are all kinda gross
+	// I thought it was clever but now it's like
+	// why do i have the same function for drawing user labels and page/category... idk
+	
 	// icon + name
 	icon_title(entity, reverse) {
 		let elem = F()
@@ -44,7 +48,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	
 	title(entity) {
 		let element = EC('span', 'textItem pre entity-title')
-		element.textContent = entity ? entity.name : "MISSINGNO." // todo: this should be like, "user 14" (we should always know the uid)
+		element.textContent = entity ? entity.name : "MISSINGNO."
 		return element
 	},
 	
@@ -841,6 +845,8 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return element
 	},
 	
+	// update the timestamps in the sidebar activity list
+	// (todo: should we update them everywhere else on the site too?)
 	update_timestamps(element) {
 		for (let e of element.querySelectorAll("time.time-ago"))
 			e.textContent = time_ago_string(new Date(e.getAttribute('datetime')))
