@@ -69,13 +69,18 @@ Node.prototype.child = function(type, classes) {
 		this.className += " "+t[0]
 }*/
 
-
+// same as JSON.parse, but returns `undefined` if it fails
+// (note that JSON can't encode `undefined`)
 JSON.safe_parse = function(json) { // should be function() not => yeah?
 	try {
 		return JSON.parse(json)
 	} catch(e) {
 		return undefined
 	}
+}
+// convert obj into a json Blob for xhr
+JSON.to_blob = function(obj) {
+	return new Blob([JSON.stringify(obj)], {type: "application/json;charset=UTF-8"})
 }
 
 // creating our own storage system, to deal with compatibility + exceptions
@@ -114,6 +119,11 @@ Object.map = (obj, callback)=>{
 Object.first_key = function(obj) {
 	for (let key in obj)
 		return key
+}
+
+// if x is a plain object (ex: from an object literal, JSON.parse, etc.)
+Object.is_plain = function(x) {
+	return x && Object.getPrototypeOf(x)==Object.prototype
 }
 
 // use this instead of String.prototype.match(regexp)

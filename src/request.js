@@ -118,25 +118,17 @@ const Req = {
 			return ""
 		return "?"+params.join("&")
 	},
-	// if `data` is a plain object
-	is_object(data) {
-		return data && Object.getPrototypeOf(data)==Object.prototype
-	},
-	// convert obj into a json Blob for xhr
-	JSONData(obj) {
-		return new Blob([JSON.stringify(obj)], {type: "application/json;charset=UTF-8"})
-	},
 	
 	// idk having all brackets bold + dimgray was kinda nice...
 	request(url, method, callback, data, proc) {
-		if (this.is_object(data))
-			data = this.JSONData(data)
+		if (Object.is_plain(data))
+			data = JSON.to_blob(data)
 		return this.raw_request(url, method, data, proc, callback.bind(null, null), callback)
 	},
 	// i dont like how proc is required but h
 	request2(url, proc, method='GET', data=null) {
-		if (this.is_object(data))
-			data = this.JSONData(data)
+		if (Object.is_plain(data))
+			data = JSON.to_blob(data)
 		return new Promise(this.raw_request.bind(this, url, method, data, proc))
 	},
 	// new version of read()
@@ -149,7 +141,8 @@ const Req = {
 		})
 		if (fields)
 			Object.assign(query, fields)
-		return this.request2("Read/chain"+this.query_string(query), Entity.process.bind(Entity))
+		let url = "Read/chain"+this.query_string(query)
+		return new Promise(this.raw_request.bind(this, url, 'GET', null, Entity.process.bind(Entity)))
 	},
 	// chain
 	read(requests, filters, callback) {
@@ -162,7 +155,8 @@ const Req = {
 			return thing
 		})
 		Object.assign(query, filters) // we're not ready for {...} syntax yet
-		return this.request("Read/chain"+this.query_string(query), 'GET', callback, null, Entity.process.bind(Entity))
+		let url = "Read/chain"+this.query_string(query)
+		return this.raw_request(url, 'GET', null, Entity.process.bind(Entity), callback.bind(null, null), callback)
 	},
 	
 	/////////////////////////
@@ -190,22 +184,20 @@ const Req = {
 	// also doesn't DO anything else. (important, can be called at time 0)
 	// return: Boolean
 	try_load_auth() {
-		this.auth = null
-		this.uid = null
-		let auth = Store.get(this.storage_key)
-		if (!auth)
-			return false
-		let uid
+		let auth, uid
 		try {
+			auth = Store.get(this.storage_key)
 			uid = +JSON.parse(window.atob(auth.split(".")[1])).uid //yeah
 		} catch(e) {
-			return false
 		}
-		if (!uid)
-			return false
-		this.auth = auth
-		this.uid = uid
-		return true
+		if (auth && uid) {
+			this.auth = auth
+			this.uid = uid
+			return true
+		}
+		this.auth = null
+		this.uid = null
+		return false
 	},
 	
 	get_initial() {

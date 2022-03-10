@@ -290,27 +290,8 @@ let Entity = {
 			}
 		})
 	},
-	// parsing the ISO 8601 timestamps used by sbs
-	// new Date() /can/ do this, but just in case...
 	parse_date(str) {
-		if (str == null)
-			return null
-		if (typeof str != 'string') {
-			console.log("got weird date:", str)
-			return new Date(NaN)
-		}
-		let data = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d+)?)/.rmatch(str)
-		if (!data) {
-			console.error("couldn't parse date:", str)
-			return new Date(NaN)
-		}
-		let off = new Date(str)
-		let sec = Math.floor(+data[6])
-		let ms = +data[6] - sec
-		let ours = new Date(Date.UTC(+data[1], +data[2]-1, +data[3], +data[4], +data[5], sec, ms)) // yes you NEED to call Date.UTC, otherwise the timezone is wrong!
-		if (off.getDate() != ours.getDate())
-			console.error('date parsing differ!', str)
-		return ours
+		return new Date(str)
 	},
 	decode_comment(content) {
 		let newline = content.indexOf("\n")
@@ -319,7 +300,7 @@ let Entity = {
 			// try to parse the first line as JSON
 			data = JSON.parse(newline>=0 ? content.substr(0, newline) : content)
 		} finally {
-			if (data && Object.getPrototypeOf(data)==Object.prototype) { // new or legacy format
+			if (Object.is_plain(data)) { // new or legacy format
 				if (newline>=0)
 					data.t = content.substr(newline+1) // new format
 				else
