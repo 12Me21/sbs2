@@ -112,10 +112,9 @@ body {
 	box-sizing: content-box;
 	/* set min-height */
 }
-
 .textItem { /* basically anything within a .bar */
-	max-width: 100%;
 	display: inline;
+	max-width: 100%;
 	/* set min-height, line-height */
 }
 .item { /* for images and other blocks that can't wrap */
@@ -234,8 +233,8 @@ scroll-outer > :not(:first-child) {
 
 scroll-middle {
 	display: flex;
-	overflow: hidden;
 	flex-direction: column;
+	overflow: hidden;
 	min-height: 100%;
 	justify-content: flex-end;
 }
@@ -278,9 +277,9 @@ but, then we can't add a border to the image
  ** Slides Box **
  ****************/
 .slide-box {
+	display: block;
 	position: relative;
 	contain: strict;
-	display: block;
 	overflow: unset; /* ?? */
 }
 .slide-box > * {
@@ -297,10 +296,10 @@ but, then we can't add a border to the image
  ** Resize **
  ************/
 .resize-box {
-	--handle-width: 1.2em;
-	contain: strict;
 	display: flex;
 	flex-direction: column;
+	--handle-width: 1.2em;
+	contain: strict;
 }
 .resize-box.row {
 	flex-direction: row;
@@ -344,8 +343,8 @@ but, then we can't add a border to the image
 	content: "↕︎";
 }
 .resize-box.row > resize-handle::before {
-	content: "↔︎";
 	display: block;
+	content: "↔︎";
 	text-align: center;
 }
 

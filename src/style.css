@@ -51,12 +51,11 @@ h1 {
 /**********/
 
 textarea {
-	border-radius: 2px;
-	border: 2px solid #00C8B4;
-	box-shadow: 0.1rem 0.2rem 0.3rem -0.2rem rgba(13,13,13,0.5);
 	max-width: 100%;
+	border: 2px solid #00C8B4;
+	border-radius: 2px;
+	box-shadow: 0.1rem 0.2rem 0.3rem -0.2rem rgba(13,13,13,0.5);
 	font-family: roboto, sans-serif;
-	
 	font-size: 0.8em;
 	color: var(--maintxtcolor);
 	background-color: var(--mainbgcolor);
@@ -73,8 +72,8 @@ sub {vertical-align: sub;}
 }
 
 time {
-	color: var(--time-color);
 	font-size: 0.9em;
+	color: var(--time-color);
 	vertical-align: baseline;
 }
 
@@ -85,8 +84,6 @@ time {
 
 .username {
 	font-weight: bold;
-	unicode-bidi: embed;
-	white-space: pre-wrap;
 }
 
 /**********************
@@ -106,19 +103,19 @@ button {
 	background: var(--button-bg);
 }
 button-container {
-	padding: 1px;
 	display: inline-block;
+	padding: 1px;
 }
 button-container button {
-	margin: 0;
 	height: 100%;
+	margin: 0;
 	overflow-y: hidden;
 }
 
 button-container > a[href] {
+	display: inline-block;
 	width: 100%;
 	height: 100%;
-	display: inline-block;
 }
 button:hover {
 	border-color: var(--button-hover-color);
@@ -163,21 +160,21 @@ html.f-error .loadBG {
  ** Tabs **
  **********/
 tab-list {
-	width: 100%;
 	display: flex;
 	flex-direction: row;
+	width: 100%;
 }
 tab-list > button {
 	flex-grow: 1;
 	flex-basis: 0;
 	height: 2rem;
-	font-size: 1em;
 	padding: 0;
+	font-size: 1em;
 }
 
 tab-list > button img.avatar {
-	height: 100%;
 	width: auto;
+	height: 100%;
 }
 
 button[aria-selected="true"] {
@@ -239,8 +236,8 @@ html:not(.f-canEdit) .canEdit {
 }
 
 .titlePane > :first-child {
-	min-width: 0.3rem;
 	display: inline-block;
+	min-width: 0.3rem;
 }
 
 /*******************************
@@ -306,66 +303,64 @@ chat-pane .userlist {
  ** Chat Messages **
  *******************/
 message-block {
+	display: block;
+	position: relative;
+	box-sizing: content-box;
 	--chat-gutter: 4rem;
 	--chat-avatar-size: calc(var(--chat-gutter) - 0.5rem);
 	--chat-message-gap: 0.8rem;
-	font-size: 1em;
 	padding-inline: 0.5rem;
 	padding-top: var(--chat-message-gap);
-	white-space: pre-wrap;
-	/*border-left-width: 0.5em;
-	border-left-style: solid;
-	border-left-color: rgb(255,153,153);*/
-	overflow: auto;
-	display: block;
-	box-sizing: content-box;
 	min-height: var(--chat-avatar-size);
-	position: relative;
+	overflow: auto;
+	white-space: pre-wrap; /* hm ? */
+	/*border-left: 0.5em solid rgb(255,153,153);; */
+	font-size: 1em; /* ? */
 }
 message-block > img.avatar {
 	display: inline-block;
+	position: absolute;
 	width: var(--chat-avatar-size);
 	height: var(--chat-avatar-size);
 	border: none;/*1px solid #777;*/
+	margin-right: calc(var(--chat-gutter) - var(--chat-avatar-size));
 	/*background-color: transparent;*/
 	/*background-color: #AAB;*/
-	margin-right: calc(var(--chat-gutter) - var(--chat-avatar-size));
-	position: absolute;
 }
 message-block > .bigAvatar {
+	position: absolute;
 	width: calc(--chat-gutter + 0.5rem);
 	height: 100%;
-	position: absolute;
+	left: 0;
+	top: 0;
+	z-index: -10;
 	background-size: cover;
 	background-position-x: center;
 	background-position-y: top;
 	background-repeat: no-repeat;
-	left: 0;
-	top: 0;
-	z-index: -10;
 }
 
 message-block > message-header {
-	margin-left: var(--chat-gutter);
 	display: flex;
+	flex-wrap: wrap-reverse;
+	margin-left: var(--chat-gutter);
 	/* make the timestamp go into margins if there's not enough space */
 	min-height: calc(var(--chat-message-gap) + 1.1875rem); /* 1.1875 = text line height */
 	margin-top: calc(0rem - var(--chat-message-gap)); /* the units on 0rem are required? */
 	align-items: flex-start;
-	flex-wrap: wrap-reverse;
 }
 message-block > message-header > time {
-	font-weight: normal;
-	color: var(--chat-dim-color);
 	flex-grow: 1;
 	text-align: right;
+	font-weight: normal;
+	color: var(--chat-dim-color);
 }
 
 message-contents {
 	display: block;
 	position: relative;
-	margin-top: 0.2rem;
 	min-height: 1.5rem; /* this is so the message controls always have somewhere to be shown */
+	margin-top: 0.2rem;
 	/* do we need all these */
 	overflow: auto;
 	overflow-y: hidden; /* i think this one is for compat? */
@@ -379,9 +374,9 @@ message-contents img {
 
 message-part {
 	display: block;
+	min-height: 1rem; /* this is so the message controls always have somewhere to be shown */
 	padding-bottom: 0.2rem;
 	padding-left: calc(var(--chat-gutter) + 0.2rem);
-	min-height: 1rem; /* this is so the message controls always have somewhere to be shown */
 }
 message-part.edited {
 	/* todo: fix this styling */
@@ -399,20 +394,19 @@ message-part:focus {
 }
 
 message-controls {
+	display: inline-flex;
 	position: absolute;
 	width: var(--chat-gutter);
+	height: 1.3rem;
 	z-index: 9;
-/*(	overflow: hidden;*/
 	/* don't remove these prefixes */
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	user-select: none;
-	display: inline-flex;
-	height: 1.3rem;
 }
 message-controls > button {
-	padding: 0;
 	flex-grow: 1;
+	padding: 0;
 }
 message-controls:hover + message-part {
 	background: rgba(0,0,0,0.1);
@@ -432,8 +426,8 @@ message-controls:hover + message-part {
  ****************/
 
 .inputPane {
-	background: var(--bar-bg);
 	align-items: stretch;
+	background: var(--bar-bg);
 }
 html.f-chatEditing #\$chatTextarea {
 	background: var(--edit-textarea-bg);
@@ -443,16 +437,16 @@ html.f-chatEditing #\$chatTextarea {
 }
 html.f-chatEditing .hideWhenEdit,
 html:not(.f-chatEditing) .showWhenEdit {
-	display:none;
+	display: none;
 }
 
 /*****************
  ** Editor Pane **
  *****************/
 #\$editorTextarea {
-	resize: none;
-	overflow-y: scroll;
 	min-height: 3rem;
+	overflow-y: scroll;
+	resize: none;
 }
 
 /*********/
@@ -463,26 +457,24 @@ html:not(.f-chatEditing) .showWhenEdit {
 }
 
 .userPageBox {
+	height: 100%;
 	align-items: flex-start;
 	/*max-height: 40vh;*/
-	height: 100%;
 	overflow: auto;
 	/* todo: make this outside of scroller and have activity list scroll separately*/ /* ??? */
 }
 
 .userPageAvatar {
-	width: 10rem;
-	height: 10rem;
 	display: inline-block;
 	flex-shrink: 1;
-	box-shadow: 2px 2px 5px gray;
+	width: 10rem;
+	height: 10rem;
 	margin-bottom: 5px;
+	box-shadow: 2px 2px 5px gray;
 }
-
 .userPageBox .pageContents {
 	flex-basis: 0;
 }
-
 .userPageContents {
 	flex-grow: 1;
 }
@@ -500,21 +492,19 @@ html:not(.f-myUserPage) .myUserPage {
 		max-height: none;
 	}
 	.userPageBox .userPageContents {
-		width: 100%;
 		flex-basis: auto;
+		width: 100%;
 	}
 }
 
 form-table > .label {
 	font-weight: bold;
-   text-align: right;
-   padding-right: 0.5rem;
+	text-align: right;
+	padding-right: 0.5rem;
 }
-
 form-table > .field {
 	vertical-align: middle;
 }
-
 form-table > .wide.label {
 	text-align: left;
 	font-weight: bold;
@@ -543,8 +533,8 @@ th {
 	text-align: left;
 }
 .permissionRow > td {
-	text-align: center;
 	padding: 0;
+	text-align: center;
 }
 .permission-table thead th {
 	padding-inline: 0.5rem
@@ -559,17 +549,19 @@ th {
 	text-align: right;
 }
 
+user-select {
+	display: block;
+}
+
 /**********
  ** Page **
  **********/
 button.voteButton[data-selected][data-vote="g"] {
 	background: linear-gradient(lime, #eee);
 }
-
 button.voteButton[data-selected][data-vote="b"] {
 	background: linear-gradient(red, #eee);
 }
-
 button.voteButton[data-selected][data-vote="o"] {
 	background: linear-gradient(aqua, #eee);
 }
@@ -579,16 +571,16 @@ button.voteButton[data-selected][data-vote="o"] {
 
 /* hecko yo */
 .pageContents {
-	max-width:100%;
-	overflow-x:auto;
+	max-width: 100%;
+	overflow-x: auto;
 	padding: 1.5em;
 }
 
 .pageInfoPane {
-	background: var(--bar-bg);
 	padding-inline: 0.3rem;
-	box-shadow: var(--normal-shadow);
 	border-bottom: 1px solid var(--border-color);
+	background: var(--bar-bg);
+	box-shadow: var(--normal-shadow);
 }
 
 /***********
@@ -601,25 +593,21 @@ button.voteButton[data-selected][data-vote="o"] {
 	height: 52px;
 	cursor: pointer;
 }
-
 .fileThumbnail > img {
+	box-sizing: content-box;
 	max-width: 50px;
 	max-height: 50px;
 	border: 1px solid black;
-	box-sizing: content-box;
 	/*vertical-align: top; /* what the fuck */
 }
-
 .fileView {
 	max-width: 100%;
 	max-height: 100%;
 	border: 1px solid black;
 }
-
 .fileViewPane {
 	overflow: auto;
 }
-
 html:not(.f-fileSelected) .fileSelected {
 	display: none;
 }
@@ -667,32 +655,19 @@ input, select { /* this is old & probably not needed */
 	max-width: 100%;
 }
 
+/* ehhh */
 .half {
-	text-align: center;
 	display: block;
-	line-height: 1.15rem;
 	min-height: 1.15rem;
+	line-height: 1.15rem;
+	text-align: center;
 }
-
 .half-label {
 	font-weight: bold;
-	/*text-align: right;*/
-}
-
-.wideCell {
-	width: 100%;
-}
-
-.wideCell > a[href] {
-	display: block;
 }
 
 .image-box > img {
 	border: 1px solid black;
-}
-
-user-select {
-	display: block;
 }
 
 textarea-container {
@@ -700,21 +675,16 @@ textarea-container {
 	padding: 5px;
 	background: var(--mainbgcolor);
 }
-
 textarea-container > textarea {
-	border-radius: 0;
 	height: 2.5em;
 	min-height: 2.5em;
 	box-shadow: none;
+	border-radius: 0;
 }
-
 textarea-container > textarea:focus {
-/*	outline-offset: 4px;
-	outline: 2px solid black;*/
-	outline-offset: 3px;
 	outline: 2px inset gray;
+	outline-offset: 3px;
 }
-
 textarea-container, textarea-container > textarea {
 	max-height: 25vh;
 }
@@ -729,8 +699,8 @@ textarea-container, textarea-container > textarea {
 ************/
 
 .gallery-inner {
-	margin-inline: auto;
 	position: relative;
+	margin-inline: auto;
 }
 .gallery-inner canvas {
 	width: 100%;
@@ -746,11 +716,10 @@ textarea-container, textarea-container > textarea {
 	height: 100%;
 }
 .gallery-title {
-	text-align: center;
 	margin-inline: auto;
+	text-align: center;
 	background: var(--bar-bg);
 }
-
 
 .debugMessage {
 	background: var(--bar-bg);
@@ -776,10 +745,10 @@ message-part, header, .markup-root, message-block {
 
 /*   idk   */
 .page-container:not(#a) {
+	min-height: 2.3rem;
+	height: 40vh;
 	max-height: 100%;
 	overflow-y: scroll;
-	height: 40vh;
-	min-height: 2.3rem;
 }
 
 #\$titlePane [data-view]:not(.shown) {
@@ -792,24 +761,22 @@ message-part, header, .markup-root, message-block {
 
 .activity-page {
 	display: block;
-	background: var(--mainbgcolor);
 	border-bottom: 1px solid var(--border-color);
 	border-top: 1px solid white;
 	padding-left: 0.2rem;
 	padding-bottom: 1px;
+	background: var(--mainbgcolor);
 	/*border: 3px solid  #CDBC8A;
 	border-bottom-color: #EAD9A7;
 	border-right-color: #EAD9A7;*/
 	/*border-width: 3px;*/
 }
 
-
 activity-users {
 	white-space: pre;
 	overflow-x: visible;
 	padding-right: 0.2rem;
 }
-
 
 #\$sidebarBottom {
 	min-height: 0; /* fixes weird ios safari bug with sidebar bottom panel expanding forever. maybe we need to apply this to all .grow elements? */
