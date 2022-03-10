@@ -113,7 +113,7 @@ let Entity = {
 			G: 'commentaggregate', // ran out of letters
 		}[key[0]] || key
 	},
-	process_type(type, data) {
+	process_item(type, data) {
 		let l = [data]
 		Entity.process_list(type, l, {})
 		return l[0]

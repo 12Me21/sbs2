@@ -140,7 +140,7 @@ const Req = {
 		return new Promise(this.raw_request.bind(this, url, method, data, proc))
 	},
 	// new version of read()
-	chain(requests, fields) {
+	chain(requests, fields=null) {
 		let query = {}
 		query.requests = requests.map(([thing, data])=>{
 			if (data)
@@ -155,6 +155,7 @@ const Req = {
 	read(requests, filters, callback) {
 		let query = {}
 		// i suppose we could like, processs this AND convert to query string at the same time hmm?
+		 /// // do not think about such things,.
 		query.requests = requests.map(([thing, data])=>{
 			if (data)
 				thing += "-"+JSON.stringify(data)
@@ -207,23 +208,23 @@ const Req = {
 		return true
 	},
 	
-	get_initial(callback) {
-		return this.read([
+	get_initial() {
+		return this.chain([
 			['systemaggregate'], //~💖
 			['user~Ume', {ids:[Req.uid], limit:1}],
-		], {}, callback)
+		])
 	},
 	
 	get_me(callback) {
 		return this.request("User/me", 'GET', (e, resp)=>{
 			callback(e ? null: resp)
-		}, null, Entity.process_type.bind(Entity, 'user'))
+		}, null, Entity.process_item.bind(Entity, 'user'))
 	},
 	
 	set_basic(data, callback) {
 		return this.request("User/basic", 'PUT', (e, resp)=>{
 			callback(e ? null : resp)
-		}, data, Entity.process_type.bind(Entity, 'user'))
+		}, data, Entity.process_item.bind(Entity, 'user')) // maybe it would be better to just pass the typename or something here?
 	},
 	
 	set_sensitive(data, callback) {
@@ -256,7 +257,7 @@ const Req = {
 	upload_file(file, params, callback) {
 		let form = new FormData() // no you can't just pass fields to the constructor
 		form.append('file', file)
-		this.request("File"+this.query_string(params), 'POST', callback, form, Entity.process_type.bind(Entity, 'file'))
+		this.request("File"+this.query_string(params), 'POST', callback, form, Entity.process_item.bind(Entity, 'file'))
 	},
 	
 	toggle_hiding(id, callback) {
@@ -303,11 +304,11 @@ const Req = {
 	},
 	
 	// might be worth speeding up in entity.js (100ms)
-	get_recent_activity(callback, fail) {
+	get_recent_activity() {
 		let day = 1000*60*60*24
 		let start = new Date(Date.now() - day).toISOString()
 		// "except no that won't work if site dies lol"
-		return this.read([
+		return this.chain([
 			['activity', {createStart: start}],
 			['comment~Mall', {reverse: true, limit: 1000}],
 			['activity~Awatching', {contentLimit:{watches:true}}],
@@ -317,11 +318,6 @@ const Req = {
 		], {
 			content: 'name,id,permissions,type',
 			Mall: 'parentId,editUserId,editDate',
-		}, (e, resp)=>{
-			if (e)
-				fail(e, resp)
-			else
-				callback(resp)
 		})
 	},
 	
@@ -376,7 +372,7 @@ const Req = {
 		this.request("Comment", 'POST', callback, {parentId: room, content: Entity.encode_comment(text, meta)})
 	},
 	
-	edit_message(id, room, text, meta, callback) {
+	edit_message(id, room, text, meta, callback) { // lots of args..
 		this.request("Comment/"+id, 'PUT', callback, {parentId: room, content: Entity.encode_comment(text, meta)})
 	},
 	

@@ -28,25 +28,17 @@ function immediate() {
 	if (Req.auth) {
 		console.log("🌄 got auth")
 		View.flag('loggedIn', true)
-		
-		Req.get_initial((e, resp)=>{
-			if (e) {
-				alert("INITIAL DATA FAILED!")
-				return
-			}
-			let lastid = resp.systemaggregate.find(x=>x.type=='actionMax').id
-			got_lastid(lastid)
-			
-			let me = resp.Ume[0]
-			if (me && me.id == Req.uid) {
-				Req.me = me
-			} else {
-				alert('invalid own user')
-			}
-			View.do_when_ready(()=>{
-				View.update_my_user(me)
-			})
+		// idk if i like this...
+		Req.get_initial().then(({systemaggregate, Ume})=>{
+			let lastid = systemaggregate.find(x=>x.type=='actionMax').id
+			let me = Ume[0]
+			if (!me || me.id != Req.uid)
+				throw 'invalid own user'
+			return {lastid, me}
+		}).then(got_initial, (e, resp)=>{
+			alert("INITIAL DATA FAILED!")
 		})
+		
 		if (Store.get('websocket'))
 			Lp.use_websocket = true
 		else
@@ -69,9 +61,11 @@ function immediate() {
 		root.style.imageRendering = "-webkit-optimize-contrast"
 }
 
-function got_lastid(id) {
-	console.log("🌄 got lastId, staring long poller etc.")
-	Lp.update_lastid(id)
+function got_initial({lastid, me}) {
+	console.log("🌄 got initial, staring long poller etc.")
+	Req.me = me
+	View.do_when_ready(()=> View.update_my_user(me) )
+	Lp.update_lastid(lastid)
 	Lp.start()
 	Nav.initial()
 	Act.pull_recent() // TODO: I'd like to run this before lastid

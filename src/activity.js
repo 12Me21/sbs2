@@ -28,15 +28,15 @@ let Act = {
 	
 	pull_recent() {
 		//console.log('pulling recent activity')
-		// bad arguments :(
-		Req.get_recent_activity(({activity, Mall, Awatching, content, comment})=>{
+		Req.get_recent_activity().then(({activity, Mall, Awatching, content, comment})=>{
 			console.log('🌄 got initial activity')
 			View.do_when_ready(()=>{
 				this.process_stuff(activity, Mall, Awatching, content)
 				Sidebar.display_messages(comment.reverse(), true)
 			})
-		}, (e)=>{print("initial activity failed!")})
-		// better yet, we could use .then/.catch here?
+		}, (e, resp)=>{
+			print("initial activity failed!")
+		})
 	},
 	
 	process_stuff(act, comments, watching, pages) {
