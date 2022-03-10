@@ -363,12 +363,12 @@ message-block > message-header > time {
 
 message-contents {
 	display: block;
-	vertical-align: top; /* why? */
-	overflow: auto;
 	position: relative;
 	margin-top: 0.2rem;
 	min-height: 1.5rem; /* this is so the message controls always have somewhere to be shown */
-	overflow-y: hidden;
+	/* do we need all these */
+	overflow: auto;
+	overflow-y: hidden; /* i think this one is for compat? */
 	overflow-y: clip;
 }
 message-contents img {
@@ -389,12 +389,13 @@ message-part.edited {
 	padding-left: calc(var(--chat-gutter) + 0.2rem - 1px);
 	border-left: 1px solid gray;
 }
-message-part[editing] {
-	background: yellow;
-}
 message-part:focus {
 	background: rgba(0,224,255,0.1);
 	outline: none;
+}
+
+.real-name-label {
+	color: gray
 }
 
 message-controls {
@@ -417,26 +418,6 @@ message-controls:hover + message-part {
 	background: rgba(0,0,0,0.1);
 }
 
-#\$chatTextarea[disabled] {
-	background: silver;
-}
-
-.inputPane {
-	background: var(--bar-bg);
-	align-items: stretch;
-}
-
-html.f-chatEditing #\$chatTextarea {
-	background: var(--edit-textarea-bg);
-}
-
-html.f-chatEditing .hideWhenEdit {
-	display:none;
-}
-html:not(.f-chatEditing) .showWhenEdit {
-	display:none;
-}
-
 .messageGap {
 	border: 1px dashed gray; /*♥*/
 	margin-block: 0.3rem;
@@ -446,15 +427,23 @@ html:not(.f-chatEditing) .showWhenEdit {
 	padding-bottom: 0.9rem; /* increased to 0.9rem because we moved message-block padding to top of element */
 }
 
-.real-name-label {
-	color: gray
-}
-
 /****************
  ** Chat Input **
  ****************/
-.chatSend {
-	height: 2.5rem;
+
+.inputPane {
+	background: var(--bar-bg);
+	align-items: stretch;
+}
+html.f-chatEditing #\$chatTextarea {
+	background: var(--edit-textarea-bg);
+}
+#\$chatTextarea[disabled] {
+	background: silver;
+}
+html.f-chatEditing .hideWhenEdit,
+html:not(.f-chatEditing) .showWhenEdit {
+	display:none;
 }
 
 /*****************
