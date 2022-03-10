@@ -11,7 +11,6 @@ function arrayToggle(array, value) {
 const Req = {
 	auth: null,
 	storage_key: "auth",
-	//storage_key = "devauth"
 	
 	server: "smilebasicsource.com/api", // no you can't add "https://" to this string, because we need to use wss:// in another place
 	
@@ -22,70 +21,14 @@ const Req = {
 	locked: false, // for testing
 	
 	JSONData(obj) {
-		return new Blob([JSON.stringify(data)], {type: "application/json;charset=UTF-8"})
+		return new Blob([JSON.stringify(obj)], {type: "application/json;charset=UTF-8"})
 	},
 	
-	wait(time) {
-		return new Promise(y => window.setTimeout(y, time))
-	},
-	
-	raw_request2(url, method='GET', data=null) {
-		let options = {method, data, cache: 'no-store', headers: {}}
-		
-		if (this.auth)
-			options.headers.Authorization = "Bearer "+this.auth
-		
-		let retry = (time, reason)=>{
-			console.log("will retry", reason, "in "+time/1000+" sec")
-			return wait(time).then(this.raw_request2.bind(this, url, method, data))
-		}
-		
-		let err = (msg, datap) => datap.then(x=>{throw [msg, x]})
-		
-		let start = Date.now()
-		
-		return fetch(`https://${this.server}/${url}`, options).then((resp)=>{
-			// onload
-			let type = resp.headers.get('Content-Type')
-			let datap = /^application\/json\b/i.test(type) ? resp.json() : resp.text()
-			let status = resp.status
-			if (status==200) return datap
-			if (status==403) return err('permission', datap)
-			if (status==404) throw ['404', datap]
-			if (status==418) throw ['ban', datap]
-			if (status==400) throw ['invalid', datap]
-			if (status==401) {
-				alert("AUTHENTICATION ERROR!?\nif this is real, you must log out!\n"+resp)
-				// this.log_out()
-				throw ['auth', datap]
-			}
-			if (status==500) { // Server Error
-				print("got 500 error! "+resp)
-				console.warn('got 500 error', x, resp)
-				throw ['server', datap]
-			}
-			if (status==502) return retry(5000, 'bad gateway')
-			// (record says server uses 408, testing showed only 204. idk)
-			if (status==408 || status==204 || status==524) return retry(0, 'timeout')
-			if (status==429) { // Rate Limit
-				let after = +(resp.headers.get('Retry-After') || 1)
-				return retry(after*1000+500, "rate limited "+after+"sec")
-			}
-			// OTHER
-			alert("Request failed! "+status+" "+url)
-			console.log("REQUEST FAILED", resp)
-			throw ['unknown', datap, status]
-		}, (resp)=>{
-			// onerror
-			let time = Date.now()-start
-			if (time > 18*1000)
-				return retry(0, "3ds timeout")
-			print("Request failed!")
-			return retry(5000, "request error")
-		})
-	},
-	
-	raw_request(url, method, data, ok, fail) {
+	// `proc` is a function that gets called after the data is recieved
+	// of course, you could handle this in the `ok` callback, but then
+	// you're forced to intercept this before passing the data to 
+	// a higher level function
+	raw_request(url, method, data, proc, ok, fail) {
 		let x = new XMLHttpRequest()
 		x.open(method, `https://${this.server}/${url}`)
 		let start = Date.now()
@@ -112,86 +55,61 @@ const Req = {
 				resp = JSON.safe_parse(resp)
 			let code = x.status
 			
-			// OK
-			if (code==200) ok(resp)
+			if (code==200) {
+				if (proc)
+					proc(resp)
+				return ok(resp)
+			}
 			
-			// Permission denied
-			else if (code==403) fail('permission', resp)
-			// 404
-			else if (code==404) fail('404', resp)
-			// Banned
-			else if (code==418) fail('ban', resp)
-			// Invalid Request
-			else if (code==400) fail('error', resp)
-			// Bad Auth
-			else if (code==401) {
+			if (code==502) return retry(5000, 'bad gateway')
+			// (record says server uses 408, testing showed only 204. idk)
+			if (code==408 || code==204 || code==524) return retry(0, 'timeout')
+			if (code==429) {
+				let after = +(x.getResponseHeader('Retry-After') || 1)
+				return retry((after+0.5)*1000, "rate limited "+after+"sec")
+			}
+			
+			if (code==403) return fail('permission', resp)
+			if (code==404) return fail('404', resp)
+			if (code==418) return fail('ban', resp)
+			if (code==400) return fail('error', resp)
+			if (code==401) {
 				alert("AUTHENTICATION ERROR!?\nif this is real, you must log out!\n"+resp)
 				// this.log_out()
-				fail('auth', resp)
+				return fail('auth', resp)
 			}
-			
-			// Server Error
-			else if (code==500) {
-				print("got 500 error! "+resp)
-				console.warn('got 500 error', x, resp)
-				fail('error', JSON.safe_parse(resp))
+			if (code==500) {
+				console.error('got 500 error', x, resp)
+				return fail('error', JSON.safe_parse(resp))
 			}
-			// Connection Error
-			else if (code==502)
-				retry(5000, 'bad gateway')
-			// Timeout
-			// (record says server uses 408, testing showed only 204. idk)
-			else if (code==408 || code==204 || code==524)
-				retry(0, 'timeout')
-			// Rate Limit
-			else if (code == 429) {
-				let after = +(x.getResponseHeader('Retry-After') || 1)
-				retry((after+0.5)*1000, "rate limited "+after+"sec")
-			}
-			// OTHER
-			else {
-				alert("Request failed! "+code+" "+url)
-				console.log("REQUEST FAILED", x)
-				resp = JSON.safe_parse(resp) || resp
-				fail('error', resp, code)
-			}
+			alert("Request failed! "+code+" "+url)
+			console.log("REQUEST FAILED", x)
+			return fail('error', resp, code)
 		}
+		
 		x.onerror = ()=>{
 			let time = Date.now()-start
-			if (time > 18*1000)
-				retry(0, "3ds timeout") // i think other browsers do this too now?
-			else {
-				print("Request failed!")
-				retry(5000, "request error")
-			}
+			if (time > 18*1000) // i think other browsers do this too now?
+				return retry(0, "3ds timeout")
+			print("Request failed!")
+			return retry(5000, "request error")
 		}
 		
-		// idk which of these is still necessary, but cache issues are so scary that I don't want to mess with it. hopefully none of them causes actual PROBLEMS
-		x.setRequestHeader('Cache-Control', "no-cache, no-store, must-revalidate")
-		x.setRequestHeader('Pragma', "no-cache") // for internet explorer
+		x.setRequestHeader('Cache-Control', "no-store no-cache must-revalidate")
 		this.auth && x.setRequestHeader('Authorization', "Bearer "+this.auth)
-		
-		// no data
-		if (data == undefined)
-			x.send()
-		// data is Object (convert to json)
-		else if (Object.getPrototypeOf(data)==Object.prototype) { //plain object. we do need to support sending strings etc. as json later though...
-			x.setRequestHeader('Content-Type', "application/json;charset=UTF-8")
-			x.send(JSON.stringify(data))
-		// otherwise, send raw (ex: string, FormData)
-		} else
-			x.send(data)
+		x.send(data)
 		
 		// the only thing we use here is .abort
 		// (note that .abort is modified by retry())
 		return x
 	},
+	
 	query_string(obj) {
 		if (!obj)
 			return ""
 		let params = []
 		for (let [key, val] of Object.entries(obj)) {
-			if (val == undefined) // I changed this to == so null is ignored too. I think that's fine? better than turning it into a string, at least. perhaps it should map to "key=" or "key" instead
+			if (val == undefined)
 				continue
 			let item = encodeURIComponent(key)+"="
 			// array items are encoded as
@@ -206,13 +124,22 @@ const Req = {
 			return ""
 		return "?"+params.join("&")
 	},
+	
+	is_object(data) {
+		return data && Object.getPrototypeOf(data)==Object.prototype
+	},
+	
 	// idk having all brackets bold + dimgray was kinda nice...
 	request(url, method, callback, data) {
-		return this.raw_request(url, method, data, callback.bind(null, null), callback)
+		if (this.is_object(data))
+			data = this.JSONData(data)
+		return this.raw_request(url, method, data, null, callback.bind(null, null), callback)
 	},
 	//
-	request2(url, method, data) {
-		return new Promise(this.raw_request.bind(this, url, method, data))
+	request2(url, proc, method='GET', data=null) {
+		if (this.is_object(data))
+			data = this.JSONData(data)
+		return new Promise(this.raw_request.bind(this, url, method, data, proc))
 	},
 	
 	// new version of read()
@@ -225,9 +152,8 @@ const Req = {
 		})
 		if (fields)
 			Object.assign(query, fields)
-		return new Promise(this.raw_request.bind(this, "Read/chain"+this.query_string(query), 'GET', null)).then((resp)=>{
+		return this.request2("Read/chain"+this.query_string(query), (resp)=>{
 			Entity.process(resp)
-			return resp
 		})
 	},
 	
@@ -274,7 +200,7 @@ const Req = {
 	
 	// log in using username/password
 	authenticate(username, password) {
-		return this.request2('User/authenticate', 'POST', {username, password}).then(resp=>{
+		return this.request2('User/authenticate', null, 'POST', {username, password}).then(resp=>{
 			Store.set(this.storage_key, resp, true)
 			window.location.reload()
 		})
