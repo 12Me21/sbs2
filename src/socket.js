@@ -71,13 +71,14 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 	listening: [-1], // lastListeners is set based on this
 	
 	// status
-	running: false,
+	running: false, // what does this do really?
 	// websocket exclusive
 	use_websocket: false,
 	websocket: null,
 	ws_token: null,
 	last_open: 0,
 	dead: false,
+	ws_is_ready: false,
 	// long poller exclusive
 	lp_cancel: ()=>{},
 	
@@ -175,7 +176,8 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 	ws_refresh() {
 		running = true
 		ws_message = make_request()
-		websocket_flush()
+		if (ws_is_ready)
+			websocket_flush()
 	},
 	
 	lp_listen(callback) {
@@ -266,46 +268,54 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 		}
 	},
 	
+	ws_ready() {
+		ws_is_ready = true
+		websocket_flush()
+	},
+	
+	ws_is_open() {
+		return websocket && websocket.readyState==WebSocket.OPEN
+	},
+	
 	websocket_flush() {
-		if (!running)
-			return // hack idk
-		if (websocket && websocket.readyState == 0) {
+		if (!ws_is_ready)
 			return
-		} else if (websocket && websocket.readyState == 1) {
-			if (ws_token) {
-				if (ws_message.listeners) {
-					ws_message.auth = ws_token
-					websocket.send(JSON.stringify(ws_message))
-				}
-			}
-		} else {
-			open_websocket()
+		if (!ws_is_open() || !ws_token) { // should never
+			print("websocket flush sequence error!")
+			console.error("websocket flush sequence error!")
+			return
+		}
+		if (ws_message.listeners) {
+			ws_message.auth = ws_token
+			websocket.send(JSON.stringify(ws_message))
 		}
 	},
 	
 	do_early() {
 		if (use_websocket) {
+			get_ws_auth()
 			open_websocket()
 		}
 	},
 	
-	get_ws_auth(callback) {
-		Req.request('Read/wsauth', 'GET', (e, resp)=>{
-			if (!e) {
-				ws_token = resp
-				print("got ws token!")
-				callback()
-			} else {
-				print('websocket auth failed:'+e)
-			}
+	get_ws_auth() {
+		Req.request2('Read/wsauth').then((resp)=>{
+			ws_token = resp
+			if (ws_is_open())
+				ws_ready()
+		}, (e, resp)=>{
+			print('websocket auth failed:'+e)
 		})
 	},
 	
 	open_websocket() {
-		if (websocket && websocket.readyState<2) {
+		if (websocket && websocket.readyState <= WebSocket.OPEN) {
 			print("multiple websocket tried to open!")
+			console.error("multiple websocket tried to open!")
+			// should not happen!
 			return
 		}
+		
 		let now = Date.now()
 		if (now - last_open < 4000) {
 			print("websocket loop too fast! delaying 5 seconds.\nThis is probably caused by an invalid websocket token. please report this")
@@ -313,29 +323,31 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 			return
 		}
 		last_open = now
-		ws_token = null
-		// todo: we don't know whether the websocket will open before or after the auth token is gotten.
-		// make sure we don't flush twice.
-		get_ws_auth(()=>{
-			websocket_flush()
-		})
+		
 		websocket = new WebSocket(`wss://${Req.server}/read/wslisten`)
 		
 		websocket.onopen = (e)=>{
 			print("websocket open!")
-			websocket_flush()
+			if (ws_token)
+				ws_ready()
 		}
 		websocket.onerror = (e)=>{
 			print("websocket error!")
 		}
 		websocket.onclose = (e)=>{
+			console.log("websocket closed:", e.code, e.reason, e.wasClean)
+			print("websocket close!")
+			
 			if (dead)
 				return
 			// 1000, "Invalid token", true - token
 			// 1006, "", false - connection error
+			ws_is_ready = false
 			
-			console.log("websocket closed:", e.code, e.reason, e.wasClean)
-			print("websocket close!")
+			if (e.reason=="Invalid token") {
+				ws_token = null
+				get_ws_auth()
+			}
 			open_websocket()
 		}
 		websocket.onmessage = (e)=>{
