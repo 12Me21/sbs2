@@ -6,18 +6,17 @@
 // 4: waiting for token or onopen
 //   - if the wsauth request finishes
 //     - failed: fatal (remember we have autorerequest at a lower level)
-//     - suceeded: go to state 1 if socket is open
+//     - suceeded: set wsauth, go to state 1 if socket is open
 //   - if the socket opens
 //     - go to state 1 if wsauth has been recieved
-// 
 
-// in state 1, if the socket closes:
-//  - reopen the websocket
-//  - if it was a token error
+// in state 1 and 4, if the socket closes:
+///  (we want to have some rate limiting here, in case we have lost connection)
+//  - reopen it
+//  - if there was a token error (only possible in state 1)
+//    - wsauth = null
 //    - request wsauth
 //  - go to state 4
-
-// how about this
 
 let Lp = Object.create(null)
 with(Lp)((window)=>{"use strict";Object.assign(Lp,{

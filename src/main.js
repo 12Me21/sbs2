@@ -52,6 +52,8 @@ function immediate() {
 		Lp.do_early()
 	} else {
 		console.warn("🌄 Not logged in!")
+		Nav.initial()
+		Act.pull_recent()
 	}
 	
 	// we can access this even if DOMContentLoaded hasn't occurred yet

@@ -105,7 +105,10 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 			{label: x, elem: $sidebarUserPanel},
 		])
 		$sidebar_tabs.fill(sidebar_tabs.elem)
-		sidebar_tabs.select(0)
+		if (Req.auth)
+			sidebar_tabs.select(0)
+		else
+			sidebar_tabs.select(4)
 		select_tab = sidebar_tabs.select
 		
 		$searchButton.onclick = ()=>{
