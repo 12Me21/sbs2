@@ -36,7 +36,7 @@ const Req = {
 			let id = window.setTimeout(()=>{
 				console.log("retrying request", reason)
 				// this is not recursion: we're in an async callback function!
-				let x2 = this.raw_request(url, method, data, ok, fail)
+				let x2 = this.raw_request(url, method, data, proc, ok, fail)
 				x.abort = x2.abort
 			}, time)
 			x.abort = ()=>{window.clearTimeout(id)}
