@@ -3,6 +3,22 @@ with(Settings)((window)=>{"use strict"; Object.assign(Settings,{
 	values: {},
 	
 	fields: {
+		theme: {
+			name: "Theme",
+			type: 'select',
+			options: ['auto','light','dark'],
+			// change event can run any time (even before DOM ready)
+			update(value) {
+				if (value != 'auto')
+					window.document.documentElement.dataset.theme = value
+				else
+					delete window.document.documentElement.dataset.theme
+			},
+		},
+		nickname: {
+			name: "Chat Nickname",
+			type: 'text',
+		},
 		chat_markup: {
 			name: "Chat Markup Language",
 			type: 'select',
@@ -20,19 +36,7 @@ with(Settings)((window)=>{"use strict"; Object.assign(Settings,{
 		},
 		big_avatar_id: {
 			name: "Big Avatar Id",
-			type: 'textarea',
-		},
-		theme: {
-			name: "Theme",
-			type: 'select',
-			options: ['auto','light','dark'],
-			// change event can run any time (even before DOM ready)
-			update(value) {
-				if (value != 'auto')
-					window.document.documentElement.dataset.theme = value
-				else
-					delete window.document.documentElement.dataset.theme
-			},
+			type: 'text',
 		},
 		sitejs: {
 			name: "Custom Javascript",
@@ -59,10 +63,6 @@ with(Settings)((window)=>{"use strict"; Object.assign(Settings,{
 				})
 			},
 		},
-		nickname: {
-			name: "Chat Nickname",
-			type: 'textarea',
-		},
 	},
 	
 	early() {
@@ -83,7 +83,6 @@ with(Settings)((window)=>{"use strict"; Object.assign(Settings,{
 	
 	// change a setting after load
 	change(name, value) {
-		console.log("change setting", name, value)
 		let field = fields[name]
 		if (!field) return
 		values[name] = value
