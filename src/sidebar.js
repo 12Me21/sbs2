@@ -39,6 +39,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		View.attach_resize($sidebar, $horizontalResize, true, -1, "sidebarWidth")
 		View.attach_resize($sidebarTop, $sidebarResize, false, 1, "sidebarPinnedHeight")
 		View.flag('sidebar', true)
+		$sidebarResize.textContent += Lp.use_websocket ? " [websocket]" : " [long polling]"
 		
 		attach_paste(got_file)
 		
@@ -153,12 +154,10 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 					registerError(resp, "Failed:") //todo: this doesn't work?
 			})
 		}
-		let d = Draw.settings(Settings.fields, (name, value)=>{
-			Settings.change(name, value)
-		})
+		let d = Draw.settings(Settings)
 		$localSettings.append(d.elem)
 		$localSettingsSave.onclick = ()=>{
-			d.saveAll()
+			d.update_all()
 		}
 	},
 	

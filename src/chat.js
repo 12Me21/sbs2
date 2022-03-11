@@ -304,8 +304,6 @@ ChatRoom.listening_rooms = function() {
 	return list
 }
 
-ChatRoom.markup = "12y"
-
 ChatRoom.generateStatus = function() {
 	let status = {}
 	for (let id in this.rooms)

@@ -34,6 +34,8 @@ function immediate() {
 	if (Req.auth) {
 		console.log("🌄 got auth")
 		View.flag('loggedIn', true)
+		Settings.early()
+		
 		// idk if i like this...
 		Req.get_initial().then(({systemaggregate, Ume})=>{
 			let lastid = systemaggregate.find(x=>x.type=='actionMax').id
@@ -45,7 +47,7 @@ function immediate() {
 			alert("INITIAL DATA FAILED!")
 		})
 		
-		if (Store.get('websocket'))
+		if (Settings.values.websocket=='websocket')
 			Lp.use_websocket = true
 		else
 			Lp.use_websocket = false

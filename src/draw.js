@@ -735,29 +735,21 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	},
 	
 	// todo: replace this
-	settings(settings, onchange) {
+	settings(settings) {
 		let get = {}
-		let set = {}
-		let change = (name)=>{
-			var value = get[name]()
-			Store.set("setting-"+name, JSON.stringify(value))
-			onchange(name, value)
+		let update = (name)=>{
+			let value = get[name]()
+			settings.change(name, value)
 		}
 		let x = {
 			elem: F(),
-			get() {
-				let ret = {}
-				Object.for(get,(func, key)=>{ret[key] = func()})
-				return ret
-			},
-			set(data) {
-				Object.for(set,(func, key)=>{func(data[key])})
-			},
-			saveAll() {
-				Object.for(get,(func, key)=>{change(key)})
+			update_all() {
+				Object.for(get, (func, key)=>{
+					update(key)
+				})
 			}
 		}
-		Object.for(settings, (data, name)=>{
+		Object.for(settings.fields, (data, name)=>{
 			let type = data.type
 			let label = x.elem.child('label')
 			label.textContent = data.name+": "
@@ -775,24 +767,18 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 				console.error("settings field '"+name+"' has invalid selection type '"+type+"'", data)
 				return // invalid setting field type
 			}
+			
 			get[name] = ()=>{
 				return elem.value
 			}
-			set[name] = (value)=>{
-				elem.value = value
-			}
 			
-			let value = Store.get("setting-"+name)
-			if (value != null) {
-				value = JSON.safe_parse(value)
-				set[name](value)
-				onchange(name, value)
-			}
-			if (data.autosave != false) {
+			let value = settings.values[name]
+			elem.value = value
+			
+			if (data.autosave != false)
 				elem.onchange = ()=>{
-					change(name);
+					update(name)
 				}
-			}
 			
 			elem && x.elem.append(elem)
 			x.elem.child('br')

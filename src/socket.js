@@ -70,10 +70,9 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 	lastListeners: {'-1':{'0':""}}, // this MUST be something which causes the request to complete instantly
 	listening: [-1], // lastListeners is set based on this
 	
-	// status
-	running: false, // what does this do really?
-	// websocket exclusive
 	use_websocket: false,
+	
+	// websocket exclusive
 	websocket: null,
 	ws_token: null,
 	last_open: 0,
@@ -81,25 +80,26 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 	ws_is_ready: false,
 	// long poller exclusive
 	lp_cancel: ()=>{},
+	running: false,
 	
 	////////////////////
 	// public methods //
 	////////////////////
 	
 	start() {
-		if (!running) {
-			if (use_websocket) {
-				print('starting lp: websocket')
-				ws_refresh(true)
-			} else {
+		refresh()
+		if (use_websocket) {
+			print('starting lp: websocket')
+			ws_refresh()
+		} else {
+			if (!running) {
 				print('starting lp: long poller')
-				lp_loop(true)
+				lp_loop()
 			}
 		}
 	},
 	
 	stop() {
-		running = false
 		if (use_websocket) {
 			websocket && websocket.close()
 		} else {
@@ -122,15 +122,11 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 	
 	// call this after setting the parameters
 	refresh() {
-		if (running) {
-			if (use_websocket) {
-				ws_refresh()
-			} else {
-				lp_cancel()
-				lp_loop()
-			}
+		if (use_websocket) {
+			ws_refresh()
 		} else {
-			console.log("ws refresh fail, too early")
+			lp_cancel()
+			lp_loop()
 		}
 	},
 	
@@ -174,13 +170,12 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 	},
 	
 	ws_refresh() {
-		running = true
 		ws_message = make_request()
 		if (ws_is_ready)
 			websocket_flush()
 	},
 	
-	lp_listen(callback) {
+	lp_listen() {
 		let {actions, listeners, fields} = make_request()
 		// convert make_request output to long poller format
 		let query = {
@@ -190,7 +185,7 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 		for (let [key, value] of Object.entries(fields))
 			query[key] = value.join(",")
 		
-		return Req.request("Read/listen"+Req.query_string(query), 'GET', callback)
+		return Req.request3("Read/listen"+Req.query_string(query))
 	},
 	
 	// if
@@ -198,30 +193,23 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 		running = true
 		//make sure only one instance of this is running
 		let cancelled
-		let x = lp_listen((e, resp)=>{
-			if (cancelled) { // should never happen (but I think it does sometimes..)
+		let x = lp_listen()
+		
+		x((resp)=>{
+			if (cancelled) {
+				// should never happen (but I think it does sometimes..)
 				console.log("OH HECK, request called callback after being cancelled?")
-				//return //removing this for consistency since websocket doesn't have cancelling
+				return
 			}
-			if (e) {
-				console.log("LONG POLLER FAILED", e, resp)
-				print("LONG POLLER FAILED:"+resp)
-				alert("LONG POLLER FAILED:"+resp)
-			} else {
-				process(resp)
-				// I'm not sure this is needed. might be able to just call lp_loop diretcly?
-				let t = window.setTimeout(()=>{
-					if (cancelled) // should never happen?
-						return
-					lp_loop()
-				}, 0)
-				lp_cancel = ()=>{
-					cancelled = true
-					running = false
-					window.clearTimeout(t)
-				}
-			}
+			process(resp)
+			lp_loop()
+		}, (e, resp)=>{
+			running = false
+			console.log("LONG POLLER FAILED", e, resp)
+			print("LONG POLLER FAILED:"+resp)
+			alert("LONG POLLER FAILED:"+resp)
 		})
+		
 		lp_cancel = ()=>{
 			cancelled = true
 			running = false
@@ -268,19 +256,11 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 		}
 	},
 	
-	ws_ready() {
-		ws_is_ready = true
-		websocket_flush()
-	},
-	
-	ws_is_open() {
-		return websocket && websocket.readyState==WebSocket.OPEN
-	},
-	
 	websocket_flush() {
 		if (!ws_is_ready)
 			return
-		if (!ws_is_open() || !ws_token) { // should never
+		// this check should never fail
+		if (!ws_is_open() || !ws_token) {
 			print("websocket flush sequence error!")
 			console.error("websocket flush sequence error!")
 			return
@@ -290,13 +270,27 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 			websocket.send(JSON.stringify(ws_message))
 		}
 	},
-	
+	// call this when websocket is ready (have auth and opened)
+	ws_ready() {
+		ws_is_ready = true
+		websocket_flush()
+	},
+	// if open
+	ws_is_open() {
+		return websocket && websocket.readyState==WebSocket.OPEN
+	},
+	// init
 	do_early() {
 		if (use_websocket) {
 			get_ws_auth()
 			open_websocket()
 		}
 	},
+	
+	// to be ready to use, we must have
+	// - the ws auth token
+	// - an opened websocket
+	// once both of these are fulfilled, ws_ready() is called
 	
 	get_ws_auth() {
 		Req.request2('Read/wsauth').then((resp)=>{
@@ -307,7 +301,7 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 			print('websocket auth failed:'+e)
 		})
 	},
-	
+
 	open_websocket() {
 		if (websocket && websocket.readyState <= WebSocket.OPEN) {
 			print("multiple websocket tried to open!")

@@ -27,6 +27,12 @@ const Req = {
 		x.open(method, `https://${this.server}/${url}`)
 		let start = Date.now()
 		
+		let z = (y, n)=>{
+			ok = y
+			fail = n
+		}
+		z.abort = x.abort.bind(x)
+		
 		let retry = (time, reason)=>{
 			console.log("will retry", reason, "in "+time/1000+" sec")
 			if (time > 2000)
@@ -36,10 +42,10 @@ const Req = {
 			let id = window.setTimeout(()=>{
 				console.log("retrying request", reason)
 				// this is not recursion: we're in an async callback function!
-				let x2 = this.raw_request(url, method, data, proc, ok, fail)
-				x.abort = x2.abort
+				let x = this.raw_request(url, method, data, proc, ok, fail)
+				z.abort = x.abort.bind(x)
 			}, time)
-			x.abort = ()=>{window.clearTimeout(id)}
+			z.abort = ()=>{window.clearTimeout(id)}
 		}
 		
 		x.onload = ()=>{
@@ -95,7 +101,8 @@ const Req = {
 		
 		// the only thing we use here is .abort
 		// (note that .abort is modified by retry())
-		return x
+		
+		return z
 	},
 	
 	query_string(obj) {
@@ -130,6 +137,9 @@ const Req = {
 		if (Object.is_plain(data))
 			data = JSON.to_blob(data)
 		return new Promise(this.raw_request.bind(this, url, method, data, proc))
+	},
+	request3(url, method='GET', data=null, proc=null) {
+		return this.raw_request(url, method, data, proc)
 	},
 	// new version of read()
 	chain(requests, fields=null) {

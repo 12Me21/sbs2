@@ -1,104 +1,99 @@
-<!--/* trick indenter
-var Settings = Object.create(null)
-with (Settings) (function($) { "use strict"
-Object.assign(Settings, { //*/
-
-values: {},
-
-fields: {
-	chat_markup: {
-		name: "Chat Markup Language",
-		type: 'select',
-		options: ['12y','bbcode','html'],
-		update: function(value) {
-			ChatRoom.markup = value
+let Settings = Object.create(null)
+with(Settings)((window)=>{"use strict"; Object.assign(Settings,{
+	values: {},
+	
+	fields: {
+		chat_markup: {
+			name: "Chat Markup Language",
+			type: 'select',
+			options: ['12y','bbcode','html'],
+		},
+		websocket: {
+			name: "Use Websocket",
+			type: 'select',
+			options: ['websocket', 'long polling'],
+		},
+		big_avatar: {
+			name: "Big Avatar",
+			type: 'select',
+			options: ['off', 'on'],
+		},
+		big_avatar_id: {
+			name: "Big Avatar Id",
+			type: 'textarea',
+		},
+		theme: {
+			name: "Theme",
+			type: 'select',
+			options: ['auto','light','dark'],
+			// change event can run any time (even before DOM ready)
+			update(value) {
+				if (value != 'auto')
+					window.document.documentElement.dataset.theme = value
+				else
+					delete window.document.documentElement.dataset.theme
+			},
+		},
+		sitejs: {
+			name: "Custom Javascript",
+			type: 'textarea',
+			autosave: false,
+			//todo: maybe highlight when changed, to notify user that they need to save manually?
+			update(value) {
+				try {
+					eval(value)
+				} catch (e) {
+					console.error("failed to run sitejs", e)
+					print(e.stack)
+					print("error in sitejs ^")
+				}
+			},
+		},
+		sitecss: {
+			name: "Custom CSS",
+			type: 'textarea',
+			autosave: false,
+			update(value) {
+				View.do_when_ready(()=>{
+					$customCSS.textContent = value
+				})
+			},
+		},
+		nickname: {
+			name: "Chat Nickname",
+			type: 'textarea',
 		},
 	},
-	big_avatar: {
-		name: "Big Avatar",
-		type: 'select',
-		options: ['off', 'on'],
-		//update: function(value) {
-		//	ChatRoom.big_avatar = value
-		//},
-	},
-	big_avatar_id: {
-		name: "Big Avatar Id",
-		type: 'textarea',
-		//update: function(value) {
-		//	ChatRoom.big_avatar_id = Number(value)
-		//},
-	},
-	html: {
-		name: "allow html injection",
-		type: 'select',
-		options: ['hell yeah'],
-		update: function(value) {
-		},
-	},
-	theme: {
-		name: "Theme",
-		type: 'select',
-		options: ['auto','light','dark'],
-		update: function(value) {
-			if (value != 'auto')
-				$.document.documentElement.dataset.theme = value
+	
+	early() {
+		Object.for(fields, (field, name)=>{
+			let value = Store.get("setting-"+name)
+			if (value != null)
+				value = JSON.safe_parse(value)
 			else
-				delete $.document.documentElement.dataset.theme
-		}
-	},
-	sitejs: {
-		name: "Custom Javascript",
-		type: 'textarea',
-		autosave: false, //todo: maybe highlight when changed, to notify user that they need to save manually?
-		update: function(value) {
-			try {
-				eval(value)
-			} catch (e) {
-				print(e.stack)
-				console.error("failed to run sitejs", e)
+				value = undefined
+			if (value === undefined) {
+				value = field.default
 			}
-		},
+			values[name] = value
+			if (field.update)
+				field.update(value)
+		})
 	},
-	sitecss: {
-		name: "Custom CSS",
-		type: 'textarea',
-		autosave: false,
-		update: function(value) {
-			$customCSS.textContent = value
-		},
-	},
-	nickname: {
-		name: "Chat Nickname",
-		type: 'textarea',
-		//update: function(value) {
-		//	ChatRoom.nickname = value.substr(0, 50).replace(/\n/g, "  ")
-		//},
-	},
-	/*
-this doesn't work because settings are not loaded soon enough
-changing that is too much work
-websocket: {
-		name: "Use Websocket",
-		type: 'select',
-		options: ['long polling', 'websocket'],
-		autosave: false,
-	}*/
-},
-// todo:
-// - add support for validation functions
-// - read settings immediately and add support for deferred onchange functions
-
-change: function(name, value) {
-	var field = fields[name]
-	values[name] = value
-	if (!field) return
-	field.update && field.update(value)
-}
-
-<!--/*
-}) //*/
+	
+	// change a setting after load
+	change(name, value) {
+		console.log("change setting", name, value)
+		let field = fields[name]
+		if (!field) return
+		values[name] = value
+		Store.set("setting-"+name, JSON.stringify(value))
+		field.update && field.update(value)
+	}
+	
+})<!-- PRIVATE })	
 
 
-<!--/*
-}(window)) //*/
+0<!-- Settings ({
+})(window)
+Object.seal(Settings)
