@@ -1,12 +1,23 @@
 // websocket states
-// 1: early
-//   - we want to open the websocket and request the token
-// 2: normal
-//   - here we start sending things
+// 1: normal
+//   - if we have lastid, start doing requests, otherwise wait
 // 3: dead
 //   - do nothing, page is about to reload
+// 4: waiting for token or onopen
+//   - if the wsauth request finishes
+//     - failed: fatal (remember we have autorerequest at a lower level)
+//     - suceeded: go to state 1 if socket is open
+//   - if the socket opens
+//     - go to state 1 if wsauth has been recieved
+// 
 
-// in states 1 and 2, if the socket closes we want to re-request the token.
+// in state 1, if the socket closes:
+//  - reopen the websocket
+//  - if it was a token error
+//    - request wsauth
+//  - go to state 4
+
+// how about this
 
 let Lp = Object.create(null)
 with(Lp)((window)=>{"use strict";Object.assign(Lp,{
@@ -321,6 +332,10 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 		websocket.onclose = (e)=>{
 			if (dead)
 				return
+			// 1000, "Invalid token", true - token
+			// 1006, "", false - connection error
+			
+			console.log("websocket closed:", e.code, e.reason, e.wasClean)
 			print("websocket close!")
 			open_websocket()
 		}
