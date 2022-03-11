@@ -1,6 +1,12 @@
-// it's very important that the first long poll request finishes instantly
-// we normally ensure this by having lpLastListeners always have at least one room set but this can be accidentally broken very easily and it's a mess
-// need a more consistent way to update lastlisteners PLEASE
+// websocket states
+// 1: early
+//   - we want to open the websocket and request the token
+// 2: normal
+//   - here we start sending things
+// 3: dead
+//   - do nothing, page is about to reload
+
+// in states 1 and 2, if the socket closes we want to re-request the token.
 
 let Lp = Object.create(null)
 with(Lp)((window)=>{"use strict";Object.assign(Lp,{
@@ -26,7 +32,7 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 			
 			//todo: properly link activity with contents?
 			// todo: do we want to pass commentdelete here?
-			Act.process_stuff(activity, comment, null, content)
+			Act.process_stuff(activity, comment, content)
 			
 			if (activity)
 				for (let a of activity)
@@ -61,6 +67,7 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 	websocket: null,
 	ws_token: null,
 	last_open: 0,
+	dead: false,
 	// long poller exclusive
 	lp_cancel: ()=>{},
 	
@@ -81,12 +88,12 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 	},
 	
 	stop() {
+		running = false
 		if (use_websocket) {
 			websocket && websocket.close()
 		} else {
 			lp_cancel()
 		}
-		running = false
 	},
 	
 	// todo: this gets set after the first request is made
@@ -132,7 +139,7 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 		let actions = {
 			lastId: lastId, // todo: make sure this is ALWAYS set (not 0) except for the initial request where we get lastid
 			statuses: statuses,
-			chains: [
+			chains: [ // 0
 				'comment.0id',
 				'activity.0id-{"includeAnonymous":true}',
 				'watch.0id', //new stuff //changed
@@ -312,6 +319,8 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 			print("websocket error!")
 		}
 		websocket.onclose = (e)=>{
+			if (dead)
+				return
 			print("websocket close!")
 			open_websocket()
 		}

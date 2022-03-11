@@ -13,6 +13,12 @@ at ${line}:${col}`)
 	}
 }
 
+window.onbeforeunload = (event)=>{
+	// this is to prevent the websocket.onclose event
+	// from trying to reopen it
+	Lp.dead = true
+}
+
 immediate()
 
 if (document.readyState == 'loading')
