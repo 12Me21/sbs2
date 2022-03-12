@@ -9,6 +9,7 @@ html {
 	--maintxtcolor: black;
 	--linkcolor: #045;
 	--link-hover-color: rgb(0,150,136);
+	--link-bg-color: #E5E5FF;
 	--time-color: #333;
 	--border-color: gray;
 	--chat-dim-color: #666;
@@ -42,6 +43,7 @@ html {
 	--light-invert-bg: #333;
 	--loading-invert-bg: #327070; /*linear-gradient(#225450, #327070); removed because of flicker ? i think we need to animate to another gradient or? */
 	--error-invert-bg: #800;
+	--input-border-color: #BBB #DDD #DDD #BBB;
 }
 
 html[data-theme="dark"], html.f-dark:not([data-theme]) {
@@ -49,6 +51,7 @@ html[data-theme="dark"], html.f-dark:not([data-theme]) {
 	--maintxtcolor: white;
 	--linkcolor: #9CE;
 	--link-hover-color: #5CE;
+	--link-bg-color: #156;
 	--time-color: #EEE;
 	--border-color: black;
 	--chat-dim-color: #666;
@@ -62,13 +65,13 @@ html[data-theme="dark"], html.f-dark:not([data-theme]) {
 	--button-active-bg: linear-gradient(#047, #047);
 	--button-selected-bg: linear-gradient(#048, #07A);
 	--error-bg: maroon;
-	--bgred: rgba(255,50,50,0.3);
-	--bgblue: rgba(50,150,255,0.3);
-	--bggreen: rgba(50,255,50,0.3);
-	--bgyellow: rgba(255,255,50,0.3);
-	--bgorange: rgba(255,150,50,0.3);
-	--bggray: rgba(128,128,128,0.1);
-	--bgpurple: rgba(200,50,255,0.3);
+	--bgred: #6A2C2C;
+	--bgblue: #2C4A6A;
+	--bggreen: #2C6A2C;
+	--bgyellow: #6A6A2C;
+	--bgorange: #6A4A2C;
+	--bggray: #383838;
+	--bgpurple: #592C6A;
 	--edit-textarea-bg: #750;
 	--normal-shadow: 0 2px 3px rgba(0,0,0,0.3);
 	/* in dark theme, the inverted colors are just normal dark */
@@ -82,4 +85,6 @@ html[data-theme="dark"], html.f-dark:not([data-theme]) {
 	--error-invert-bg: #800;
 	--message-hover-bg: #444;
 	--message-focus-bg: #253C3F;
+	
+	--input-border-color: #444 #555 #555 #444;
 }

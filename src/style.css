@@ -2,12 +2,15 @@
 
 html {
 	background-color: #FEE; /* for debug */
-	font-family: roboto, sans-serif;
 	color: var(--maintxtcolor);
 }
 
 body {
 	background: var(--mainbgcolor);
+}
+
+* {
+	font-family: roboto, sans-serif;
 }
 
 /***********
@@ -524,15 +527,6 @@ form-table > .wide.label {
 	font-size: 1.2em;
 }
 
-input::placeholder {
-	font-style: italic;
-	color: rgba(128,128,128,0.6);
-	padding-left: 0.3rem;
-}
-input:invalid {
-	background: var(--error-bg);
-}
-
 /* what are these for? */
 /* permissions editor i guess */
 table {
@@ -570,13 +564,13 @@ user-select {
  ** Page **
  **********/
 button.voteButton[data-selected][data-vote="g"] {
-	background: linear-gradient(lime, #eee);
+	background: linear-gradient(var(--bggreen), #eee);
 }
 button.voteButton[data-selected][data-vote="b"] {
-	background: linear-gradient(red, #eee);
+	background: linear-gradient(var(--bgred), #eee);
 }
 button.voteButton[data-selected][data-vote="o"] {
-	background: linear-gradient(aqua, #eee);
+	background: linear-gradient(var(--bgblue), #eee);
 }
 
 /* TODO FIX */
@@ -644,11 +638,28 @@ html:not(.f-fileSelected) .fileSelected {
 
 /* TODO: margin should be fullscreen mode by default, then disabled with @media (min-width) */ /* ? */
 
-input, output {
-	font-size: 0.8em;
+input, output, select {
+	font-size: 0.9em;
+	border-width: 2px;
+	border-style: solid;
+	border-color: var(--input-border-color);
+	border-radius: 1px;
 }
-select {
-	font-size: 1em;
+input, select { /* this is old & probably not needed */
+	min-width: 0; 
+	max-width: 100%;
+}
+input, select, button, input::placeholder {
+	color: var(--maintxtcolor);
+}
+
+input::placeholder {
+	font-style: italic;
+	color: rgba(128,128,128,0.6);
+	padding-left: 0.3rem;
+}
+input:invalid {
+	background: var(--error-bg);
 }
 
 /* for devices with small screens */
@@ -661,15 +672,6 @@ select {
 .registerBox {
 	padding-inline: 0.5rem;
 	padding-block: 0.3rem;
-}
-
-input, select, button, input::placeholder {
-	color: inherit;
-}
-
-input, select { /* this is old & probably not needed */
-	min-width: 0; 
-	max-width: 100%;
 }
 
 /* ehhh */

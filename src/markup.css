@@ -4,6 +4,10 @@
 	vertical-align: baseline;
 }
 
+.markup-root * {
+	background-color: transparent;
+}
+
 .markup-root table, .markup-root td, .markup-root th {
 	border: 1px solid var(--maintxtcolor);
 	border-collapse: collapse;
@@ -282,7 +286,7 @@ this doesn't work because text nodes...
 }
 
 .markup-root a[href].customLink {
-	background-color: rgba(0,0,255,0.1);
+	background-color: var(--link-bg-color);
 }
 
 .markup-root > iframe {
