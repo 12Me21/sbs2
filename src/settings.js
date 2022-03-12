@@ -73,7 +73,10 @@ with(Settings)((window)=>{"use strict"; Object.assign(Settings,{
 			else
 				value = undefined
 			if (value === undefined) {
-				value = field.default
+				if (field.options)
+					value = field.options[0]
+				else
+					value = ""
 			}
 			values[name] = value
 			if (field.update)
