@@ -4,10 +4,6 @@
 	vertical-align: baseline;
 }
 
-.markup-root * {
-	background-color: transparent;
-}
-
 .markup-root table, .markup-root td, .markup-root th {
 	border: 1px solid var(--maintxtcolor);
 	border-collapse: collapse;

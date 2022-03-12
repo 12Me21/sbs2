@@ -174,7 +174,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		// outer box element
 		let box = EC('chat-pane', 'resize-box')
 		// page element
-		let page1 = box.child('div', 'sized page-container')
+		let page1 = box.child('scroll-outer', 'sized page-container')
 		let info = page_info(page)
 		page1.append(info)
 		let page2 = page1.child('div', 'markup-root pageContents')

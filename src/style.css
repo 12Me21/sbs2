@@ -379,6 +379,7 @@ message-contents {
 	overflow: auto;
 	overflow-y: hidden; /* i think this one is for compat? */
 	overflow-y: clip;
+	background: var(--mainbgcolor);
 }
 message-contents img {
 	max-width: 100%;
@@ -388,8 +389,8 @@ message-contents img {
 
 message-block > img.avatar,
 message-block > .bigAvatar {
-	z-index: 2;
-	pointer-events: none;
+	/*z-index: 2;*/
+	/*pointer-events: none;*/
 }
 message-part {
 	display: block;
@@ -771,8 +772,6 @@ message-part, header, .markup-root, message-block {
 .page-container:not(#a) {
 	min-height: 2.3rem;
 	height: 40vh;
-	max-height: 100%;
-	overflow-y: scroll;
 }
 
 #\$titlePane [data-view]:not(.shown) {

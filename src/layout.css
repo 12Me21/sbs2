@@ -366,16 +366,24 @@ textarea-container > textarea {
 /* use solid backgrounds on elements
  to improve rendering performance + subpixel text usage */
 
-/*
-.resize-box > *,
+.resize-box, .resize-box > *,
 .slide-box, .slide-box > *,
-scroll-inner {
-	background: var(--mainbgcolor);
+scroll-outer, scroll-outer > *,
+sidebar-panel > *, /* scrolling element */
+scroll-inner /* just in case? idk */
+{
+	background: inherit; /*var(--mainbgcolor);*/
 }
+
+/*
+from what i've noticed, the most important thing is having a solid BG on
+the inner scrolling element (the one which moves when you scroll)
 */
 
-/* ahh what the heck, why not */
-
-* {
+/*scroll-outer {
+	background-clip: content-box;
+	background-attachment: local;
 	background-color: inherit;
-}
+doesn't work...
+}*/
+
