@@ -646,7 +646,7 @@ input, output, select {
 	border-radius: 1px;
 }
 input, select { /* this is old & probably not needed */
-	min-width: 0; 
+	min-width: 0;
 	max-width: 100%;
 }
 input, select, button, input::placeholder {

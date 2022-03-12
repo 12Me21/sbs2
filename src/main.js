@@ -87,7 +87,7 @@ function dom_ready() {
 	console.log("🌄 DOM ready")
 	
 	// whitespace between nodes in html (due to line breaks, indentation, etc.) creates text nodes which need to be stripped:
-	let walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {acceptNode: node=>/^\s+$/.test(node.textContent)});
+	let walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {acceptNode: node=>/^\s+$/.test(node.textContent)})
 	let blank_nodes = []
 	while (walker.nextNode())
 		blank_nodes.push(walker.currentNode)

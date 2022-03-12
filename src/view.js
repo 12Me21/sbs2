@@ -93,7 +93,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		while (view && view.redirect) {//danger!
 			let ret = view.redirect(id, query)
 			if (!ret) // oops no redirect
-				break;
+				break
 			;[name, id, query] = ret
 			view = views[name]
 			got = true
@@ -244,7 +244,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		if (data.quick)
 			return handle(attempt.bind(
 				null,
-				"render failed in view.quick", 
+				"render failed in view.quick",
 				view.quick.bind(view, data.ext, view.render)))
 		// otherwise prepare to make an api request
 		let xhr
@@ -416,7 +416,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 	
 	title_notification(text, icon) {
 		if (!Req.me)
-			return;
+			return
 		if (text == false) {
 			document.title = real_title
 			change_favicon(null)

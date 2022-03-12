@@ -18,12 +18,12 @@ let render_page = (page)=>{
 	set_entity_title(page)
 	set_entity_path(page.parent)
 	flag('canEdit', /u/.test(page.myPerms))
-	$chatTextarea.disabled = !(page.createUserId==Req.uid || /c/.test(page.permissions[Req.uid] || page.permissions[0]));
+	$chatTextarea.disabled = !(page.createUserId==Req.uid || /c/.test(page.permissions[Req.uid] || page.permissions[0]))
 	Nav.link("editpage/"+page.id, $pageEditLink)
 	Nav.link("comments/"+page.id, $pageCommentsLink)
 }
 
-let last_sent = null;
+let last_sent = null
 
 add_view('page', {
 	// in this case, we sometimes make a request, and sometimes
@@ -91,7 +91,7 @@ add_view('page', {
 		let send_message = ()=>{
 			let room = ChatRoom.currentRoom
 			if (!room)
-				return;
+				return
 			
 			let data = read_input(editing_comment, !!editing_comment)
 			if (editing_comment) { // editing comment

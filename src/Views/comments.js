@@ -95,7 +95,7 @@ View.add_view('comments', {
 })
 
 function build_search(data) {
-	let merge = true;
+	let merge = true
 	let search = {limit: 200}
 	if (!data.search && !(data.users && data.users.length) && !data.range && !data.start && !data.end)
 		return [null, null]

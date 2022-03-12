@@ -422,7 +422,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	// </button>
 	sidebar_tabs(list, callback) {
 		let btns = []
-		let frag = F();
+		let frag = F()
 		let x = {
 			elem: frag,
 			select: (i)=>{
