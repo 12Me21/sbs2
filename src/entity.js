@@ -145,7 +145,40 @@ let Entity = {
 			data.editDate = this.parse_date(data.editDate)
 		if (data.createDate)
 			data.createDate = this.parse_date(data.createDate)
-		return data
+	},
+	process_comment_user_meta(data) {
+		let override = {}
+		// avatar override
+		if (+data.meta.a)
+			override.avatar = {value: +data.meta.a}
+		if (+data.meta.big)
+			override.bigAvatar = {value: +data.meta.big}
+		// nicknames
+		let nick = null
+		let bridge = null
+		if (typeof data.meta.b == 'string') {
+			nick = data.meta.b
+			bridge = nick
+			// strip bridge nickname from old discord messages
+			if (data.meta.m=='12y' && data.content.substr(0, nick.length+3) == "<"+nick+"> ")
+				data.content = data.content.substring(nick.length+3, data.content.length)
+		}
+		if (typeof data.meta.n == 'string')
+			nick = data.meta.n
+		if (nick != undefined) {
+			override.nickname = {value: this.filter_nickname(nick)}
+			override.realname = {value: data.createUser.name}
+			// if the bridge name is set, we set the actual .name property to that, so it will render as the true name in places where nicknames aren't handled (i.e. in the sidebar)
+			// and it's kinda dangerous that .b property is trusted so much..
+			if (bridge != undefined)
+				override.name = {value: bridge}
+		}
+		// todo: we should render the nickname in other places too (add this to the title() etc. functions.
+		// and then put like, some icon or whatever to show that they're nicked, I guess.
+		
+		// won't this fail on comments without a createuser for whatever reason??
+		if (Object.first_key(override) != undefined)
+			data.createUser = Object.create(data.createUser, override)
 	},
 	process_type: {
 		// date
@@ -178,67 +211,31 @@ let Entity = {
 				Object.assign(cat, data)
 				data = cat
 			}
-			data = this.process_editable(data, users)
+			this.process_editable(data, users)
 			return data
 		},
 		// parentId -> parent
 		// ?? -> users
 		content(data, users) {
-			data = this.process_editable(data, users)
+			this.process_editable(data, users)
 			if (data.parentId != null)
 				data.parent = this.category_map[data.parentId]
-			data.users = users //hack for permissions users. TODO: why?
 			return data
 		},
 		// content
 		// content -> meta, nickname, realname, name, avatar, bigAvatar
 		comment(data, users) {
-			data = this.process_editable(data, users)
+			this.process_editable(data, users)
 			if (data.content) {
-				let m = this.decode_comment(data.content)
-				data.content = m.t
-				delete m.t //IMPORTANT
-				data.meta = m
-				
-				let override = {}
-				// avatar override
-				if (+data.meta.a)
-					override.avatar = {value: +data.meta.a}
-				if (+data.meta.big)
-					override.bigAvatar = {value: +data.meta.big}
-				// nicknames
-				let nick = null
-				let bridge = null
-				if (typeof data.meta.b == 'string') {
-					nick = data.meta.b
-					bridge = nick
-					// strip bridge nickname from old discord messages
-					if (data.meta.m=='12y' && data.content.substr(0, nick.length+3) == "<"+nick+"> ")
-						data.content = data.content.substring(nick.length+3, data.content.length)
-				}
-				if (typeof data.meta.n == 'string')
-					nick = data.meta.n
-				if (nick != undefined) {
-					override.nickname = {value: this.filter_nickname(nick)}
-					override.realname = {value: data.createUser.name}
-					// if the bridge name is set, we set the actual .name property to that, so it will render as the true name in places where nicknames aren't handled (i.e. in the sidebar)
-					// and it's kinda dangerous that .b property is trusted so much..
-					if (bridge != undefined)
-						override.name = {value: bridge}
-				}
-				// todo: we should render the nickname in other places too (add this to the title() etc. functions.
-				// and then put like, some icon or whatever to show that they're nicked, I guess.
-				
-				if (Object.first_key(override) != undefined)
-					data.createUser = Object.create(data.createUser, override)
-				
+				;[data.content, data.meta] = this.decode_comment(data.content)
+				this.process_comment_user_meta(data)
 			} else { // deleted comment usually
 				data.meta = {}
 			}
 			return data
 		},
 		file(data, users) {
-			data = this.process_editable(data, users)
+			this.process_editable(data, users)
 			return data
 		},
 		watch(data) {
@@ -295,19 +292,26 @@ let Entity = {
 	},
 	decode_comment(content) {
 		let newline = content.indexOf("\n")
-		let data
+		let text, data
 		try {
 			// try to parse the first line as JSON
 			data = JSON.parse(newline>=0 ? content.substr(0, newline) : content)
 		} finally {
 			if (Object.is_plain(data)) { // new or legacy format
-				if (newline>=0)
-					data.t = content.substr(newline+1) // new format
-				else
-					data.t = String(data.t)
-			} else // raw
-				data = {t: content}
-			return data
+				if (newline>=0) // new format
+					text = content.substr(newline+1)
+				else { // legacy format
+					if (typeof data.t == 'string')
+						text = data.t
+					else
+						text = 'ERROR'
+					delete data.t
+				}
+			} else { // raw
+				data = {}
+				text = content
+			}
+			return [text, data]
 		}
 	},
 	encode_comment(text, metadata) {
