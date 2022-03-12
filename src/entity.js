@@ -290,29 +290,27 @@ let Entity = {
 	parse_date(str) {
 		return new Date(str)
 	},
+	// return: [text, metadata]
 	decode_comment(content) {
 		let newline = content.indexOf("\n")
-		let text, data
 		try {
 			// try to parse the first line as JSON
-			data = JSON.parse(newline>=0 ? content.substr(0, newline) : content)
-		} finally {
-			if (Object.is_plain(data)) { // new or legacy format
-				if (newline>=0) // new format
-					text = content.substr(newline+1)
-				else { // legacy format
-					if (typeof data.t == 'string')
-						text = data.t
-					else
-						text = 'ERROR'
-					delete data.t
-				}
-			} else { // raw
-				data = {}
-				text = content
+			let data = JSON.parse(newline>=0 ? content.substr(0, newline) : content)
+			// if it's a valid json object, it could be new or legacy format
+			if (Object.is_plain(data)) { // (see fill.js)
+				// new format: <json><newline><text>
+				if (newline>=0)
+					return [content.substr(newline+1), data]
+				// legacy format: <json> (text in "t" field)
+				let text = data.t
+				delete data.t // important!
+				if (typeof text == 'string')
+					return [text, data]
 			}
-			return [text, data]
-		}
+		} catch(e) {}
+		// if we can't detect the format, or something goes wrong,
+		// just return the raw content and no metadata
+		return [content, {}]
 	},
 	encode_comment(text, metadata) {
 		return JSON.stringify(metadata || {})+"\n"+text
