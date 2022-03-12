@@ -103,8 +103,8 @@ let Act = {
 	
 	new_activity(activity, pageMap, watch) {
 		for (let {contentId, date, user, type} of activity)
-			if (type == '')
-			this.new_thing(contentId, date, user, pageMap, watch, true)
+			if (type == 'content')
+				this.new_thing(contentId, date, user, pageMap, watch, true)
 	},
 	
 	//todo: somewhere we are getting Fake users with uid 0/

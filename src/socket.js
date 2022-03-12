@@ -27,7 +27,7 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 			ChatRoom.update_userlists(map)
 		})
 	},
-	on_data({comment, commentdelete, activity, content}) {
+	on_data({comment, commentdelete, activity, content, watch}) {
 		View.do_when_ready(()=>{
 			function comments(c) {
 				if (c) {
@@ -42,7 +42,7 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 			
 			//todo: properly link activity with contents?
 			// todo: do we want to pass commentdelete here?
-			Act.process_stuff(activity, comment, content)
+			Act.process_stuff(activity, comment, watch, content)
 			
 			if (activity)
 				for (let a of activity)
@@ -209,7 +209,6 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 			print("LONG POLLER FAILED:"+resp)
 			alert("LONG POLLER FAILED:"+resp)
 		})
-		
 		lp_cancel = ()=>{
 			cancelled = true
 			running = false
