@@ -123,7 +123,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		if (user.id != Req.uid)
 			return //uh oh
 		Req.me = user
-		let icon = Draw.icon(user)
+		let icon = Draw.icon(Req.me)
 		Sidebar.my_avatar.fill(icon)
 	},
 	
