@@ -29,12 +29,10 @@ else
 function immediate() {
 	Sidebar.print("hi!\ncommit: "+window.commit)
 	
-	window.onoffline = function(){print('offline')}
+	/*window.onoffline = function(e){print('offline')}
 	window.ononline = function(){print('online')}
 	window.onfocus = function(){print('focus')}
-	window.onblur = function(){print('blur')}
-	window.onpageshow = function(){print('pageshow')}
-	window.onpagehide = function(){print('pagehide')}
+	window.onblur = function(){print('blur')}*/
 	
 	Req.try_load_auth()
 	
