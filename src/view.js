@@ -122,6 +122,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 	update_my_user(user) {
 		if (user.id != Req.uid)
 			return //uh oh
+		Req.me = user
 		let icon = Draw.icon(user)
 		Sidebar.my_avatar.fill(icon)
 	},
