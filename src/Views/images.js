@@ -66,18 +66,19 @@ with (View) (()=>{ "use strict"; {
 				skip: (page-1)*20,
 				reverse: true,
 			}
-			query.bucket && (search.bucket = query.bucket)
+			query.bucket && (search.bucket = query.bucket) // did i really write this like that lol
 			return {
 				chains: [
 					['file', search],
 					['user.0createUserId'],
 				],
 				fields: {},
-				ext: {page},
+				ext: {page, query},
 			}
 		},
 		className: 'images',
-		render(resp, {page}) {
+		render(resp, {page, query}) {
+			$fileSearchBucket.value = query.bucket || ""
 			navButtons.set(page)
 			let files = resp.file
 			set_title("Files")
