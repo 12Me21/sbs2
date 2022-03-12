@@ -117,7 +117,7 @@ function build_search(data) {
 	if (range) {
 		if (range.ids) {
 			search.ids = range.ids
-			if (ids.length > 1)
+			if (range.ids.length > 1)
 				merge = false
 		} else {
 			if (range.min != null)
