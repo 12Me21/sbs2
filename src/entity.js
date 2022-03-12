@@ -298,14 +298,14 @@ let Entity = {
 			let data = JSON.parse(newline>=0 ? content.substr(0, newline) : content)
 			// if it's a valid json object, it could be new or legacy format
 			if (Object.is_plain(data)) { // (see fill.js)
+				let t = data.t
+				delete data.t // important!
 				// new format: <json><newline><text>
 				if (newline>=0)
 					return [content.substr(newline+1), data]
 				// legacy format: <json> (text in "t" field)
-				let text = data.t
-				delete data.t // important!
-				if (typeof text == 'string')
-					return [text, data]
+				if (typeof t == 'string')
+					return [t, data]
 			}
 		} catch(e) {}
 		// if we can't detect the format, or something goes wrong,
