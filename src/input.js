@@ -193,11 +193,11 @@ const CONVERT = {
 			//from https://github.com/randomouscrap98/newsbs/blob/42b4c5b383f738f6b492b77d9a7d5d0d92f56761/index.js#L1341
 			if (typeof x != 'string')
 				return null
-			let match = /^(\d*)-(\d*)$/.rmatch(x)
+			let [match, min, max] = /^(\d*)-(\d*)$/.rmatch(x)
 			if (match) {
 				return {
-					min: match[1] ? Number(match[1]) : null,
-					max: match[2] ? Number(match[2]) : null,
+					min: min ? Number(min) : null,
+					max: max ? Number(max) : null,
 				} // what if number parse fails? should be null i think
 			} else {
 				return {ids: x.split(",").map(x=>Number(x))}
@@ -475,35 +475,42 @@ const INPUTS = (()=>{
 				super()
 				this.elem = elem('div')
 				
-				this.input = elem('input')
-				this.input.id = this.html_id
-				this.input.type = 'datetime-local'
-				this.input.step = "0.001"
+				this.input1 = elem('input')
+				this.input1.id = this.html_id
+				this.input1.type = 'date'
+				this.input2 = elem('input')
+				this.input2.type = 'time'
+				//this.input2.step = "1"
 				
-				/*this.seconds = elem('input')
-				this.seconds.type = 'number'
-				this.seconds.min = 0
-				this.seconds.max = 60*/
-				this.elem.append(this.input)
+				this.elem.append(this.input1)
+				this.elem.append(this.input2)
 				
-				this.input.onchange = this._onchange.bind(this)
+				this.input1.onchange = this._onchange.bind(this)
+				this.input2.onchange = this._onchange.bind(this)
 			}
 			get() {
-				let date = new Date(this.input.value)
-				/*let seconds = +this.seconds.value
-				date.setSeconds(Math.floor(seconds))
-				date.setMilliseconds(seconds % 1 * 1000)*/
-				if (isNaN(date))
+				// we can't use the .valueAsNumber or .valueAsDate attributes because these read the times in utc
+				let [m1,year,month,day] = /(\d+)-(\d+)-(\d+)/.rmatch(this.input1.value)
+				if (!m1)
 					return null
-				return date
+				let [m2,hour,minute,second] = /(\d+):(\d+)(?::([\d.]+))?/.rmatch(this.input2.value)
+				if (!m2)
+					hour = minute = second = 0
+				return new Date(year,month-1,day,hour,minute,Math.floor(second||0))
 			}
 			set(v) {
 				if (v) {
-					this.input.value = v.toISOString().replace(/Z$/,"")
-					//this.seconds.value = v.getSeconds() + v.getMilliseconds()/1000
+					let year = v.getFullYear()
+					let month = v.getMonth() + 1
+					let day = v.getDate()
+					let hour = v.getHours()
+					let minute = v.getMinutes()
+					let second = v.getSeconds()
+					this.input1.value = String(year).padStart(4,0)+"-"+String(month).padStart(2,0)+"-"+String(day).padStart(2,0)
+					this.input2.value = String(hour).padStart(2,0)+":"+String(minute).padStart(2,0)+":"+String(second).padStart(2,0)
 				} else {
-					this.input.value = ""
-					//this.seconds.value = ""
+					this.input1.value = ""
+					this.input2.value = ""
 				}
 			}
 		},
