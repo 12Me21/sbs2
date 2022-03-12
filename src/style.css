@@ -271,6 +271,10 @@ sidebar-container {
 	z-index: 30;
 }
 
+#\$sidebarActivity {
+	padding-top: 0.2rem;
+}
+
 /*******************
  ** Category Pane **
  *******************/
