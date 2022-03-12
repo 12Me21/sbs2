@@ -261,6 +261,7 @@ sidebar-container {
 
 #\$sidebarResize {
 	box-shadow: var(--normal-shadow);
+	z-index: 30;
 }
 #\$sidebar_tabs {
 	box-shadow: var(--normal-shadow);
@@ -337,11 +338,10 @@ message-block > img.avatar {
 }
 message-block > .bigAvatar {
 	position: absolute;
-	width: calc(--chat-gutter + 0.5rem);
+	width: calc(var(--chat-gutter) + 0.5rem);
 	height: 100%;
 	left: 0;
 	top: 0;
-	z-index: -10;
 	background-size: cover;
 	background-position-x: center;
 	background-position-y: top;
@@ -366,7 +366,6 @@ message-block > message-header > time {
 
 message-contents {
 	display: block;
-	position: relative;
 	min-height: 1.5rem; /* this is so the message controls always have somewhere to be shown */
 	margin-top: 0.2rem;
 	/* do we need all these */
@@ -380,6 +379,11 @@ message-contents img {
 	border: 1px solid var(--image-border-color);
 }
 
+message-block > img.avatar,
+message-block > .bigAvatar {
+	z-index: 2;
+	pointer-events: none;
+}
 message-part {
 	display: block;
 	min-height: 1rem; /* this is so the message controls always have somewhere to be shown */
@@ -389,11 +393,12 @@ message-part {
 message-part.edited {
 	/* todo: fix this styling */
 	/* we may just need an extra container for message-parts... */
-	padding-left: calc(var(--chat-gutter) + 0.2rem - 1px);
-	border-left: 1px solid gray;
+	/*padding-left: calc(var(--chat-gutter) + 0.2rem - 1px);*/
+	/*border-left: 1px solid gray;*/
+	outline-left: 2px solid gray;
 }
 message-part:focus {
-	background: rgba(0,224,255,0.1);
+	background: var(--message-focus-bg);
 	outline: none;
 }
 
@@ -417,7 +422,7 @@ message-controls > button {
 	padding: 0;
 }
 message-controls:hover + message-part {
-	background: rgba(0,0,0,0.1);
+	background: var(--message-hover-bg);
 }
 
 .messageGap {
@@ -658,6 +663,10 @@ select {
 	padding-block: 0.3rem;
 }
 
+input, select, button, input::placeholder {
+	color: inherit;
+}
+
 input, select { /* this is old & probably not needed */
 	min-width: 0; 
 	max-width: 100%;
@@ -772,12 +781,8 @@ message-part, header, .markup-root, message-block {
 	border-bottom: 1px solid var(--border-color);
 	border-top: 1px solid white;
 	padding-left: 0.2rem;
-	padding-bottom: 1px;
+	padding-block: 1px;
 	background: var(--mainbgcolor);
-	/*border: 3px solid  #CDBC8A;
-	border-bottom-color: #EAD9A7;
-	border-right-color: #EAD9A7;*/
-	/*border-width: 3px;*/
 }
 
 activity-users {

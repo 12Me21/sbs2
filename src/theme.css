@@ -17,6 +17,8 @@ html {
 	--mainbgcolor: white;
 	--avatar-bg: white;
 	--button-hover-color: #59E;
+	--message-hover-bg: #DDD;
+	--message-focus-bg: #E5FCFF;
 	--bar-bg: #EEE;
 	--button-bg: linear-gradient(#EEE, #CCC);
 	--button-active-bg: linear-gradient(#DDD, #EEE);
@@ -78,4 +80,6 @@ html[data-theme="dark"], html.f-dark:not([data-theme]) {
 	--light-invert-bg: #111;
 	--loading-invert-bg: #327070;
 	--error-invert-bg: #800;
+	--message-hover-bg: #444;
+	--message-focus-bg: #253C3F;
 }

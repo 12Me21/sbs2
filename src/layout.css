@@ -277,7 +277,6 @@ but, then we can't add a border to the image
 	color: var(--databartxtcolor);
 	background: var(--databarbgcolor);
 	overflow: hidden;
-	/*box-shadow: 0 -2px 3px rgba(0,0,0,0.3);*/
 }
 .resize-box > resize-handle[data-dragging] {
 	cursor: grabbing;
@@ -362,4 +361,21 @@ textarea-container > textarea {
 	border: none;
 	padding: 0;
 	margin: 0;
+}
+
+/* use solid backgrounds on elements
+ to improve rendering performance + subpixel text usage */
+
+/*
+.resize-box > *,
+.slide-box, .slide-box > *,
+scroll-inner {
+	background: var(--mainbgcolor);
+}
+*/
+
+/* ahh what the heck, why not */
+
+* {
+	background-color: inherit;
 }
