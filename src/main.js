@@ -31,10 +31,10 @@ function immediate() {
 	
 	window.onoffline = function(){print('offline')}
 	window.ononline = function(){print('online')}
-	window.focus = function(){print('focus')}
-	window.blur = function(){print('blur')}
-	window.pageshow = function(){print('pageshow')}
-	window.pagehide = function(){print('pagehide')}
+	window.onfocus = function(){print('focus')}
+	window.onblur = function(){print('blur')}
+	window.onpageshow = function(){print('pageshow')}
+	window.onpagehide = function(){print('pagehide')}
 	
 	Req.try_load_auth()
 	
