@@ -644,6 +644,7 @@ input, output, select {
 	border-style: solid;
 	border-color: var(--input-border-color);
 	border-radius: 1px;
+	background-color: var(--mainbgcolor);
 }
 input, select { /* this is old & probably not needed */
 	min-width: 0;
