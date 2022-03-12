@@ -193,27 +193,44 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		$sidebarCategories.fill(Draw.nav_category(cats[0]))
 	},
 	
-	print(...args) {
-		let text = args.map((str)=>{
-			// wtf is this
+	// garbage shit
+	safe_tostring(val) {
+		try {
+			return ""+val
+		} catch(e) {
 			try {
-				try {
-					return String(str)
-				} catch(e) {
-					return "<"+str.constructor.name+">" // todo: breaks on {} with no constructor now
+				let type = Object.getPrototypeOf(val)
+				if (type && type.constructor) {
+					let c = type.constructor
+					if (c && c.name && typeof c.name == 'string')
+						return "<"+cname+">"
 				}
 			} catch(e) {
-				return "<???>"
 			}
-		}).join("\n")
-		if (scroller)
-			scroller.print(()=>{
-				message_count++
-				limit_messages()
-				return Draw.sidebar_debug(text)
-			}, true)
-		else
-			pre_print.push(text)
+			return "<???>"
+		}
+	},
+	printing: false,
+	// messy messy messy...
+	print(...args) {
+		View.do_when_ready(()=>{
+			try {
+				if (printing) {
+					alert("recursive print detected!")
+					return
+				}
+				printing = true;
+				let text = args.map(x => safe_tostring(x)).join("\n")
+				scroller.print(()=>{
+					message_count++
+					limit_messages()
+					return Draw.sidebar_debug(text)
+				}, true)
+			} catch (e) {
+				console.error("print error", e, "\n", args)
+			}
+			printing = false;
+		})
 	},
 	
 	file_cancel() {

@@ -155,7 +155,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		if (init_done) {
 			go()
 		} else {
-			console.log("deferring render")
+			console.log("deferring render", go)
 			run_on_load.push(go)
 		}
 	},

@@ -328,11 +328,11 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 			print("websocket error!")
 		}
 		websocket.onclose = (e)=>{
-			console.log("websocket closed:", e.code, e.reason, e.wasClean)
-			print("websocket close!")
-			
 			if (dead)
 				return
+			
+			console.log("websocket closed:", e.code, e.reason, e.wasClean)
+			print("websocket close!")
 			// 1000, "Invalid token", true - token
 			// 1006, "", false - connection error
 			ws_is_ready = false

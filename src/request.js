@@ -36,9 +36,7 @@ const Req = {
 		let retry = (time, reason)=>{
 			console.log("will retry", reason, "in "+time/1000+" sec")
 			if (time > 2000)
-				try { // messy. why don't we have a print func which never fails?
-					print("Warning: request was rate limited with extremely long wait time: "+time/1000+" seconds")
-				} catch(e) {}
+				print("Warning: request was rate limited with extremely long wait time: "+time/1000+" seconds")
 			let id = window.setTimeout(()=>{
 				console.log("retrying request", reason)
 				// this is not recursion: we're in an async callback function!
