@@ -29,6 +29,13 @@ else
 function immediate() {
 	Sidebar.print("hi!\ncommit: "+window.commit)
 	
+	window.onoffline = function(){print('offline')}
+	window.ononline = function(){print('online')}
+	window.focus = function(){print('focus')}
+	window.blur = function(){print('blur')}
+	window.pageshow = function(){print('pageshow')}
+	window.pagehide = function(){print('pagehide')}
+	
 	Req.try_load_auth()
 	
 	if (Req.auth) {
