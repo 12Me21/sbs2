@@ -16,6 +16,7 @@ View.add_view('comments', {
 				['end', 'date', {label: "End Date", convert: CONVERT.date, param: 'end'}],
 				['range', 'range', {label: "Id Range", convert: CONVERT.range, param: 'ids'}],
 				['reverse', 'checkbox', {label: "Newest First", convert: CONVERT.flag, param: 'r'}],
+				['raw', 'checkbox', {label: "Raw Search", convert: CONVERT.flag, param: 'raw'}],
 			]
 		})
 		$commentSearchForm.replaceWith(comment_form.elem)
@@ -104,7 +105,10 @@ function build_search(data) {
 		merge = false
 	}
 	if (data.search) {
-		search.contentLike = "%\n%"+data.search+"%"
+		if (data.raw)
+			search.contentLike = data.search
+		else
+			search.contentLike = "%\n%"+data.search+"%"
 		merge = false
 	}
 	if (data.pages)
