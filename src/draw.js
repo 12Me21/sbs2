@@ -440,7 +440,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			btn.setAttribute('role', "tab")
 			btn.setAttribute('aria-selected', "false")
 			btn.id = "sidebar-tab-"+i
-			btn.setAttribute('aria-controls', "sidebar-panel-"+i)
+			btn.setAttribute('aria-controls', "sidebar-panel-"+i) // um did i forgot the corresponding property? TODO
 			btns[i] = btn
 			btn.onclick = ()=>{
 				x.select(i)

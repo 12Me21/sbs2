@@ -179,9 +179,10 @@ form-table > .wide {
  **************/
 
 scroll-outer {
+	overflow-y: scroll;
+	/* we probably don't need these ones: */
 	display: block;
 	height: 100%;
-	overflow-y: scroll;
 }
 scroll-middle {
 	display: flex;
@@ -396,10 +397,10 @@ sidebar-panel
 /* their scrolling contents */
 .resize-box > *,
 scroll-outer > *,
-scroll-inner, /* necessary, but idk why */
+scroll-inner, /* necessary, but idk why (well maybe either this OR scroll-middle but at least 1 **/
 sidebar-panel > *
 {
-	background: var(--mainbgcolor);
+	background: inherit;
 }
 
 /*
