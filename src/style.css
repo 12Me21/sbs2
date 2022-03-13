@@ -328,7 +328,6 @@ message-block {
 	padding-inline: 0.5rem;
 	padding-top: var(--chat-message-gap);
 	min-height: var(--chat-avatar-size);
-	overflow: auto;
 	white-space: pre-wrap; /* hm ? */
 	/*border-left: 0.5em solid rgb(255,153,153);; */
 	font-size: 1em; /* ? */
@@ -376,10 +375,11 @@ message-contents {
 	min-height: 1.5rem; /* this is so the message controls always have somewhere to be shown */
 	margin-top: 0.2rem;
 	/* do we need all these */
-	overflow: auto;
 	overflow-y: hidden; /* i think this one is for compat? */
 	overflow-y: clip;
 	background: var(--mainbgcolor);
+	
+	contain: none; /* because of overlapping with avatar */
 }
 message-contents img {
 	max-width: 100%;
@@ -487,12 +487,20 @@ html:not(.f-chatEditing) .showWhenEdit {
 
 .userPageAvatar {
 	display: inline-block;
-	flex-shrink: 1;
 	width: 10rem;
 	height: 10rem;
+	flex-shrink: 1;
 	margin-bottom: 5px;
+	
 	box-shadow: 2px 2px 5px gray;
+	position: relative;
+	z-index: 2;
 }
+.userPageAvatar > img {
+	width: 100%;
+	height: 100%;
+}
+
 .userPageBox .pageContents {
 	flex-basis: 0;
 }
@@ -508,6 +516,7 @@ html:not(.f-myUserPage) .myUserPage {
 }
 
 @media (max-width: 700px) {
+	/* this is broken */
 	.userPageBox {
 		flex-direction: column;
 		max-height: none;
@@ -757,12 +766,10 @@ textarea-container, textarea-container > textarea {
 }
 
 /* contain */
-main, sidebar-container, #\$sidebarTop, #\$sidebarBottom, .resize, .sidebarComment, $sidebarActivity > .linkBar {
+#\$sidebarBottom, .sidebarComment, $sidebarActivity > .linkBar {
 	contain: strict;
 }
-message-part, header, .markup-root, message-block {
-	contain: content;
-}
+
 /* this might be bad */
 .chatScroller, #\$sidebarScroller, $sidebarActivity {
 	/*will-change: contents; /* might need to change .chatScroller ? */

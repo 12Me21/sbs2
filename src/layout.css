@@ -5,6 +5,7 @@
 	margin: 0;
 	box-sizing: border-box;
 	word-break: inherit; /* this might not actually do anything. note that we can't set it to break-word here, otherwise it messes up children of elements with word-break set to something else */
+	vertical-align: inherit;
 }
 
 html {
@@ -15,13 +16,15 @@ html {
 	-webkit-text-size-adjust: none;
 	/* required for text wrapping to work */
 	word-break: break-word;
+	vertical-align: top;
 }
 
 /* this fixes a weird positioning bug with inline elements */
 /* may need more things here */
 .textItem, .item, button-container button, .avatar,
-tbody, img, canvas, button {
-	vertical-align: top;
+tbody, img, canvas, button, label {
+	/*vertical-align: inherit;*/
+	/* TODO: maybe set vertical-align: inherit; and then vertical-align: top; on html ? then reset it on markup-root*/
 }
 
 /* always display images at correct aspect ratio, even if the element is the wrong size */
@@ -179,7 +182,6 @@ scroll-outer {
 	display: block;
 	height: 100%;
 	overflow-y: scroll;
-	contain: strict;
 }
 scroll-middle {
 	display: flex;
@@ -232,7 +234,6 @@ but, then we can't add a border to the image
 	display: block;
 	position: relative;
 	overflow: unset; /* ?? */
-	contain: strict;
 }
 .slide-box > * {
 	position: absolute;
@@ -251,7 +252,6 @@ but, then we can't add a border to the image
 	display: flex;
 	flex-direction: column;
 	--handle-width: 1.2em;
-	contain: strict;
 }
 .resize-box.row {
 	flex-direction: row;
@@ -363,16 +363,43 @@ textarea-container > textarea {
 	margin: 0;
 }
 
+/* honestly we can just apply this to pretty much everything lol */
+* {
+	contain: content;
+}
+html {
+	contain: none;
+}
+ul, ol, li, /* bullets render outside */
+td, th {  /* border renders outside */
+	contain: none;
+}
+
 /* use solid backgrounds on elements
  to improve rendering performance + subpixel text usage */
 
-.resize-box, .resize-box > *,
+/* sized containers */
+.resize-box,
 .slide-box, .slide-box > *,
-scroll-outer, scroll-outer > *,
-sidebar-panel > *, /* scrolling element */
-scroll-inner /* just in case? idk */
+scroll-outer,
+sidebar-panel
+/* maybe also .resize-box > .grow ? */
 {
-	background: inherit; /*var(--mainbgcolor);*/
+	contain: strict;
+	background: var(--mainbgcolor);
+}
+/* this element isn't sized based on contents */
+.resize-box > .grow {
+	contain: strict;
+}
+
+/* their scrolling contents */
+.resize-box > *,
+scroll-outer > *,
+scroll-inner, /* necessary, but idk why */
+sidebar-panel > *
+{
+	background: var(--mainbgcolor);
 }
 
 /*
@@ -380,10 +407,13 @@ from what i've noticed, the most important thing is having a solid BG on
 the inner scrolling element (the one which moves when you scroll)
 */
 
-/*scroll-outer {
-	background-clip: content-box;
-	background-attachment: local;
-	background-color: inherit;
-doesn't work...
-}*/
-
+scroll-outer,
+.resize-box,
+.slide-box,
+sidebar-panel
+{
+/*	background-clip: content-box;*/
+/*	background-attachment: fixed;*/
+/*	background-color: white;*/
+/*doesn't work...*/
+}
