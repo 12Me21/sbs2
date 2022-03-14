@@ -135,7 +135,7 @@ const Req = {
 	request(url, method, callback, data, proc) {
 		if (Object.is_plain(data))
 			data = JSON.to_blob(data)
-		return this.raw_request(url, method, data, {proc}, callback.bind(null, null), callback)
+		this.raw_request(url, method, data, {proc}, callback.bind(null, null), callback)
 	},
 	// i dont like how proc is required but h
 	request2(url, proc, method='GET', data=null) {
@@ -168,7 +168,7 @@ const Req = {
 		})
 		Object.assign(query, filters) // we're not ready for {...} syntax yet
 		let url = "Read/chain"+this.query_string(query)
-		return this.raw_request(url, 'GET', null, {proc: Entity.process.bind(Entity)}, callback.bind(null, null), callback)
+		this.raw_request(url, 'GET', null, {proc: Entity.process.bind(Entity)}, callback.bind(null, null), callback)
 	},
 	
 	/////////////////////////
@@ -220,23 +220,23 @@ const Req = {
 	},
 	
 	get_me(callback) {
-		return this.request("User/me", 'GET', (e, resp)=>{
+		this.request("User/me", 'GET', (e, resp)=>{
 			callback(e ? null: resp)
 		}, null, Entity.process_item.bind(Entity, 'user'))
 	},
 	
 	set_basic(data, callback) {
-		return this.request("User/basic", 'PUT', (e, resp)=>{
+		this.request("User/basic", 'PUT', (e, resp)=>{
 			callback(e ? null : resp)
 		}, data, Entity.process_item.bind(Entity, 'user')) // maybe it would be better to just pass the typename or something here?
 	},
 	
 	set_sensitive(data, callback) {
-		return this.request("User/sensitive", 'POST', callback, data)
+		this.request("User/sensitive", 'POST', callback, data)
 	},
 	
 	put_file(file, callback) {
-		return this.request("File/"+file.id, 'PUT', callback, file)
+		this.request("File/"+file.id, 'PUT', callback, file)
 	},
 	// this should accept as many types as possible
 	// unused!
@@ -265,7 +265,7 @@ const Req = {
 	},
 	
 	toggle_hiding(id, callback) {
-		return this.get_me((me)=>{
+		this.get_me((me)=>{
 			if (me) {
 				let hiding = me.hidelist
 				let hidden = arrayToggle(hiding, id)
@@ -280,7 +280,7 @@ const Req = {
 	searchUsers(text, callback) {
 		let like = text.replace(/%/g,"_") //the best we can do...
 		let count = 20
-		return this.read([
+		this.read([
 			['user', {limit: count, usernameLike: "%"+like+"%", sort: 'editDate', reverse: true}],
 		], {}, (e, resp)=>{
 			callback(e ? null : resp.user_map)
@@ -292,7 +292,7 @@ const Req = {
 		let count = 20
 		let page = 0
 		page = page*count
-		return this.read([
+		this.read([
 			['user~Usearch', {limit: count, skip: page, usernameLike: like+"%"}],
 			['content', {limit: count, skip: page, nameLike: "%"+like+"%"}],
 			['content', {limit: count, skip: page, keyword: like}],
@@ -327,7 +327,7 @@ const Req = {
 		let fi = {reverse: true, limit: count, parentIds: [pid]}
 		if (firstId != null)
 			fi.maxId = firstId // maxId is EXCLUSIVE
-		return this.read([
+		this.read([
 			['comment', fi],
 			['user.0createUserId.0editUserId'],
 		], {}, (e, resp)=>{
@@ -343,7 +343,7 @@ const Req = {
 		let fi = {limit: count, parentIds: [pid]}
 		if (lastId != null)
 			fi.minId = lastId
-		return this.read([
+		this.read([
 			['comment', fi],
 			['user.0createUserId.0editUserId'],
 		], {}, (e, resp)=>{
