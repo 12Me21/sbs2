@@ -470,6 +470,9 @@ const INPUTS = (()=>{
 			}
 		},
 		// type: Date/null
+		// dates are interpreted in local time.
+		// uses 2 <input>s
+		// considered "empty" if date input is blank. time input is optional and defaults to 00:00:00
 		date: class extends GenericInput {
 			constructor(p) {
 				super()
@@ -478,11 +481,11 @@ const INPUTS = (()=>{
 				this.input1 = elem('input')
 				this.input1.id = this.html_id
 				this.input1.type = 'date'
+				this.elem.append(this.input1)
+				
 				this.input2 = elem('input')
 				this.input2.type = 'time'
 				//this.input2.step = "1"
-				
-				this.elem.append(this.input1)
 				this.elem.append(this.input2)
 				
 				this.input1.onchange = this._onchange.bind(this)
@@ -490,24 +493,27 @@ const INPUTS = (()=>{
 			}
 			get() {
 				// we can't use the .valueAsNumber or .valueAsDate attributes because these read the times in utc
-				let [m1,year,month,day] = /(\d+)-(\d+)-(\d+)/.rmatch(this.input1.value)
+				let [m1, year, month, day] = /(\d+)-(\d+)-(\d+)/.rmatch(this.input1.value)
 				if (!m1)
 					return null
-				let [m2,hour,minute,second] = /(\d+):(\d+)(?::([\d.]+))?/.rmatch(this.input2.value)
+				let [m2, hour, minute, second] = /(\d+):(\d+)(?::([\d.]+))?/.rmatch(this.input2.value)
 				if (!m2)
 					hour = minute = second = 0
-				return new Date(year,month-1,day,hour,minute,Math.floor(second||0))
+				return new Date(year, month-1, day, hour, minute, Math.floor(second || 0))
 			}
 			set(v) {
 				if (v) {
-					let year = v.getFullYear()
-					let month = v.getMonth() + 1
-					let day = v.getDate()
-					let hour = v.getHours()
-					let minute = v.getMinutes()
-					let second = v.getSeconds()
-					this.input1.value = String(year).padStart(4,0)+"-"+String(month).padStart(2,0)+"-"+String(day).padStart(2,0)
-					this.input2.value = String(hour).padStart(2,0)+":"+String(minute).padStart(2,0)+":"+String(second).padStart(2,0)
+					function str(x, len) {
+						return String(x).padStart(len, "0")
+					}
+					this.input1.value =
+						str(v.getFullYear(), 4)+"-"+
+						str(v.getMonth()+1, 2)+"-"+
+						str(v.getDate(), 2)
+					this.input2.value =
+						str(v.getHours(), 2)+":"+
+						str(v.getMinutes(), 2)+":"+
+						str(v.getSeconds(), 2)
 				} else {
 					this.input1.value = ""
 					this.input2.value = ""
