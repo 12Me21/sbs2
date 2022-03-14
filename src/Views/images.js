@@ -27,20 +27,17 @@ with (View) (()=>{ "use strict"; {
 			$setAvatarButton.onclick = ()=>{
 				if (!selectedFile)
 					return
-				Req.set_basic({avatar: selectedFile.id}, (user)=>{
-					user && update_my_user(user) // have to do this because rannnnnnnnnnndommmmmmm broke user activityyy
+				Req.set_basic({avatar: selectedFile.id}).then((user)=>{
+					update_my_user(user) // have to do this because rannnnnnnnnnndommmmmmm broke user activityyy
 				})
 			}
 			$fileUpdateButton.onclick = ()=>{
 				if (!selectedFile)
 					return
 				readFields(selectedFile)
-				Req.put_file(selectedFile, (e, resp)=>{
-					if (!e) {
-						resp.createUser = selectedFile.createUser //ehhhhh
-						selectFile(resp)
-					}
-					//eh
+				Req.put_file(selectedFile).then((resp)=>{
+					resp.createUser = selectedFile.createUser //ehhhhh
+					selectFile(resp)
 				})
 			}
 			

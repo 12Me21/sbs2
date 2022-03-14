@@ -65,10 +65,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 				if (data.quantize)
 					params.quantize = +data.quantize
 				
-				Req.upload_file(selected_file, params, (e, file)=>{
-					$file_upload.disabled = false
-					if (e) // failed
-						return
+				Req.upload_file(selected_file, params).then((file)=>{
 					selected_file = null
 					
 					$file_url.hidden = false
@@ -81,6 +78,8 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 					$file_url.value = Req.file_url(file.id)
 					$file_image.src = ""
 					$file_image.src = Req.file_url(file.id)
+				}).finally(()=>{
+					$file_upload.disabled = false
 				})
 			}
 		}
@@ -147,11 +146,10 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 				return
 			}
 			delete data.error
-			Req.set_sensitive(data, (e, resp)=>{
-				if (!e)
-					registerError("Updated", undefined)
-				else
-					registerError(resp, "Failed:") //todo: this doesn't work?
+			Req.set_sensitive(data).then((resp)=>{
+				registerError("Updated", undefined)
+			}, ()=>{
+				registerError(resp, "Failed:") //todo: this doesn't work?
 			})
 		}
 		let d = Draw.settings(Settings)

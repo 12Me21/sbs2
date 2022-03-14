@@ -878,29 +878,27 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 					 oldButton.hasAttribute('data-selected') &&
 					 button.hasAttribute('data-selected'))
 					vote = undefined
-				Req.setVote(page.id, vote, (e, resp)=>{
-					// in case the vote fails when user is blocked from voting
-					if (!e) {
-						// if the vote was already toggled, then remove highlight
-						let replaceVote = (q, x)=>{
-							let c = element.querySelector(q)
-							c.textContent = String(Number(c.textContent) + x)
-						}
-						if (!vote) {
-							delete button.dataset.selected
-							replaceVote('.voteCount[data-vote="' + state + '"]', -1)
-						} else {
-							// otherwise, we want to remove the highlight from the
-							// button that was already pressed before and highlight
-							// the new button
-							if (oldButton) {
-								delete oldButton.dataset.selected
-								replaceVote('.voteCount[data-vote="' + oldButton.dataset.vote + '"]', -1)
-							}
-							button.dataset.selected = ""
-							replaceVote('.voteCount[data-vote="' + state + '"]', 1)
-						}
+				Req.setVote(page.id, vote).then((resp)=>{
+					// if the vote was already toggled, then remove highlight
+					let replaceVote = (q, x)=>{
+						let c = element.querySelector(q)
+						c.textContent = String(Number(c.textContent) + x)
 					}
+					if (!vote) {
+						delete button.dataset.selected
+						replaceVote('.voteCount[data-vote="' + state + '"]', -1)
+					} else {
+						// otherwise, we want to remove the highlight from the
+						// button that was already pressed before and highlight
+						// the new button
+						if (oldButton) {
+							delete oldButton.dataset.selected
+							replaceVote('.voteCount[data-vote="' + oldButton.dataset.vote + '"]', -1)
+						}
+						button.dataset.selected = ""
+						replaceVote('.voteCount[data-vote="' + state + '"]', 1)
+					}
+				}).finally(()=>{
 					button.disabled = false
 				})
 			}

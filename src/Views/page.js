@@ -100,30 +100,23 @@ add_view('page', {
 				$chatTextarea.focus()
 				
 				if (data.content) { // input not blank
-					Req.edit_message(last_edit.id, last_edit.parentId, data.content, data.meta, (e)=>{
-						if (e) {
-							alert("Editing comment failed")
-						}
+					Req.edit_message(last_edit.id, last_edit.parentId, data.content, data.meta).catch((e)=>{
+						alert("Editing comment failed")
 					})
 				} else { // input is blank
 					let resp = confirm("Are you sure you want to delete this message?\n"+last_edit.content)
 					if (resp) {
-						Req.delete_message(last_edit.id, (e, resp)=>{
-							if (e) {
-								alert("Deleting comment failed")
-							}
+						Req.delete_message(last_edit.id).catch((e)=>{
+							alert("Deleting comment failed")
 						})
 					}
 				}
 			} else { // posting new comment
 				if (data.content) { // input is not blank
 					let old = data
-					Req.send_message(room.id, data.content, data.meta, (e, resp)=>{
-						if (e) {
-							//error sending message
-							write_input(old)
-						} else {
-						}
+					Req.send_message(room.id, data.content, data.meta).catch(()=>{
+						//error sending message
+						write_input(old)
 					})
 					// going to try this hack to see if that fixes safari
 					window.setTimeout(()=>{

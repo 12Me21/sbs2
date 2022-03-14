@@ -1,15 +1,22 @@
 window.onerror = function(message, source, line, col, error) {
 	try {
-		console.error(arguments)
-		if (!error)
-			return
-		Sidebar.print(`Error: ${message}
-in ${source}
-at ${line}:${col}`)
-		// to prevent this from throwing more errors
-		// though the scroll event might cause issues...
+		// sometimes we don't get any useful information other than the filename
+		if (error)
+			Sidebar.print(error.stack)
+		if (line)
+			Sidebar.print(`ERROR: ${message}\nin ${source}\nat ${line}:${col}`)
+		else
+			Sidebar.print(`ERROR: ${message}\nin ${source}`)
 	} catch(e) {
+		console.error("error in window.onerror:", e, arguments)
 		// yeah no
+	}
+}
+window.onunhandledrejection = function(event) {
+	try {
+		Sidebar.print("ERROR IN PROMISE: ", event.reason)
+	} catch(e) {
+		console.error("error in window.onunhandledrejection:", e, event)
 	}
 }
 

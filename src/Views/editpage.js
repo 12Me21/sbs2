@@ -15,12 +15,13 @@ add_view('editpage', {
 		$markupSelect.onchange = ()=>{update_preview(true)}
 		$markupUpdate.onclick = ()=>{update_preview(false)}
 		$submitEdit.onclick = ()=>{
-			submit_edit((e, resp)=>{
-				if (!e) {
-					Nav.go("page/"+resp.id)
-				} else {
-					alert("Error submitting page!")
-				}
+			if (!editing_page)
+				return
+			readFields(editing_page)
+			Req.editPage(editing_page).then((resp)=>{
+				Nav.go("page/"+resp.id)
+			},(e, resp)=>{
+				alert("Error submitting page!")
 			})
 		}
 		$toggleEditorMode.onclick = ()=>{
@@ -131,13 +132,6 @@ add_view('editpage', {
 
 let editing_page = null
 let form = null
-
-function submit_edit(callback) {
-	if (!editing_page)
-		return
-	readFields(editing_page)
-	Req.editPage(editing_page, callback)
-}
 
 function update_preview() {
 	let parent = $editorPreview

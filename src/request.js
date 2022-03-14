@@ -132,11 +132,11 @@ const Req = {
 	},
 	
 	// idk having all brackets bold + dimgray was kinda nice...
-	request(url, method, callback, data, proc) {
+	/*request(url, method, callback, data, proc) {
 		if (Object.is_plain(data))
 			data = JSON.to_blob(data)
 		this.raw_request(url, method, data, {proc}, callback.bind(null, null), callback)
-	},
+	},*/
 	// i dont like how proc is required but h
 	request2(url, proc, method='GET', data=null) {
 		if (Object.is_plain(data))
@@ -205,65 +205,40 @@ const Req = {
 		])
 	},
 	
-	get_me(callback) {
-		this.request("User/me", 'GET', (e, resp)=>{
-			callback(e ? null: resp)
-		}, null, Entity.process_item.bind(Entity, 'user'))
+	get_me() {
+		return this.request2("User/me", Entity.process_item.bind(Entity, 'user'))
 	},
 	
-	set_basic(data, callback) {
-		this.request("User/basic", 'PUT', (e, resp)=>{
-			callback(e ? null : resp)
-		}, data, Entity.process_item.bind(Entity, 'user')) // maybe it would be better to just pass the typename or something here?
+	set_basic(data) {
+		return this.request2("User/basic", Entity.process_item.bind(Entity, 'user'), 'PUT', data)
+		// maybe it would be better to just pass the typename or something here? instead of entity.whatever
 	},
 	
-	set_sensitive(data, callback) {
-		this.request("User/sensitive", 'POST', callback, data)
+	set_sensitive(data) {
+		return this.request2("User/sensitive", null, 'POST', data)
 	},
 	
-	put_file(file, callback) {
-		this.request("File/"+file.id, 'PUT', callback, file)
-	},
-	// this should accept as many types as possible
-	// unused!
-	upload_image(thing, callback) {
-		if (thing instanceof HTMLCanvasElement) {
-			thing.toBlob((blob)=>{
-				if (blob)
-					this.upload_file(blob, callback)
-				else
-					callback(null)
-			})
-		} else if (thing instanceof File || thing instanceof Blob) {
-			this.uploadFile(thing, callback)
-		} else if (thing instanceof Image) {
-			this.callback(null)
-			// todo
-		} else {
-			this.callback(null)
-		}
+	put_file(file) {
+		return this.request2("File/"+file.id, null, 'PUT', file)
 	},
 	
-	upload_file(file, params, callback) {
+	upload_file(file, params) {
 		let form = new FormData() // no you can't just pass fields to the constructor
 		form.append('file', file)
-		this.request("File"+this.query_string(params), 'POST', callback, form, Entity.process_item.bind(Entity, 'file'))
+		return this.request2("File"+this.query_string(params), Entity.process_item.bind(Entity, 'file'), 'POST', form)
 	},
 	
 	toggle_hiding(id, callback) {
-		this.get_me((me)=>{
-			if (me) {
-				let hiding = me.hidelist
-				let hidden = arrayToggle(hiding, id)
-				this.set_basic({hidelist:hiding}, (e, resp)=>{
-					callback(e ? null : hidden)
-				})
-			} else
-				callback(null)
+		this.get_me().then((me)=>{
+			let hiding = me.hidelist
+			let hidden = arrayToggle(hiding, id)
+			this.set_basic({hidelist:hiding}).then(()=>{
+				callback(hidden)
+			})
 		})
 	},
 	
-	searchUsers(text, callback) {
+	searchUsers(text) {
 		let like = text.replace(/%/g,"_") //the best we can do...
 		let count = 20
 		return this.chain([
@@ -271,7 +246,7 @@ const Req = {
 		])
 	},
 	
-	search1(text, callback) {
+	search1(text) {
 		let like = text.replace(/%/g,"_") //the best we can do...
 		let count = 20
 		let page = 0
@@ -286,20 +261,19 @@ const Req = {
 		})
 	},
 	
-	setVote(id, state, callback) {
-		this.request("Vote/"+id+"/"+(state||"delete"), 'POST', callback)
+	setVote(id, state) {
+		return this.request2("Vote/"+id+"/"+(state||"delete"), null, 'POST', null)
 	},
 	
-	editPage(page, callback) {
+	editPage(page) {
 		if (this.locked) {
 			console.log("editing page:", page)
-			callback(true, null)
 			return
 		}
 		if (page.id)
-			this.request("Content/"+page.id, 'PUT', callback, page)
+			return this.request2("Content/"+page.id, null, 'PUT', page)
 		else
-			this.request("Content", 'POST', callback, page)
+			return this.request2("Content", null, 'POST', page)
 	},
 	
 	get_older_comments(pid, firstId, count) {
@@ -322,16 +296,16 @@ const Req = {
 		])
 	},
 	
-	send_message(room, text, meta, callback) {
-		this.request("Comment", 'POST', callback, {parentId: room, content: Entity.encode_comment(text, meta)})
+	send_message(room, text, meta) {
+		return this.request2("Comment", null, 'POST', {parentId: room, content: Entity.encode_comment(text, meta)})
 	},
 	
-	edit_message(id, room, text, meta, callback) { // lots of args..
-		this.request("Comment/"+id, 'PUT', callback, {parentId: room, content: Entity.encode_comment(text, meta)})
+	edit_message(id, room, text, meta) { // lots of args..
+		return this.request2("Comment/"+id, null, 'PUT', {parentId: room, content: Entity.encode_comment(text, meta)})
 	},
 	
-	delete_message(id, callback) {
-		this.request("Comment/"+id+"/delete", 'POST', callback)
+	delete_message(id) {
+		return this.request2("Comment/"+id+"/delete", null, 'POST', null)
 	},
 	
 	file_url(id, query) {
