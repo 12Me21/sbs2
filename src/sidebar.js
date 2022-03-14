@@ -114,7 +114,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		
 		$searchButton.onclick = ()=>{
 			$searchButton.disabled = true
-			Req.search1($searchInput.value, (users, pages)=>{
+			Req.search1($searchInput.value).then(({Usearch:users, content:pages})=>{
 				$searchButton.disabled = false
 				$searchResults.fill()
 				pages.forEach((item)=>{

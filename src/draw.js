@@ -350,9 +350,8 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			b[1].textContent = "Load Older"
 			outer.append(b[0])
 			b[1].onclick = ()=>{
-				Req.get_older_comments(comment.parentId, firstId, 10, (comments)=>{
-					if (!comments) return
-					comments.forEach((c)=>{
+				Req.get_older_comments(comment.parentId, firstId, 10).then(resp=>{
+					resp.comment.forEach((c)=>{
 						firstId = c.id
 						if (c.deleted)
 							return
@@ -375,9 +374,8 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			b[1].textContent = "Load Newer"
 			outer.append(b[0])
 			b[1].onclick = ()=>{
-				Req.get_newer_comments(comment.parentId, lastId, 10, (comments)=>{
-					if (!comments) return
-					comments.forEach((c)=>{
+				Req.get_newer_comments(comment.parentId, lastId, 10).then(resp=>{
+					resp.comments.forEach((c)=>{
 						lastId = c.id
 						if (c.deleted)
 							return
@@ -669,12 +667,8 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			dropdown.fill(placeholder2)
 			placeholder2.selected = true
 			results = true
-			Req.searchUsers(x.searchText, (user_map)=>{
+			Req.searchUsers(x.searchText).then(({user_map})=>{
 				dropdown.fill()
-				if (!user_map) {
-					x.searchText = null //error
-					return
-				}
 				results = user_map
 				submit.disabled = false
 				let found = false
@@ -692,6 +686,9 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 					dropdown.value = "0"
 					input.focus()
 				}
+			}, (e, resp)=>{
+				dropdown.fill()
+				x.searchText = null //error
 			})
 		}
 		let reset = ()=>{

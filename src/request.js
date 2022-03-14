@@ -156,20 +156,6 @@ const Req = {
 		let url = "Read/chain"+this.query_string(query)
 		return new Promise(this.raw_request.bind(this, url, 'GET', null, {proc: Entity.process.bind(Entity), abort}))
 	},
-	// chain
-	read(requests, filters, callback) {
-		let query = {}
-		// i suppose we could like, processs this AND convert to query string at the same time hmm?
-		 /// // do not think about such things,.
-		query.requests = requests.map(([thing, data])=>{
-			if (data)
-				thing += "-"+JSON.stringify(data)
-			return thing
-		})
-		Object.assign(query, filters) // we're not ready for {...} syntax yet
-		let url = "Read/chain"+this.query_string(query)
-		this.raw_request(url, 'GET', null, {proc: Entity.process.bind(Entity)}, callback.bind(null, null), callback)
-	},
 	
 	/////////////////////////
 	//                     //
@@ -280,11 +266,9 @@ const Req = {
 	searchUsers(text, callback) {
 		let like = text.replace(/%/g,"_") //the best we can do...
 		let count = 20
-		this.read([
-			['user', {limit: count, usernameLike: "%"+like+"%", sort: 'editDate', reverse: true}],
-		], {}, (e, resp)=>{
-			callback(e ? null : resp.user_map)
-		})
+		return this.chain([
+			['user', {limit: count, usernameLike: "%"+like+"%", sort: 'editDate', reverse: true}]
+		])
 	},
 	
 	search1(text, callback) {
@@ -292,18 +276,13 @@ const Req = {
 		let count = 20
 		let page = 0
 		page = page*count
-		this.read([
+		return this.chain([
 			['user~Usearch', {limit: count, skip: page, usernameLike: like+"%"}],
 			['content', {limit: count, skip: page, nameLike: "%"+like+"%"}],
 			['content', {limit: count, skip: page, keyword: like}],
 			['user.1createUserId.2createUserId'],
-		],{
+		], {
 			content: 'name,id,type,permissions,createUserId', //eh
-		}, (e, resp)=>{
-			if (!e)
-				callback(resp.Usearch, resp.content)
-			else
-				callback(null)
 		})
 	},
 	
@@ -323,35 +302,24 @@ const Req = {
 			this.request("Content", 'POST', callback, page)
 	},
 	
-	get_older_comments(pid, firstId, count, callback, err) {
+	get_older_comments(pid, firstId, count) {
 		let fi = {reverse: true, limit: count, parentIds: [pid]}
 		if (firstId != null)
 			fi.maxId = firstId // maxId is EXCLUSIVE
-		this.read([
+		return this.chain([
 			['comment', fi],
 			['user.0createUserId.0editUserId'],
-		], {}, (e, resp)=>{
-			if (!e)
-				callback(resp.comment)
-			else
-				callback(null)
-		})
-		// so messy, with the different types of error hiding and shit
+		])
 	},
 	
-	get_newer_comments(pid, lastId, count, callback) {
+	get_newer_comments(pid, lastId, count) {
 		let fi = {limit: count, parentIds: [pid]}
-		if (lastId != null)
+		if (lastId != null) // isn't it fine if we just pass null though?
 			fi.minId = lastId
-		this.read([
+		return this.chain([
 			['comment', fi],
 			['user.0createUserId.0editUserId'],
-		], {}, (e, resp)=>{
-			if (!e)
-				callback(resp.comment)
-			else
-				callback(null)
-		})
+		])
 	},
 	
 	send_message(room, text, meta, callback) {

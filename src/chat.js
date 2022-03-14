@@ -117,8 +117,8 @@ class ChatRoom {
 	
 	load_older(num, callback) {
 		let firstId = Object.first_key(this.message_parts)
-		Req.get_older_comments(this.id, +firstId, num, (comments)=>{
-			comments && this.display_old_messages(comments)
+		Req.get_older_comments(this.id, +firstId, num).then((resp)=>{
+			resp.comment && this.display_old_messages(resp.comment)
 			callback()
 		})
 	}
