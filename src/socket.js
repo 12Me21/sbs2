@@ -165,7 +165,7 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 		return {
 			actions: actions,
 			listeners: listeners,
-			fields: {content:['id','createUserId','name','permissions','type']},
+			fields: {content: ['id','createUserId','name','permissions','type']},
 		}
 	},
 	
@@ -175,7 +175,7 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 			websocket_flush()
 	},
 	
-	lp_listen() {
+	lp_listen(abort) {
 		let {actions, listeners, fields} = make_request()
 		// convert make_request output to long poller format
 		let query = {
@@ -185,22 +185,15 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 		for (let [key, value] of Object.entries(fields))
 			query[key] = value.join(",")
 		
-		return Req.request3("Read/listen"+Req.query_string(query))
+		return Req.request2("Read/listen"+Req.query_string(query), null, abort)
 	},
 	
 	// if
 	lp_loop() {
 		running = true
 		//make sure only one instance of this is running
-		let cancelled
-		let x = lp_listen()
-		
-		x((resp)=>{
-			if (cancelled) {
-				// should never happen (but I think it does sometimes..)
-				console.log("OH HECK, request called callback after being cancelled?")
-				return
-			}
+		let abort = [null]
+		lp_listen(abort).then((resp)=>{
 			process(resp)
 			lp_loop()
 		}, (e, resp)=>{
@@ -210,9 +203,8 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 			alert("LONG POLLER FAILED:"+resp)
 		})
 		lp_cancel = ()=>{
-			cancelled = true
 			running = false
-			x.abort()
+			abort[0]()
 		}
 	},
 	
@@ -251,7 +243,7 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 			
 			c && on_data(c)
 		} catch (e) {
-			error("error processing lp/ws response: ", e)
+			console.error("error processing lp/ws response: ", e)
 		}
 	},
 	

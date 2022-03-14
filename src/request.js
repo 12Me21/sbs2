@@ -22,31 +22,36 @@ const Req = {
 	// of course, you could handle this in the `ok` callback, but then
 	// you're forced to intercept this before passing the data to 
 	// a higher level function
-	raw_request(url, method, data, proc, ok, fail) {
+	raw_request(url, method, data, etc, ok, fail) {
 		let x = new XMLHttpRequest()
 		x.open(method, `https://${this.server}/${url}`)
 		let start = Date.now()
 		
-		let z = (y, n)=>{
-			ok = y
-			fail = n
-		}
-		z.abort = x.abort.bind(x)
+		let aborted // just in case
+		if (etc.abort)
+			etc.abort[0] = ()=>{
+				aborted = true
+				x.abort()
+			}
 		
 		let retry = (time, reason)=>{
 			console.log("will retry", reason, "in "+time/1000+" sec")
 			if (time > 2000)
 				print("Warning: request was rate limited with extremely long wait time: "+time/1000+" seconds")
 			let id = window.setTimeout(()=>{
+				if (aborted)
+					return
 				console.log("retrying request", reason)
 				// this is not recursion: we're in an async callback function!
-				let x = this.raw_request(url, method, data, proc, ok, fail)
-				z.abort = x.abort.bind(x)
+				this.raw_request(url, method, data, etc, ok, fail)
 			}, time)
-			z.abort = ()=>{window.clearTimeout(id)}
+			x.abort = window.clearTimeout.bind(window, id)
 		}
 		
 		x.onload = ()=>{
+			if (aborted)
+				return
+			
 			let type = x.getResponseHeader('Content-Type')
 			let resp = x.responseText
 			if (/^application\/json\b/i.test(type))
@@ -54,8 +59,8 @@ const Req = {
 			let code = x.status
 			
 			if (code==200) {
-				if (proc)
-					resp = proc(resp)
+				if (etc.proc)
+					resp = etc.proc(resp)
 				return ok(resp)
 			}
 			
@@ -86,6 +91,9 @@ const Req = {
 		}
 		
 		x.onerror = ()=>{
+			if (aborted)
+				return
+			
 			let time = Date.now()-start
 			if (time > 18*1000) // i think other browsers do this too now?
 				return retry(0, "3ds timeout")
@@ -99,8 +107,7 @@ const Req = {
 		
 		// the only thing we use here is .abort
 		// (note that .abort is modified by retry())
-		
-		return z
+		//return x
 	},
 	
 	query_string(obj) {
@@ -128,19 +135,16 @@ const Req = {
 	request(url, method, callback, data, proc) {
 		if (Object.is_plain(data))
 			data = JSON.to_blob(data)
-		return this.raw_request(url, method, data, proc, callback.bind(null, null), callback)
+		return this.raw_request(url, method, data, {proc}, callback.bind(null, null), callback)
 	},
 	// i dont like how proc is required but h
 	request2(url, proc, method='GET', data=null) {
 		if (Object.is_plain(data))
 			data = JSON.to_blob(data)
-		return new Promise(this.raw_request.bind(this, url, method, data, proc))
-	},
-	request3(url, method='GET', data=null, proc=null) {
-		return this.raw_request(url, method, data, proc)
+		return new Promise(this.raw_request.bind(this, url, method, data, {proc}))
 	},
 	// new version of read()
-	chain(requests, fields=null) {
+	chain(requests, fields=null, abort=null) {
 		let query = {}
 		query.requests = requests.map(([thing, data])=>{
 			if (data)
@@ -150,7 +154,7 @@ const Req = {
 		if (fields)
 			Object.assign(query, fields)
 		let url = "Read/chain"+this.query_string(query)
-		return new Promise(this.raw_request.bind(this, url, 'GET', null, Entity.process.bind(Entity)))
+		return new Promise(this.raw_request.bind(this, url, 'GET', null, {proc: Entity.process.bind(Entity), abort}))
 	},
 	// chain
 	read(requests, filters, callback) {
@@ -164,7 +168,7 @@ const Req = {
 		})
 		Object.assign(query, filters) // we're not ready for {...} syntax yet
 		let url = "Read/chain"+this.query_string(query)
-		return this.raw_request(url, 'GET', null, Entity.process.bind(Entity), callback.bind(null, null), callback)
+		return this.raw_request(url, 'GET', null, {proc: Entity.process.bind(Entity)}, callback.bind(null, null), callback)
 	},
 	
 	/////////////////////////

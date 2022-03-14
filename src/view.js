@@ -148,6 +148,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			Lp.set_statuses(ChatRoom.generateStatus())
 			Lp.refresh()
 		}
+		//$main.scrollTop = 0 TODO, scroll the correct element here
 		// todo: scroll to fragment element
 	},
 	
@@ -187,10 +188,9 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			} catch(e) {
 				// we ignore this error, because it's probably not important
 				// and also cleanup gets called during error handling so we don't want to get into a loop of errors
-				error(e, "error in cleanup function")
+				console.error(e, "error in cleanup function")
 			}
 			current_view = null
-			//$main.scrollTop = 0 TODO, scroll the correct element here
 		}
 		
 		// must call this exactly once
@@ -248,10 +248,10 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 				"render failed in view.quick",
 				view.quick.bind(view, data.ext, view.render)))
 		// otherwise prepare to make an api request
-		let xhr
+		let abort = [null]
 		cancel_request = ()=>{
 			load_end()
-			xhr && xhr.abort && xhr.abort()
+			abort[0] && abort[0]()
 			cancelled = true
 		}
 		let chains = data.chains
@@ -259,32 +259,30 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		if (do_first) {
 			chains.push(['category~Ctree'])
 		}
-		xhr = Req.read(chains, data.fields, (e, resp)=>{
-			// handle the response
-			if (e)
-				return handle_error("error 1")
-			
+		Req.chain(chains, data.fields, abort).then((resp)=>{
 			if (do_first) {
 				console.log("🌄 got first page's data")
 				initial_data = true
 			}
-			
-			if (data.check && !data.check(resp, data.ext)) // try/catch here?
-				return handle_error("content not found?")
-			
-			return handle(attempt.bind(
-				null,
-				"render failed in view.render",
-				view.render.bind(view, resp, data.ext)))
+			if (data.check && !data.check(resp, data.ext)) {// try/catch here?
+				handle_error("content not found?")
+			} else {
+				handle(attempt.bind(
+					null,
+					"render failed in view.render",
+					view.render.bind(view, resp, data.ext)))
+			}
+		}, (e, resp)=>{
+			handle_error("error 1")
 		})
 		
 		function handle_error(message, e=null) {
 			handle(()=>{
 				view = errorView
 				if (e)
-					error(e, message)
+					console.error(message, e)
 				else
-					console.error(message) //eh
+					console.error(message)
 				// RENDER
 				set_title(message)
 				$errorMessage.textContent = e ? e+"\n"+e.stack : ""

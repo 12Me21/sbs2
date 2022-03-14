@@ -103,15 +103,16 @@ let Store = {
 	},
 }
 
+// these are kinda bad, both based on Array.forEach() which is [value,key] while here [key,value] would make more sense.
 Object.for = (obj, callback)=>{
-	for (let key in obj)
-		callback(obj[key], key, obj)
+	for (let [key, value] of Object.entries(obj))
+		callback(value, key, obj)
 }
-
+// are we using this?
 Object.map = (obj, callback)=>{
 	let ret = {}
-	for (let key in obj)
-		ret[key] = callback(obj[key], key, obj)
+	for (let [key, value] of Object.entries(obj))
+		ret[key] = callback(value, key, obj)
 	return ret
 }
 
@@ -131,10 +132,6 @@ RegExp.prototype.rmatch = function(str) {
 	if (typeof str != 'string')
 		throw new TypeError("RegExp.rmatch() expects string")
 	return String.prototype.match.call(str, this) || [null]
-}
-
-function error(e, ...rest) {
-	console.error(...rest, "\n", e)
 }
 
 //talking excitedly about javasscript getters and setters for an hour and then crying
