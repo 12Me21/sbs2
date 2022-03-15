@@ -329,6 +329,9 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 			// 1006, "", false - connection error
 			ws_is_ready = false
 			
+			//todo: if we get a connection error after a long time (ex: after exiting sleep mode) then the auth token might be invalid too. we should check how long it has been since the token was generated
+			// and maybe also auto-rerequest the token when its about to expire too.
+			
 			if (e.reason=="Invalid token") {
 				ws_token = null
 				get_ws_auth()
