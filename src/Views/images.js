@@ -1,11 +1,9 @@
-// oh I just realized...
-// the function($){...}(window) trick won't work here
-// because View has been initialized, so it COULD have a property named `window`...
-with (View) (()=>{ "use strict"; {
-	let form = null
+{
+	let form
 	let selectedFile = null
 	let navButtons
 	let currentQuery // hack
+	let fileList = null
 	
 	// todo:
 	// - page selector input type
@@ -28,7 +26,7 @@ with (View) (()=>{ "use strict"; {
 				if (!selectedFile)
 					return
 				Req.set_basic({avatar: selectedFile.id}).then((user)=>{
-					update_my_user(user) // have to do this because rannnnnnnnnnndommmmmmm broke user activityyy
+					View.update_my_user(user) // have to do this because rannnnnnnnnnndommmmmmm broke user activityyy
 				})
 			}
 			$fileUpdateButton.onclick = ()=>{
@@ -78,7 +76,7 @@ with (View) (()=>{ "use strict"; {
 			$fileSearchBucket.value = query.bucket || ""
 			navButtons.set(page)
 			let files = resp.file
-			set_title("Files")
+			View.set_title("Files")
 			fileList = files
 			$fileBox.fill(files.map(file => Draw.file_thumbnail(file, selectFile)))
 		},
@@ -88,8 +86,6 @@ with (View) (()=>{ "use strict"; {
 			fileList = null
 		},
 	})
-	
-	let fileList
 	
 	function readFields(file) {
 		let data = form.get()
@@ -103,7 +99,7 @@ with (View) (()=>{ "use strict"; {
 		$filePageView.src = "" // set to "" to hide old image immediately
 		if (!file) {
 			selectedFile = file
-			flag('fileSelected', false)
+			View.flag('fileSelected', false)
 			return
 		}
 		selectedFile = file
@@ -121,7 +117,7 @@ with (View) (()=>{ "use strict"; {
 		
 		$filePageView.src = url
 		//Draw.setBgImage($filePageView, Req.file_url(file.id))
-		flag('fileSelected', true)
-		flag('canEdit', /u/.test(file.myPerms))
+		View.flag('fileSelected', true)
+		View.flag('canEdit', /u/.test(file.myPerms))
 	}
-}})()
+}
