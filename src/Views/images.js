@@ -8,7 +8,7 @@
 	// todo:
 	// - page selector input type
 	// - add a page for viewing info about a specific image (image/id? or images/id?), or otherwise some way to find a specific image by id here
-	add_view('images', {
+	View.add_view('images', {
 		init() {
 			let nav = $fileNav
 			$fileSearchBucket.onchange = ()=>{
