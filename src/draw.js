@@ -762,9 +762,6 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 				elem = E`textarea`
 			} else if (type=='text') {
 				elem = E`input`
-			} else {
-				console.error("settings field '"+name+"' has invalid selection type '"+type+"'", data)
-				return // invalid setting field type
 			}
 			
 			get[name] = ()=>{

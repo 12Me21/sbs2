@@ -65,7 +65,6 @@ let Entity = {
 	},
 	
 	process(resp) {
-		//let x = performance.now()
 		// build user map first
 		let map = {}
 		let users = this.safe_map(map, (id)=>({
@@ -101,7 +100,6 @@ let Entity = {
 			}, 0)
 		}
 		return resp // for convenienece
-		//console.log('process took:', performance.now()-x, resp)
 	},
 	key_type(key) {
 		return {

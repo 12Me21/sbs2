@@ -10,7 +10,6 @@ let Act = {
 	
 	// might be worth speeding up in entity.js (100ms)
 	pull_recent() {
-		//console.log('pulling recent activity')
 		let day = 1000*60*60*24
 		let start = new Date(Date.now() - day).toISOString()
 		// "except no that won't work if site dies lol"
