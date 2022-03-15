@@ -1,13 +1,10 @@
-// todo: put these vars in a scope somewhere?
-// maybe define scopes at like View.views[name]? and separate methods from the rest of the scope of course,
-
 // todo: should have some indicator whether the input fields reflect the current search results or have been edited
 
-let comment_form
-
 View.add_view('comments', {
+	form: null,
+	
 	init() {
-		comment_form = new Form({
+		this.form = new Form({
 			fields: [
 				['search', 'text', {label: "Search", convert: CONVERT.string, param: 's'}],
 				['pages', 'number_list', {label: "Page Ids", convert: CONVERT.number_list, param: 'pid'}],
@@ -19,24 +16,24 @@ View.add_view('comments', {
 				['raw', 'checkbox', {label: "Raw Search", convert: CONVERT.flag, param: 'raw'}],
 			]
 		})
-		$commentSearchForm.replaceWith(comment_form.elem)
+		$commentSearchForm.replaceWith(this.form.elem)
 		$commentSearchButton.onclick = ()=>{
-			let data = comment_form.get()
+			let data = this.form.get()
 			let name = "comments"
 			if (data.pages && data.pages.length==1) {
 				name += "/"+data.pages[0]
 				delete data.pages
 			}
-			let query = comment_form.to_query(data)
+			let query = this.form.to_query(data)
 			Nav.go(name+query)
 		}
 		View.bind_enter($commentSearch, $commentSearchButton.onclick)
 	},
 	start(id, query) {
-		let data = comment_form.from_query(query)
+		let data = this.form.from_query(query)
 		if (id)
 			data.pages = [id]
-		let [search, merge] = build_search(data)
+		let [search, merge] = this.build_search(data)
 		
 		if (!search)
 			return {quick: true, ext: {data}}
@@ -53,7 +50,7 @@ View.add_view('comments', {
 	},
 	quick({data}) {
 		View.set_title("Comments")
-		comment_form.set(data)
+		this.form.set(data)
 		$commentSearchResults.fill()
 	},
 	render(resp, {data, merge}) {
@@ -61,7 +58,7 @@ View.add_view('comments', {
 		let pages = resp.content
 		
 		View.set_title("Comments")
-		comment_form.set(data)
+		this.form.set(data)
 		
 		$commentSearchResults.fill()
 		if (!comments.length) {
@@ -92,54 +89,53 @@ View.add_view('comments', {
 	cleanup() {
 		$commentSearchResults.fill()
 	},
-})
-
-function build_search(data) {
-	let merge = true
-	let search = {limit: 200}
-	if (!data.search && !(data.users && data.users.length) && !data.range && !data.start && !data.end)
-		return [null, null]
-	if (data.reverse) {
-		search.reverse = true
-		merge = false
-	}
-	if (data.search) {
-		if (data.raw)
-			search.contentLike = data.search
-		else
-			search.contentLike = "%\n%"+data.search+"%"
-		merge = false
-	}
-	if (data.pages)
-		search.parentIds = data.pages
-	if (data.users) { // todo: is an empty list [] or null?
-		search.userIds = data.users
-		merge = false
-	}
-	let range = data.range
-	if (range) {
-		if (range.ids) {
-			search.ids = range.ids
-			if (range.ids.length > 1)
-				merge = false
-		} else {
-			if (range.min != null)
-				search.minId = range.min-1
-			if (range.max != null)
-				search.maxId = range.max+1
+	
+	build_search(data) {
+		// check if form is empty
+		if (!data.search && !(data.users && data.users.length) && !data.range && !data.start && !data.end)
+			return [null, null]
+		
+		let merge = true
+		let search = {limit: 200}
+		
+		if (data.reverse) {
+			search.reverse = true
+			merge = false
 		}
-	}
-	if (data.start)
-		search.createStart = data.start.toISOString()
-	if (data.end)
-		search.createEnd = data.end.toISOString()
-	return [search, merge]
-}
-// todo: ids should accept either:
-// <number>
-// <number>-
-// <number>-<number>
-// <number>,<number>... (or space etc)
+		let text = data.search
+		if (text) {
+			if (!data.raw)
+				text = "%\n%"+text+"%"
+			search.contentLike = text
+			merge = false
+		}
+		if (data.pages)
+			search.parentIds = data.pages
+		if (data.users) { // todo: is an empty list [] or null?
+			search.userIds = data.users
+			merge = false
+		}
+		let range = data.range
+		if (range) {
+			if (range.ids) {
+				search.ids = range.ids
+				if (range.ids.length > 1)
+					merge = false
+			} else {
+				if (range.min != null)
+					search.minId = range.min-1
+				if (range.max != null)
+					search.maxId = range.max+1
+			}
+		}
+		if (data.start)
+			search.createStart = data.start.toISOString()
+		if (data.end)
+			search.createEnd = data.end.toISOString()
+		
+		return [search, merge]
+	},
+})
 
 View.add_view('chatlogs', {
 	redirect: (id, query)=>{
