@@ -69,11 +69,12 @@ const Nav = {
 		let [main, fragment] = url.split1("#")
 		let [path, query] = main.split1("?")
 		let vars = {}
-		query && query.split("&").forEach((item)=>{
-			let [key, value] = item.split1("=")
-			key = decodeURIComponent(key.trim())
-			vars[key] = value==null ? true : decodeURIComponent(value.trim())
-		})
+		if (query)
+			for (let item of query.split("&")) {
+				let [key, value] = item.split1("=")
+				key = decodeURIComponent(key.trim())
+				vars[key] = value==null ? true : decodeURIComponent(value.trim())
+			}
 		
 		path = path.split("/")
 		let type = path[0] || ""
@@ -133,7 +134,7 @@ const Nav = {
 		Nav.current_path = path
 		path = Nav.decodePath(String(path))
 		let {type, id, query} = path
-		View.do_when_ready(()=>{
+		do_when_ready(()=>{
 			$haloopdyLink.href = this.haloopdy_path({
 				path: id==null ? [type] : [type, String(id)],
 				query: query,

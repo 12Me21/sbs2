@@ -117,14 +117,15 @@ const Req = {
 		for (let [key, val] of Object.entries(obj)) {
 			if (val == undefined)
 				continue
-			let item = encodeURIComponent(key)+"="
+			let item = window.encodeURIComponent(key)+"="
 			// array items are encoded as
 			// ids:[1,2,3] -> ids=1&ids=2&ids=3
 			if (val instanceof Array)
-				val.forEach(x => params.push(item+encodeURIComponent(x)))
+				for (let x of val)
+					params.push(item+window.encodeURIComponent(x))
 			// otherwise, key=value
 			else
-				params.push(item+encodeURIComponent(val))
+				params.push(item+window.encodeURIComponent(val))
 		}
 		if (!params.length)
 			return ""

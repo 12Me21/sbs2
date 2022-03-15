@@ -48,7 +48,6 @@ add_view('category', {
 			}
 		}
 	},
-	className: 'category',
 	render(resp, ext) {
 		let category = ext.id==0 ? Entity.category_map[0] : resp.Cmain[0]
 		let cats = resp.category
@@ -64,21 +63,21 @@ add_view('category', {
 		$categoryCategories.fill()
 		Nav.link("editpage?cid="+category.id, $createPage.parentNode)
 		Nav.link("editcategory/"+category.id, $editCategory.parentNode)
-		category.children.forEach((child)=>{
+		for (let child of category.children) {
 			let bar = Draw.entity_title_link(child)
 			bar.className += " linkBar bar rem2-3"
 			$categoryCategories.append(bar)
-		})
-		pinned.forEach((page)=>{
+		}
+		for (let page of pinned) {
 			let bar = Draw.page_bar(page)
 			bar.className += " linkBar bar rem2-3"
 			$categoryCategories.append(bar)
-		})
-		pages.forEach((page)=>{
+		}
+		for (let page of pages) {
 			let bar = Draw.page_bar(page)
 			bar.className += " linkBar bar rem2-3"
 			$categoryPages.append(bar)
-		})
+		}
 		
 		//$.Nav.link("editpage?cid="+category.id, $createPage)
 		if (/u/.test(category.myPerms))

@@ -23,12 +23,12 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 	
 	// interfacing with other systems
 	on_listeners(map) {
-		View.do_when_ready(()=>{
+		do_when_ready(()=>{
 			ChatRoom.update_userlists(map)
 		})
 	},
 	on_data({comment, commentdelete, activity, content, watch}) {
-		View.do_when_ready(()=>{
+		do_when_ready(()=>{
 			function comments(c) {
 				if (c) {
 					ChatRoom.display_messages(c)

@@ -2,6 +2,7 @@
 with (View) (function($) { "use strict" //*/
 
 add_view('', {
+	className: 'home',
 	init() {
 	},
 	start(id, query) {
@@ -19,18 +20,17 @@ add_view('', {
 			ext: {},
 		}
 	},
-	className: 'home',
 	render(resp, ext) {
 		let gallery = resp.Pgallery
 		let categories = resp.category
 		
 		set_title("Welcome to SmileBASIC Source 2!")
 		$homeCategories.fill()
-		categories.forEach((cat)=>{
+		for (let cat of categories) {
 			let bar = Draw.entity_title_link(cat)
 			bar.className += " linkBar bar rem1-5"
 			$homeCategories.append(bar)
-		})
+		}
 		updateGallery(gallery[0])
 	},
 })

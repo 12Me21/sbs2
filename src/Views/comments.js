@@ -51,12 +51,11 @@ View.add_view('comments', {
 			ext: {data, merge},
 		}
 	},
-	quick({data}, render) {
+	quick({data}) {
 		View.set_title("Comments")
 		comment_form.set(data)
 		$commentSearchResults.fill()
 	},
-	className: 'comments',
 	render(resp, {data, merge}) {
 		let comments = resp.comment
 		let pages = resp.content

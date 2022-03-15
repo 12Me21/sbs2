@@ -9,7 +9,7 @@
 // then we wait for onload, before displaying
 
 let View = Object.create(null)
-with(View)((window)=>{"use strict";Object.assign(View,{
+with(View)((window)=>{"use strict"; Object.assign(View,{
 	
 	cancel_request: null,
 	// this will always be the currently rendered view
@@ -17,8 +17,6 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 	// current_view.cleanup should always be correct!
 	current_view: null,
 	
-	init_done: false,
-	run_on_load: [],
 	real_title: null,
 	favicon_element: null,
 	
@@ -39,9 +37,9 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 					}
 				}
 			},
-			className: 'test',
+			name: 'test',
 			start() {
-				return [2, {}]
+				return {quick: true}
 			},
 			quick() {
 				set_title("Testing")
@@ -49,15 +47,15 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		},
 		users: {
 			start(id, query) {
-				return [1, {
+				return {
 					chains: [
 						['user'],
 					],
 					fields: {},
 					ext: {},
-				}]
+				}
 			},
-			className: 'users',
+			name: 'users',
 			render(resp) {
 				let users = resp.user
 				set_title("Users")
@@ -80,7 +78,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 	},
 	// fake-ish
 	errorView: {
-		className: 'error',
+		name: 'error',
 		cleanup() {
 			$errorMessage.textContent = ""
 		}
@@ -150,15 +148,6 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		}
 		//$main.scrollTop = 0 TODO, scroll the correct element here
 		// todo: scroll to fragment element
-	},
-	
-	do_when_ready(go) {
-		if (init_done) {
-			go()
-		} else {
-			console.log("deferring render", go)
-			run_on_load.push(go)
-		}
 	},
 	
 	// rn the `after2` callback is never used, but it's meant to be like,
@@ -246,7 +235,7 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 			return handle(attempt.bind(
 				null,
 				"render failed in view.quick",
-				view.quick.bind(view, data.ext, view.render)))
+				view.quick.bind(view, data.ext)))
 		// otherwise prepare to make an api request
 		let abort = [null]
 		cancel_request = ()=>{
@@ -294,7 +283,6 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 	onload() {
 		// initialize all views
 		Object.for(views, (view)=>{
-			view.name = name
 			try {
 				view.init && view.init()
 			} catch(e) {
@@ -350,8 +338,9 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 	
 	add_view(name, data) {
 		data.name = name
+		if (!data.className)
+			data.className = name
 		views[name] = data
-		init_done && data.init && data.init()
 	},
 	
 	/// HELPER FUNCTIONS ///
@@ -429,7 +418,10 @@ with(View)((window)=>{"use strict";Object.assign(View,{
 		if (!favicon_element) {
 			if (src == null)
 				return
-			document.head.querySelectorAll("link[data-favicon]").forEach(e=>e.remove())
+			// remove the normal favicons
+			for (let e of document.head.querySelectorAll("link[data-favicon]"))
+				e.remove()
+			// add our new one
 			favicon_element = document.createElement('link')
 			favicon_element.rel = "icon"
 			favicon_element.href = src

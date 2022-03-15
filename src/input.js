@@ -458,14 +458,14 @@ const INPUTS = (()=>{
 			}
 			get() {
 				let ret = {}
-				this.body.childNodes.forEach(row => {
+				for (let row of this.body.childNodes) {
 					let perm = ''
-					row.querySelectorAll('input').forEach(check => {
+					for (let check of row.querySelectorAll('input')) {
 						if (check.checked)
 							perm += check.value
-					})
+					}
 					ret[row.dataset.id] = perm
-				})
+				}
 				return ret
 			}
 		},
@@ -548,9 +548,9 @@ const INPUTS = (()=>{
 				// ⚠ if there are cycles in the data, this will freeze
 				let build_list = (node, ret, depth)=>{
 					ret.push({id: node.id, text: ">".repeat(depth)+" "+node.name})
-					node.children && node.children.forEach((node)=>{
-						build_list(node, ret, depth+1)
-					})
+					if (node.children)
+						for (let node of node.children)
+							build_list(node, ret, depth+1)
 				}
 				
 				let list = []

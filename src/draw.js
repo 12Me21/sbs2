@@ -351,15 +351,15 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			outer.append(b[0])
 			b[1].onclick = ()=>{
 				Req.get_older_comments(comment.parentId, firstId, 10).then(resp=>{
-					resp.comment.forEach((c)=>{
+					for (let c of res.comment) {
 						firstId = c.id
 						if (c.deleted)
-							return
+							continue
 						let d = message_block(c)
 						d[1].append(message_part(c))
 						outer.insertBefore(d[0], firstElem)
 						firstElem = d[0]
-					})
+					}
 				})
 			}
 		}
@@ -375,14 +375,14 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			outer.append(b[0])
 			b[1].onclick = ()=>{
 				Req.get_newer_comments(comment.parentId, lastId, 10).then(resp=>{
-					resp.comments.forEach((c)=>{
+					for (let c of resp.comments) {
 						lastId = c.id
 						if (c.deleted)
-							return
+							continue
 						let d = message_block(c)
 						d[1].append(message_part(c))
 						outer.insertBefore(d[0], b[0]) // yes
-					})
+					}
 				})
 			}
 		}

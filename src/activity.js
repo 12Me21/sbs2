@@ -25,7 +25,7 @@ let Act = {
 			Mall: 'parentId,editUserId,editDate',
 		}).then(({activity, Mall, Awatching, content, comment})=>{
 			console.log('🌄 got initial activity')
-			View.do_when_ready(()=>{
+			do_when_ready(()=>{
 				this.process_stuff(activity, Mall, Awatching, content)
 				Sidebar.display_messages(comment.reverse(), true)
 			})
@@ -75,8 +75,8 @@ let Act = {
 		let item = this.items[page.id]
 		if (!item) //old page
 			return
-		comments.forEach(({editUser, editDate})=>
-			this.user_update(item, editUser, editDate)) //nice formatting
+		for (let {editUser, editDate} of comments)
+			this.user_update(item, editUser, editDate)
 	},
 	
 	new_thing(id, date, user, pageMap, watch, update_pages) {

@@ -59,14 +59,13 @@ add_view('page', {
 			},
 		}
 	},
-	quick({room, z}, render) {
+	quick({room, z}) {
 		let page = room.page
 		//ChatRoom.setViewing([page.id])
 		room.show()
 		room.pinned = z
 		render_page(page)
 	},
-	className: 'page',
 	render(resp, ext) {
 		let comments = resp.comment
 		comments.reverse()

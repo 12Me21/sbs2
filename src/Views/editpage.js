@@ -57,10 +57,9 @@ add_view('editpage', {
 			ext: ext,
 		}
 	},
-	quick(ext, render) {
-		render({}, ext)
+	quick(ext) {
+		this.render({}, ext)
 	},
-	className: 'editpage',
 	render(resp, {query}) {
 		let page = resp.content && resp.content[0]
 		let users = resp.user_map

@@ -29,7 +29,6 @@ add_view('user', {
 			ext: {},
 		}
 	},
-	className: 'user',
 	render(resp, ext) {
 		let user = resp.user[0]
 		let userpage = resp.Puserpage[0]

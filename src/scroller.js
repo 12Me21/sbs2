@@ -5,22 +5,22 @@ class ResizeTracker {
 		if (window.ResizeObserver) {
 			this.tracking = new WeakMap()
 			this.observer = new ResizeObserver((events)=>{
-				events.forEach((event)=>{
+				for (let event of events) {
 					this.check_element(
 						this.tracking.get(event.target),
 						event.contentRect,
 					)
-				})
+				}
 			})
 		} else {
 			this.tracking = []
 			this.interval = window.setInterval(()=>{
-				this.tracking.forEach((item)=>{
+				for (let item of this.tracking) {
 					this.check_element(
 						item,
 						item.element.getBoundingClientRect(),
 					)
-				})
+				}
 			}, 200)
 		}
 		Object.seal(this)

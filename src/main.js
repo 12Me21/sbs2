@@ -86,7 +86,7 @@ function immediate() {
 function got_initial({lastid, me}) {
 	console.log("🌄 got initial, staring long poller etc.")
 	Req.me = me
-	View.do_when_ready(()=> View.update_my_user(me) )
+	do_when_ready(()=> View.update_my_user(me) )
 	Lp.update_lastid(lastid)
 	Lp.start()
 	Nav.initial()
@@ -108,12 +108,12 @@ function dom_ready() {
 	//console.log("removed "+blank_nodes.length+" blank text nodes")
 	
 	// draw links
-	document.querySelectorAll("a[data-static-path]").forEach((elem)=>{
+	for (let elem of document.querySelectorAll("a[data-static-path]")) {
 		Nav.link(elem.dataset.staticPath, elem)
-	})
+	}
 	// draw buttons
 	// i really don't like this
-	document.querySelectorAll("button:not([data-noreplace])").forEach((button)=>{
+	for (let button of document.querySelectorAll("button:not([data-noreplace])")) {
 		let container = document.createElement('button-container')
 		button.replaceWith(container)
 		container.className += " "+button.className
@@ -125,17 +125,17 @@ function dom_ready() {
 			container = a
 		}
 		container.append(button)
-	})
+	}
 	
 	View.onload()
 	
 	Sidebar.onload()
 	
-	// do these ever really happen?
-	print("running "+View.run_on_load.length+" deferred items")
-	View.init_done = true
-	for (let f of View.run_on_load)
+	print("running "+run_on_load.length+" deferred items")
+	init_done = true
+	for (let f of run_on_load)
 		f()
-	View.run_on_load = null
+	run_on_load = null
 	
+	//danger: view.init() can potentially run after view.start() (but before view.render())
 }

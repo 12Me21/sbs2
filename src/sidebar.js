@@ -4,7 +4,6 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	selected_file: null,
 	
 	scroller: null,
-	pre_print: [],
 	
 	select_tab: null,
 	
@@ -85,8 +84,6 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		}
 		$file_url.onclick = function() { $file_url.select() }
 		scroller = new Scroller($sidebarScroller.parentNode, $sidebarScroller)
-		pre_print.forEach((x)=> print(x) )
-		pre_print = null
 		// todo: maybe a global ESC handler?
 		/*document.addEventListener('keydown', function(e) {
 		  
@@ -116,16 +113,16 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 			Req.search1($searchInput.value).then(({Usearch:users, content:pages})=>{
 				$searchButton.disabled = false
 				$searchResults.fill()
-				pages.forEach((item)=>{
+				for (let item of pages) {
 					let bar = Draw.page_bar(item)
 					bar.className += " linkBar bar rem1-5"
 					$searchResults.append(bar)
-				})
-				users.forEach((item)=>{
+				}
+				for (let item of users) {
 					let bar = Draw.entity_title_link(item)
 					bar.className += " linkBar bar rem1-5"
 					$searchResults.append(bar)
-				})
+				}
 			})
 		}
 		View.bind_enter($searchInput, $searchButton.onclick)
@@ -211,7 +208,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	printing: false,
 	// messy messy messy...
 	print(...args) {
-		View.do_when_ready(()=>{
+		do_when_ready(()=>{
 			try {
 				if (printing) {
 					alert("recursive print detected!")

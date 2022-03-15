@@ -58,7 +58,7 @@ with(Settings)((window)=>{"use strict"; Object.assign(Settings,{
 			type: 'textarea',
 			autosave: false,
 			update(value) {
-				View.do_when_ready(()=>{
+				do_when_ready(()=>{
 					$customCSS.textContent = value
 				})
 			},

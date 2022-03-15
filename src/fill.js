@@ -134,4 +134,16 @@ RegExp.prototype.rmatch = function(str) {
 	return String.prototype.match.call(str, this) || [null]
 }
 
+// shouldn't really be here but this needs to be defined pretty early..
+let init_done = false
+let run_on_load = []
+function do_when_ready(go) {
+	if (init_done) {
+		go()
+	} else {
+		console.log("deferring render", go)
+		run_on_load.push(go)
+	}
+}
+
 //talking excitedly about javasscript getters and setters for an hour and then crying
