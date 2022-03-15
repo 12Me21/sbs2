@@ -1,23 +1,24 @@
-<!--/* trick indenter
-with (View) (function($) { "use strict" //*/
-
-add_view('category', {
+View.add_view('category', Object.seal({
+	navButtons: null,
+	currentCategory: null,
+	currentQuery: null,
+	
 	init() {
 		let nav = $categoryNav
-		navButtons = Draw.nav_buttons()
-		nav.append(navButtons.element)
-		navButtons.onchange = (n)=>{
-			if (currentCategory == null)
+		this.navButtons = Draw.nav_buttons()
+		nav.append(this.navButtons.element)
+		this.navButtons.onchange = (n)=>{
+			if (this.currentCategory == null)
 				return
-			currentQuery.page = n
-			Nav.go("category/"+currentCategory+Req.query_string(currentQuery))
+			this.currentQuery.page = n
+			Nav.go("category/"+this.currentCategory+Req.query_string(this.currentQuery))
 		}
 	},
 	
 	start(id, query) {
-		currentQuery = query
+		this.currentQuery = query
 		let page = +query.page || 1
-		navButtons.set(page)
+		this.navButtons.set(page)
 		
 		let search = {
 			parentIds: [id],
@@ -55,10 +56,10 @@ add_view('category', {
 		let pinned = resp.Ppinned
 		let pageNum = ext.page
 		
-		currentCategory = category.id
-		navButtons.set(pageNum)
-		set_entity_title(category)
-		set_entity_path(category.parent)
+		this.currentCategory = category.id
+		this.navButtons.set(pageNum)
+		View.set_entity_title(category)
+		View.set_entity_path(category.parent)
 		$categoryDescription.fill(Parse.parseLang(category.description, category.values.markupLang))
 		$categoryCategories.fill()
 		Nav.link("editpage?cid="+category.id, $createPage.parentNode)
@@ -81,20 +82,17 @@ add_view('category', {
 		
 		//$.Nav.link("editpage?cid="+category.id, $createPage)
 		if (/u/.test(category.myPerms))
-			flag('canEdit', true)
+			View.flag('canEdit', true)
 	},
 	cleanup() {
 		$categoryCategories.fill()
 		$categoryPages.fill()
 		$categoryDescription.fill()
-		flag('canEdit', false)
-		currentCategory = null
+		View.flag('canEdit', false)
+		this.currentCategory = null
 	},
-})
+}))
 
-var navButtons
-var currentCategory
-var currentQuery
 
 <!--/*
 }(window)) //*/
