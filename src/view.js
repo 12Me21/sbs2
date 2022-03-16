@@ -9,7 +9,7 @@
 // then we wait for onload, before displaying
 
 let View = Object.create(null)
-with(View)((window)=>{"use strict"; Object.assign(View,{
+with(View)((window)=>{"use strict"; Object.assign(View, {
 	
 	cancel_request: null,
 	// this will always be the currently rendered view
@@ -341,6 +341,7 @@ with(View)((window)=>{"use strict"; Object.assign(View,{
 		if (!data.className)
 			data.className = name
 		views[name] = data
+		Object.seal(data)
 	},
 	
 	/// HELPER FUNCTIONS ///

@@ -2,8 +2,7 @@
 // render new page block only when page added to list
 // handle updating existing page blocks (updating users list, time, etc.)
 // use this for activity and watchlist
-
-let Act = {
+let Act = function(){"use strict"; return singleton({
 	// this is a list of activity items
 	// i.e. pages with recent activity, displayed in the sidebar
 	items: {},
@@ -138,5 +137,4 @@ let Act = {
 		/*if (!date && !user.unsorted)
 		  user = Object.create(user, {unsorted: {value: true}})*/
 	},
-}
-Object.seal(Act)
+})}()

@@ -134,6 +134,26 @@ RegExp.prototype.rmatch = function(str) {
 	return String.prototype.match.call(str, this) || [null]
 }
 
+
+
+let 𖹭 = Object.create.bind(Object,null,{𖹭:{set(f){Object.seal(Object.assign(this,f))}}})
+
+//let 𖹭 = () => Object.create(null,{𖹭:{set(f){Object.seal(Object.assign(this,f))}}})
+
+// we aren't ready to use `static` yet, so we
+// assign our static fields this way instead
+const new_class = (cls, stat) => Object.seal(Object.assign(cls, stat))
+const singleton = (obj) => Object.seal(obj)
+
+// you might also pass `new class { ... }` in place of `{ ... }` for syntax
+
+/*let Namespace = N($=>{with($)return{
+	x: 3,
+	test(y) {
+		return x+y
+	},
+}})*/
+
 // shouldn't really be here but this needs to be defined pretty early..
 let init_done = false
 let run_on_load = []

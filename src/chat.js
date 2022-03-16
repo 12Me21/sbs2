@@ -1,4 +1,4 @@
-class ChatRoom {
+let ChatRoom = (()=>{"use strict"; return new_class(class ChatRoom {
 	constructor(id, page) {
 		let old = ChatRoom.rooms[id]
 		if (old)
@@ -289,88 +289,98 @@ class ChatRoom {
 		}
 	}
 	
-} // class ChatRoom
+}, { // STATIC METHODS
+	/* static */ 
+	listening_rooms() {
+		let list = [-1]
+		for (let id in this.rooms)
+			list.push(id)
+		return list
+	},
+	
+	/* static */
+	generateStatus() {
+		let status = {}
+		for (let id in this.rooms)
+			status[id] = this.rooms[id].status
+		status[-1] = this.global.status
+		return status
+	},
+	
+	/* static */
+	rooms: {},
+	global: null,
+	currentRoom: null,
+	
+	/* static */
+	update_avatar(user) {
+		Object.for(this.rooms, room => room.update_avatar(user))
+		this.global && this.global.update_avatar(user)
+	},
+	
+	/* static */
+	addRoom(room) {
+		this.rooms[room.id] = room
+		//ChatRoom.setViewing(Object.keys(ChatRoom.rooms))
+	},
+	
+	/* static */
+	removeRoom(room) {
+		if (this.currentRoom == room)
+			this.currentRoom = null
+		if (this.rooms[room.id] == room)
+			delete this.rooms[room.id]
+		//ChatRoom.setViewing(Object.keys(ChatRoom.rooms))
+	},
+	
+	// unused
+	/* static */
+	setViewing(ids) {
+		Lp.set_listening(ids)
+		Lp.refresh()
+	},
+	
+	/* static */
+	update_userlists(a) {
+		// why don't we just use .rooms[-1] instead of .global?
+		a[-1] && this.global.update_userlist(a[-1])
+		for (let id in a) {
+			let room = this.rooms[id]
+			room && room.update_userlist(a[id])
+		}
+	},
+	
+	// display a list of messages from multiple rooms
+	/* static */
+	display_messages(comments) {
+		// for each room, display all of the new comments for that room
+		for (let room of Object.values(this.rooms)) {
+			let c = comments.filter(c => c.parentId==room.id)
+			if (c.length)
+				room.display_messages(c, room==this.currentRoom)
+		}
+		// display comment in title
+		// does this belong here, or in the room displaycomments message?
+		// I feel like here is better so each room doesn't need to be checking if it's current.. idk
+		if (this.currentRoom) {
+			let last = comments.findLast((c)=>
+				c.parentId==this.currentRoom.id && Entity.is_new_comment(c))
+			if (last)
+				this.title_notification(last)
+		}
+	},
+	
+	/* static */
+	title_notification(comment) {
+		View.title_notification(comment.content, Draw.avatar_url(comment.createUser, "size=120&crop=true"))
+		// todo: also call if the current comment being shown in the title is edited
+	},
+	
+})})()
+
 
 // todo: when starting to render any page
 //- run generatestatus and generatelisteners
 //- if changed, refresh long poller with new data
 //- when rendering chat, we need to retrieve the listeners list from Req
 
-// this would be a `static` method but we aren't ready to use those yet
-ChatRoom.listening_rooms = function() {
-	let list = [-1]
-	for (let id in this.rooms)
-		list.push(id)
-	return list
-}
-
-ChatRoom.generateStatus = function() {
-	let status = {}
-	for (let id in this.rooms)
-		status[id] = this.rooms[id].status
-	status[-1] = this.global.status
-	return status
-}
-
-ChatRoom.rooms = {}
-ChatRoom.global = null
-ChatRoom.currentRoom = null
-
-ChatRoom.update_avatar = function(user) {
-	Object.for(this.rooms, room => room.update_avatar(user))
-	this.global && this.global.update_avatar(user)
-}
-
-ChatRoom.addRoom = function(room) {
-	this.rooms[room.id] = room
-	//ChatRoom.setViewing(Object.keys(ChatRoom.rooms))
-}
-
-ChatRoom.removeRoom = function(room) {
-	if (this.currentRoom == room)
-		this.currentRoom = null
-	if (this.rooms[room.id] == room)
-		delete this.rooms[room.id]
-	//ChatRoom.setViewing(Object.keys(ChatRoom.rooms))
-}
-
-// unused
-ChatRoom.setViewing = function(ids) {
-	Lp.set_listening(ids)
-	Lp.refresh()
-}
-
-ChatRoom.update_userlists = function(a) {
-	// why don't we just use .rooms[-1] instead of .global?
-	a[-1] && this.global.update_userlist(a[-1])
-	for (let id in a) {
-		let room = this.rooms[id]
-		room && room.update_userlist(a[id])
-	}
-}
-
-// display a list of messages from multiple rooms
-ChatRoom.display_messages = function(comments) {
-	// for each room, display all of the new comments for that room
-	for (let room of Object.values(this.rooms)) {
-		let c = comments.filter(c => c.parentId==room.id)
-		if (c.length)
-			room.display_messages(c, room==this.currentRoom)
-	}
-	// display comment in title
-	// does this belong here, or in the room displaycomments message?
-	// I feel like here is better so each room doesn't need to be checking if it's current.. idk
-	if (this.currentRoom) {
-		let last = comments.findLast((c)=>
-			c.parentId==this.currentRoom.id && Entity.is_new_comment(c))
-		if (last)
-			this.title_notification(last)
-	}
-}
-
-ChatRoom.title_notification = function(comment) {
-	View.title_notification(comment.content, Draw.avatar_url(comment.createUser, "size=120&crop=true"))
-	// todo: also call if the current comment being shown in the title is edited
-}
-
-Object.seal(ChatRoom)

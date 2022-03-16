@@ -1,26 +1,5 @@
-// websocket states
-// 1: normal
-//   - if we have lastid, start doing requests, otherwise wait
-// 3: dead
-//   - do nothing, page is about to reload
-// 4: waiting for token or onopen
-//   - if the wsauth request finishes
-//     - failed: fatal (remember we have autorerequest at a lower level)
-//     - suceeded: set wsauth, go to state 1 if socket is open
-//   - if the socket opens
-//     - go to state 1 if wsauth has been recieved
-
-// in state 1 and 4, if the socket closes:
-///  (we want to have some rate limiting here, in case we have lost connection)
-//  - reopen it
-//  - if there was a token error (only possible in state 1)
-//    - wsauth = null
-//    - request wsauth
-//  - go to state 4
-
-let Lp = Object.create(null)
-with(Lp)((window)=>{"use strict";Object.assign(Lp,{
-	
+let Lp = 𖹭()
+with(Lp)~function(){"use strict";𖹭={
 	// interfacing with other systems
 	on_listeners(map) {
 		do_when_ready(()=>{
@@ -357,10 +336,4 @@ with(Lp)((window)=>{"use strict";Object.assign(Lp,{
 		}
 	},
 	
-})<!-- PRIVATE })
-
-
-
-0<!-- Lp ({
-})(window)
-Object.seal(Lp)
+}}()

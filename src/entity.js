@@ -1,12 +1,6 @@
-// todo:
-// when replacing user ids with user objects,
-// if the user doesn't exist, we should add a dummy object,
-// so it's possible to at least determine the type of the missing data
-
 // functions for processing recieved entities/
 // DATA PROCESSOR
-
-let Entity = {
+let Entity = (()=>{"use strict"; return singleton({
 	
 	onCategoryUpdate(cats) {
 		Sidebar.redraw_category_tree(cats)
@@ -122,11 +116,12 @@ let Entity = {
 			console.warn('recvd unknown type', type, data)
 			return // uh oh, unknown type
 		}
+		proc = proc.bind(this) //oops, we have to bind `this` here. maybe time to rethink the use of `this`...
 		if (type == 'category')
 			this.got_new_category = true
 		data.forEach((item, i, data)=>{
 			// this is done in-place
-			data[i] = proc.call(this, item, users) //oops, we have to bind `this` here. maybe time to rethink the use of `this`...
+			data[i] = proc(item, users)
 			data[i].Type = type
 		})
 	},
@@ -317,5 +312,4 @@ let Entity = {
 	is_new_comment(c) {
 		return !c.deleted && (+c.editDate == +c.createDate)
 	},
-}
-Object.seal(Entity)
+})})()

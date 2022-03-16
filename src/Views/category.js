@@ -1,4 +1,4 @@
-View.add_view('category', Object.seal({
+View.add_view('category', {
 	navButtons: null,
 	currentCategory: null,
 	currentQuery: null,
@@ -91,8 +91,4 @@ View.add_view('category', Object.seal({
 		View.flag('canEdit', false)
 		this.currentCategory = null
 	},
-}))
-
-
-<!--/*
-}(window)) //*/
+})
