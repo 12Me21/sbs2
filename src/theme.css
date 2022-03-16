@@ -32,6 +32,7 @@ html {
 	--bgblue: #CEF;
 	--bgpurple: #ECF;
 	--bggray: #DDD;
+	--spoiler-bg: #F7F7F7;
 	--edit-textarea-bg: #FFFF80;
 	--normal-shadow: 0 2px 3px rgba(0,0,0,0.3);
 	/* inverted text colors (white) */
@@ -61,6 +62,7 @@ html[data-theme="dark"], html.f-dark:not([data-theme]) {
 	--avatar-bg: gray;
 	--button-hover-color: #59E;
 	--bar-bg: #555;
+	--spoiler-bg: #444;
 	--button-bg: linear-gradient(#048, #035);
 	--button-active-bg: linear-gradient(#047, #047);
 	--button-selected-bg: linear-gradient(#048, #07A);

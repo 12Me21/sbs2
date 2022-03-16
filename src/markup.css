@@ -204,7 +204,8 @@ markup-root .youtube {
 .markup-root .spoiler {
 	padding: 0.5em;
 	border: 1px solid var(--border-color);
-	background: var(--bar-bg);
+	border-left: 4px solid var(--border-color);
+	background: var(--spoiler-bg);
 	margin-bottom: 1px;
 }
 
