@@ -164,7 +164,7 @@ with(Lp)~function(){"use strict";𖹭={
 		for (let [key, value] of Object.entries(fields))
 			query[key] = value.join(",")
 		
-		return Req.request2("Read/listen"+Req.query_string(query), null, abort)
+		return new Promise(Req.raw_request.bind(Req, "Read/listen"+Req.query_string(query), 'GET', null, {abort}))
 	},
 	
 	// if
@@ -173,6 +173,7 @@ with(Lp)~function(){"use strict";𖹭={
 		//make sure only one instance of this is running
 		let abort = [null]
 		lp_listen(abort).then((resp)=>{
+			running = false
 			process(resp)
 			lp_loop()
 		}, (e, resp)=>{
