@@ -329,7 +329,6 @@ message-block {
 	padding-inline: 0.5rem;
 	padding-top: var(--chat-message-gap);
 	min-height: var(--chat-avatar-size);
-	white-space: pre-wrap; /* hm ? */
 	/*border-left: 0.5em solid rgb(255,153,153);; */
 	font-size: 1em; /* ? */
 }

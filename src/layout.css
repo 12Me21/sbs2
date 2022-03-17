@@ -3,7 +3,6 @@
  ****************/
 
 html {
-	white-space: pre-wrap;
 	word-break: break-word; /* required for text wrapping to work */
 	vertical-align: top; /* if this isn't `top`, inline elements will overflow their containers */
 	-webkit-text-size-adjust: none; /* this fixes an ios safari bug where some text is "stuck" at larger sizes after rotating the screen */
@@ -15,10 +14,11 @@ html {
 	vertical-align: inherit;
 	/* override default browser styles */
 	word-break: unset;
-	white-space: unset;
 	font-family: unset;
 	font-variant-ligatures: unset;
 	font-size: unset;
+	/* to be safe */
+	contain: content; /* optional */
 }
 
 /* always display images at correct aspect ratio, even if the element is the wrong size */
@@ -41,6 +41,9 @@ img {
 
 html {
 	position: fixed;
+	/* we don't use this node for display, so it has size 0, so we can't set contain */
+	/* should html have display: contents, perhaps? */
+	contain: none;
 }
 
 body {
@@ -365,13 +368,6 @@ textarea-container > textarea {
 	margin: 0;
 }
 
-/* honestly we can just apply this to pretty much everything lol */
-* {
-	contain: content;
-}
-html {
-	contain: none;
-}
 ul, ol, li, /* bullets render outside */
 td, th {  /* border renders outside */
 	contain: none;
@@ -408,14 +404,3 @@ sidebar-panel > *
 from what i've noticed, the most important thing is having a solid BG on
 the inner scrolling element (the one which moves when you scroll)
 */
-
-scroll-outer,
-.resize-box,
-.slide-box,
-sidebar-panel
-{
-/*	background-clip: content-box;*/
-/*	background-attachment: fixed;*/
-/*	background-color: white;*/
-/*doesn't work...*/
-}
