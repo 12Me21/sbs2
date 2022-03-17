@@ -11,12 +11,13 @@ html {
 * {
 	margin: 0;
 	box-sizing: border-box;
-	vertical-align: inherit;
+	vertical-align: inherit; /* (not normally inherited) */
 	/* override default browser styles */
-	word-break: unset;
-	font-family: unset;
-	font-variant-ligatures: unset;
-	font-size: unset;
+	/* (these are all inherited properties) */
+	word-break: inherit;
+	font-family: inherit;
+	font-variant-ligatures: inherit;
+	font-size: inherit;
 	/* to be safe */
 	contain: content; /* optional */
 }
@@ -238,7 +239,7 @@ but, then we can't add a border to the image
 .slide-box {
 	display: block;
 	position: relative;
-	overflow: unset; /* ?? */
+	overflow: hidden;
 }
 .slide-box > * {
 	position: absolute;
@@ -248,6 +249,7 @@ but, then we can't add a border to the image
 }
 .slide-box > :not(.shown) {
 	visibility: hidden;
+	/* we use visibility:hidden instead of display:none so the element keeps its size/layout when hidden */
 }
 
 /****************
@@ -326,7 +328,7 @@ but, then we can't add a border to the image
 		top: 0;
 		bottom: 0;
 		right: 0;
-		width: unset !important;
+		width: initial !important;
 	}
 	/* this is kinda a hack. basically what we really want is,
 for horizontal-split to stop acting like a .resize-box
