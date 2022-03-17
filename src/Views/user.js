@@ -50,7 +50,7 @@ add_view('user', {
 		$userPageAvatar.src = Draw.avatar_url(user, "size=400&crop=true")
 		//setPath([["users","Users"], [Nav.entityPath(user), user.name]])
 		if (userpage)
-			$userPageContents.fill(Draw.markup(userpage))
+			$userPageContents.fill(Draw.page_markup(userpage))
 		else
 			$userPageContents.fill()
 	},

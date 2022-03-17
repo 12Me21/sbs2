@@ -60,7 +60,7 @@ View.add_view('category', {
 		this.navButtons.set(pageNum)
 		View.set_entity_title(category)
 		View.set_entity_path(category.parent)
-		$categoryDescription.fill(Parse.parseLang(category.description, category.values.markupLang))
+		$categoryDescription.fill(Draw.markup(category.description, category.values.markupLang))
 		$categoryCategories.fill()
 		Nav.link("editpage?cid="+category.id, $createPage.parentNode)
 		Nav.link("editcategory/"+category.id, $editCategory.parentNode)
