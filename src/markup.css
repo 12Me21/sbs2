@@ -1,44 +1,42 @@
-a:not(.markup-root *)
-
-.markup-root {
+:root {
 	white-space: pre-wrap;
 	overflow-x: auto;
 }
 
-.markup-root, .markup-root * {
+* {
 	vertical-align: baseline;
 }
 
-.markup-root table, .markup-root td, .markup-root th {
+table, td, th {
 	border: 1px solid var(--maintxtcolor);
 	border-collapse: collapse;
 }
 
-.markup-root td, .markup-root th {
+td, th {
 	padding: 0.2em 0.3em;
 }
 
-.markup-root table {
+table {
 	overflow-wrap: break-word;
 }
 
-.markup-root a[href] {
+a[href] {
 	/*color: rgb(0, 80, 150);*/
 	text-decoration: underline;
 	display: inline;
 }
 
-.markup-root a[href]:visited {
+a[href]:visited {
 	/*color: rgb(0, 80, 150);*/
 }
 
-.markup-root a[href]:hover {
+a[href]:hover {
 	/*color: rgb(50, 130, 200)*/
 }
 
-.markup-root h2,
-.markup-root h3,
-.markup-root h4 {
+h2,
+h3,
+h4 {
 	font-weight: 500;
 	margin-block: 0.6em 0.2em;
 	
@@ -46,22 +44,22 @@ a:not(.markup-root *)
 	padding-left: .3em;
 }
 
-.markup-root h2 {
+h2 {
 	font-size: 2em;
 	border-bottom: 1px solid #ddd;
 }
 
-.markup-root h3 {
+h3 {
 	font-size: 1.6em;
 	border-bottom: 1px solid #eaecef;
 }
 
-.markup-root h4 {
+h4 {
 	font-size: 1.2em;
 	border-bottom: 1px solid #EEE;
 }
 
-.markup-root pre, .markup-root code {
+pre, code {
 	-moz-tab-size: 4;
 	tab-size: 4;
 	white-space: pre-wrap;
@@ -70,7 +68,7 @@ a:not(.markup-root *)
 	font-size: 0.9em;
 }
 
-.markup-root pre {
+pre {
 	color: white;
 	background-color: black;
 	border: 1px solid black;
@@ -79,34 +77,34 @@ a:not(.markup-root *)
 	word-break: break-all;
 }
 
-.markup-root code {
+code {
 	background-color: rgba(0,0,0,0.1);
 	padding: 0 0.2em;
 }
 
-.markup-root pre /*, .markup-root table*/ {
+pre /*, table*/ {
 	box-shadow: 2px 2px 2px var(--border-color);
 }
 
-.markup-root ruby {
+ruby {
 	white-space: normal;
 }
 
-.markup-root ol {
+ol {
 	margin-left: 2em;
 	padding-left: 0;
 }
 
-.markup-root ul, .markup-root ol ol, .markup-root ul ol {
+ul, ol ol, ul ol {
 	margin-left: 1.1em;
 	padding-left: 0;
 }
 
-.markup-root video {
+video {
 	min-width: 8rem;
 }
 
-.markup-root img, .markup-root audio, .markup-root video {
+img, audio, video {
 	max-width: 100%;
 	max-height: 10vh;
 	display: block;
@@ -114,20 +112,20 @@ a:not(.markup-root *)
 	transition: max-height 0.25s ease;
 }
 
-.markup-root [data-loading] {
+[data-loading] {
 	min-height: 10vh;
 }
 
-.markup-root [data-big] {
+[data-big] {
 	max-height: 75vh;
 }
 
-markup-root .youtube {
+.youtube {
 	display: block;
 	max-width: 100%;
 }
 
-.markup-root .youtube a[href] {
+.youtube a[href] {
 	width: 320px;
 	height: 180px;
 	max-height: 10vh;
@@ -138,7 +136,7 @@ markup-root .youtube {
 	background-size: cover;
 }
 
-.markup-root .playingYoutube a[href] {
+.playingYoutube a[href] {
 	width: 480px;
 	height: 270px;
 	max-height: none;
@@ -148,47 +146,47 @@ markup-root .youtube {
 	overflow: hidden;
 }
 
-.markup-root .youtube a[href] iframe {
+.youtube a[href] iframe {
 	width: 100%;
 	height: 100%;
 	border: none;
 	display: inline-block;
 }
 
-.markup-root .videoTitle, .markup-root .videoAuthor {
+.videoTitle, .videoAuthor {
 	color: white;
 	background-color: rgba(0,0,0,0.3);
 	padding: 0 0.2em;
 	display: inline-block;
 }
 
-.markup-root .cell {
+.cell {
 	background-color: var(--mainbgcolor); /* needed to reset for nested tables */
 }
 
-.markup-root [data-bgcolor="red"] {
+[data-bgcolor="red"] {
 	background-color: var(--bgred);
 }
-.markup-root [data-bgcolor="green"] {
+[data-bgcolor="green"] {
 	background-color: var(--bggreen);
 }
-.markup-root [data-bgcolor="yellow"] {
+[data-bgcolor="yellow"] {
 	background-color: var(--bgyellow);
 }
-.markup-root [data-bgcolor="orange"] {
+[data-bgcolor="orange"] {
 	background-color: var(--bgorange);
 }
-.markup-root [data-bgcolor="blue"] {
+[data-bgcolor="blue"] {
 	background-color: var(--bgblue);
 }
-.markup-root [data-bgcolor="purple"] {
+[data-bgcolor="purple"] {
 	background-color: var(--bgpurple);
 }
-.markup-root [data-bgcolor="gray"] {
+[data-bgcolor="gray"] {
 	background-color: var(--bggray);
 }
 
-.markup-root .spoilerButton {
+.spoilerButton {
 	padding: 0 0.3em;
 	background: var(--bar-bg);
 	border: 2px solid var(--border-color);
@@ -199,15 +197,15 @@ markup-root .youtube {
 	display: table;
 }
 
-.markup-root .spoilerButton:hover {
+.spoilerButton:hover {
 	border-color: var(--button-hover-color);
 }
 
-.markup-root spoilerButton:active {
+spoilerButton:active {
 	border-style: inset;
 }
 
-.markup-root .spoiler {
+.spoiler {
 	padding: 0.5em;
 	border: 1px solid var(--border-color);
 	border-left: 4px solid var(--border-color);
@@ -219,7 +217,7 @@ markup-root .youtube {
 	display: none;
 }
 
-.markup-root .spoilerButton:not([data-show]):before {
+.spoilerButton:not([data-show]):before {
 	content: "Show ";
 }
 
@@ -227,34 +225,34 @@ markup-root .youtube {
 	border-bottom: none;
 }
 
-.markup-root .spoilerButton[data-show]:before {
+.spoilerButton[data-show]:before {
 	content: "Hide ";
 }
 
-.markup-root .invalid {
+.invalid {
 	background: var(--error-bg);
 }
 
-.markup-root .error {
+.error {
 	background: var(--error-bg);
 	border: 1px solid black;
 	padding: 0.2em;
 	border-radius: 5px;
 }
 
-.markup-root .tableContainer {
+.tableContainer {
 	overflow-x: auto;
 	max-width: 100%;
 	margin-block: 0.2em;
 }
 
-/*.markup-root th.cell {
+/*th.cell {
 	background-color: #222;
 	color: white;
 	border-color: white;
 }*/
 
-.markup-root blockquote {
+blockquote {
 	padding: 0.3em;
 	padding-left: 0.5em;
 	border: 1px solid var(--border-color);
@@ -262,11 +260,11 @@ markup-root .youtube {
 	margin-block: 1px;
 }
 
-.markup-root blockquote > cite {
+blockquote > cite {
 	margin-left: -1em;
 }
 
-/*.markup-root blockquote[cite]::before {
+/*blockquote[cite]::before {
 	content: attr(cite) ":\A";
 	white-space: pre;
 	font-weight: bold;
@@ -275,24 +273,24 @@ markup-root .youtube {
 	margin-bottom: 0.2em;
 }*/
 
-/*.markup-root > :first-child {
+/*> :first-child {
 	margin-top: 0;
 }
-.markup-root > :last-child {
+> :last-child {
 	margin-bottom: 0;
 }
 this doesn't work because text nodes...
 */
 
-.markup-root .i {
+.i {
 	text-decoration: wavy underline red;
 }
 
-.markup-root a[href].customLink {
+a[href].customLink {
 	background-color: var(--link-bg-color);
 }
 
-.markup-root > iframe {
+iframe {
 	width: 100%;
 	margin: 0;
 	max-height: 50vh;

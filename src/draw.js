@@ -1,3 +1,7 @@
+let LINK = document.createElement('link')
+LINK.rel='stylesheet'
+LINK.href='src/markup.css'
+
 // HTML RENDERING
 let Draw = Object.create(null)
 with(Draw)((window)=>{"use strict";Object.assign(Draw,{
@@ -133,7 +137,11 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	
 	// returns a documentFragment
 	markup(content, lang, preview) {
-		return Parse.parseLang(content, lang, preview)
+		let d = E`div`
+		let shadow = d.attachShadow({mode:'open'})
+		shadow.append(LINK.cloneNode(false))
+		shadow.append(Parse.parseLang(content, lang, preview))
+		return d
 	},
 	page_markup(page) {
 		let lang = page.values ? page.values.markupLang : null
