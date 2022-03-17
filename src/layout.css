@@ -1,30 +1,27 @@
 /****************
  ** All Things **
  ****************/
-* {
-	margin: 0;
-	box-sizing: border-box;
-	word-break: inherit; /* this might not actually do anything. note that we can't set it to break-word here, otherwise it messes up children of elements with word-break set to something else */
-	vertical-align: inherit;
-}
 
 html {
-	/* disable ligatures like fi ffi etc. */
-	/* (doesn't affect real languages or emoji)*/
-	font-variant-ligatures: none;
-	/* this fixes an ios safari bug where some text is "stuck" at larger sizes after rotating the screen */
-	-webkit-text-size-adjust: none;
 	/* required for text wrapping to work */
 	word-break: break-word;
+	/* if this isn't `top`, inline elements will overflow their containers */
 	vertical-align: top;
+	/* this fixes an ios safari bug where some text is "stuck" at larger sizes after rotating the screen */
+	-webkit-text-size-adjust: none;
+	/*white-space: pre-wrap;*/
 }
 
-/* this fixes a weird positioning bug with inline elements */
-/* may need more things here */
-.textItem, .item, button-container button, .avatar,
-tbody, img, canvas, button, label {
-	/*vertical-align: inherit;*/
-	/* TODO: maybe set vertical-align: inherit; and then vertical-align: top; on html ? then reset it on markup-root*/
+* {
+	/*all: unset;
+	display: revert;*/
+	margin: 0;
+	box-sizing: border-box;
+	/* these are all inherited properties, with their value set to `inherit` to override default browser styles */
+	word-break: inherit;
+	vertical-align: inherit;
+	font-family: inherit;
+	font-variant-ligatures: inherit;
 }
 
 /* always display images at correct aspect ratio, even if the element is the wrong size */
@@ -32,6 +29,7 @@ img {
 	object-fit: contain;
 }
 
+/* by default, hidden just sets `display: none`, which is overridden by any element which has its display explicitly set (most of them) */
 [hidden] {
 	display: none !important;
 }
@@ -53,6 +51,7 @@ body {
 	bottom: 0;
 }
 
+/* this is being phased out */
 .fill {
 	width: 100%;
 	height: 100%;
