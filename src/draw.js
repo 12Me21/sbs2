@@ -351,7 +351,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			outer.append(b[0])
 			b[1].onclick = ()=>{
 				Req.get_older_comments(comment.parentId, firstId, 10).then(resp=>{
-					for (let c of res.comment) {
+					for (let c of resp.comment) {
 						firstId = c.id
 						if (c.deleted)
 							continue
@@ -375,7 +375,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			outer.append(b[0])
 			b[1].onclick = ()=>{
 				Req.get_newer_comments(comment.parentId, lastId, 10).then(resp=>{
-					for (let c of resp.comments) {
+					for (let c of resp.comment) {
 						lastId = c.id
 						if (c.deleted)
 							continue
