@@ -1,4 +1,4 @@
-let ChatRoom = (()=>{"use strict"; return new_class(class ChatRoom {
+let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 	constructor(id, page) {
 		let old = ChatRoom.rooms[id]
 		if (old)
@@ -376,7 +376,7 @@ let ChatRoom = (()=>{"use strict"; return new_class(class ChatRoom {
 		// todo: also call if the current comment being shown in the title is edited
 	},
 	
-})})()
+})}()
 
 
 // todo: when starting to render any page
