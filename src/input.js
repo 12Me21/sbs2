@@ -549,8 +549,8 @@ const INPUTS = (()=>{
 				let build_list = (node, ret, depth)=>{
 					ret.push({id: node.id, text: ">".repeat(depth)+" "+node.name})
 					if (node.children)
-						for (let node of node.children)
-							build_list(node, ret, depth+1)
+						for (let child of node.children)
+							build_list(child, ret, depth+1)
 				}
 				
 				let list = []
