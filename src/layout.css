@@ -3,13 +3,10 @@
  ****************/
 
 html {
-	/* required for text wrapping to work */
-	word-break: break-word;
-	/* if this isn't `top`, inline elements will overflow their containers */
-	vertical-align: top;
-	/* this fixes an ios safari bug where some text is "stuck" at larger sizes after rotating the screen */
-	-webkit-text-size-adjust: none;
-	/*white-space: pre-wrap;*/
+	white-space: pre-wrap;
+	word-break: break-word; /* required for text wrapping to work */
+	vertical-align: top; /* if this isn't `top`, inline elements will overflow their containers */
+	-webkit-text-size-adjust: none; /* this fixes an ios safari bug where some text is "stuck" at larger sizes after rotating the screen */
 }
 
 * {
@@ -17,11 +14,13 @@ html {
 	display: revert;*/
 	margin: 0;
 	box-sizing: border-box;
-	/* these are all inherited properties, with their value set to `inherit` to override default browser styles */
-	word-break: inherit;
-	vertical-align: inherit;
-	font-family: inherit;
-	font-variant-ligatures: inherit;
+	/* override default browser styles */
+	word-break: unset;
+	white-space: unset;
+	vertical-align: unset;
+	font-family: unset;
+	font-variant-ligatures: unset;
+	font-size: unset;
 }
 
 /* always display images at correct aspect ratio, even if the element is the wrong size */
@@ -34,9 +33,13 @@ img {
 	display: none !important;
 }
 
-/****************
-** Positioning **
-****************/
+.cont {
+	display: contents !important;
+}
+
+/*****************
+ ** Positioning **
+ *****************/
 
 html {
 	position: fixed;
@@ -194,11 +197,13 @@ scroll-inner {
 	display: block;
 }
 
+/***************
+ ** Image Box **
+ ***************/
 .image-box {
 	position: relative;
 	overflow: hidden;
 }
-
 .image-box > img {
 	position: absolute;
 	box-sizing: border-box;
@@ -211,7 +216,6 @@ scroll-inner {
 	bottom: -10000%;
 	margin: auto;
 }
-
 /*
 would be nice to use something like this
 but, then we can't add a border to the image
@@ -245,9 +249,9 @@ but, then we can't add a border to the image
 	visibility: hidden;
 }
 
-/************
- ** Resize **
- ************/
+/****************
+ ** Resize Box **
+ ****************/
 .resize-box {
 	display: flex;
 	flex-direction: column;
@@ -299,9 +303,9 @@ but, then we can't add a border to the image
 	text-align: center;
 }
 
-/************
-** Sidebar **
-************/
+/*************
+ ** Sidebar **
+ *************/
 
 /* normal */
 @media not all and (max-width: 700px) {
@@ -342,9 +346,9 @@ for horizontal-split to stop acting like a .resize-box
 	}
 }
 
-/***********************
-** expanding textarea **
-***********************/
+/************************
+ ** expanding textarea **
+ ************************/
 
 textarea-container {
 	display: block;

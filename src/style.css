@@ -62,6 +62,7 @@ textarea {
 	font-size: 0.8em;
 	color: var(--maintxtcolor);
 	background-color: var(--mainbgcolor);
+	white-space: break-spaces; /* optional */
 }
 
 sup {vertical-align: super;}

@@ -98,15 +98,6 @@ function got_initial({lastid, me}) {
 function dom_ready() {
 	console.log("🌄 DOM ready")
 	
-	// whitespace between nodes in html (due to line breaks, indentation, etc.) creates text nodes which need to be stripped:
-	let walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {acceptNode: node=>/^\s+$/.test(node.textContent)})
-	let blank_nodes = []
-	while (walker.nextNode())
-		blank_nodes.push(walker.currentNode)
-	// remove in 1 step rather than calling .remove() one at a time
-	document.createElement('gay-baby-jail').append(...blank_nodes)
-	//console.log("removed "+blank_nodes.length+" blank text nodes")
-	
 	// draw links
 	for (let elem of document.querySelectorAll("a[data-static-path]")) {
 		Nav.link(elem.dataset.staticPath, elem)

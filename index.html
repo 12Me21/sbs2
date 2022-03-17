@@ -13,12 +13,15 @@
 <link rel=image_src href=resource/iconbig.png> <!-- large 3 -->
 
 <script>
-	// this doesn't work in local files in edge :(
 	window.onerror = function(message, source, line, col, error) {
 		alert("ERROR DURING PAGE LOAD!\n"+message+"\nin "+source+"\nat "+line+":"+col)
 	}
 </script>
-
+<style>
+	head, script, style {
+		display: none;
+	}
+</style>
 <!-- garbage, doesn't work -->
 <!--<link rel=preload href=resource/roboto-400.woff2 as=font type=font/woff2 crossorigin>
 <link rel=preload href=resource/roboto-400i.woff2 as=font type=font/woff2 crossorigin>
@@ -310,3 +313,13 @@
 </horizontal-split>
 
 </body>
+<script hidden>
+	// whitespace between nodes in html (due to line breaks, indentation, etc.) creates text nodes which need to be stripped:
+	let walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {acceptNode: node=>/^\s+$/.test(node.textContent)})
+	let blank_nodes = []
+	while (walker.nextNode())
+		blank_nodes.push(walker.currentNode)
+	// remove in 1 step rather than calling .remove() one at a time
+	document.createElement('gay-baby-jail').append(...blank_nodes)
+	//console.log("removed "+blank_nodes.length+" blank text nodes")
+</script>

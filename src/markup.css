@@ -1,6 +1,11 @@
+a:not(.markup-root *)
+
 .markup-root {
 	white-space: pre-wrap;
 	overflow-x: auto;
+}
+
+.markup-root, .markup-root * {
 	vertical-align: baseline;
 }
 
@@ -20,6 +25,7 @@
 .markup-root a[href] {
 	/*color: rgb(0, 80, 150);*/
 	text-decoration: underline;
+	display: inline;
 }
 
 .markup-root a[href]:visited {
