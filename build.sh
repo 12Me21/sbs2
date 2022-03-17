@@ -32,12 +32,12 @@ function nocache {
 echo 'creating _build.html' >&2
 
 inject="<!--**********************************************-->\\
-<link rel=preload href=resource/roboto-400.woff2 as=font type=font/woff2 crossorigin>\
-<link rel=preload href=resource/roboto-400i.woff2 as=font type=font/woff2 crossorigin>\
-<link rel=preload href=resource/roboto-500.woff2 as=font type=font/woff2 crossorigin>\
-<link rel=preload href=resource/roboto-700.woff2 as=font type=font/woff2 crossorigin>\
-<link rel=preload href=resource/roboto-700i.woff2 as=font type=font/woff2 crossorigin>\
-<link rel=preload href=cascadia-mono.woff2 as=font type=font/woff2 crossorigin>\\
+<link rel=preload href=resource/roboto-400.woff2 as=font type=font/woff2>\
+<link rel=preload href=resource/roboto-400i.woff2 as=font type=font/woff2>\
+<link rel=preload href=resource/roboto-500.woff2 as=font type=font/woff2>\
+<link rel=preload href=resource/roboto-700.woff2 as=font type=font/woff2>\
+<link rel=preload href=resource/roboto-700i.woff2 as=font type=font/woff2>\
+<link rel=preload href=cascadia-mono.woff2 as=font type=font/woff2>\\
 <!--**********************************************-->\\
 <link rel=stylesheet href=$(nocache resource/_build.css)>\\
 <script src=$(nocache resource/_build.js)></script>\\
