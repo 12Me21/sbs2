@@ -5,6 +5,7 @@ todo: look into https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#sys
 */
 
 html {
+	color-scheme: light;
 	/* text colors (black) */
 	--maintxtcolor: black;
 	--linkcolor: #045;

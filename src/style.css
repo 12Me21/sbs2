@@ -767,12 +767,12 @@ textarea-container, textarea-container > textarea {
 }
 
 /* contain */
-#\$sidebarBottom, .sidebarComment, $sidebarActivity > .linkBar {
+#\$sidebarBottom, .sidebarComment, #\$sidebarActivity > .linkBar {
 	contain: strict;
 }
 
 /* this might be bad */
-.chatScroller, #\$sidebarScroller, $sidebarActivity {
+.chatScroller, #\$sidebarScroller, #\$sidebarActivity {
 	/*will-change: contents; /* might need to change .chatScroller ? */
 }
 

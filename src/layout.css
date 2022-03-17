@@ -14,10 +14,10 @@ html {
 	display: revert;*/
 	margin: 0;
 	box-sizing: border-box;
+	vertical-align: inherit;
 	/* override default browser styles */
 	word-break: unset;
 	white-space: unset;
-	vertical-align: unset;
 	font-family: unset;
 	font-variant-ligatures: unset;
 	font-size: unset;

@@ -11,12 +11,12 @@ echo 'Building markup system' >&2
 ./markup/build.sh
 
 echo 'creating _build.css' >&2
-css=($(grep -Po '<link rel=stylesheet href=\K.*(?=>)' index.html))
+css=($(grep -Po '<link .*\brel=stylesheet href=\K.*(?=>)' index.html))
 echo ${css[@]}
 cat ${css[@]} > resource/_build.css
 
 echo 'creating _build.js' >&2
-js=($(grep -Po '<script src=\K.*(?=></script>)' index.html))
+js=($(grep -Po '<script .*\bsrc=\K.*(?=></script>)' index.html))
 echo ${js[@]}
 printf 'window.commit = "%q";\n\n' "`git log -1 --format='%h [%ad] %s'`" | cat - ${js[@]} > resource/_build.js
 
@@ -30,9 +30,19 @@ function nocache {
 }
 
 echo 'creating _build.html' >&2
-date=`date +%s`
-sed '/<!--START-->/,/<!--END-->/c<link rel="stylesheet" href="'"$(nocache resource/_build.css)"'">\
-<script src="'"$(nocache resource/_build.js)"'"></script>' index.html > _build.html
+
+inject="<!--**********************************************-->\\
+<link rel=preload href=resource/roboto-400.woff2 as=font type=font/woff2 crossorigin>\
+<link rel=preload href=resource/roboto-400i.woff2 as=font type=font/woff2 crossorigin>\
+<link rel=preload href=resource/roboto-500.woff2 as=font type=font/woff2 crossorigin>\
+<link rel=preload href=resource/roboto-700.woff2 as=font type=font/woff2 crossorigin>\
+<link rel=preload href=resource/roboto-700i.woff2 as=font type=font/woff2 crossorigin>\
+<link rel=preload href=cascadia-mono.woff2 as=font type=font/woff2 crossorigin>\\
+<!--**********************************************-->\\
+<link rel=stylesheet href=$(nocache resource/_build.css)>\\
+<script src=$(nocache resource/_build.js)></script>\\
+<!--**********************************************-->"
+sed "/<!--START-->/,/<!--END-->/c $inject" index.html > _build.html
 
 if [ "$1" ]
 then
