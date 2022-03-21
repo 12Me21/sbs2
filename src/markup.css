@@ -1,5 +1,3 @@
-a:not(.markup-root *)
-
 .markup-root {
 	white-space: pre-wrap;
 	overflow-x: auto;
