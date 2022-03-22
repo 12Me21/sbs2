@@ -46,7 +46,6 @@ add_view('editpage', {
 			}
 		}
 		//otherwise create new page
-		throw 'hey'
 		if (Req.got_categories) { // TODO: WE DON'T USE THAT ANYMORE!
 			return {quick: true, ext: ext}
 		}
