@@ -4,14 +4,17 @@
 
 html {
 	word-break: break-word; /* required for text wrapping to work */
-	vertical-align: top; /* if this isn't `top`, inline elements will overflow their containers */
+	vertical-align: top !important; /* if this isn't `top`, inline elements will overflow their containers */
 	-webkit-text-size-adjust: none; /* this fixes an ios safari bug where some text is "stuck" at larger sizes after rotating the screen */
+}
+
+:not(.markup-root *) {
+	vertical-align: inherit; /* (not normally inherited) */
 }
 
 * {
 	margin: 0;
 	box-sizing: border-box;
-	vertical-align: inherit; /* (not normally inherited) */
 	/* override default browser styles */
 	/* (these are all inherited properties) */
 	word-break: inherit;
