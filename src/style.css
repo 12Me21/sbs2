@@ -401,9 +401,9 @@ message-part {
 message-part.edited {
 	/* todo: fix this styling */
 	/* we may just need an extra container for message-parts... */
-	/*padding-left: calc(var(--chat-gutter) + 0.2rem - 1px);*/
-	/*border-left: 1px solid gray;*/
-	outline-left: 2px solid gray;
+	padding-left: calc(var(--chat-gutter) + 0.2rem - 2px);
+	border-left: 2px solid gray;
+	/*outline-left: 2px solid gray;*/
 }
 message-part:focus {
 	background: var(--message-focus-bg);
