@@ -20,7 +20,6 @@ html {
 	word-break: inherit;
 	font-family: inherit;
 	font-variant-ligatures: inherit;
-	font-size: inherit;
 	/* to be safe */
 	contain: content; /* optional */
 }
@@ -43,14 +42,7 @@ img {
  ** Positioning **
  *****************/
 
-html {
-	position: fixed;
-	/* we don't use this node for display, so it has size 0, so we can't set contain */
-	/* should html have display: contents, perhaps? */
-	contain: none;
-}
-
-body {
+html, body {
 	position: fixed;
 	overflow: hidden;
 	top: 0;
