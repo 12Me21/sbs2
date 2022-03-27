@@ -4,6 +4,7 @@ html {
 	background: #FEE; /* for debug */
 	color: var(--maintxtcolor);
 	font-family: roboto, sans-serif;
+	line-height: 1.2;
 	/* disable ligatures like fi ffi etc. */
 	/* (doesn't affect real languages or emoji)*/
 	font-variant-ligatures: none;

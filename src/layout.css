@@ -19,6 +19,7 @@ html {
 	/* (these are all inherited properties) */
 	word-break: inherit;
 	font-family: inherit;
+	line-height: inherit;
 	font-variant-ligatures: inherit;
 	/* to be safe */
 	contain: content; /* optional */
