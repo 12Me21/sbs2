@@ -8,6 +8,8 @@ html {
 	/* disable ligatures like fi ffi etc. */
 	/* (doesn't affect real languages or emoji)*/
 	font-variant-ligatures: none;
+	/* alternate glyphs for K and k (whatever) */
+	font-feature-settings: "ss04" on;
 }
 
 body {

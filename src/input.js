@@ -41,8 +41,8 @@
 
 // nicer replacement for encodeURIComponent
 function url_escape(s) {
-	let escape = c => "%"+(c.charCodeAt(0)+0x100).toString(16).substr(1)
-	return s.replace(/[^-\w\$\.+!*',;/\:@~]/g, escape).replace(/[,\.?!:]$/, escape)
+	s = s.replace(/[^\w$.+!*',;/:@~-]|[,.?!:]$/gu, x=>encodeURIComponent(x))
+	return s
 }
 // todo: also make a full query string encode function, to use instead of Req.query_string
 
