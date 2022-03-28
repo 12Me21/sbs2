@@ -376,7 +376,7 @@ message-block > message-header > time {
 message-contents {
 	display: block;
 	min-height: 1.5rem; /* this is so the message controls always have somewhere to be shown */
-	margin-top: 0.2rem;
+	margin-block: 0.1rem;
 	/* do we need all these */
 	overflow-y: hidden; /* i think this one is for compat? */
 	overflow-y: clip;
@@ -398,7 +398,7 @@ message-block > .bigAvatar {
 message-part {
 	display: block;
 	min-height: 1rem; /* this is so the message controls always have somewhere to be shown */
-	padding-bottom: 0.2rem;
+	padding-block: 0.1rem;
 	padding-left: calc(var(--chat-gutter) + 0.2rem);
 }
 message-part.edited {
