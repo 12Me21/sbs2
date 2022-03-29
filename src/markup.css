@@ -3,6 +3,10 @@
 	overflow-x: auto;
 }
 
+.markup-root * {
+	contain: none;
+}
+
 .markup-root table, .markup-root td, .markup-root th {
 	border: 1px solid var(--maintxtcolor);
 	border-collapse: collapse;
