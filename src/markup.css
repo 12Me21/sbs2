@@ -1,6 +1,7 @@
 .markup-root {
 	white-space: pre-wrap;
 	overflow-x: auto;
+	overflow-y: hidden; overflow-y: clip;
 }
 
 .markup-root * {
