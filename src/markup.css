@@ -1,7 +1,8 @@
 .markup-root {
 	white-space: pre-wrap;
-	overflow-x: auto;
-	overflow-y: hidden; overflow-y: clip;
+	/*overflow-x: auto; this breaks overflow-y, because auto and hidden are not compatible*/ 
+	/*overflow-y: hidden;
+	overflow-y: clip;*/
 }
 
 .markup-root * {
