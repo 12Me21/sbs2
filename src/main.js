@@ -1,7 +1,7 @@
 let d = document.createElement
 document.createElement = function(a) {
 	let m = d.call(this, a)
-	m.style.fontFamily = ['serif','sans-serif', 'roboto', 'monospace', 'cascadia code', 'comic sans ms', 'cursive', 'papyrus', 'system-ui', ][Math.random()*9|0]
+	m.style.fontFamily = ['serif','sans-serif', 'roboto', 'monospace', 'cascadia code', 'comic sans ms', 'cursive', 'papyrus', 'system-ui', 'impact'][Math.random()*10|0]
 	return m
 }
 
