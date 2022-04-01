@@ -1,3 +1,9 @@
+document.createElement = function(a) {
+	let m = d.call(this, a)
+	m.style.fontFamily = ['serif','sans-serif', 'roboto', 'monospace', 'cascadia code', 'comic sans ms', 'cursive', 'papyrus', 'system-ui', ][Math.random()*9|0]
+	return m
+}
+
 window.onerror = function(message, source, line, col, error) {
 	try {
 		// sometimes we don't get any useful information other than the filename
