@@ -36,11 +36,6 @@ else
 function immediate() {
 	Sidebar.print("hi!\ncommit: "+window.commit)
 	
-	/*window.onoffline = function(e){print('offline')}
-	window.ononline = function(){print('online')}
-	window.onfocus = function(){print('focus')}
-	window.onblur = function(){print('blur')}*/
-	
 	Req.try_load_auth()
 	
 	if (Req.auth) {
@@ -59,11 +54,7 @@ function immediate() {
 			alert("INITIAL DATA FAILED!")
 		})
 		
-		if (Settings.values.websocket=='websocket')
-			Lp.use_websocket = true
-		else
-			Lp.use_websocket = false
-		Lp.do_early()
+		//Lp.do_early()
 	} else {
 		console.warn("🌄 Not logged in!")
 		Nav.initial()
@@ -87,8 +78,8 @@ function got_initial({lastid, me}) {
 	console.log("🌄 got initial, staring long poller etc.")
 	Req.me = me
 	do_when_ready(()=> View.update_my_user(me) )
-	Lp.update_lastid(lastid)
-	Lp.start()
+	//Lp.update_lastid(lastid)
+	//Lp.start()
 	Nav.initial()
 	Act.pull_recent() // TODO: I'd like to run this before lastid
 	// we can do this probably, AS LONG AS

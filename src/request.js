@@ -9,9 +9,11 @@ function arrayToggle(array, value) {
 }
 
 const Req = {
-	server: "smilebasicsource.com/api",
+	server: "qcs.shsbs.xyz/api",
+	get storage_key() {
+		return `token-${this.server}`
+	},
 	
-	storage_key: "auth",
 	auth: null,
 	uid: null,
 	me: null,
@@ -172,7 +174,7 @@ const Req = {
 	
 	// log in using username/password
 	authenticate(username, password) {
-		return this.request2('User/authenticate', null, 'POST', {username, password}).then(resp=>{
+		return this.request2('User/login', null, 'POST', {username, password}).then(resp=>{
 			Store.set(this.storage_key, resp, true)
 			window.location.reload()
 		})

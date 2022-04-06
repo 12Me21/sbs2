@@ -59,6 +59,7 @@ let Entity = (()=>{"use strict"; return singleton({
 	},
 	
 	process(resp) {
+		return
 		// build user map first
 		let map = {}
 		let users = this.safe_map(map, (id)=>({

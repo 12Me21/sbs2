@@ -396,6 +396,7 @@ message-block > .bigAvatar {
 	/*pointer-events: none;*/
 }
 message-part {
+	overflow: visible;
 	display: block;
 	min-height: 1rem; /* this is so the message controls always have somewhere to be shown */
 	padding-block: 0.1rem;

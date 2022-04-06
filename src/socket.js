@@ -49,17 +49,11 @@ with(Lp)~function(){"use strict";𖹭={
 	lastListeners: {'-1':{'0':""}}, // this MUST be something which causes the request to complete instantly
 	listening: [-1], // lastListeners is set based on this
 	
-	use_websocket: false,
-	
 	// websocket exclusive
 	websocket: null,
-	ws_token: null,
 	last_open: 0,
 	dead: false,
 	ws_is_ready: false,
-	// long poller exclusive
-	lp_cancel: ()=>{},
-	running: false,
 	
 	////////////////////
 	// public methods //
@@ -67,23 +61,10 @@ with(Lp)~function(){"use strict";𖹭={
 	
 	start() {
 		refresh()
-		if (use_websocket) {
-			print('starting lp: websocket')
-			ws_refresh()
-		} else {
-			if (!running) {
-				print('starting lp: long poller')
-				lp_loop()
-			}
-		}
 	},
 	
 	stop() {
-		if (use_websocket) {
-			websocket && websocket.close()
-		} else {
-			lp_cancel()
-		}
+		websocket && websocket.close()
 	},
 	
 	// todo: this gets set after the first request is made
@@ -99,22 +80,53 @@ with(Lp)~function(){"use strict";𖹭={
 		statuses = stats
 	},
 	
-	// call this after setting the parameters
-	refresh() {
-		if (use_websocket) {
-			ws_refresh()
-		} else {
-			lp_cancel()
-			lp_loop()
-		}
-	},
-	
 	/////////////////////////
 	// "private" functions //
 	/////////////////////////
 	
 	// output is in websocket format
 	make_request() {
+		let x = {
+			type: 'request',
+			data: {
+				'values': {
+					pid: 937,
+					yesterday: "2022-04-03 20",
+				},
+				requests: [{
+					type: 'message_aggregate',
+					fields: "contentId,count,maxId,minId,createUserId,maxCreateDate",
+					query: "createDate > @yesterday",
+					order: '',
+					limit: 1000,
+					skip: 0,
+				},{
+					type: 'content',
+					fields: 'id, name, permissions',
+					query: "id = @pid or id in @message_aggregate.contentId",
+					order: '',
+					limit: 1000,
+					skip: 0,
+				},{
+					type: 'message',
+					fields: '*',
+					query: "contentId = @pid and !notdeleted()",
+					order: 'id_desc',
+					limit: 30,
+					skip: 0,
+				},{
+					type: 'user',
+					fields: '*',
+					query: "id in @message.createUserId or id in @message.uidsInText",
+					order: '',
+					limit: 1000,
+					skip: 0,
+				}],
+			},
+			id: '9718812705010064',
+		}
+		return x
+		
 		let new_listeners = {}
 		for (let id of listening)
 			new_listeners[id] = lastListeners[id] || {'0':""}
@@ -122,70 +134,12 @@ with(Lp)~function(){"use strict";𖹭={
 		if (!lastId)
 			alert("missing lastid!")
 		
-		let actions = {
-			lastId: lastId, // todo: make sure this is ALWAYS set (not 0) except for the initial request where we get lastid
-			statuses: statuses,
-			chains: [ // 0
-				'comment.0id',
-				'activity.0id-{"includeAnonymous":true}',
-				'watch.0id', //new stuff //changed
-				'content.1parentId.2contentId.3contentId', //pages
-				'user.1createUserId.2userId.1editUserId.2contentId', //users for comment and activity
-				'category.2contentId', //todo: handle values returned by this
-			]
-		}
-		let listeners = {
-			lastListeners: new_listeners,
-			chains: [
-				'user.0listeners',
-			]
-		}
-		
-		return {
-			actions: actions,
-			listeners: listeners,
-			fields: {content: ['id','createUserId','name','permissions','type']},
-		}
 	},
 	
-	ws_refresh() {
+	refresh() {
 		ws_message = make_request()
 		if (ws_is_ready)
 			websocket_flush()
-	},
-	
-	lp_listen(abort) {
-		let {actions, listeners, fields} = make_request()
-		// convert make_request output to long poller format
-		let query = {
-			actions: JSON.stringify(actions),
-			listeners: JSON.stringify(listeners),
-		}
-		for (let [key, value] of Object.entries(fields))
-			query[key] = value.join(",")
-		
-		return new Promise(Req.raw_request.bind(Req, "Read/listen"+Req.query_string(query), 'GET', null, {abort}))
-	},
-	
-	// if
-	lp_loop() {
-		running = true
-		//make sure only one instance of this is running
-		let abort = [null]
-		lp_listen(abort).then((resp)=>{
-			running = false
-			process(resp)
-			lp_loop()
-		}, (e, resp)=>{
-			running = false
-			console.log("LONG POLLER FAILED", e, resp)
-			print("LONG POLLER FAILED:"+resp)
-			alert("LONG POLLER FAILED:"+resp)
-		})
-		lp_cancel = ()=>{
-			running = false
-			abort[0]()
-		}
 	},
 	
 	update_lastid(id) {
@@ -196,34 +150,14 @@ with(Lp)~function(){"use strict";𖹭={
 	},
 	
 	process(resp) {
-		// try/catch here so the long poller won't fail when there's an error in the callbacks
-		try {
-			// most important stuff:
-			if (resp.lastId)
-				update_lastid(resp.lastId)
-			if (resp.listeners)
-				lastListeners = resp.listeners
-			
-			let c = resp.chains // this SHOULD always be set, yeah?
-			c && Entity.process(c)
-			
-			if (resp.listeners) {
-				// process listeners (convert uids to user objetcs) (also makes a copy)
-				// shouldn't this be handled by Entity?
-				let out = {}
-				Object.for(resp.listeners, (list, id)=>{
-					out[id] = {}
-					Object.for(list, (status, uid)=>{
-						out[id][uid] = {user: c.user_map[uid], status: status}
-					})
-				})
-				processed_listeners = out
-				on_listeners(out)
-			}
-			
-			c && on_data(c)
-		} catch (e) {
-			console.error("error processing lp/ws response: ", e)
+		if (resp.type=='request') {
+			let data = resp.data.data
+			Entity.process(data)
+			//on_data(data)
+		} else if (resp.type=='live') {
+			let data = resp.data.data.message
+			Entity.process(data)
+			on_data(data)
 		}
 	},
 	
@@ -231,13 +165,12 @@ with(Lp)~function(){"use strict";𖹭={
 		if (!ws_is_ready)
 			return
 		// this check should never fail
-		if (!ws_is_open() || !ws_token) {
+		if (!ws_is_open()) {
 			print("websocket flush sequence error!")
 			console.error("websocket flush sequence error!")
 			return
 		}
 		if (ws_message.listeners) {
-			ws_message.auth = ws_token
 			websocket.send(JSON.stringify(ws_message))
 		}
 	},
@@ -252,10 +185,7 @@ with(Lp)~function(){"use strict";𖹭={
 	},
 	// init
 	do_early() {
-		if (use_websocket) {
-			get_ws_auth()
-			open_websocket()
-		}
+		open_websocket()
 	},
 	
 	// to be ready to use, we must have
@@ -263,16 +193,6 @@ with(Lp)~function(){"use strict";𖹭={
 	// - an opened websocket
 	// once both of these are fulfilled, ws_ready() is called
 	
-	get_ws_auth() {
-		Req.request2('Read/wsauth').then((resp)=>{
-			ws_token = resp
-			if (ws_is_open())
-				ws_ready()
-		}, (e, resp)=>{
-			print('websocket auth failed:'+e)
-		})
-	},
-
 	open_websocket() {
 		if (websocket && websocket.readyState <= WebSocket.OPEN) {
 			print("multiple websocket tried to open!")
@@ -289,12 +209,11 @@ with(Lp)~function(){"use strict";𖹭={
 		}
 		last_open = now
 		
-		websocket = new WebSocket(`wss://${Req.server}/read/wslisten`)
+		websocket = new WebSocket(`wss://${Req.server}/live/ws?token=${Req.auth}`)
 		
 		websocket.onopen = (e)=>{
 			print("websocket open!")
-			if (ws_token)
-				ws_ready()
+			ws_ready()
 		}
 		websocket.onerror = (e)=>{
 			print("websocket error!")
@@ -311,13 +230,15 @@ with(Lp)~function(){"use strict";𖹭={
 			//todo: if we get a connection error after a long time (ex: after exiting sleep mode) then the auth token might be invalid too. we should check how long it has been since the token was generated
 			// and maybe also auto-rerequest the token when its about to expire too.
 			
-			if (e.reason=="Invalid token") {
-				ws_token = null
-				get_ws_auth()
-			}
 			open_websocket()
 		}
 		websocket.onmessage = (e)=>{
+			let data = JSON.safe_parse(e.data)
+			if (!data)
+				return
+			
+			
+			
 			let msg = String(e.data) // will e.data always be a string?
 			let [match, type] = /^(\w+):/.rmatch(msg)
 			if (!match) {
