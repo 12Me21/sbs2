@@ -1,15 +1,50 @@
-//const TYPES = {}
+const TYPES = {}
 
-for (let type in ABOUT.details.types) {
-	let descs = ABOUT.details.types[type]
-	let defs = ABOUT.details.objects[type]
-	for (let field in descs) {
-		let desc = descs[field]
-		let def = defs[field]
-		
+for (let type_name in ABOUT.details.types) {
+	let field_datas = ABOUT.details.types[type_name]
+	let field_defaults = ABOUT.details.objects[type_name]
+	let writables = {}
+	let proto = {
+		toJSON: {value: function() {
+			let json = {}
+			let wt = this.New?'writableOnInsert':'writableOnUpdate'
+			for (let f in this.Fields) {
+				let data = field_datas[f]
+				if (data[wt])
+					json[f] = this[f]
+			}
+			return json
+		}},
+		then: {},
+		Type: {value: type_name},
+		Fields: {value: field_datas},
 	}
+	for (let field_name in field_datas) {
+		let field_data = field_datas[field_name]
+		let field_default = field_defaults[field_name]
+		proto[field_name] = {value: field_default, enumerable: true}
+		if (field_data.type=='datetime')
+			proto[field_name] = {get(){
+				let d = this[field_name]
+				return d ? new Date(d.replace(/Z?$/, "Z")) : null
+			}}
+	}
+	proto = Object.create(STRICT, proto)
+	let cons = (o, u)=>{
+		/*for (let field_name in o) {
+			let field_data = field_datas[field_name]
+			let writable = field_data.writableOnInsert || field_data.writableOnUpdate
+			Object.defineProperty(o, field_name, {
+				value: o[field_name], 
+			})
+		}*/
+		
+		Object.freeze(Object.setPrototypeOf(o, proto))
+		return o
+		//Object.defineProperties(this, Object.getOwnPropertyDescriptors(o))
+	}
+	TYPES[type_name] = cons
 }
-
 
 function map_user(obj, prop, users) {
 	let user = users[obj[prop+"Id"]]
@@ -19,75 +54,6 @@ function map_user(obj, prop, users) {
 function map_date(obj, prop) {
 	if (obj[prop])
 		obj[prop] = new Date(obj[prop])
-}
-
-
-
-const TYPES = {
-	user: Type({
-		Type: 'user',
-		id: 0,
-		get username() { return `{User ${this.id}}` },
-		avatar: "0",
-		special: null,
-		type: "user",
-		createDate: new Date(0),
-		super: false,
-		registered: true,
-		deleted: false,
-		groups: [],
-	}, function(u) {
-		map_date(this, 'createDate')
-	}),
-	message: Type({
-		Type: 'message',
-		id: 0,
-		contentId: 0,
-		createUserId: 0,
-		get createUser() { return TYPES.user({id:this.createUserId}) },
-		//get createUser(){this.createUserId}, // todo: dummy user
-		createDate: new Date(0),
-		text: "???",
-		values: {},
-		editDate: new Date(0),
-		editUserId: 0,
-		edited: false,
-		deleted: false,
-		module: null,
-		receiveUserId: 0,
-		uidsInText: [],
-	}, function(u) {
-		map_user(this, 'createUser', u)
-		map_user(this, 'editUser', u)
-		map_date(this, 'createDate')
-		map_date(this, 'editDate')
-	}),
-	content: Type({
-		Type: 'content',
-		id: 0,
-		deleted: false,
-		createUserId: 0,
-		createDate: new Date(0),
-		contentType: -1,
-		get name() { return `{Content ${this.id}}` },
-		parentId: 0,
-		text: "???",
-		literalType: "",
-		meta: "",
-		description: "???",
-		hash: "",
-		permissions: {},
-		values: {},
-		keywords: [],
-		votes: {},
-		lastCommentId: 0,
-		commentCount: 0,
-		watchCount: 0,
-		lastRevisionId: 0,
-	}, function(u) {
-		map_date(this, 'createDate')
-		map_user(this, 'createUser', u)
-	})
 }
 
 // functions for processing recieved entities/

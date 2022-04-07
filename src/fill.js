@@ -36,7 +36,7 @@ class FieldError extends Error {
 	}
 }
 
-let strict = new Proxy(Object.create(null), {
+let STRICT = new Proxy(Object.create(null), {
 	get(t, name, obj) {
 		throw new FieldError("🚮 invalid field read", obj, "⛔."+String(name))
 	},
@@ -44,16 +44,6 @@ let strict = new Proxy(Object.create(null), {
 		throw new FieldError("🚮 invalid field write", obj, "⛔."+String(name)+" =", value)
 	},
 })
-
-function Type(fields, func) {
-	fields.toJSON = undefined
-	fields.then = undefined
-	let proto = Object.create(strict, Object.getOwnPropertyDescriptors(fields))
-	return (o,u)=>{
-		func.call(o,u)
-		return Object.freeze(Object.setPrototypeOf(o, proto))
-	}
-}
 
 if (!Array.prototype.findLast)
 	Array.prototype.findLast = function(filter) {
