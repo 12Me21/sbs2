@@ -24,7 +24,7 @@ const Req = {
 	// of course, you could handle this in the `ok` callback, but then
 	// you're forced to intercept this before passing the data to 
 	// a higher level function
-	raw_request(url, method, data, etc, ok, fail) {
+	raw_request: function me(url, method, data, etc, ok, fail) {
 		let x = new XMLHttpRequest()
 		x.open(method, `https://${this.server}/${url}`)
 		let start = Date.now()
@@ -45,7 +45,7 @@ const Req = {
 					return
 				console.log("retrying request", reason)
 				// this is not recursion: we're in an async callback function!
-				this.raw_request(url, method, data, etc, ok, fail)
+				me.call(this, url, method, data, etc, ok, fail)
 			}, time)
 			x.abort = window.clearTimeout.bind(window, id)
 		}
@@ -103,13 +103,9 @@ const Req = {
 			return retry(5000, "request error")
 		}
 		
-		x.setRequestHeader('Cache-Control', "no-store no-cache must-revalidate")
-		this.auth && x.setRequestHeader('Authorization', "Bearer "+this.auth)
+		x.setRequestHeader('CACHE-CONTROL', "L, ratio, no-store, no-cache, must-revalidate")
+		this.auth && x.setRequestHeader('AUTHORIZATION', "Bearer "+this.auth)
 		x.send(data)
-		
-		// the only thing we use here is .abort
-		// (note that .abort is modified by retry())
-		//return x
 	},
 	
 	query_string(obj) {
@@ -141,17 +137,16 @@ const Req = {
 		this.raw_request(url, method, data, {proc}, callback.bind(null, null), callback)
 	},*/
 	// i dont like how proc is required but h
-	request2(url, proc, method='GET', data=null) {
+	request(url, proc, data) {
 		if (Object.is_plain(data))
 			data = JSON.to_blob(data)
-		return new Promise(this.raw_request.bind(this, url, method, data, {proc}))
+		let method = data===undefined ? 'GET' : 'POST'
+		return this.raw_request.bind(this, url, method, data, {proc})
 	},
-	// new version of read()
+	// idea: function.valueOf calls the function and returns um ..   something.. .chaining .. mmmm
+	
 	chain(data, abort=null) {
-		return new Promise(this.raw_request.bind(
-			this, 'request', 'POST', JSON.to_blob(data),
-			{proc(resp){return Entity.process(resp.data)}, abort}
-		))
+		return this.raw_request.bind(this, 'request', 'POST', JSON.to_blob(data), {proc: resp=>Entity.process(resp.data), abort})
 	},
 	
 	/////////////////////////
@@ -168,10 +163,7 @@ const Req = {
 	
 	// log in using username/password
 	authenticate(username, password) {
-		return this.request2('User/login', null, 'POST', {username, password}).then(resp=>{
-			Store.set(this.storage_key, resp, true)
-			window.location.reload()
-		})
+		return this.request('User/login', null, {username, password})
 	},
 	
 	// try to load cached auth token from localstorage
@@ -195,15 +187,12 @@ const Req = {
 		return false
 	},
 	
-	get_initial() {
-		return this.chain([
-			['systemaggregate'], //~💖
-			['user~Ume', {ids:[Req.uid], limit:1}],
-		])
-	},
-	
 	get_me() {
-		return this.request2("User/me", Entity.process_item.bind(Entity, 'user'))
+		// todo: instead of the proc function,
+		// we can just tell it what type of data to expect
+		// this will just be like either
+		// a single entity, or ws response, or api/request response
+		return this.request("User/me", Entity.process_item.bind(Entity, 'user'))
 	},
 	
 	set_basic(data) {

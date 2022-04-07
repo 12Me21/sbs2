@@ -1,3 +1,16 @@
+//const TYPES = {}
+
+for (let type in ABOUT.details.types) {
+	let descs = ABOUT.details.types[type]
+	let defs = ABOUT.details.objects[type]
+	for (let field in descs) {
+		let desc = descs[field]
+		let def = defs[field]
+		
+	}
+}
+
+
 function map_user(obj, prop, users) {
 	let user = users[obj[prop+"Id"]]
 	if (user)
@@ -7,6 +20,8 @@ function map_date(obj, prop) {
 	if (obj[prop])
 		obj[prop] = new Date(obj[prop])
 }
+
+
 
 const TYPES = {
 	user: Type({
@@ -173,6 +188,7 @@ let Entity = (()=>{"use strict"; return singleton({
 	process_item(type, item, users) {
 		if (TYPES[type])
 			TYPES[type](item, users)
+		return item
 	},
 	process_list(type, list, users) {
 		if (TYPES[type])

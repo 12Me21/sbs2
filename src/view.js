@@ -241,7 +241,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 			abort[0] && abort[0]()
 			cancelled = true
 		}
-		Req.chain(data.request, abort).then((resp)=>{
+		Req.chain(data.request, abort)((resp)=>{
 			if (data.check && !data.check(resp, data.ext)) {// try/catch here?
 				handle_error("content not found?")
 			} else {

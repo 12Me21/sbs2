@@ -88,11 +88,12 @@ Node.prototype.child = function(type, classes) {
 		elem.className = classes
 	return elem
 }
+
 /*Node.prototype.class = function(t) {
 	if (t)
 		this.className += " "+t[0]
 }*/
-
+eval("\n".repeat(419)+'a=>{return;'+' '.repeat(58)+'return}')
 // same as JSON.parse, but returns `undefined` if it fails
 // (note that JSON can't encode `undefined`)
 JSON.safe_parse = function(json) { // should be function() not => yeah?
