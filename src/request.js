@@ -1,7 +1,7 @@
 class InvalidRequestError extends TypeError {
 	constructor(url, data, resp) {
 		super()
-		this.trim_stack(1)
+		this.trim_stack()
 		this.resp = resp
 		this.name = "400 ➡️ "+url
 	}
@@ -16,10 +16,7 @@ class InvalidRequestError extends TypeError {
 				lines.push(`❌${key}:`)
 				lines.push(...msg.map(x=>` 🔸${x}`))
 			})
-		Object.defineProperty(this, 'message', {
-			value: "\n"+lines.join("\n")
-		})
-		return this.message
+		return "\n"+lines.join("\n")
 	}
 }
 InvalidRequestError.prototype.name = "InvalidRequestError"
@@ -82,8 +79,8 @@ const Req = {
 			
 			let type = x.getResponseHeader('Content-Type')
 			let resp = x.responseText
-			if (/^application\/(\w+\+)?json\b/i.test(type))
-				resp = JSON.safe_parse(resp)
+			if (/[/+]json(;| |$)/i.test(type)) // ehhhh regex..
+				resp = JSON.parse(resp)
 			let code = x.status
 			
 			if (code==200) {

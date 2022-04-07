@@ -13,8 +13,18 @@ for (let key of Object.getOwnPropertyNames(Object.prototype)) {
 //Object.freeze(Object.prototype)
 /////////////////
 
+//usage:
+/*
+constructor(...) {
+	super() // do not pass args here!
+	this.trim_stack(1)
+	this.message = "..." // set message like this instead
+	...
+}
+*/
 Error.prototype.trim_stack = function(levels=1) {
-	this.stack = this.stack.replace(new RegExp(`^(?!Error\\n)(.*\n){${levels}}`, 'm'), "")
+	while (levels-->0)
+		this.stack = this.stack.replace(/^(?!Error\n).*\n/, "")
 }
 
 class FieldError extends Error {
@@ -28,10 +38,10 @@ class FieldError extends Error {
 
 let strict = new Proxy(Object.create(null), {
 	get(t, name, obj) {
-		throw new FieldError("invalid field read", obj, "."+String(name))
+		throw new FieldError("🚮 invalid field read", obj, "⛔."+String(name))
 	},
 	set(t, name, value, obj) {
-		throw new FieldError("invalid field write", obj, "."+String(name)+" =", value)
+		throw new FieldError("🚮 invalid field write", obj, "⛔."+String(name)+" =", value)
 	},
 })
 
