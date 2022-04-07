@@ -123,7 +123,14 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		
 		$loginForm.onsubmit = function(e) {
 			e.preventDefault()
-			Req.authenticate($loginForm.username.value, $loginForm.password.value) // todo: do something here?
+			Req.log_in($loginForm.username.value, $loginForm.password.value)(
+				()=>{
+					alert("✅ logged in!")
+				},
+				()=>{
+					alert("❌ logging in failed")
+				}
+			) // todo: do something here?
 		}
 		$logOut.onclick = function(e) {
 			Req.log_out()
