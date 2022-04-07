@@ -13,8 +13,8 @@ View.add_view('page', {
 	
 	render_page(page) {
 		View.set_entity_title(page)
-		View.set_entity_path(page.parent)
-		View.flag('canEdit', /u/.test(page.myPerms))
+		//View.set_entity_path(page.parent)
+		View.flag('canEdit', /u/i.test(page.permissions[Req.uid]))
 		$chatTextarea.disabled = !(page.createUserId==Req.uid || /c/.test(page.permissions[Req.uid] || page.permissions[0])) // don't use myperms here
 		Nav.link("editpage/"+page.id, $pageEditLink)
 		Nav.link("comments/"+page.id, $pageCommentsLink)
@@ -32,15 +32,22 @@ View.add_view('page', {
 		// we might get messages from long polling before
 		// loading the initial messages :(
 		return {
-			chains: [
+			request: {
+				values: {
+					pageid: id,
+					filetype: 3,
+				},
+				requests: [
+					{type: 'content', fields: "*", query: "id = @pageid"},
+					{type: 'user', fields: "*", query: "id in @content.createUserId"},
+				],
+			},
+/*			chains: [
 				['content', {ids: [id], IncludeAbout: ["votes","watches"]}],
 				['comment', {parentIds: [id], limit: 30, reverse: true}],
 				['comment.0values_pinned~Mpinned'],//: {parentIds: [id]}},
 				['user.0createUserId.0editUserId.1createUserId.1editUserId.2createUserId.2editUserId'],
-			],
-			fields: {
-				//content: "name,parentId,type,createUserId,editUserId,createDate,editDate,permissions,id"
-			},
+			],*/
 			ext: {},
 			check(resp) {
 				return resp.content[0]
@@ -55,18 +62,18 @@ View.add_view('page', {
 		this.render_page(page)
 	},
 	render(resp, ext) {
-		let comments = resp.comment
-		comments.reverse()
+//		let comments = resp.comment
+//		comments.reverse()
 		let page = resp.content[0]
-		let pinned = resp.Mpinned
+//		let pinned = resp.Mpinned
 		
 		// TODO: should we be calling this again every time?
-		Act.new_page_comments(page, comments)
-		Act.redraw()
+//		Act.new_page_comments(page, comments)
+//		Act.redraw()
 		
 		//ChatRoom.setViewing([page.id])
 		this.room = new ChatRoom(page.id, page)
-		this.room.display_initial_messages(comments, pinned) //todo: when page is edited, update pinned messages
+//		this.room.display_initial_messages(comments, pinned) //todo: when page is edited, update pinned messages
 		this.room.show()
 		
 		this.render_page(page)

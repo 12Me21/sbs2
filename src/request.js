@@ -147,17 +147,11 @@ const Req = {
 		return new Promise(this.raw_request.bind(this, url, method, data, {proc}))
 	},
 	// new version of read()
-	chain(requests, fields=null, abort=null) {
-		let query = {}
-		query.requests = requests.map(([thing, data])=>{
-			if (data)
-				thing += "-"+JSON.stringify(data)
-			return thing
-		})
-		if (fields)
-			Object.assign(query, fields)
-		let url = "Read/chain"+this.query_string(query)
-		return new Promise(this.raw_request.bind(this, url, 'GET', null, {proc: Entity.process.bind(Entity), abort}))
+	chain(data, abort=null) {
+		return new Promise(this.raw_request.bind(
+			this, 'request', 'POST', JSON.to_blob(data),
+			{proc(resp){return Entity.process(resp.data)}, abort}
+		))
 	},
 	
 	/////////////////////////

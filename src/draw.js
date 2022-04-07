@@ -1,3 +1,13 @@
+/*Element.prototype.make = function() {
+	return this.cloneNode(true).getElementsByTagName('*')
+}
+
+function 𐀶([html]) {
+	let temp = document.createElement('template')
+	temp.innerHTML = html
+	return temp.content.firstChild
+}*/
+
 // HTML RENDERING
 let Draw = Object.create(null)
 with(Draw)((window)=>{"use strict";Object.assign(Draw,{
@@ -134,7 +144,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	// returns a documentFragment
 	markup(page) {
 		let lang = page.values ? page.values.markupLang : null
-		return Parse.parseLang(page.content, lang, true)
+		return Parse.parseLang(page.text, lang, true)
 	},
 	
 	title_path(path) {
@@ -181,10 +191,10 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		// resize handle
 		let resize = box.child('resize-handle')
 		let height = null
-		if (page.type == 'resource')
-			height = 1000 //whatever
-		else if (page.type == 'chat')
-			height = 0
+//		if (page.type == 'resource')
+//			height = 1000 //whatever
+//		else if (page.type == 'chat')
+		height = 0
 		View.attach_resize(page1, resize, false, 1, 'setting--divider-pos-'+page.id, null, height) // todo: save?
 		// userlist
 		let list1 = box.child('div', 'bar rem2-3 userlist')
@@ -411,7 +421,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	// </div>
 	page_info(page) {
 		let e = EC('div', 'pageInfoPane rem2-3 bar')
-		e.append(author_box(page), vote_box(page))
+		//e.append(author_box(page), vote_box(page))
 		return e
 	},
 	
@@ -529,10 +539,10 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			entity_title_link(page.createUser, true))
 		if (page.editUserId != page.createUserId) {
 			elem.append(
-				" ", page_edited_time("Edited by:", page.editDate),
+				" ", page_edited_time("Edited by:", page.lastRevisionDate),
 				" ", entity_title_link(page.editUser, true))
-		} else if (page.createDate != page.editDate) { //edited by same user
-			elem.append(" ", page_edited_time("Edited", page.editDate))
+		} else if (page.createDate != page.lastRevisionDate) { //edited by same user
+			elem.append(" ", page_edited_time("Edited", page.lastRevisionDate))
 		}
 		return elem
 	},

@@ -1,3 +1,80 @@
+function map_user(obj, prop, users) {
+	let user = users[obj[prop+"Id"]]
+	if (user)
+		obj[prop] = user
+}
+function map_date(obj, prop) {
+	if (obj[prop])
+		obj[prop] = new Date(obj[prop])
+}
+
+const TYPES = {
+	user: Type({
+		Type: 'user',
+		id: 0,
+		get username() { return `{User ${this.id}}` },
+		avatar: "0",
+		special: null,
+		type: "user",
+		createDate: new Date(0),
+		super: false,
+		registered: true,
+		deleted: false,
+		groups: [],
+	}, function(u) {
+		map_date(this, 'createDate')
+	}),
+	message: Type({
+		Type: 'message',
+		id: 0,
+		contentId: 0,
+		createUserId: 0,
+		get createUser() { return TYPES.user({id:this.createUserId}) },
+		//get createUser(){this.createUserId}, // todo: dummy user
+		createDate: new Date(0),
+		text: "???",
+		values: {},
+		editDate: new Date(0),
+		editUserId: 0,
+		edited: false,
+		deleted: false,
+		module: null,
+		receiveUserId: 0,
+		uidsInText: [],
+	}, function(u) {
+		map_user(this, 'createUser', u)
+		map_user(this, 'editUser', u)
+		map_date(this, 'createDate')
+		map_date(this, 'editDate')
+	}),
+	content: Type({
+		Type: 'content',
+		id: 0,
+		deleted: false,
+		createUserId: 0,
+		createDate: new Date(0),
+		contentType: -1,
+		get name() { return `{Content ${this.id}}` },
+		parentId: 0,
+		text: "???",
+		literalType: "",
+		meta: "",
+		description: "???",
+		hash: "",
+		permissions: {},
+		values: {},
+		keywords: [],
+		votes: {},
+		lastCommentId: 0,
+		commentCount: 0,
+		watchCount: 0,
+		lastRevisionId: 0,
+	}, function(u) {
+		map_date(this, 'createDate')
+		map_user(this, 'createUser', u)
+	})
+}
+
 // functions for processing recieved entities/
 // DATA PROCESSOR
 let Entity = (()=>{"use strict"; return singleton({
@@ -58,88 +135,53 @@ let Entity = (()=>{"use strict"; return singleton({
 		return x.split(/[, ]+/).filter(x=>/^\d+$/.test(x)).map(x=>+x)
 	},
 	
-	process(resp) {
-		return
+	process(data) {
 		// build user map first
-		let map = {}
-		let users = this.safe_map(map, (id)=>({
-			Type: 'user',
-			name: `{user: ${id}}`,
-			id: id,
-			fake: true,
-		}))
+		let user_map = {}
 		
-		Object.for(resp, (data, key)=>{
-			let type = this.key_type(key)
-			if (type == 'user') {
-				this.process_list(type, data, users)
-				for (let user of data)
-					map[user.id] = user
-			}
+		if (data.user)
+			for (let user of data.user)
+				user_map[user.id] = user
+		
+		Object.for(data, (list, name)=>{
+			let type = this.key_type(name)
+			this.process_list(type, list, user_map)
 		})
 		
-		if (resp.Ctree)
-			this.process_list('category', resp.Ctree, users)
+		/*if (resp.Ctree)
+			this.process_list('category', resp.Ctree, users)*/
 		
-		Object.for(resp, (data, key)=>{
-			let type = this.key_type(key)
-			if (type!='user' && key!='Ctree')
-				this.process_list(type, data, users)
-		})
-		resp.user_map = users
+		data.user_map = user_map
 		
-		if (this.got_new_category) {
+		/*if (this.got_new_category) {
 			this.rebuildCategoryTree()
 			window.setTimeout(()=>{
 				this.onCategoryUpdate && this.onCategoryUpdate(this.category_map)
 			}, 0)
-		}
-		return resp // for convenienece
+		}*/
+		return data // for convenienece
 	},
 	key_type(key) {
 		return {
 			A: 'activity',
-			C: 'category',
 			U: 'user',
-			P: 'content', // "page"
-			M: 'comment', // "message"
+			C: 'content',
+			M: 'message',
 			G: 'commentaggregate', // ran out of letters
 		}[key[0]] || key
 	},
-	process_item(type, data) {
-		let l = [data]
-		Entity.process_list(type, l, {})
-		return l[0]
+	process_item(type, item, users) {
+		if (TYPES[type])
+			TYPES[type](item, users)
 	},
-	process_list(type, data, users) {
-		let proc = this.process_type[type]
-		if (!proc) {
-			console.warn('recvd unknown type', type, data)
-			return // uh oh, unknown type
-		}
-		proc = proc.bind(this) //oops, we have to bind `this` here. maybe time to rethink the use of `this`...
-		if (type == 'category')
-			this.got_new_category = true
-		data.forEach((item, i, data)=>{
-			// this is done in-place
-			data[i] = proc(item, users)
-			data[i].Type = type
-		})
+	process_list(type, list, users) {
+		if (TYPES[type])
+			list.forEach(item => TYPES[type](item, users))
 	},
 	// editUserId -> editUser
 	// createUserId -> createUser
 	// editDate
 	// createDate
-	process_editable(data, users) {
-		if (data.editUserId) // checking both null and 0
-			data.editUser = users[data.editUserId]
-		if (data.createUserId)
-			data.createUser = users[data.createUserId]
-		if (data.editDate) // date will always be non-null in the database but we might filter it out in the response
-			data.editDate = this.parse_date(data.editDate)
-		if (data.createDate)
-			data.createDate = this.parse_date(data.createDate)
-	},
 	process_comment_user_meta(data) {
 		let override = {}
 		// avatar override
@@ -196,24 +238,16 @@ let Entity = (()=>{"use strict"; return singleton({
 			data.name = data.name || data.username
 			return data
 		},
-		// update category map?
-		category(data, users) {
-			let cat = this.category_map[data.id]
-			if (!cat) {
-				this.category_map[data.id] = cat = data
-			} else {
-				Object.assign(cat, data)
-				data = cat
-			}
-			this.process_editable(data, users)
-			return data
-		},
 		// parentId -> parent
 		// ?? -> users
 		content(data, users) {
-			this.process_editable(data, users)
-			if (data.parentId != null)
-				data.parent = this.category_map[data.parentId]
+			data.createDate = this.parse_date(data.createDate)
+			data.lastRevisionDate = this.parse_date(data.lastRevisionDate)
+			data.lastCommentDate = this.parse_date(data.lastCommentDate)
+			
+			//this.process_editable(data, users)
+			//if (data.parentId != null)
+			//	data.parent = this.category_map[data.parentId]
 			return data
 		},
 		// content

@@ -39,12 +39,17 @@ View.add_view('comments', {
 			return {quick: true, ext: {data}}
 		
 		return {
+			request: {
+				values: {},
+				requests: [
+					
+				],
+			},
 			chains: [
 				['comment', search],
 				['content.0parentId'],
 				['user.0createUserId'],
 			],
-			fields: {},
 			ext: {data, merge},
 		}
 	},

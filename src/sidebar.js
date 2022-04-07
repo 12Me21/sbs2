@@ -1,14 +1,9 @@
 let Sidebar = Object.create(null)
 with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
-	
 	selected_file: null,
-	
 	scroller: null,
-	
 	select_tab: null,
-	
 	my_avatar: null,
-	
 	file_upload_form: null,
 	
 	interval: null,
@@ -38,7 +33,6 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		View.attach_resize($sidebar, $horizontalResize, true, -1, "sidebarWidth")
 		View.attach_resize($sidebarTop, $sidebarResize, false, 1, "sidebarPinnedHeight")
 		View.flag('sidebar', true)
-		$sidebarResize.textContent += Lp.use_websocket ? " [websocket]" : " [long polling]"
 		
 		attach_paste(got_file)
 		

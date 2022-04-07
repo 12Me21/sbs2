@@ -2,18 +2,42 @@
 
 // relatively safe
 delete Array.prototype.toString
-delete Object.prototype.toString
+//delete Object.prototype.toString
 // ⚠ DANGER! ⚠ //
 window.hasOwnProperty = Object.prototype.hasOwnProperty // firefox dev tools break otherwise
-for (let key of Object.getOwnPropertyNames(Object.prototype))
+Object.proto = Object.create(null)
+for (let key of Object.getOwnPropertyNames(Object.prototype)) {
+	Object.proto[key] = Object.prototype[key]
 	delete Object.prototype[key]
-Object.freeze(Object.prototype)
+}
+//Object.freeze(Object.prototype)
 /////////////////
 
-if (!window.devicePixelRatio)
-	window.devicePixelRatio = 1
+class FieldError extends Error {
+	constructor(message, ...args) {
+		super()
+		this.stack = this.stack.replace(/^(?!Error\n)(.*\n){2}/m, "")
+		this.name = message
+		console.error(...args)
+	}
+}
 
-delete window.sidebar // obsolete firefox global variable
+let strict = new Proxy(Object.create(null), {
+	get(t, name, obj) {
+		throw new FieldError("invalid field read", obj, "."+name)
+	},
+	set(t, name, value, obj) {
+		throw new FieldError("invalid field write", obj, "."+name+" =", value)
+	},
+})
+
+function Type(fields, func) {
+	let proto = Object.create(strict, Object.getOwnPropertyDescriptors(fields))
+	return (o,u)=>{
+		func.call(o,u)
+		return Object.freeze(Object.setPrototypeOf(o, proto))
+	}
+}
 
 if (!Array.prototype.findLast)
 	Array.prototype.findLast = function(filter) {
@@ -168,5 +192,10 @@ function do_when_ready(go) {
 		run_on_load.push(go)
 	}
 }
+
+if (!window.devicePixelRatio)
+	window.devicePixelRatio = 1
+
+delete window.sidebar // obsolete firefox global variable
 
 //talking excitedly about javasscript getters and setters for an hour and then crying

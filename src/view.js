@@ -20,8 +20,6 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 	real_title: null,
 	favicon_element: null,
 	
-	initial_data: null,
-	
 	// create public variables here
 	views: {
 		test: {
@@ -243,16 +241,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 			abort[0] && abort[0]()
 			cancelled = true
 		}
-		let chains = data.chains
-		let do_first = !initial_data
-		if (do_first) {
-			chains.push(['category~Ctree'])
-		}
-		Req.chain(chains, data.fields, abort).then((resp)=>{
-			if (do_first) {
-				console.log("🌄 got first page's data")
-				initial_data = true
-			}
+		Req.chain(data.request, abort).then((resp)=>{
 			if (data.check && !data.check(resp, data.ext)) {// try/catch here?
 				handle_error("content not found?")
 			} else {
@@ -262,6 +251,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 					view.render.bind(view, resp, data.ext)))
 			}
 		}, (e, resp)=>{
+			console.error(e)
 			handle_error("error 1")
 		})
 		
@@ -269,7 +259,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 			handle(()=>{
 				view = errorView
 				if (e)
-					console.error(message, e)
+					console.error(message+"\n", e)
 				else
 					console.error(message)
 				// RENDER

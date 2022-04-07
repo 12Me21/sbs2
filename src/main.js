@@ -43,22 +43,14 @@ function immediate() {
 		View.flag('loggedIn', true)
 		Settings.early()
 		
-		// idk if i like this...
-		Req.get_initial().then(({systemaggregate, Ume})=>{
-			let lastid = systemaggregate.find(x=>x.type=='actionMax').id
-			let me = Ume[0]
-			if (!me || me.id != Req.uid)
-				throw 'invalid own user'
-			return {lastid, me}
-		}).then(got_initial, (e, resp)=>{
-			alert("INITIAL DATA FAILED!")
-		})
-		
+		Nav.initial()
+		//Act.pull_recent()
 		//Lp.do_early()
 	} else {
 		console.warn("🌄 Not logged in!")
 		Nav.initial()
-		Act.pull_recent()
+		//Act.pull_recent()
+		
 	}
 	
 	// we can access this even if DOMContentLoaded hasn't occurred yet
