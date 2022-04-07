@@ -13,10 +13,14 @@ for (let key of Object.getOwnPropertyNames(Object.prototype)) {
 //Object.freeze(Object.prototype)
 /////////////////
 
+Error.prototype.trim_stack = function(levels=1) {
+	this.stack = this.stack.replace(new RegExp(`^(?!Error\\n)(.*\n){${levels}}`, 'm'), "")
+}
+
 class FieldError extends Error {
 	constructor(message, ...args) {
 		super()
-		this.stack = this.stack.replace(/^(?!Error\n)(.*\n){2}/m, "")
+		this.trim_stack(2)
 		this.name = message
 		console.error(...args)
 	}
@@ -24,14 +28,16 @@ class FieldError extends Error {
 
 let strict = new Proxy(Object.create(null), {
 	get(t, name, obj) {
-		throw new FieldError("invalid field read", obj, "."+name)
+		throw new FieldError("invalid field read", obj, "."+String(name))
 	},
 	set(t, name, value, obj) {
-		throw new FieldError("invalid field write", obj, "."+name+" =", value)
+		throw new FieldError("invalid field write", obj, "."+String(name)+" =", value)
 	},
 })
 
 function Type(fields, func) {
+	fields.toJSON = undefined
+	fields.then = undefined
 	let proto = Object.create(strict, Object.getOwnPropertyDescriptors(fields))
 	return (o,u)=>{
 		func.call(o,u)

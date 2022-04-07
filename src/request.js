@@ -1,3 +1,29 @@
+class InvalidRequestError extends TypeError {
+	constructor(url, data, resp) {
+		super()
+		this.trim_stack(1)
+		this.resp = resp
+		this.name = "400 ➡️ "+url
+	}
+	get message() {
+		let lines = []
+		if (!this.resp)
+			lines.push("???")
+		if (this.resp.title)
+			lines.push(this.resp.title)
+		if (this.resp.errors)
+			Object.for(this.resp.errors, (msg,key)=>{
+				lines.push(`❌${key}:`)
+				lines.push(...msg.map(x=>` 🔸${x}`))
+			})
+		Object.defineProperty(this, 'message', {
+			value: "\n"+lines.join("\n")
+		})
+		return this.message
+	}
+}
+InvalidRequestError.prototype.name = "InvalidRequestError"
+
 function arrayToggle(array, value) {
 	let i = array.indexOf(value)
 	if (i<0) {
@@ -24,7 +50,7 @@ const Req = {
 	// of course, you could handle this in the `ok` callback, but then
 	// you're forced to intercept this before passing the data to 
 	// a higher level function
-	raw_request: function me(url, method, data, etc, ok, fail) {
+	raw_request(url, method, data, etc, ok, fail) {
 		let x = new XMLHttpRequest()
 		x.open(method, `https://${this.server}/${url}`)
 		let start = Date.now()
@@ -45,7 +71,7 @@ const Req = {
 					return
 				console.log("retrying request", reason)
 				// this is not recursion: we're in an async callback function!
-				me.call(this, url, method, data, etc, ok, fail)
+				this.raw_request(url, method, data, etc, ok, fail)
 			}, time)
 			x.abort = window.clearTimeout.bind(window, id)
 		}
@@ -56,7 +82,7 @@ const Req = {
 			
 			let type = x.getResponseHeader('Content-Type')
 			let resp = x.responseText
-			if (/^application\/json\b/i.test(type))
+			if (/^application\/(\w+\+)?json\b/i.test(type))
 				resp = JSON.safe_parse(resp)
 			let code = x.status
 			
@@ -77,9 +103,12 @@ const Req = {
 			if (code==403) return fail('permission', resp)
 			if (code==404) return fail('404', resp)
 			if (code==418) return fail('ban', resp)
-			if (code==400) return fail('error', resp)
+			if (code==400) {
+				return fail('error', new InvalidRequestError(url, data, resp))
+			}
 			if (code==401) {
 				alert("AUTHENTICATION ERROR!?\nif this is real, you must log out!\n"+resp)
+				// todo: let the user log in with the sidebar, without calling log_out, so the page only reloads once instead of twice
 				// this.log_out()
 				return fail('auth', resp)
 			}
@@ -102,7 +131,6 @@ const Req = {
 			print("Request failed!")
 			return retry(5000, "request error")
 		}
-		
 		x.setRequestHeader('CACHE-CONTROL', "L, ratio, no-store, no-cache, must-revalidate")
 		this.auth && x.setRequestHeader('AUTHORIZATION', "Bearer "+this.auth)
 		x.send(data)
@@ -131,11 +159,6 @@ const Req = {
 	},
 	
 	// idk having all brackets bold + dimgray was kinda nice...
-	/*request(url, method, callback, data, proc) {
-		if (Object.is_plain(data))
-			data = JSON.to_blob(data)
-		this.raw_request(url, method, data, {proc}, callback.bind(null, null), callback)
-	},*/
 	// i dont like how proc is required but h
 	request(url, proc, data) {
 		if (Object.is_plain(data))
@@ -162,7 +185,7 @@ const Req = {
 	},
 	
 	// log in using username/password
-	authenticate(username, password) {
+	log_in(username, password) {
 		return this.request('User/login', null, {username, password})
 	},
 	
