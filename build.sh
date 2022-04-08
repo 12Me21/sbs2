@@ -1,3 +1,5 @@
+set -e
+
 if [ "$1" ]
 then
 	dest="$(readlink -f "$1")"
