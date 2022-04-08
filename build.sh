@@ -5,33 +5,28 @@ then
 (Press Enter)" >&2
 fi
 
-cd "$(dirname "${BASH_SOURCE[0]}")"
+cd "$(dirname "$0")" || exit
 
-echo 'Building markup system' >&2
-./markup/build.sh
-
-echo 'creating _build.css' >&2
-css=($(grep -Po '<link .*\brel=stylesheet href=\K.*(?=>)' index.html))
-echo ${css[@]}
-cat ${css[@]} > resource/_build.css
-
-echo 'creating _build.js' >&2
-js=($(grep -Po '<script .*\bsrc=\K.*(?=></script>)' index.html))
-echo ${js[@]}
-printf 'window.commit = "%q";\n\n' "`git log -1 --format='%h [%ad] %s'`" | cat - ${js[@]} > resource/_build.js
-
-
-# nocache filename -> filename?1234567 (uses date modified)
-# for now this isn't very useful since the files are always new
-# but maybe if we use `make`...
-function nocache {
-	echo -n "$1?"
-	date -r "$1" +%s
+merge_files () {
+	files=`grep -Po "$2" index.html`
+	echo "Creating $1" >&2
+	echo "-------------------" >&2
+	printf %s\\n $files >&2
+	echo "===================" >&2
+	cat $files >"$1"
 }
 
-echo 'creating _build.html' >&2
+merge_files resource/_build.css '<link .*\brel=stylesheet href=\K[\w/.-]+(?=>)'
+merge_files resource/_build.js '<script .*\bsrc=\K[\w/.-]+(?=>)'
 
+echo 'Creating _build.html' >&2
+# nocache filename -> filename?1234567 (uses date modified)
+nocache () {
+	printf "$1?" ; date -r "$1" +%s
+}
+commit="$( git log -1 --format='%h [%ad] %s' | sed 's@[`$\\]@\\&@g' )"
 inject="<!--**********************************************-->\\
+<script>window.COMMIT = \`$commit\`</script>\\
 <link rel=stylesheet href=$(nocache resource/_build.css)>\\
 <script src=$(nocache resource/_build.js)></script>\\
 <!--**********************************************-->"
@@ -40,30 +35,7 @@ sed "/<!--START-->/,/<!--END-->/c $inject" index.html > _build.html
 if [ "$1" ]
 then
 	echo 'Copying files' >&2
-	mkdir -vp "$dest"
+	mkdir -vp "$dest" || exit
 	cp -v -u -r resource "$dest"/
 	cp -v -u _build.html "$dest"/index.html
 fi
-
-# Instructions for humans:
-
-# 1: follow the instructions in markup/build.sh
-
-# 2: combine the contents of the files (in order):
-#  fonts.css style.css markup.css code.css
-# into resource/_build.css
- 
-# 3: combine the contents of the files (in order):
-#  markup/_build.js fill.js entity.js request.js draw.js view.js navigate.js main.js
-# into resource/_build.js
-
-# 4: open index.html
-# replace the lines between <!--START--> and <!--END--> with
-#  <link rel="stylesheet" href="_build.css?12345">
-#  <script src="_build.js?12345"></script>
-# replace the "12345"s with any random number (use a different one each time you build this))
-# save as _build.html
-
-# 5: copy these files to wherever you're hosting the site from:
-#  _build.html resource/
-# _build.html can be renamed

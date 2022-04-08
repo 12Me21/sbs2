@@ -183,7 +183,7 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 	}
 	update_page(page) {
 		this.page = page
-		this.page_contents.fill(Parse.parseLang(page.text, page.values.markupLang))
+		Markup.convert_lang(page.text, page.values.markupLang, this.page_contents)
 	}
 	// 8:10;35
 	show() {

@@ -134,7 +134,8 @@ let form = null
 function update_preview() {
 	let parent = $editorPreview
 	let shouldScroll = parent.scrollHeight-parent.clientHeight-parent.scrollTop < 10
-	$editorPreview.fill(Parse.parseLang($editorTextarea.value, $markupSelect.value, true))
+	let f = Markup.convert_lang($editorTextarea.value, $markupSelect.value, undefined, {preview: true})
+	$editorPreview.fill(f)
 	// auto scroll down when adding new lines to the end (presumably)
 	
 	// TODO: this doesn't work, probably because of layout changes

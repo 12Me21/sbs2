@@ -144,7 +144,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	// returns a documentFragment
 	markup(page) {
 		let lang = page.values ? page.values.markupLang : null
-		return Parse.parseLang(page.text, lang, true)
+		return Markup.convert_lang(page.text, lang, undefined)
 	},
 	
 	title_path(path) {
@@ -299,7 +299,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		
 		element.dataset.id = comment.id
 		element.dataset.time = comment.createDate.getTime()
-		element.append(Parse.parseLang(comment.content, comment.meta.m, false))
+		Markup.convert_lang(comment.content, comment.meta.m, element)
 		return element
 	},
 	// date: Date
