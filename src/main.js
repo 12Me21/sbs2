@@ -12,6 +12,7 @@ window.onerror = function(message, source, line, col, error) {
 		// yeah no
 	}
 }
+
 window.onunhandledrejection = function(event) {
 	try {
 		Sidebar.print("ERROR IN PROMISE: ", event.reason)
@@ -42,7 +43,10 @@ function immediate() {
 		console.log("🌄 got auth")
 		View.flag('loggedIn', true)
 		Settings.early()
-		
+		Req.get_me()(me=>{
+			Req.me = me
+			do_when_ready(()=> View.update_my_user(me) )
+		})
 		Nav.initial()
 		//Act.pull_recent()
 		//Lp.do_early()
@@ -68,8 +72,6 @@ function immediate() {
 
 function got_initial({lastid, me}) {
 	console.log("🌄 got initial, staring long poller etc.")
-	Req.me = me
-	do_when_ready(()=> View.update_my_user(me) )
 	//Lp.update_lastid(lastid)
 	//Lp.start()
 	Nav.initial()

@@ -5,16 +5,7 @@ for (let type_name in ABOUT.details.types) {
 	let field_defaults = ABOUT.details.objects[type_name]
 	let writables = {}
 	let proto = {
-		toJSON: {value: function() {
-			let json = {}
-			let wt = this.New?'writableOnInsert':'writableOnUpdate'
-			for (let f in this.Fields) {
-				let data = field_datas[f]
-				if (data[wt])
-					json[f] = this[f]
-			}
-			return json
-		}},
+		toJSON: {}, //idea: keep track of whether an object was requested with fields=*, and prevent posting it otherwise
 		then: {},
 		Type: {value: type_name},
 		Fields: {value: field_datas},
@@ -39,7 +30,7 @@ for (let type_name in ABOUT.details.types) {
 			})
 		}*/
 		
-		Object.freeze(Object.setPrototypeOf(o, proto))
+		Object.setPrototypeOf(o, proto)
 		return o
 		//Object.defineProperties(this, Object.getOwnPropertyDescriptors(o))
 	}

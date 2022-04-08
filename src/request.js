@@ -1,12 +1,14 @@
 class InvalidRequestError extends TypeError {
-	constructor(url, data, resp) {
+	constructor(url, data, status, resp) {
 		super()
 		this.trim_stack()
 		this.resp = resp
-		this.name = "400 ➡️ "+url
+		this.name = status+" ➡️ api╱"+url
 	}
 	get message() {
-		let lines = []
+		if (typeof this.resp == 'string')
+			return "\n"+this.resp
+		let lines = [""]
 		if (!this.resp)
 			lines.push("???")
 		if (this.resp.title)
@@ -16,7 +18,7 @@ class InvalidRequestError extends TypeError {
 				lines.push(`❌${key}:`)
 				lines.push(...msg.map(x=>` 🔸${x}`))
 			})
-		return "\n"+lines.join("\n")
+		return lines.join("\n")
 	}
 }
 InvalidRequestError.prototype.name = "InvalidRequestError"
@@ -47,7 +49,7 @@ const Req = {
 	// of course, you could handle this in the `ok` callback, but then
 	// you're forced to intercept this before passing the data to 
 	// a higher level function
-	raw_request(url, method, data, etc, ok, fail) {
+	raw_request(url, method, data, etc, ok=console.info, fail=console.error) {
 		let x = new XMLHttpRequest()
 		x.open(method, `https://${this.server}/${url}`)
 		let start = Date.now()
@@ -100,8 +102,8 @@ const Req = {
 			if (code==403) return fail('permission', resp)
 			if (code==404) return fail('404', resp)
 			if (code==418) return fail('ban', resp)
-			if (code==400) {
-				return fail('error', new InvalidRequestError(url, data, resp))
+			if (code==400 || code==415) {
+				return fail('error', new InvalidRequestError(url, data, code, resp))
 			}
 			if (code==401) {
 				alert("AUTHENTICATION ERROR!?\nif this is real, you must log out!\n"+resp)
