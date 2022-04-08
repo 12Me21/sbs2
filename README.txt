@@ -1,9 +1,9 @@
 🔸🔶🟧 INSTRUCTIONS 🟧🔶🔸
 
-• Make sure ❲markup/❳ isn't empty:
+• Make sure ❲markup2/❳ isn't empty:
   ◦ If you're using git:
     💲 git submodule update --init
-  ◦ Otherwise, download the files from https://github.com/12Me21/sbs2-markup and put them in ❲markup/❳
+  ◦ Otherwise, download the files from https://github.com/12Me21/markup2 and put them in ❲markup2/❳
 
 • Open ❲index.html❳ in a web browser
 
@@ -85,8 +85,10 @@ If you are hosting this on a server, it's a good idea to use ❲build.sh❳, to 
  ┃ ┃
  ┃ ┣📘❲theme.css❳
  ┃ ┃    css variable definitions
- ┃ ┣📘❲style.css❳
+ ┃ ┣📘❲layout.css❳
  ┃ ┃    main css file
+ ┃ ┣📘❲style.css❳
+ ┃ ┃    main css file 2
  ┃ ┣📘❲markup.css❳
  ┃ ┃    styling for markup
  ┃ ┗📘❲code.css❳
@@ -100,7 +102,7 @@ If you are hosting this on a server, it's a good idea to use ❲build.sh❳, to 
  ┃ ┃
  ┃ ┗╾ ...
  ┃
- ┗📚❲markup/❳
+ ┗📚❲markup2/❳
    ┃  markup parser subsystem
    ┃
    ┗╾ ...
