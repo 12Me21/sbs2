@@ -42,14 +42,18 @@ function immediate() {
 	if (Req.auth) {
 		console.log("🌄 got auth")
 		View.flag('loggedIn', true)
+		
 		Settings.early()
-		Req.get_me()(me=>{
+		new (Req.get_me())(me=>{
 			Req.me = me
-			do_when_ready(()=> View.update_my_user(me) )
+			do_when_ready(()=> View.update_my_user(me))
 		})
+		
+		Lp.start()
 		Nav.initial()
+		
 		//Act.pull_recent()
-		//Lp.do_early()
+		//Lp.start()
 	} else {
 		console.warn("🌄 Not logged in!")
 		Nav.initial()

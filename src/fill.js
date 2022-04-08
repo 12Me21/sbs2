@@ -13,6 +13,20 @@ for (let key of Object.getOwnPropertyNames(Object.prototype)) {
 //Object.freeze(Object.prototype)
 /////////////////
 
+class ParamError extends Error {
+	constructor() {
+		super()
+		this.trim_stack(2)
+	}
+}
+ParamError.prototype.name = "Undefined Argument"
+
+const E = {
+	[Symbol.toPrimitive]: function Missing_Arg() {
+		throw new ParamError()
+	}
+}
+
 //usage:
 /*
 constructor(...) {

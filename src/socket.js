@@ -184,7 +184,7 @@ with(Lp)~function(){"use strict";𖹭={
 		return websocket && websocket.readyState==WebSocket.OPEN
 	},
 	// init
-	do_early() {
+	start() {
 		open_websocket()
 	},
 	

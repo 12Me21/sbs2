@@ -1,9 +1,14 @@
 class InvalidRequestError extends TypeError {
-	constructor(url, data, status, resp) {
+	constructor(url, body, code, resp) {
 		super()
 		this.trim_stack()
+		this.url = url
+		this.body = body
+		this.code = code
 		this.resp = resp
-		this.name = status+" ➡️ api╱"+url
+	}
+	get name() {
+		return this.code+" ➡️ api╱"+this.url
 	}
 	get message() {
 		if (typeof this.resp == 'string')
@@ -23,6 +28,100 @@ class InvalidRequestError extends TypeError {
 }
 InvalidRequestError.prototype.name = "InvalidRequestError"
 
+class ApiRequest extends XMLHttpRequest {
+	constructor(url, method, body, etc, ok=console.info, fail=Unhandled_Callback) {
+		super()
+		super.onreadystatechange = this.onreadystatechange
+		
+		this.url = url
+		this.method = method
+		this.body = body
+		
+		this.proc = etc.proc
+		
+		this.ok = ok
+		this.fail = fail
+		
+		this.go()
+	}
+	go() {
+		this.start = Date.now()
+		this.open(this.method, `https://${Req.server}/${this.url}`)
+		this.setRequestHeader('CACHE-CONTROL', "L, ratio, no-store, no-cache, must-revalidate")
+		if (Req.auth)
+			this.setRequestHeader('AUTHORIZATION', "Bearer "+Req.auth)
+		this.send(this.body)
+	}
+	abort() {
+		super.abort()
+		this.aborted = true
+	}
+	retry(time, reason) {
+		console.log(`will retry ${reason} in ${time/1000} sec`)
+		if (time > 2000)
+			print(`Warning: request was rate limited with extremely long wait time: ${time/1000} seconds`)
+		let id = window.setTimeout(()=>{
+			if (this.aborted) return
+			console.log("retrying request", reason)
+			this.go()
+		}, time)
+	}
+	onreadystatechange() {
+		if (this.aborted) return
+		
+		switch (this.readyState) {
+		case XMLHttpRequest.HEADERS_RECEIVED:
+			let type = this.getResponseHeader('Content-Type')
+			if (/[/+]json(;| |$)/i.test(type))
+				this.responseType = 'json'
+			return
+			
+		case XMLHttpRequest.DONE:
+			let resp = this.response
+			
+			switch (this.status) {
+				// === Success ===
+			case 200:
+				if (this.proc)
+					resp = this.proc(resp)
+				return this.ok(resp)
+				// === Invalid request ===
+			case 400: case 415: case 404: case 500:
+				return this.fail(new InvalidRequestError(this, body))
+				// === Network Conditions ===
+			case 0:
+				let time = Date.now()-this.start
+				if (time > 18*1000)
+					return this.retry(0, "3ds timeout")
+				print("Request failed!")
+				return this.retry(5000, "request error")
+			case 502:
+				return this.retry(5000, 'bad gateway')
+			case 408: case 204: case 524:
+				return this.retry(0, 'timeout')
+			case 429: // rate limited
+				let after = +(this.getResponseHeader('Retry-After') || 1)
+				return this.retry((after+0.5)*1000, "rate limited "+after+"sec")
+				// === Permissions ===
+			case 403:
+				return this.fail('permission', resp)
+			case 418:
+				return this.fail('ban', resp)
+			case 401:
+				alert("AUTHENTICATION ERROR!?\nif this is real, you must log out!\n"+resp)
+				// todo: let the user log in with the sidebar, without calling log_out, so the page only reloads once instead of twice
+				// this.log_out()
+				return this.fail('auth', resp)
+				// === ??? some other error ===
+			default:
+				alert("Request failed! "+this.status+" "+url)
+				console.log("REQUEST FAILED", this)
+				return this.fail('error', resp, this.status)
+			}
+		}
+	}
+}
+
 function arrayToggle(array, value) {
 	let i = array.indexOf(value)
 	if (i<0) {
@@ -31,6 +130,10 @@ function arrayToggle(array, value) {
 	}
 	array.splice(i, 1)
 	return false
+}
+
+function Unhandled_Callback(err, ...x) {
+	console.error("Unhandled Callback\n", err, ...x);
 }
 
 const Req = {
@@ -44,96 +147,6 @@ const Req = {
 	me: null,
 	
 	locked: false, // for testing
-	
-	// `proc` is a function that gets called after the data is recieved
-	// of course, you could handle this in the `ok` callback, but then
-	// you're forced to intercept this before passing the data to 
-	// a higher level function
-	raw_request(url, method, data, etc, ok=console.info, fail=console.error) {
-		let x = new XMLHttpRequest()
-		x.open(method, `https://${this.server}/${url}`)
-		let start = Date.now()
-		
-		let aborted // just in case
-		if (etc.abort)
-			etc.abort[0] = ()=>{
-				aborted = true
-				x.abort()
-			}
-		
-		let retry = (time, reason)=>{
-			console.log("will retry", reason, "in "+time/1000+" sec")
-			if (time > 2000)
-				print("Warning: request was rate limited with extremely long wait time: "+time/1000+" seconds")
-			let id = window.setTimeout(()=>{
-				if (aborted)
-					return
-				console.log("retrying request", reason)
-				// this is not recursion: we're in an async callback function!
-				this.raw_request(url, method, data, etc, ok, fail)
-			}, time)
-			x.abort = window.clearTimeout.bind(window, id)
-		}
-		
-		x.onload = ()=>{
-			if (aborted)
-				return
-			
-			let type = x.getResponseHeader('Content-Type')
-			let resp = x.responseText
-			if (/[/+]json(;| |$)/i.test(type)) // ehhhh regex..
-				resp = JSON.parse(resp)
-			let code = x.status
-			
-			if (code==200) {
-				if (etc.proc)
-					resp = etc.proc(resp)
-				return ok(resp)
-			}
-			
-			if (code==502) return retry(5000, 'bad gateway')
-			// (record says server uses 408, testing showed only 204. idk)
-			if (code==408 || code==204 || code==524) return retry(0, 'timeout')
-			if (code==429) {
-				let after = +(x.getResponseHeader('Retry-After') || 1)
-				return retry((after+0.5)*1000, "rate limited "+after+"sec")
-			}
-			
-			if (code==403) return fail('permission', resp)
-			if (code==404) return fail('404', resp)
-			if (code==418) return fail('ban', resp)
-			if (code==400 || code==415) {
-				return fail('error', new InvalidRequestError(url, data, code, resp))
-			}
-			if (code==401) {
-				alert("AUTHENTICATION ERROR!?\nif this is real, you must log out!\n"+resp)
-				// todo: let the user log in with the sidebar, without calling log_out, so the page only reloads once instead of twice
-				// this.log_out()
-				return fail('auth', resp)
-			}
-			if (code==500) {
-				console.error('got 500 error', x, resp)
-				return fail('error', JSON.safe_parse(resp))
-			}
-			alert("Request failed! "+code+" "+url)
-			console.log("REQUEST FAILED", x)
-			return fail('error', resp, code)
-		}
-		
-		x.onerror = ()=>{
-			if (aborted)
-				return
-			
-			let time = Date.now()-start
-			if (time > 18*1000) // i think other browsers do this too now?
-				return retry(0, "3ds timeout")
-			print("Request failed!")
-			return retry(5000, "request error")
-		}
-		x.setRequestHeader('CACHE-CONTROL', "L, ratio, no-store, no-cache, must-revalidate")
-		this.auth && x.setRequestHeader('AUTHORIZATION', "Bearer "+this.auth)
-		x.send(data)
-	},
 	
 	query_string(obj) {
 		if (!obj)
@@ -160,15 +173,15 @@ const Req = {
 	// idk having all brackets bold + dimgray was kinda nice...
 	// i dont like how proc is required but h
 	request(url, proc, data) {
-		if (Object.is_plain(data))
+		if (Object.is_plain(data)) // todo: with custom classes this doesn't work. we need a better solution..
 			data = JSON.to_blob(data)
 		let method = data===undefined ? 'GET' : 'POST'
-		return this.raw_request.bind(this, url, method, data, {proc})
+		return ApiRequest.bind(null, url, method, data, {proc})
 	},
 	// idea: function.valueOf calls the function and returns um ..   something.. .chaining .. mmmm
 	
-	chain(data, abort=null) {
-		return this.raw_request.bind(this, 'request', 'POST', JSON.to_blob(data), {proc: resp=>Entity.process(resp.data), abort})
+	chain(data) {
+		return ApiRequest.bind(null, 'request', 'POST', JSON.to_blob(data), {proc: resp=>Entity.process(resp.data)})
 	},
 	
 	/////////////////////////

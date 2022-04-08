@@ -235,13 +235,13 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 				"render failed in view.quick",
 				view.quick.bind(view, data.ext)))
 		// otherwise prepare to make an api request
-		let abort = [null]
+		let x
 		cancel_request = ()=>{
 			load_end()
-			abort[0] && abort[0]()
-			cancelled = true
+			x.abort()
+			cancelled = true //mrhh
 		}
-		Req.chain(data.request, abort)((resp)=>{
+		x = new (Req.chain(data.request))((resp)=>{
 			if (data.check && !data.check(resp, data.ext)) {// try/catch here?
 				handle_error("content not found?")
 			} else {
