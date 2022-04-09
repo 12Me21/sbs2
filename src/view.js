@@ -184,7 +184,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 		// and must be the last call made
 		function handle(callback) {
 			if (cancelled)
-				return
+				return // why do we check this so much
 			do_when_ready(()=>{
 				if (cancelled)
 					return
@@ -241,7 +241,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 			x.abort()
 			cancelled = true //mrhh
 		}
-		x = new (Req.chain(data.request))((resp)=>{
+		x = new (Req.chain(data.values, data.requests))((resp)=>{
 			if (data.check && !data.check(resp, data.ext)) {// try/catch here?
 				handle_error("content not found?")
 			} else {

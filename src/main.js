@@ -49,7 +49,7 @@ function immediate() {
 			do_when_ready(()=> View.update_my_user(me))
 		})
 		
-		Lp.start()
+		Lp.start_websocket()
 		Nav.initial()
 		
 		//Act.pull_recent()

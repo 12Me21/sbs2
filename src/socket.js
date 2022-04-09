@@ -1,4 +1,73 @@
-let Lp = 𖹭()
+class ApiSocket {
+	constructor() {
+		this.requests = {}
+		this.ready = false
+		this.last_id = -1
+		this.processed_listeners = {}
+	}
+	set_listening(){}
+	set_statuses(){}
+	refresh(){}
+	start_websocket() {
+		if (this.websocket && websocket.readyState <= WebSocket.OPEN)
+			throw new Error("Tried to open multiple websockets")
+		
+		this.websocket = new WebSocket(`wss://${Req.server}/live/ws?lastId=${this.last_id}&token=${encodeURIComponent(Req.auth)}`)
+		this.websocket.onopen = (e)=>{
+			for (let i in this.requests)
+				this.websocket.send(this.requests[i].data)
+			this.ready = true
+		}
+		this.websocket.onclose = (e)=>{
+			this.ready = false
+			alert('websocket died,,')
+			//this.make_websocket()
+		}
+		this.websocket.onmessage = (event)=>{
+			this.process(JSON.parse(event.data))
+		}
+	}
+	request(data, callback) {
+		data = JSON.stringify(data)
+		this.requests[data.id] = {data, callback}
+		if (this.ready)
+			this.websocket.send(data)
+	}
+	process(data) {
+		if (data.type=='live')
+			this.process_live(data)
+		else if (data.type=='userlistupdate')
+			;
+		if (data.id) {
+			let req = this.requests[data.id]
+			delete this.requests[data.id]
+			if (!req)
+				throw new Error("got response without callback! id:"+data.id)
+			req.callback(data)
+		}
+	}
+	process_live(data) {
+		this.last_id = data.data.lastId
+		let ddd = data.data.data
+		if (ddd.message)
+			Entity.process(ddd.message)
+		if (ddd.activity)
+			Entity.process(ddd.activity)
+		for (let {refId, type, action, userId, date, id} of data.data.events) {
+			let list = ddd[type][type] // todo: process these lists into maps
+			switch (type) {
+			case 'message':
+				Sidebar.display_messages([list["-"+idref]])
+			}
+		}
+		
+		console.log('message', ddd)
+	}
+}
+
+let Lp = new ApiSocket()
+
+/*let Lp = 𖹭()
 with(Lp)~function(){"use strict";𖹭={
 	// interfacing with other systems
 	on_listeners(map) {
@@ -83,179 +152,5 @@ with(Lp)~function(){"use strict";𖹭={
 	/////////////////////////
 	// "private" functions //
 	/////////////////////////
-	
-	// output is in websocket format
-	make_request() {
-		let x = {
-			type: 'request',
-			data: {
-				'values': {
-					pid: 937,
-					yesterday: "2022-04-03 20",
-				},
-				requests: [{
-					type: 'message_aggregate',
-					fields: "contentId,count,maxId,minId,createUserId,maxCreateDate",
-					query: "createDate > @yesterday",
-					order: '',
-					limit: 1000,
-					skip: 0,
-				},{
-					type: 'content',
-					fields: 'id, name, permissions',
-					query: "id = @pid or id in @message_aggregate.contentId",
-					order: '',
-					limit: 1000,
-					skip: 0,
-				},{
-					type: 'message',
-					fields: '*',
-					query: "contentId = @pid and !notdeleted()",
-					order: 'id_desc',
-					limit: 30,
-					skip: 0,
-				},{
-					type: 'user',
-					fields: '*',
-					query: "id in @message.createUserId or id in @message.uidsInText",
-					order: '',
-					limit: 1000,
-					skip: 0,
-				}],
-			},
-			id: '9718812705010064',
-		}
-		return x
-		
-		let new_listeners = {}
-		for (let id of listening)
-			new_listeners[id] = lastListeners[id] || {'0':""}
-		
-		if (!lastId)
-			alert("missing lastid!")
-		
-	},
-	
-	refresh() {
-		ws_message = make_request()
-		if (ws_is_ready)
-			websocket_flush()
-	},
-	
-	update_lastid(id) {
-		id = +id
-		if (id) {
-			lastId = id
-		}
-	},
-	
-	process(resp) {
-		if (resp.type=='request') {
-			let data = resp.data.data
-			Entity.process(data)
-			//on_data(data)
-		} else if (resp.type=='live') {
-			let data = resp.data.data.message
-			Entity.process(data)
-			on_data(data)
-		}
-	},
-	
-	websocket_flush() {
-		if (!ws_is_ready)
-			return
-		// this check should never fail
-		if (!ws_is_open()) {
-			print("websocket flush sequence error!")
-			console.error("websocket flush sequence error!")
-			return
-		}
-		if (ws_message.listeners) {
-			websocket.send(JSON.stringify(ws_message))
-		}
-	},
-	// call this when websocket is ready (have auth and opened)
-	ws_ready() {
-		ws_is_ready = true
-		websocket_flush()
-	},
-	// if open
-	ws_is_open() {
-		return websocket && websocket.readyState==WebSocket.OPEN
-	},
-	// init
-	start() {
-		open_websocket()
-	},
-	
-	// to be ready to use, we must have
-	// - the ws auth token
-	// - an opened websocket
-	// once both of these are fulfilled, ws_ready() is called
-	
-	open_websocket() {
-		if (websocket && websocket.readyState <= WebSocket.OPEN) {
-			print("multiple websocket tried to open!")
-			console.error("multiple websocket tried to open!")
-			// should not happen!
-			return
-		}
-		
-		let now = Date.now()
-		if (now - last_open < 4000) {
-			print("websocket loop too fast! delaying 5 seconds.\nThis is probably caused by an invalid websocket token. please report this")
-			setTimeout(open_websocket, 5000)
-			return
-		}
-		last_open = now
-		
-		websocket = new WebSocket(`wss://${Req.server}/live/ws?token=${Req.auth}`)
-		
-		websocket.onopen = (e)=>{
-			print("websocket open!")
-			ws_ready()
-		}
-		websocket.onerror = (e)=>{
-			print("websocket error!")
-		}
-		websocket.onclose = (e)=>{
-			if (dead)
-				return
-			
-			print("websocket closed: "+e.reason)
-			// 1000, "Invalid token", true - token
-			// 1006, "", false - connection error
-			ws_is_ready = false
-			
-			//todo: if we get a connection error after a long time (ex: after exiting sleep mode) then the auth token might be invalid too. we should check how long it has been since the token was generated
-			// and maybe also auto-rerequest the token when its about to expire too.
-			
-			open_websocket()
-		}
-		websocket.onmessage = (e)=>{
-			let data = JSON.safe_parse(e.data)
-			if (!data)
-				return
-			
-			
-			
-			let msg = String(e.data) // will e.data always be a string?
-			let [match, type] = /^(\w+):/.rmatch(msg)
-			if (!match) {
-				let resp = JSON.safe_parse(msg)
-				if (resp !== undefined) {
-					process(resp)
-					return
-				}
-			} else if (type=='accepted') {
-				return //print("websocket accepted")
-			} else if (type=='error') {
-				if (!/^error:System.InvalidOperationException: Invalid token/.test(msg))
-					print("websocket error:", msg)
-				return
-			}
-			print("websocket unknown message:", msg)
-		}
-	},
-	
-}}()
+}}
+*/

@@ -1,14 +1,14 @@
 class InvalidRequestError extends TypeError {
-	constructor(url, body, code, resp) {
+	constructor(apir) {
 		super()
 		this.trim_stack()
-		this.url = url
-		this.body = body
-		this.code = code
-		this.resp = resp
-	}
-	get name() {
-		return this.code+" ➡️ api╱"+this.url
+		
+		this.resp = apir.response
+		this.url = apir.url
+		this.code = apir.status
+		
+		this.name = `${this.code} ➡️ api╱${this.url}`
+		//this.body = apir.body
 	}
 	get message() {
 		if (typeof this.resp == 'string')
@@ -45,7 +45,6 @@ class ApiRequest extends XMLHttpRequest {
 		this.go()
 	}
 	go() {
-		this.start = Date.now()
 		this.open(this.method, `https://${Req.server}/${this.url}`)
 		this.setRequestHeader('CACHE-CONTROL', "L, ratio, no-store, no-cache, must-revalidate")
 		if (Req.auth)
@@ -80,41 +79,40 @@ class ApiRequest extends XMLHttpRequest {
 			let resp = this.response
 			
 			switch (this.status) {
-				// === Success ===
+			// === Success ===
 			case 200:
 				if (this.proc)
 					resp = this.proc(resp)
 				return this.ok(resp)
-				// === Invalid request ===
+			// === Invalid request ===
 			case 400: case 415: case 404: case 500:
-				return this.fail(new InvalidRequestError(this, body))
-				// === Network Conditions ===
+				return this.fail(new InvalidRequestError(this))
+			// === Network Conditions ===
 			case 0:
-				let time = Date.now()-this.start
-				if (time > 18*1000)
-					return this.retry(0, "3ds timeout")
 				print("Request failed!")
-				return this.retry(5000, "request error")
+				return this.fail('connection')
 			case 502:
 				return this.retry(5000, 'bad gateway')
 			case 408: case 204: case 524:
 				return this.retry(0, 'timeout')
-			case 429: // rate limited
+			case 429:
 				let after = +(this.getResponseHeader('Retry-After') || 1)
-				return this.retry((after+0.5)*1000, "rate limited "+after+"sec")
-				// === Permissions ===
+				return this.retry((after+0.5)*1000, `rate limited ${after}sec`)
+			// === Permissions ===
 			case 403:
 				return this.fail('permission', resp)
 			case 418:
 				return this.fail('ban', resp)
 			case 401:
-				alert("AUTHENTICATION ERROR!?\nif this is real, you must log out!\n"+resp)
+				alert(`AUTHENTICATION ERROR!?
+if this is real, you must log out!
+${resp}`)
 				// todo: let the user log in with the sidebar, without calling log_out, so the page only reloads once instead of twice
 				// this.log_out()
 				return this.fail('auth', resp)
-				// === ??? some other error ===
+			// === ??? some other error ===
 			default:
-				alert("Request failed! "+this.status+" "+url)
+				alert(`Request failed! ${this.status} ${url}`)
 				console.log("REQUEST FAILED", this)
 				return this.fail('error', resp, this.status)
 			}
@@ -136,8 +134,9 @@ function Unhandled_Callback(err, ...x) {
 	console.error("Unhandled Callback\n", err, ...x);
 }
 
-const Req = {
+const Req = { // this stuff can all be static methods on ApiRequest maybe?
 	server: "qcs.shsbs.xyz/api",
+//	server: "oboy.smilebasicsource.com/api",
 	get storage_key() {
 		return `token-${this.server}`
 	},
@@ -180,8 +179,8 @@ const Req = {
 	},
 	// idea: function.valueOf calls the function and returns um ..   something.. .chaining .. mmmm
 	
-	chain(data) {
-		return ApiRequest.bind(null, 'request', 'POST', JSON.to_blob(data), {proc: resp=>Entity.process(resp.data)})
+	chain(values, requests) {
+		return ApiRequest.bind(null, 'request', 'POST', JSON.to_blob({values, requests}), {proc: resp=>Entity.process(resp.data)})
 	},
 	
 	/////////////////////////

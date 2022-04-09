@@ -107,7 +107,7 @@ let Entity = (()=>{"use strict"; return singleton({
 		return x.split(/[, ]+/).filter(x=>/^\d+$/.test(x)).map(x=>+x)
 	},
 	
-	process(data) {
+	process(data=~E) {
 		// build user map first
 		let user_map = {}
 		
@@ -149,12 +149,18 @@ let Entity = (()=>{"use strict"; return singleton({
 	},
 	process_list(type, list, users) {
 		if (TYPES[type])
-			list.forEach(item => TYPES[type](item, users))
+			list.forEach(item => {
+				list["-"+item.id] = TYPES[type](item, users)
+				// we use a "-" prefix for the map keys, since
+				// we want to preserve the order
+				// so the keys can't be nonnegative integers
+			})
 	},
 	// editUserId -> editUser
 	// createUserId -> createUser
 	// editDate
 	// createDate
+	// TODO: instead of this silly user modifying thing, just render the damn message directly, based on its own data
 	process_comment_user_meta(data) {
 		let override = {}
 		// avatar override
@@ -188,81 +194,6 @@ let Entity = (()=>{"use strict"; return singleton({
 		// won't this fail on comments without a createuser for whatever reason??
 		if (Object.first_key(override) != undefined)
 			data.createUser = Object.create(data.createUser, override)
-	},
-	process_type: {
-		// date
-		// contentId -> content
-		// userId -> user
-		activity(data, users) {
-			if (data.date)
-				data.date = this.parse_date(data.date)
-			if (data.type == 'user')
-				data.content = users[data.contentId]
-			if (data.userId)
-				data.user = users[data.userId]
-			return data
-		},
-		// createDate
-		// username -> name
-		user(data, users) {
-			if (data.createDate)
-				data.createDate = this.parse_date(data.createDate)
-			// store user's name in .name instead of .username to be consistent with other entity types
-			data.name = data.name || data.username
-			return data
-		},
-		// parentId -> parent
-		// ?? -> users
-		content(data, users) {
-			data.createDate = this.parse_date(data.createDate)
-			data.lastRevisionDate = this.parse_date(data.lastRevisionDate)
-			data.lastCommentDate = this.parse_date(data.lastCommentDate)
-			
-			//this.process_editable(data, users)
-			//if (data.parentId != null)
-			//	data.parent = this.category_map[data.parentId]
-			return data
-		},
-		// content
-		// content -> meta, nickname, realname, name, avatar, bigAvatar
-		comment(data, users) {
-			this.process_editable(data, users)
-			if (data.content) {
-				;[data.content, data.meta] = this.decode_comment(data.content)
-				this.process_comment_user_meta(data)
-			} else { // deleted comment usually
-				data.meta = {}
-			}
-			return data
-		},
-		file(data, users) {
-			this.process_editable(data, users)
-			return data
-		},
-		watch(data) {
-			return data //TODO
-		},
-		// userIds -> users
-		activityaggregate(data, users) {
-			data.users = data.userIds /*.filter(id=>id)*/ .map(id=>users[id])
-			return data
-		},
-		// userIds -> users
-		// firstDate
-		// lastDate
-		commentaggregate(data, users) {
-			// need to filter out uid 0 (I think this comes from deleted comments)
-			data.users = data.userIds.filter(id=>id).map(id=>users[id])
-			if (data.firstDate)
-				data.firstDate = this.parse_date(data.firstDate)
-			if (data.lastDate)
-				data.lastDate = this.parse_date(data.lastDate)
-			return data
-		},
-		systemaggregate(data, users) {
-			return data
-			// rip recv'd unknown :(
-		},
 	},
 	
 	page_map(pages) {

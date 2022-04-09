@@ -7,6 +7,9 @@ function register_activity(e) {
 //;['wheel','keydown','mousedown','mousemove','touchstart'].forEach(event => document.addEventListener(event, registerActivity))
 //window.addEventListener('focus', registerActivity)
 
+//todo: views should be classes that extend a base class
+// then, most of the query is static and etc.
+
 View.add_view('page', {
 	room: null, // do we need this?
 	track_resize_2: new ResizeTracker('width'),
@@ -32,16 +35,14 @@ View.add_view('page', {
 		// we might get messages from long polling before
 		// loading the initial messages :(
 		return {
-			request: {
-				values: {
-					pageid: id,
-					filetype: 3,
-				},
-				requests: [
-					{type: 'content', fields: "*", query: "id = @pageid"},
-					{type: 'user', fields: "*", query: "id in @content.createUserId"},
-				],
+			values: {
+				pageid: id,
+				filetype: 3,
 			},
+			requests: [
+				{type: 'content', fields: "*", query: "id = @pageid"},
+				{type: 'user', fields: "*", query: "id in @content.createUserId"},
+			],
 /*			chains: [
 				['content', {ids: [id], IncludeAbout: ["votes","watches"]}],
 				['comment', {parentIds: [id], limit: 30, reverse: true}],

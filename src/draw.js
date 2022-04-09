@@ -809,18 +809,18 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	sidebar_comment(comment) {
 		let d = EC('div', 'bar rem1-5 sidebarComment ellipsis')
 		d.dataset.id = comment.id
-		d.title = `${comment.createUser.name} in ${comment.parentId}:\n${comment.content}` // todo: page name 🥺  oh︕ emojis render in italic? don't remember adding that...
+	//	d.title = `${comment.createUserId.name} in ${comment.parentId}:\n${comment.content}` // todo: page name 🥺  oh︕ emojis render in italic? don't remember adding that...
 		
-		if (comment.editUserId != comment.createUserId) {
+/*		if (comment.editUserId != comment.createUserId) {
 			d.append(
 				entity_title_link(comment.editUser),
 				" edited ",
 			)
-		}
+		}*/
 		d.append(
-			entity_title_link(comment.createUser),
-			": ",
-			comment.content.replace(/\n/g, "  "),
+//			entity_title_link(comment.createUser),
+//			": ",
+			comment.text.replace(/\n/g, "  "),
 		)
 		return d
 	},
