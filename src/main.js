@@ -60,6 +60,9 @@ function immediate() {
 	
 	Lp.start_websocket()
 	
+	if (window.location.hash=="" && window.location.search.length>1)
+		Nav.replace_url(window.location.search.substr(1))
+	
 	window.onhashchange()
 	
 	//Act.pull_recent()
