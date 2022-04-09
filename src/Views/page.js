@@ -19,8 +19,8 @@ View.add_view('page', {
 		//View.set_entity_path(page.parent)
 		View.flag('canEdit', /u/i.test(page.permissions[Req.uid]))
 		$chatTextarea.disabled = !(page.createUserId==Req.uid || /c/i.test(page.permissions[Req.uid] || page.permissions[0])) // don't use myperms here
-		Nav.link("editpage/"+page.id, $pageEditLink)
-		Nav.link("comments/"+page.id, $pageCommentsLink)
+		$pageEditLink.href = "#editpage/"+page.id
+		$pageCommentsLink.href = "#comments/"+page.id
 	},
 	
 	start(id, query) {
@@ -65,7 +65,6 @@ View.add_view('page', {
 	},
 	render(resp, ext) {
 		let comments = resp.message
-		console.log(resp,'page')
 		comments.reverse()
 		let page = resp.content[0]
 //		let pinned = resp.Mpinned

@@ -1,9 +1,12 @@
+// todo: navigate and view could maybe be merged?
+
+
 Markup.url_scheme["sbs:"] = function(url) {
 	return "#"+url.pathname+url.search+url.hash
 }
 
 const Nav = {
-	current_path: null,
+	ignore: false,
 	
 	entityPath(entity) {
 		if (!entity)
@@ -17,97 +20,64 @@ const Nav = {
 		return type+"/"+entity.id
 	},
 	
-	link(path, element) {
-		path = String(path)
-		element = element || document.createElement('a')
-		element.href = "#"+path
-		// however, I also use some nested link elements (sorry...)
-		// so, this assumes the event will be called on the inner element first
-		// which is the default in most browsers, but some old browsers... idk
-		return element
-	},
-	
-	go(path) {
-		// todo: maybe try to update page only after page loads
-		Nav.render(path)
-	},
-	
-	// called when site loads to load the initial page
-	// should read window.location and
-	// eventually call `render`
-	initial() {
-		Nav.update_from_location()
-	},
-	
-	update_from_location() {
-		let path = window.location.hash.substr(1)
-		Nav.render(path)
-	},
-	
 	// all paths are in the form
 	// name[/id][?query][#fragment]
-	decodePath(url) {
-		let [main, fragment] = url.split1("#")
-		let [path, query] = main.split1("?")
-		let vars = {}
-		if (query)
-			for (let item of query.split("&")) {
-				let [key, value] = item.split1("=")
-				key = decodeURIComponent(key.trim())
-				vars[key] = value==null ? true : decodeURIComponent(value.trim())
-			}
+	to_location(url_str) {
+		// /^(.*?)(|[?].*?)(|[#].*)$/.exec(url)
+		let url = new URL("sbs:"+url_str)
+		// replace ? with &, so, ex: "?x?y" parses as 2 items
+		url.search = url.search.replace(/^|[?]/g, "")
+		let query = Object.fromEntries(url.searchParams.entries())
 		
-		path = path.split("/")
-		let type = path[0] || ""
-		let id = path[1]
-		if (id != undefined && /^-?\d+$/.test(id))
-			id = +id
-		return {path, query: vars, fragment, type, id}
+		let [, type, id=null, num_id] = /^([^/]*)[/]?((-?\d+$)|[^]*)?$/.exec(url.pathname)
+		if (num_id)
+			id = +num_id
+		
+		// todo: we should have our own (global) location object or something, rather than passing around urls which are all just the current url anyway
+		return {type, id, query, fragment:url.hash.substr(1)}
 	},
 	
 	// convert back to url
-	encode_path({path, query, fragment}) {
-		let url = path.map(url_escape).join("/")
-		let params = []
-		Object.for(query, (value, key)=>{
-			if (value!=undefined) {
-				let param = url_escape(key)
-				if (value!==true)
-					param += "="+url_escape(value)
-				params.push(param)
-			}
-		})
-		if (params.length!=0)
-			url += "?"+params.join("&")
-		if (fragment != null)
+	from_location(location) {
+		let url = url_escape(location.type)
+		if (location.id != null)
+			url += "/"+url_escape(location.id)
+		let query = new URLSearchParams(location.query).toString()
+		if (query)
+			url += "?"+query
+		if (location.fragment != null)
 			url += "#"+fragment
+		
 		return url
 	},
 	
-	// no fragment?
-	set_location(type, id, query) {
-		let url = Nav.encode_path({
-			path: id==null ? [type] : [type, String(id)],
-			query: query,
-		})
-		window.location.hash="#"+url
+	get_url() {
+		return Nav.to_location(window.location.hash.substr(1))
 	},
 	
-	render(path, callback) {
-		console.log('hello?')
-		Nav.current_path = path
-		path = Nav.decodePath(String(path))
-		let {type, id, query} = path
-		View.handle_view(type, id, query, callback)
+	replace_url(location) {
+		Nav.ignore = true
+		window.location.replace("#"+Nav.from_location(location))
+		Nav.ignore = false
+	},
+	
+	render(location, callback) {
+		View.handle_view(location, callback)
 	},
 	
 	reload() {
-		/// TODO: surely there's a better way?
-		window.location.search = window.location.search ? "" : "?"
+		let url = document.location.href
+		window.history.replaceState(null, "", "?⌛")
+		document.location.replace(url)
 	},
 }
 Object.seal(Nav)
 
 window.onhashchange = ()=>{
-	Nav.update_from_location()
+	if (Nav.ignore)
+		return
+	current_url = window.location
+	let location = Nav.get_url()
+	Nav.render(location)
 }
+// todo: we also need to check onpopstate, perhaps.. because sometimes there's like, a break in the history and forward/back cause a page reload.

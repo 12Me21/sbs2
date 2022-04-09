@@ -39,11 +39,11 @@ add_view('user', {
 		if (user.id == Req.uid) {
 			flag('myUserPage', true)
 			let path
-			if (userpage) {
-				path="editpage/"+userpage.id
-			} else
-				path="editpage?type=userpage&name="+url_escape(user.name)+"'s user page"
-			Nav.link(path, $editUserPage)
+			if (userpage)
+				path="#editpage/"+userpage.id
+			else
+				path="#editpage?type=userpage&name="+url_escape(user.name)+"'s user page"
+			$editUserPage.href = path
 		}
 		set_entity_title(user)
 		/*$userPageAvatarLink.href = Draw.avatar_url(user)*/

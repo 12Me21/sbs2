@@ -176,8 +176,8 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 	},
 	// idea: function.valueOf calls the function and returns um ..   something.. .chaining .. mmmm
 	
-	chain(values, requests) {
-		return ApiRequest.bind(null, 'request', 'POST', JSON.to_blob({values, requests}), {proc: resp=>Entity.process(resp.data)})
+	chain(data) {
+		return ApiRequest.bind(null, 'request', 'POST', JSON.to_blob(data), {proc: resp=>Entity.process(resp.data)})
 	},
 	
 	/////////////////////////

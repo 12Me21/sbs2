@@ -62,6 +62,8 @@ function map_date(obj, prop) {
 		obj[prop] = new Date(obj[prop])
 }
 
+//class Emap
+
 // functions for processing recieved entities/
 // DATA PROCESSOR
 let Entity = (()=>{"use strict"; return singleton({

@@ -62,8 +62,8 @@ View.add_view('category', {
 		View.set_entity_path(category.parent)
 		Markup.convert_lang(category.description, category.values.markupLang, $categoryDescription)
 		$categoryCategories.fill()
-		Nav.link("editpage?cid="+category.id, $createPage.parentNode)
-		Nav.link("editcategory/"+category.id, $editCategory.parentNode)
+		$createPage.parentNode.href = "#editpage?cid="+category.id
+		$editCategory.parentNode.href = "#editcategory/"+category.id
 		for (let child of category.children) {
 			let bar = Draw.entity_title_link(child)
 			bar.className += " linkBar bar rem2-3"

@@ -15,8 +15,9 @@ class ApiSocket {
 		
 		this.websocket = new WebSocket(`wss://${Req.server}/live/ws?lastId=${this.last_id}&token=${encodeURIComponent(Req.auth)}`)
 		this.websocket.onopen = (e)=>{
+			console.log("🌄 websocket open")
 			for (let i in this.requests)
-				this.websocket.send(this.requests[i].json)
+				this.send(this.requests[i].data)
 			this.ready = true
 		}
 		this.websocket.onclose = (e)=>{
@@ -25,63 +26,69 @@ class ApiSocket {
 			//this.make_websocket()
 		}
 		this.websocket.onmessage = (event)=>{
-			this.process(JSON.parse(event.data))
+			this.handle_response(JSON.parse(event.data))
 		}
 	}
-	request(requests, values, callback=console.info) {
-		let data = {type:'request', data:{requests, values}, id:this.request_id++}
-		let json = JSON.stringify(data)
-		this.requests[data.id] = {json, callback}
+	send(data) {
+		this.websocket.send(JSON.stringify(data))
+	}
+	chain(data, callback=console.info) {
+		data = {type:'request', data, id:this.request_id++}
+		this.requests[data.id] = {data, callback}
 		if (this.ready)
-			this.websocket.send(json)
-		return {id}
-	},
+			this.send(data)
+		return {id: data.id}
+	}
 	cancel({id}) {
 		delete this.requests[id]
-	},
-	process(data) {
-		if (data.error) {
-			console.error(data)
-			if (data.id) {
-				let req = this.requests[data.id]
-				if (req)
-					console.error("error from", req.json, "\n→", data)
-			}
+	}
+	handle_response({type, id, data:body, error}) {
+		let entitys = body.data
+		
+		let request
+		if (id) {
+			request = this.requests[id]
+			delete this.requests[id]
+			if (!request)
+				console.warn("got response without callback! id:"+id)
+		}
+		if (error) {
+			console.error("error from", request, "\n→", error)
 			throw new Error("invalid websocket request!")
 		}
-		if (data.type=='live')
-			this.process_live(data)
-		else if (data.type=='userlistupdate')
-			;
-		if (data.id) {
-			let req = this.requests[data.id]
-			delete this.requests[data.id]
-			if (!req)
-				throw new Error("got response without callback! id:"+data.id)
-			Entity.process(data.data.data)
-			req.callback(data.data.data)
+		if (type=='live') {
+			this.last_id = body.lastId
+			if (entitys.message)
+				Entity.process(entitys.message)
+			if (entitys.activity)
+				Entity.process(entitys.activity)
+			this.process_live(body.events, entitys)
+		} else if (type=='userlistupdate') {
+			Entity.process(entitys)
+		} else if (type=='request') {
+			Entity.process(entitys)
+			if (request)
+				request.callback(entitys)
 		}
 	}
-	process_live(data) {
-		this.last_id = data.data.lastId
-		let ddd = data.data.data
-		if (ddd.message)
-			Entity.process(ddd.message)
-		if (ddd.activity)
-			Entity.process(ddd.activity)
-		for (let {refId, type, action, userId, date, id} of data.data.events) {
-			let list = ddd[type][type] // todo: process these lists into maps
+	process_live(events, entitys) {
+		for (let {refId, type, action, userId, date, id} of events) {
+			let elistmap = entitys[type]
 			switch (type) {
 			case 'message':
-				let m = [list["-"+refId]]
-				Sidebar.display_messages(m)
-				ChatRoom.display_messages(m)
+				let m = elistmap.message["-"+refId]
+				Sidebar.display_messages([m])
+				ChatRoom.display_messages([m])
 			}
 		}
-		
-		console.log('message', ddd)
 	}
 }
+
+// entity types:
+// entity
+// elist - list of entity
+// elistmap - map of type -> elist
+// elistmapmap - map of type -> elist
 
 let Lp = new ApiSocket()
 

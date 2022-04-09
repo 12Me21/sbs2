@@ -207,16 +207,9 @@ const singleton = (obj) => Object.seal(obj)
 // })}()
 
 // shouldn't really be here but this needs to be defined pretty early..
-let init_done = false
 let run_on_load = []
-function do_when_ready(go) {
-	if (init_done) {
-		go()
-	} else {
-		console.log("deferring render", go)
-		run_on_load.push(go)
-	}
-}
+let do_when_ready = func => run_on_load.push(func)
+//console.log("deferring render", go)
 
 if (!window.devicePixelRatio)
 	window.devicePixelRatio = 1

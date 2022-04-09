@@ -17,6 +17,8 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 	// current_view.cleanup should always be correct!
 	current_view: null,
 	
+	first: true,
+	
 	real_title: null,
 	favicon_element: null,
 	
@@ -83,18 +85,18 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 	},
 	
 	// handle redirects
-	get_view(name, id, query) {
-		let view = views[name]
+	get_view(location) {
+		let view = views[location.type]
 		let got = false
 		while (view && view.redirect) {//danger!
-			let ret = view.redirect(id, query)
+			let ret = view.redirect(location.id, location.query)
 			if (!ret) // oops no redirect
 				break
-			;[name, id, query] = ret
-			view = views[name]
+			;[location.type, location.id, location.query] = ret
+			view = views[location.type]
 			got = true
 		}
-		return [name, id, query, got]
+		return got
 	},
 	
 	load_start() {
@@ -106,13 +108,8 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 	
 	flags: {},
 	flag(flag, state) {
-		if (!flags[flag] != !state) {
-			if (state)
-				flags[flag] = true
-			else
-				delete flags[flag]
-			document.documentElement.classList.toggle("f-"+flag, state)
-		}
+		flags[flag] = state
+		document.documentElement.classList.toggle("f-"+flag, state)
 	},
 	
 	update_my_user(user) {
@@ -150,7 +147,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 	
 	// rn the `after2` callback is never used, but it's meant to be like,
 	// called after rendering, to handle scrolling down to fragment links and whatever, I think
-	handle_view(type, id, query, after2) {
+	handle_view(location, after2) {
 		if (cancel_request) {
 			cancel_request()
 			cancel_request = null
@@ -171,7 +168,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 				return
 			try {
 				if (current_view.cleanup)
-					current_view.cleanup(type, id, query)
+					current_view.cleanup(location)
 			} catch(e) {
 				// we ignore this error, because it's probably not important
 				// and also cleanup gets called during error handling so we don't want to get into a loop of errors
@@ -188,11 +185,18 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 			do_when_ready(()=>{
 				if (cancelled)
 					return
-				cleanup(type)
+				if (first) {
+					console.log("🌄 Rendering first page")
+				}
+				cleanup(location)
 				callback()
 				current_view = view
 				after()
 				after2 && after2()
+				if (first) {
+					console.log("☀️ First page rendered!")
+					first = false
+				}
 			})
 		}
 		
@@ -209,24 +213,23 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 		
 		// handle view redirects
 		if (attempt("error during redirect", ()=>{
-			let got_redirect
-			;[type, id, query, got_redirect] = get_view(type, id, query)
-			view = views[type]
+			let got_redirect = get_view(location)
+			view = views[location.type]
 			if (got_redirect)
-				Nav.set_location(type, id, query)
+				Nav.replace_url(location)
 		}))
 			return
 		
 		// NO VIEW
-		if (!view)
-			return handle_error("Unknown page type: \""+type+"\"")
+		if (!view || view!=View.views.page)
+			return handle_error("Unknown page type: \""+location.type+"\"")
 		
 		// call view.start
 		let data
 		if (attempt("render failed in view.start", ()=>{
-			data = view.start(id, query)
+			data = view.start(location.id, location.query)
 		}))
-			return
+			return // TODO:why have this weird attempt/return structure, vs just throwing an error within some nested function?
 		
 		// if we can render the page immediately
 		if (data.quick)
@@ -241,14 +244,14 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 			Lp.cancel(x)
 			cancelled = true //mrhh
 		}
-		x = Lp.request(data.requests, data.values, resp=>{
-			if (data.check && !data.check(resp, data.ext)) {// try/catch here?
+		x = Lp.chain(data, entitys=>{
+			if (data.check && !data.check(entitys, data.ext)) {// try/catch here?
 				handle_error("content not found?")
 			} else {
 				handle(attempt.bind(
 					null,
 					"render failed in view.render",
-					view.render.bind(view, resp, data.ext)))
+					view.render.bind(view, entitys, data.ext)))
 			}
 		})
 /*		, (e, resp)=>{
@@ -283,6 +286,22 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 			// maybe we can just call these the first time the view is visited instead of right away,
 			// though none of them should really take a significant amount of time, so whatver
 		})
+		
+		// draw buttons
+		// i really don't like this
+		for (let button of document.querySelectorAll("button:not([data-noreplace])")) {
+			let container = document.createElement('button-container')
+			button.replaceWith(container)
+			container.className += " "+button.className
+			button.className = ""
+			if (button.dataset.staticLink != undefined) {
+				button.setAttribute('tabindex', "-1")
+				let a = document.createElement('a')
+				container.append(a)
+				container = a
+			}
+			container.append(button)
+		}
 		
 		// set up event handlers:
 		

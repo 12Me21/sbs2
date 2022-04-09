@@ -13,14 +13,6 @@ window.onerror = function(message, source, line, col, error) {
 	}
 }
 
-window.onunhandledrejection = function(event) {
-	try {
-		Sidebar.print("ERROR IN PROMISE: ", event.reason)
-	} catch(e) {
-		console.error("error in window.onunhandledrejection:", e, event)
-	}
-}
-
 window.onbeforeunload = (event)=>{
 	// this is to prevent the websocket.onclose event
 	// from trying to reopen it
@@ -35,87 +27,56 @@ else
 	dom_ready()
 
 function immediate() {
-	Sidebar.print("hi!\ncommit: "+window.commit)
+	console.log("🌅 STARTING INIT")
+	Sidebar.print("hi!\ncommit: "+window.COMMIT)
+	
+	// (we can access <html> even if DOMContentLoaded hasn't occurred yet)
+	// dark theme
+	let dark = window.matchMedia("(prefers-color-scheme: dark)")
+	dark.onchange = (query) => View.flag('dark', query.matches)
+	dark.onchange(dark)
 	
 	Req.try_load_auth()
 	
-	if (Req.auth) {
-		console.log("🌄 got auth")
-		View.flag('loggedIn', true)
-		
-		Settings.early()
-		new (Req.get_me())(me=>{
-			Req.me = me
-			do_when_ready(()=> View.update_my_user(me))
-		})
-		
-		Lp.start_websocket()
-		Nav.initial()
-		
-		//Act.pull_recent()
-		//Lp.start()
-	} else {
-		console.warn("🌄 Not logged in!")
-		Nav.initial()
-		//Act.pull_recent()
-		
+	if (!Req.auth) {
+		console.warn("🌇 Not logged in!")
+		return
 	}
+	//console.log("🌄 is logged in")
+	View.flag('loggedIn', true)
 	
-	// we can access this even if DOMContentLoaded hasn't occurred yet
-	let root = document.documentElement
-	// dark theme
-	let dark = window.matchMedia("(prefers-color-scheme: dark)")
-	dark.onchange = (query)=>{
-		root.classList.toggle('f-dark', query.matches)
-	}
-	dark.onchange(dark)
-	// detect chromium browsers (broken image downscaling)
-	if (navigator.vendor=="Google Inc.")
-		root.style.imageRendering = "-webkit-optimize-contrast"
-}
-
-function got_initial({lastid, me}) {
-	console.log("🌄 got initial, staring long poller etc.")
-	//Lp.update_lastid(lastid)
-	//Lp.start()
-	Nav.initial()
-	Act.pull_recent() // TODO: I'd like to run this before lastid
-	// we can do this probably, AS LONG AS
-	// maybe we decrement lastid by like 10 or something just in case
+	Settings.early()
+	
+	Lp.chain({values:{uid:Req.uid}, requests:[{type:'user',fields:'*',query:'id = @uid'}]}, resp=>{
+		let me = resp.user[0]
+		if (!me) {
+			console.error(resp, 'me?"')
+			throw "missing user me?"
+		}
+		console.log("🌄 Got own userdata")
+		Req.me = me
+		do_when_ready(()=> View.update_my_user(Req.me))
+	})
+	
+	Lp.start_websocket()
+	
+	window.onhashchange()
+	
+	//Act.pull_recent()
+	
 }
 
 function dom_ready() {
-	console.log("🌄 DOM ready")
-	
-	// draw links
-	for (let elem of document.querySelectorAll("a[data-static-path]")) {
-		Nav.link(elem.dataset.staticPath, elem)
-	}
-	// draw buttons
-	// i really don't like this
-	for (let button of document.querySelectorAll("button:not([data-noreplace])")) {
-		let container = document.createElement('button-container')
-		button.replaceWith(container)
-		container.className += " "+button.className
-		button.className = ""
-		if (button.dataset.staticLink != undefined) {
-			button.setAttribute('tabindex', "-1")
-			let a = document.createElement('a')
-			container.append(a)
-			container = a
-		}
-		container.append(button)
-	}
+	console.log("🌄 DOCUMENT READY")
 	
 	View.onload()
 	
 	Sidebar.onload()
 	
 	print("running "+run_on_load.length+" deferred items")
-	init_done = true
-	for (let f of run_on_load)
-		f()
+	do_when_ready = x=>x()
+	run_on_load.forEach(x=>x())
 	run_on_load = null
 	
-	//danger: view.init() can potentially run after view.start() (but before view.render())
+	//danger: View.onload() can potentially run after view.start() (but before view.render())  TODO
 }

@@ -37,7 +37,9 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	
 	entity_link(entity) {
 		let path = Nav.entityPath(entity)
-		let element = path ? Nav.link(path) : E`span`
+		let element = E`a`
+		if (path)
+			element.href = "#"+path
 		return element
 	},
 	
@@ -153,7 +155,8 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			return element
 		path.forEach((item, i, path)=>{
 			if (item) { //todo: use entities here instead
-				let link = Nav.link(item[0])
+				let link = E`a`
+				link.href = item[0]
 				link.textContent = item[1]
 				link.className += ' textItem pre entity-title'
 				element.append(link)

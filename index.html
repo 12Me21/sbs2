@@ -14,7 +14,9 @@
 
 <script>
 	window.onerror = function(message, source, line, col, error) {
-		alert("ERROR DURING PAGE LOAD!\n"+message+"\nin "+source+"\nat "+line+":"+col)
+		window.setTimeout(function() {
+			alert("ERROR DURING PAGE LOAD!\n"+message+"\nin "+source+"\nat "+line+":"+col)
+		}, 0)
 	}
 </script>
 
@@ -75,13 +77,13 @@
 		<button id=$openSidebar class='item'>|||</button>
 	</div>
 	
-	<a data-static-path="" class='textItem'><img class='item' src=resource/iconbig.png alt="SBS"></a>
+	<a href=# class='textItem'><img class='item' src=resource/iconbig.png alt="SBS"></a>
 	<noscript>This web-site requires JavaScript</noscript>
 	<span data-view=page,category id=$path></span>
 	<h1 id=$pageTitle class='textItem pageTitle'></h1>
 	<span data-view=page>
-		<a data-static-path class='textItem canEdit' id=$pageEditLink>[Edit]</a>
-		<a data-static-path class='textItem' id=$pageCommentsLink>[Logs]</a>
+		<a class='textItem canEdit' id=$pageEditLink>[Edit]</a>
+		<a class='textItem' id=$pageCommentsLink>[Logs]</a>
 	</span>
 	<span data-view=user><a class='textItem loggedIn myUserPage' id=$editUserPage>Edit User Page</a></span>
 	<span class='item loggedIn myUserPage'>
@@ -251,12 +253,11 @@
 				</div>
 				<br id=$file_upload_form>
 				<div class='image-box grow' style="min-height: 3rem;"><img id=$file_image></div>
-				<a data-static-path=images>Uploaded Images</a> <!-- I want to move this into the upper bar so it takes up less space... -->
+				<a href=#images>Uploaded Images</a> <!-- I want to move this into the upper bar so it takes up less space... -->
 			</sidebar-panel>
 			<sidebar-panel id=$sidebarUserPanel>
 				<div class='registerBox'>
-					<button onclick="window.location.search = window.location.search ? '?' : '?a'">Reload Page</button>
-					<a id=$haloopdyLink>H</a>
+					<button onclick='var l=location.href;history.replaceState(null, "", "?⌛");location.replace(l)'>Reload Page</button>
 					<button class='rightAlign' id=$logOut>Log out</button>
 				</div>
 				<div class='loggedOut'>
@@ -272,10 +273,10 @@
 				</div>
 				<div class='loggedIn border-list'>
 					<div class='registerBox'>
-						<a data-static-path=images>Change your avatar here</a>
+						<a href=#images>Change your avatar here</a>
 					</div>
 					<div class='registerBox'>
-						<a data-static-path=users>User list</a>
+						<a href=#users>User list</a>
 					</div>
 					<div class='registerBox'>
 						<div id=$localSettings></div>
@@ -306,11 +307,12 @@
 </body>
 <script hidden>
 	// whitespace between nodes in html (due to line breaks, indentation, etc.) creates text nodes which need to be stripped:
-	let walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {acceptNode: node=>/^\s+$/.test(node.textContent)})
+	let walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {acceptNode: node => !node.textContent.trim()})
 	let blank_nodes = []
 	while (walker.nextNode())
 		blank_nodes.push(walker.currentNode)
 	// remove in 1 step rather than calling .remove() one at a time
 	document.createElement('gay-baby-jail').append(...blank_nodes)
 	//console.log("removed "+blank_nodes.length+" blank text nodes")
+	console.log("🌅 removed blank textnodes")
 </script>
