@@ -192,11 +192,12 @@ scroll-outer {
 	height: 100%;
 }
 scroll-middle {
-	display: flex;
+/*	display: flex;
 	flex-direction: column;
-	overflow: hidden;
+	
 	min-height: 100%;
-	justify-content: flex-end;
+	justify-content: flex-end;*/
+	overflow: hidden;
 }
 scroll-inner {
 	display: block;
