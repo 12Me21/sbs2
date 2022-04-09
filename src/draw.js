@@ -811,7 +811,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		d.dataset.id = comment.id
 		d.title = `${comment.createUserId.name} in ${comment.contentId}:\n${comment.text}` // todo: page name 🥺  oh︕ emojis render in italic? don't remember adding that...   we should store refs to pages but like intern them so its not a memory leak...
 		
-		if (comment.editUserId != comment.createUserId) {
+		if (comment.editDate && comment.editUserId!=comment.createUserId) {
 			d.append(
 				entity_title_link(comment.editUser),
 				" edited ",
