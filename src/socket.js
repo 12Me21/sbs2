@@ -57,7 +57,7 @@ class ApiSocket {
 			let list = ddd[type][type] // todo: process these lists into maps
 			switch (type) {
 			case 'message':
-				Sidebar.display_messages([list["-"+idref]])
+				Sidebar.display_messages([list["-"+refId]])
 			}
 		}
 		

@@ -9,6 +9,7 @@ for (let type_name in ABOUT.details.types) {
 		then: {},
 		Type: {value: type_name},
 		Fields: {value: field_datas},
+		name: {get() { return this.username }}, // temp
 	}
 	for (let field_name in field_datas) {
 		let field_data = field_datas[field_name]
@@ -21,26 +22,36 @@ for (let type_name in ABOUT.details.types) {
 			}}
 	}
 	proto = Object.create(STRICT, proto)
-	let cons = (o, u)=>{
-		/*for (let field_name in o) {
-			let field_data = field_datas[field_name]
-			let writable = field_data.writableOnInsert || field_data.writableOnUpdate
-			Object.defineProperty(o, field_name, {
-				value: o[field_name], 
-			})
-		}*/
-		
-		Object.setPrototypeOf(o, proto)
-		return o
-		//Object.defineProperties(this, Object.getOwnPropertyDescriptors(o))
-	}
+	let cons
+	if (type_name=='message')
+		cons = (o, u)=>{
+			// TODO: this is kinda a memory leak, 
+			// we really only need like, avatar and etc.
+			map_user(o, 'createUser', u)
+			map_user(o, 'editUser', u)
+			Object.setPrototypeOf(o, proto)
+			return o
+		}
+	else 
+		cons = (o, u)=>{
+			/*for (let field_name in o) {
+			  let field_data = field_datas[field_name]
+			  let writable = field_data.writableOnInsert || field_data.writableOnUpdate
+			  Object.defineProperty(o, field_name, {
+			  value: o[field_name], 
+			  })
+			  }*/
+			
+			Object.setPrototypeOf(o, proto)
+			return o
+			//Object.defineProperties(this, Object.getOwnPropertyDescriptors(o))
+		}
 	TYPES[type_name] = cons
 }
 
 function map_user(obj, prop, users) {
 	let user = users[obj[prop+"Id"]]
-	if (user)
-		obj[prop] = user
+	obj[prop] = user || null
 }
 function map_date(obj, prop) {
 	if (obj[prop])
@@ -149,12 +160,12 @@ let Entity = (()=>{"use strict"; return singleton({
 	},
 	process_list(type, list, users) {
 		if (TYPES[type])
-			list.forEach(item => {
+			for (let item of list) {
 				list["-"+item.id] = TYPES[type](item, users)
 				// we use a "-" prefix for the map keys, since
 				// we want to preserve the order
 				// so the keys can't be nonnegative integers
-			})
+			}
 	},
 	// editUserId -> editUser
 	// createUserId -> createUser

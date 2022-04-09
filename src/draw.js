@@ -809,17 +809,17 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	sidebar_comment(comment) {
 		let d = EC('div', 'bar rem1-5 sidebarComment ellipsis')
 		d.dataset.id = comment.id
-	//	d.title = `${comment.createUserId.name} in ${comment.parentId}:\n${comment.content}` // todo: page name 🥺  oh︕ emojis render in italic? don't remember adding that...
+		d.title = `${comment.createUserId.name} in ${comment.contentId}:\n${comment.text}` // todo: page name 🥺  oh︕ emojis render in italic? don't remember adding that...   we should store refs to pages but like intern them so its not a memory leak...
 		
-/*		if (comment.editUserId != comment.createUserId) {
+		if (comment.editUserId != comment.createUserId) {
 			d.append(
 				entity_title_link(comment.editUser),
 				" edited ",
 			)
-		}*/
+		}
 		d.append(
-//			entity_title_link(comment.createUser),
-//			": ",
+			entity_title_link(comment.createUser),
+			": ",
 			comment.text.replace(/\n/g, "  "),
 		)
 		return d
