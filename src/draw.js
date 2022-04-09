@@ -169,7 +169,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	// <chat-pane class='resize-box'>
 	//   <div class='sized page-container'>
 	//     [page info]
-	//     <div class='markup-root pageContents'></div>
+	//     <div class='pageContents'></div>
 	//   </div>
 	//   <resize-handle></resize-handle>
 	//   <div class='bar rem2-3 userlist'>
@@ -187,7 +187,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		let page1 = box.child('scroll-outer', 'sized page-container')
 		let info = page_info(page)
 		page1.append(info)
-		let page2 = page1.child('div', 'markup-root pageContents')
+		let page2 = page1.child('div', 'pageContents')
 		// resize handle
 		let resize = box.child('resize-handle')
 		let height = null
@@ -279,11 +279,11 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return [div, contentBox]
 	},
 	
-	// <message-part class='markup-root ...' tab-index=0 data-id=... data-time=...>
+	// <message-part class='...' tab-index=0 data-id=... data-time=...>
 	//   ...
 	// </message-part>
 	message_part(comment) {
-		let element = EC('message-part', 'markup-root')
+		let element = EC('message-part')
 		element.setAttribute('tabindex', "0")
 		
 		if (comment.editDate)

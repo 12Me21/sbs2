@@ -124,13 +124,13 @@
 		<div data-slide=user>
 			<div class='userPageBox flex-row'>
 				<a id=$userPageAvatarLink class='userPageAvatar'><img id=$userPageAvatar alt="" src=""></a>
-				<scroll-outer class='pageContents userPageContents markup-root' id=$userPageContents></scroll-outer>
+				<scroll-outer class='pageContents userPageContents 🍂' id=$userPageContents></scroll-outer>
 			</div>
 			<div class='userActivity' id=$userActivity></div>
 		</div>
 		
 		<div data-slide=category>
-			<div id=$categoryDescription class='categoryDescription pageContents markup-root'></div>
+			<div id=$categoryDescription class='categoryDescription pageContents 🍂'></div>
 			<div id=$categoryCategories></div>
 			<div id=$categoryPinned></div>
 			<div class='rem1-7 bar'>
@@ -188,7 +188,7 @@
 					<div class='registerBox' id=$editPageForm></div> <!-- really what we want here is a marker, not a container element or a replaced element. I would use <br> and then .replaceWith(form.elem), then set the form's .id back to $editPageForm. but that feels unsafe for something which could be generated many times. plus we have to set it back when cleaning up. -->
 				</div>
 				<div data-slide=preview>
-					<div id=$editorPreview class='markup-root pageContents'></div>
+					<div id=$editorPreview class='🍂 pageContents'></div>
 				</div>
 			</div>
 			<resize-handle id=$editorPreviewResize><button id=$toggleEditorMode>Toggle Preview</button></resize-handle>
