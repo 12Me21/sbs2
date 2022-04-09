@@ -355,7 +355,7 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 	display_messages(comments) {
 		// for each room, display all of the new comments for that room
 		for (let room of Object.values(this.rooms)) {
-			let c = comments.filter(c => c.parentId==room.id)
+			let c = comments.filter(c => c.contentId==room.id)
 			if (c.length)
 				room.display_messages(c, room==this.currentRoom)
 		}
@@ -364,7 +364,7 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 		// I feel like here is better so each room doesn't need to be checking if it's current.. idk
 		if (this.currentRoom) {
 			let last = comments.findLast((c)=>
-				c.parentId==this.currentRoom.id && Entity.is_new_comment(c))
+				c.contentId==this.currentRoom.id && Entity.is_new_comment(c))
 			if (last)
 				this.title_notification(last)
 		}
@@ -372,7 +372,7 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 	
 	/* static */
 	title_notification(comment) {
-		View.title_notification(comment.content, Draw.avatar_url(comment.createUser, "size=120&crop=true"))
+		View.title_notification(comment.text, Draw.avatar_url(comment.createUser, "size=120&crop=true"))
 		// todo: also call if the current comment being shown in the title is edited
 	},
 	

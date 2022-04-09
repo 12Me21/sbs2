@@ -9,16 +9,20 @@ for (let type_name in ABOUT.details.types) {
 		then: {},
 		Type: {value: type_name},
 		Fields: {value: field_datas},
-		name: {get() { return this.username }}, // temp
+		// temp: 
+		name: {get() { return this.username }},
+		bigAvatar: {value: null},
+		nickname: {value: null},
+		realname: {value: null},
 	}
 	for (let field_name in field_datas) {
 		let field_data = field_datas[field_name]
 		let field_default = field_defaults[field_name]
 		proto[field_name] = {value: field_default, enumerable: true}
 		if (field_data.type=='datetime')
-			proto[field_name] = {get(){
+			proto[field_name+"2"] = {get(){
 				let d = this[field_name]
-				return d ? new Date(d.replace(/Z?$/, "Z")) : null
+				return d ? new Date(d) : null
 			}}
 	}
 	proto = Object.create(STRICT, proto)
@@ -102,7 +106,7 @@ let Entity = (()=>{"use strict"; return singleton({
 	
 	comment_merge_hash(comment) {
 		let user = comment.createUser || {}
-		return `${comment.parentId},${comment.createUserId},${user.avatar},${user.bigAvatar||""},${user.name} ${user.nickname || ""}`
+		return `${comment.contentId},${comment.createUserId},${user.avatar},${user.bigAvatar||""},${user.name} ${user.nickname || ""}`
 	},
 	
 	filter_nickname(name) {
@@ -223,7 +227,7 @@ let Entity = (()=>{"use strict"; return singleton({
 		Object.for(this.category_map, (cat)=> cat.children = [])
 		// todo: make sure root category doesn't have parent
 		Object.for(this.category_map, (cat)=>{
-			let parent = this.category_map[cat.parentId] || this.category_map[0]
+			let parent = this.category_map[cat.contentId] || this.category_map[0]
 			if (cat.id != 0) {
 				parent.children.push(cat)
 				cat.parent = parent

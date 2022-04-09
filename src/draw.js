@@ -232,7 +232,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	// </message-block>
 	message_block(comment) {
 		let user = comment.createUser
-		let date = comment.createDate
+		let date = comment.createDate2
 		//outer
 		let div = E`message-block`
 		div.dataset.uid = comment.createUserId
@@ -249,7 +249,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		let name = label.child('span')
 		let n = name.child('span', 'pre username')
 		// if nickname is set, render as "nickname (realname):"
-		if (user.nickname !== undefined) { // why !== here?
+		if (user.nickname != null) {
 			n.textContent = user.nickname
 			let ns = EC('span', 'real-name-label')
 			name.append(":", ns)
@@ -278,7 +278,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		let element = EC('message-part', 'markup-root')
 		element.setAttribute('tabindex', "0")
 		
-		if (comment.createDate.getTime() != comment.editDate.getTime())
+		if (comment.editDate)
 			element.className += " edited"
 		
 		// this is a hack.
@@ -292,14 +292,14 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			createUserId: comment.createUserId,
 			editUserId: comment.editUserId,
 			id: comment.id,
-			parentId: comment.parentId,
-			content: comment.content,
-			meta: comment.meta,
+			contentId: comment.contentId,
+			content: comment.text,
+			values: comment.values,
 		}
 		
 		element.dataset.id = comment.id
-		element.dataset.time = comment.createDate.getTime()
-		Markup.convert_lang(comment.content, comment.meta.m, element)
+		element.dataset.time = comment.createDate2.getTime()
+		Markup.convert_lang(comment.text, comment.values.m, element)
 		return element
 	},
 	// date: Date
@@ -321,7 +321,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	can_merge_comment(block, comment, time) {
 		if (block) {
 			let hash = block.dataset.merge
-			return hash && hash==Entity.comment_merge_hash(comment) && (!time || comment.createDate-time <= 1000*60*5)
+			return hash && hash==Entity.comment_merge_hash(comment) && (!time || comment.createDate2-time <= 1000*60*5)
 		}
 		return false
 	},
@@ -360,7 +360,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			b[1].textContent = "Load Older"
 			outer.append(b[0])
 			b[1].onclick = ()=>{
-				Req.get_older_comments(comment.parentId, firstId, 10).then(resp=>{
+				Req.get_older_comments(comment.contentId, firstId, 10).then(resp=>{
 					for (let c of resp.comment) {
 						firstId = c.id
 						if (c.deleted)
@@ -384,7 +384,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			b[1].textContent = "Load Newer"
 			outer.append(b[0])
 			b[1].onclick = ()=>{
-				Req.get_newer_comments(comment.parentId, lastId, 10).then(resp=>{
+				Req.get_newer_comments(comment.contentId, lastId, 10).then(resp=>{
 					for (let c of resp.comment) {
 						lastId = c.id
 						if (c.deleted)
@@ -471,11 +471,11 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	//   </div>
 	// <???>
 	activity_item(item) {
-		let outer = entity_link(item.content)
+		let outer = entity_link(item.text)
 		outer.className += " activity-page"
 		
 		let bar = outer.child('div', 'bar rem1-5 ellipsis')
-		bar.append(icon_title(item.content))
+		bar.append(icon_title(item.text))
 		
 		let bar2 = outer.child('div', 'bar rem1-5')
 		
@@ -535,7 +535,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		if (!page)
 			return elem
 		elem.append(
-			page_edited_time("Author:", page.createDate), " ",
+			page_edited_time("Author:", page.createDate2), " ",
 			entity_title_link(page.createUser, true))
 		if (page.editUserId != page.createUserId) {
 			elem.append(

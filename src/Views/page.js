@@ -156,12 +156,12 @@ View.add_view('page', {
 			this.cancel_edit()
 			$chatTextarea.focus()
 			
-			if (data.content) { // input not blank
-				Req.edit_message(last_edit.id, last_edit.parentId, data.content, data.meta).catch((e)=>{
+			if (data.text) { // input not blank
+				Req.edit_message(last_edit.id, last_edit.contentId, data.text, data.values).catch((e)=>{
 					alert("Editing comment failed")
 				})
 			} else { // input is blank
-				let resp = confirm("Are you sure you want to delete this message?\n"+last_edit.content)
+				let resp = confirm("Are you sure you want to delete this message?\n"+last_edit.text)
 				if (resp) {
 					Req.delete_message(last_edit.id).catch((e)=>{
 						alert("Deleting comment failed")
@@ -169,9 +169,9 @@ View.add_view('page', {
 				}
 			}
 		} else { // posting new comment
-			if (data.content) { // input is not blank
+			if (data.text) { // input is not blank
 				let old = data
-				Req.send_message(room.id, data.content, data.meta).catch(()=>{
+				Req.send_message(room.id, data.text, data.values).catch(()=>{
 					//error sending message
 					this.write_input(old)
 				})
@@ -185,30 +185,30 @@ View.add_view('page', {
 	},
 	
 	read_input(old, editing) {
-		let meta = old ? old.meta : {}
+		let values = old ? old.values : {}
 		
 		if ($chatMarkupSelect.checked)
-			meta.m = Settings.values.chat_markup
+			values.m = Settings.values.chat_markup
 		else
-			meta.m = 'plaintext'
+			values.m = 'plaintext'
 		if (!editing) {
 			if (Req.me)
-				meta.a = Req.me.avatar
+				values.a = Req.me.avatar
 			if (Settings.values.nickname)
-				meta.n = Entity.filter_nickname(Settings.values.nickname)
+				values.n = Entity.filter_nickname(Settings.values.nickname)
 			if (Settings.values.big_avatar=='on' && Settings.values.big_avatar_id)
-				meta.big = Settings.values.big_avatar_id
+				values.big = Settings.values.big_avatar_id
 		}
 		
 		return {
-			meta: meta,
+			values: values,
 			content: $chatTextarea.value,
 		}
 	},
 	
 	write_input(data) {
-		$chatTextarea.value = data.content || ""
-		$chatMarkupSelect.checked = data.meta.m == Settings.values.chat_markup
+		$chatTextarea.value = data.text || ""
+		$chatMarkupSelect.checked = data.values.m == Settings.values.chat_markup
 		this.textarea_resize()
 	},
 

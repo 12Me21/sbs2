@@ -401,6 +401,7 @@ message-part {
 	min-height: 1rem; /* this is so the message controls always have somewhere to be shown */
 	padding-block: 0.1rem;
 	padding-left: calc(var(--chat-gutter) + 0.2rem);
+	--mainbg: transparent;
 }
 message-part.edited {
 	/* todo: fix this styling */
