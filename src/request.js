@@ -316,8 +316,8 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 		])
 	},
 	
-	send_message(room, text, meta) {
-		return this.request2("Comment", null, 'POST', {parentId: room, content: Entity.encode_comment(text, meta)})
+	send_message(contentId, text, values) {
+		return this.request('Write/message', null, {contentId, text, values})
 	},
 	
 	edit_message(id, room, text, meta) { // lots of args..

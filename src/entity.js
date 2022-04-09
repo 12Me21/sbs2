@@ -28,7 +28,7 @@ for (let type_name in ABOUT.details.types) {
 	proto = Object.create(STRICT, proto)
 	let cons
 	if (type_name=='message')
-		cons = (o, u)=>{
+		cons = (o=~E, u)=>{
 			// TODO: this is kinda a memory leak, 
 			// we really only need like, avatar and etc.
 			map_user(o, 'createUser', u)
@@ -37,7 +37,7 @@ for (let type_name in ABOUT.details.types) {
 			return o
 		}
 	else 
-		cons = (o, u)=>{
+		cons = (o=~E, u)=>{
 			/*for (let field_name in o) {
 			  let field_data = field_datas[field_name]
 			  let writable = field_data.writableOnInsert || field_data.writableOnUpdate
@@ -157,12 +157,12 @@ let Entity = (()=>{"use strict"; return singleton({
 			G: 'commentaggregate', // ran out of letters
 		}[key[0]] || key
 	},
-	process_item(type, item, users) {
+	process_item(type=~E, item=~E, users) {
 		if (TYPES[type])
 			TYPES[type](item, users)
 		return item
 	},
-	process_list(type, list, users) {
+	process_list(type=~E, list=~E, users) {
 		if (TYPES[type])
 			for (let item of list) {
 				list["-"+item.id] = TYPES[type](item, users)
@@ -176,7 +176,7 @@ let Entity = (()=>{"use strict"; return singleton({
 	// editDate
 	// createDate
 	// TODO: instead of this silly user modifying thing, just render the damn message directly, based on its own data
-	process_comment_user_meta(data) {
+/*	process_comment_user_meta(data) {
 		let override = {}
 		// avatar override
 		if (+data.meta.a)
@@ -211,7 +211,7 @@ let Entity = (()=>{"use strict"; return singleton({
 			data.createUser = Object.create(data.createUser, override)
 	},
 	
-	page_map(pages) {
+/*	page_map(pages) {
 		let map = {}
 		pages && pages.forEach(p => map[p.id] = p)
 		return this.safe_map(map, (id)=>({
@@ -220,7 +220,7 @@ let Entity = (()=>{"use strict"; return singleton({
 			id: id,
 			fake: true,
 		}))
-	},
+	},*/
 	
 	rebuildCategoryTree() {
 		this.got_new_category = false
@@ -234,35 +234,7 @@ let Entity = (()=>{"use strict"; return singleton({
 			}
 		})
 	},
-	parse_date(str) {
-		return new Date(str)
-	},
 	// return: [text, metadata]
-	decode_comment(content) {
-		let newline = content.indexOf("\n")
-		try {
-			// try to parse the first line as JSON
-			let data = JSON.parse(newline>=0 ? content.substr(0, newline) : content)
-			// if it's a valid json object, it could be new or legacy format
-			if (Object.is_plain(data)) { // (see fill.js)
-				let t = data.t
-				delete data.t // important!
-				// new format: <json><newline><text>
-				if (newline>=0)
-					return [content.substr(newline+1), data]
-				// legacy format: <json> (text in "t" field)
-				if (typeof t == 'string')
-					return [t, data]
-			}
-		} catch(e) {}
-		// if we can't detect the format, or something goes wrong,
-		// just return the raw content and no metadata
-		return [content, {}]
-	},
-	encode_comment(text, metadata) {
-		return JSON.stringify(metadata || {})+"\n"+text
-	},
-	
 	is_new_comment(c) {
 		return !c.deleted && (+c.editDate == +c.createDate)
 	},

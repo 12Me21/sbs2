@@ -18,7 +18,7 @@ View.add_view('page', {
 		View.set_entity_title(page)
 		//View.set_entity_path(page.parent)
 		View.flag('canEdit', /u/i.test(page.permissions[Req.uid]))
-		$chatTextarea.disabled = !(page.createUserId==Req.uid || /c/.test(page.permissions[Req.uid] || page.permissions[0])) // don't use myperms here
+		$chatTextarea.disabled = !(page.createUserId==Req.uid || /c/i.test(page.permissions[Req.uid] || page.permissions[0])) // don't use myperms here
 		Nav.link("editpage/"+page.id, $pageEditLink)
 		Nav.link("comments/"+page.id, $pageCommentsLink)
 	},
@@ -171,7 +171,9 @@ View.add_view('page', {
 		} else { // posting new comment
 			if (data.text) { // input is not blank
 				let old = data
-				Req.send_message(room.id, data.text, data.values).catch(()=>{
+				new (Req.send_message(room.id, data.text, data.values))(resp=>{
+					// 
+				}, (err)=>{
 					//error sending message
 					this.write_input(old)
 				})
@@ -202,7 +204,7 @@ View.add_view('page', {
 		
 		return {
 			values: values,
-			content: $chatTextarea.value,
+			text: $chatTextarea.value,
 		}
 	},
 	

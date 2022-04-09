@@ -126,6 +126,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 			Req.log_in($loginForm.username.value, $loginForm.password.value)(
 				()=>{
 					alert("✅ logged in!")
+					Nav.reload()
 				},
 				()=>{
 					alert("❌ logging in failed")

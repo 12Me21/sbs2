@@ -9,7 +9,7 @@ class ApiSocket {
 	set_statuses(){}
 	refresh(){}
 	start_websocket() {
-		if (this.websocket && websocket.readyState <= WebSocket.OPEN)
+		if (this.websocket && this.websocket.readyState <= WebSocket.OPEN)
 			throw new Error("Tried to open multiple websockets")
 		
 		this.websocket = new WebSocket(`wss://${Req.server}/live/ws?lastId=${this.last_id}&token=${encodeURIComponent(Req.auth)}`)

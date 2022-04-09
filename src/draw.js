@@ -248,17 +248,25 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		let label = div.child('message-header')
 		let name = label.child('span')
 		let n = name.child('span', 'pre username')
+		let v = comment.values
+		let nickname, realname
+		if (v) {
+			if (v.n!=undefined) {
+				nickname = v.n
+				realname = user.username
+			}
+		}
 		// if nickname is set, render as "nickname (realname):"
-		if (user.nickname != null) {
-			n.textContent = user.nickname
+		if (nickname != null) {
+			n.textContent = nickname
 			let ns = EC('span', 'real-name-label')
 			name.append(":", ns)
 			let real = EC('span', 'pre')
-			real.textContent = user.realname
+			real.textContent = realname
 			ns.append(" (", real, ")")
 		} else {
 			// otherwise render as "name:"
-			n.textContent = user.name
+			n.textContent = user.username
 			name.append(":")
 		}
 		// time
