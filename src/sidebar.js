@@ -123,7 +123,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		
 		$loginForm.onsubmit = function(e) {
 			e.preventDefault()
-			Req.log_in($loginForm.username.value, $loginForm.password.value)(
+			new (Req.log_in($loginForm.username.value, $loginForm.password.value))(
 				()=>{
 					alert("✅ logged in!")
 					Nav.reload()
