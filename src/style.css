@@ -328,7 +328,7 @@ message-block {
 	box-sizing: content-box;
 	--chat-gutter: 3.4rem;
 	--chat-avatar-size: calc(var(--chat-gutter) - 0.5rem);
-	--chat-message-gap: 0.8rem;
+	--chat-message-gap: 0.6rem;
 	padding-inline: 0.5rem;
 	padding-top: var(--chat-message-gap);
 	min-height: var(--chat-avatar-size);
