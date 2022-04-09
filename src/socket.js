@@ -4,6 +4,7 @@ class ApiSocket {
 		this.ready = false
 		this.last_id = ""
 		this.processed_listeners = {}
+		this.request_id = 1
 	}
 	set_listening(){}
 	set_statuses(){}
@@ -15,7 +16,7 @@ class ApiSocket {
 		this.websocket = new WebSocket(`wss://${Req.server}/live/ws?lastId=${this.last_id}&token=${encodeURIComponent(Req.auth)}`)
 		this.websocket.onopen = (e)=>{
 			for (let i in this.requests)
-				this.websocket.send(this.requests[i].data)
+				this.websocket.send(this.requests[i].json)
 			this.ready = true
 		}
 		this.websocket.onclose = (e)=>{
@@ -27,13 +28,27 @@ class ApiSocket {
 			this.process(JSON.parse(event.data))
 		}
 	}
-	request(data, callback) {
-		data = JSON.stringify(data)
-		this.requests[data.id] = {data, callback}
+	request(requests, values, callback=console.info) {
+		let data = {type:'request', data:{requests, values}, id:this.request_id++}
+		let json = JSON.stringify(data)
+		this.requests[data.id] = {json, callback}
 		if (this.ready)
-			this.websocket.send(data)
-	}
+			this.websocket.send(json)
+		return {id}
+	},
+	cancel({id}) {
+		delete this.requests[id]
+	},
 	process(data) {
+		if (data.error) {
+			console.error(data)
+			if (data.id) {
+				let req = this.requests[data.id]
+				if (req)
+					console.error("error from", req.json, "\n→", data)
+			}
+			throw new Error("invalid websocket request!")
+		}
 		if (data.type=='live')
 			this.process_live(data)
 		else if (data.type=='userlistupdate')
@@ -43,7 +58,8 @@ class ApiSocket {
 			delete this.requests[data.id]
 			if (!req)
 				throw new Error("got response without callback! id:"+data.id)
-			req.callback(data)
+			Entity.process(data.data.data)
+			req.callback(data.data.data)
 		}
 	}
 	process_live(data) {

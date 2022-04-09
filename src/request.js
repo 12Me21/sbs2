@@ -130,9 +130,6 @@ function arrayToggle(array, value) {
 	return false
 }
 
-function Unhandled_Callback(err, ...x) {
-	console.error("Unhandled Callback\n", err, ...x);
-}
 
 const Req = { // this stuff can all be static methods on ApiRequest maybe?
 	server: "qcs.shsbs.xyz/api",

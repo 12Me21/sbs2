@@ -266,7 +266,7 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 						old.parentNode.replaceChild(part, old)
 					} else { // new comment
 						this.insert_merge(comment, this.last_time, false)
-						this.last_time = comment.createDate //todo: improve
+						this.last_time = comment.createDate2 //todo: improve
 					}
 				}
 			}

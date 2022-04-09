@@ -13,6 +13,10 @@ for (let key of Object.getOwnPropertyNames(Object.prototype)) {
 //Object.freeze(Object.prototype)
 /////////////////
 
+function Unhandled_Callback(err, ...x) {
+	console.error("Unhandled Callback\n", err, ...x);
+}
+
 class ParamError extends Error {
 	constructor() {
 		super()

@@ -106,7 +106,7 @@ let Entity = (()=>{"use strict"; return singleton({
 	
 	comment_merge_hash(comment) {
 		let user = comment.createUser || {}
-		return `${comment.contentId},${comment.createUserId},${user.avatar},${user.bigAvatar||""},${user.name} ${user.nickname || ""}`
+		return `${comment.contentId},${comment.createUserId},${user.avatar},${user.bigAvatar||""},${user.username} ${user.nickname || ""}`
 	},
 	
 	filter_nickname(name) {

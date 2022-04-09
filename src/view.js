@@ -238,10 +238,10 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 		let x
 		cancel_request = ()=>{
 			load_end()
-			x.abort()
+			Lp.cancel(x)
 			cancelled = true //mrhh
 		}
-		x = new (Req.chain(data.values, data.requests))((resp)=>{
+		x = Lp.request(data.requests, data.values, resp=>{
 			if (data.check && !data.check(resp, data.ext)) {// try/catch here?
 				handle_error("content not found?")
 			} else {
@@ -250,10 +250,11 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 					"render failed in view.render",
 					view.render.bind(view, resp, data.ext)))
 			}
-		}, (e, resp)=>{
+		})
+/*		, (e, resp)=>{
 			console.error(e)
 			handle_error("error 1")
-		})
+		})*/
 		
 		function handle_error(message, e=null) {
 			handle(()=>{

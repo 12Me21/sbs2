@@ -36,12 +36,13 @@ View.add_view('page', {
 		// loading the initial messages :(
 		return {
 			values: {
-				pageid: id,
-				filetype: 3,
+				pid: id,
 			},
 			requests: [
-				{type: 'content', fields: "*", query: "id = @pageid"},
-				{type: 'user', fields: "*", query: "id in @content.createUserId"},
+				{type: 'content', fields: "*", query: "id = @pid"},
+				{type: 'message', fields: "*", query: "contentId = @pid and !notdeleted()", order: "id_desc", limit: 30},
+//				{name: 'Mpinned', type: 'message', fields: "*", query: "id in @content.values.pinned"},
+				{type: 'user', fields: "*", query: "id in @content.createUserId or id in @message.createUserId or id in @message.editUserId"},
 			],
 /*			chains: [
 				['content', {ids: [id], IncludeAbout: ["votes","watches"]}],
@@ -63,8 +64,9 @@ View.add_view('page', {
 		this.render_page(page)
 	},
 	render(resp, ext) {
-//		let comments = resp.comment
-//		comments.reverse()
+		let comments = resp.message
+		console.log(resp,'page')
+		comments.reverse()
 		let page = resp.content[0]
 //		let pinned = resp.Mpinned
 		
@@ -74,7 +76,7 @@ View.add_view('page', {
 		
 		//ChatRoom.setViewing([page.id])
 		this.room = new ChatRoom(page.id, page)
-//		this.room.display_initial_messages(comments, pinned) //todo: when page is edited, update pinned messages
+		this.room.display_initial_messages(comments/*, pinned*/) //todo: when page is edited, update pinned messages
 		this.room.show()
 		
 		this.render_page(page)
@@ -89,8 +91,6 @@ View.add_view('page', {
 		window.editComment = this.edit_comment.bind(this) // HACK
 		
 		// up arrow = edit last comment
-		// todo: keep track of the previous message more reliably
-		// either store it when displayed and only pull info from the server if necessary, or idk
 		$chatTextarea.onkeydown = (e)=>{
 			if (e.keyCode==38 && $chatTextarea.value=="") { // up arrow
 				let room = ChatRoom.currentRoom
