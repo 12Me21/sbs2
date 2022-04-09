@@ -124,12 +124,13 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		$loginForm.onsubmit = function(e) {
 			e.preventDefault()
 			new (Req.log_in($loginForm.username.value, $loginForm.password.value))(
-				()=>{
+				resp=>{
+					Req.save_auth(resp)
 					alert("✅ logged in!")
 					Nav.reload()
 				},
-				()=>{
-					alert("❌ logging in failed")
+				err=>{
+					alert("❌ logging in failed\n"+err)
 				}
 			) // todo: do something here?
 		}

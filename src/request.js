@@ -218,6 +218,10 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 		return false
 	},
 	
+	save_auth(token) {
+		Store.set(this.storage_key, token)
+	},
+	
 	get_me() {
 		// todo: instead of the proc function,
 		// we can just tell it what type of data to expect
