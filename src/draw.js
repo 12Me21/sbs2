@@ -301,7 +301,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			editUserId: comment.editUserId,
 			id: comment.id,
 			contentId: comment.contentId,
-			content: comment.text,
+			text: comment.text,
 			values: comment.values,
 		}
 		

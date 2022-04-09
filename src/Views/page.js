@@ -157,31 +157,31 @@ View.add_view('page', {
 			$chatTextarea.focus()
 			
 			if (data.text) { // input not blank
-				Req.edit_message(last_edit.id, last_edit.contentId, data.text, data.values).catch((e)=>{
+				new (Req.send_message({id:last_edit.id, contentId:last_edit.contentId, text:data.text, values:data.values}))(resp=>{
+					//
+				},err=>{
 					alert("Editing comment failed")
 				})
 			} else { // input is blank
 				let resp = confirm("Are you sure you want to delete this message?\n"+last_edit.text)
-				if (resp) {
-					Req.delete_message(last_edit.id).catch((e)=>{
-						alert("Deleting comment failed")
-					})
-				}
+				if (!resp) return
+				new (Req.delete_message(last_edit.id))(resp=>{
+					//
+				},err=>{
+					alert("Deleting comment failed")
+				})
 			}
 		} else { // posting new comment
 			if (data.text) { // input is not blank
 				let old = data
-				new (Req.send_message(room.id, data.text, data.values))(resp=>{
+				new (Req.send_message({contentId:room.id, text:data.text, values:data.values}))(resp=>{
 					// 
-				}, (err)=>{
+				}, err=>{
 					//error sending message
 					this.write_input(old)
 				})
-				// going to try this hack to see if that fixes safari
-				window.setTimeout(()=>{
-					$chatTextarea.value = "" //hack?
-					this.textarea_resize()
-				}, 0)
+				$chatTextarea.value = ""
+				this.textarea_resize()
 			}
 		}
 	},
