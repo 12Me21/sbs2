@@ -2,7 +2,7 @@ class ApiSocket {
 	constructor() {
 		this.requests = {}
 		this.ready = false
-		this.last_id = -1
+		this.last_id = ""
 		this.processed_listeners = {}
 	}
 	set_listening(){}

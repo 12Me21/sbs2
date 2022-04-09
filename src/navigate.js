@@ -1,9 +1,9 @@
-// todo: i suspect that quickly doubleclicking the same link is a thing which happens and isnt good
+Markup.url_scheme["sbs:"] = function(url) {
+	return "#"+url.pathname+url.search+url.hash
+}
 
 const Nav = {
 	current_path: null,
-	initial_pop: false,
-	init: false,
 	
 	entityPath(entity) {
 		if (!entity)
@@ -20,15 +20,7 @@ const Nav = {
 	link(path, element) {
 		path = String(path)
 		element = element || document.createElement('a')
-		element.href = "?"+path
-		element.onclick = (e)=>{
-			e.preventDefault()
-			e.stopPropagation()
-			Nav.go(path)
-		}
-		// a few notes about this
-		// first, we need to use onclick because removing event listeners is a MASSIVE pain, especially here. we need to keep a list of old function references, and somehow attach that to the node? idk. WeakMap maybe but that's too new
-		// this way, adding a new event will override the old one automatically
+		element.href = "#"+path
 		// however, I also use some nested link elements (sorry...)
 		// so, this assumes the event will be called on the inner element first
 		// which is the default in most browsers, but some old browsers... idk
@@ -36,7 +28,6 @@ const Nav = {
 	},
 	
 	go(path) {
-		window.history.pushState(null, "", "?"+path)
 		// todo: maybe try to update page only after page loads
 		Nav.render(path)
 	},
@@ -45,21 +36,11 @@ const Nav = {
 	// should read window.location and
 	// eventually call `render`
 	initial() {
-		// bad browsers will trigger popstate event
-		// whenever the page loads
-		// (not just from back/forward buttons)
-		// this SHOULD happen before DOMContentLoaded,
-		// and if it does, cancel the initial loader
-		// if it happens AFTER DOMContentLoaded then you're basically fucked though
-		if (Nav.init || Nav.initial_pop)
-			return
-		Nav.initial_pop = true
-		Nav.init = true
 		Nav.update_from_location()
 	},
 	
 	update_from_location() {
-		let path = window.location.search.substr(1)
+		let path = window.location.hash.substr(1)
 		Nav.render(path)
 	},
 	
@@ -103,54 +84,30 @@ const Nav = {
 		return url
 	},
 	
-	haloopdy_path({path, query, fragment}) {
-		let url = "https://smilebasicsource.com/"
-		let params = ["p="+path.map(url_escape).join("-")] // can escape - though?
-		Object.for(query, (value, key)=>{
-			if (value!=undefined) {
-				let param = url_escape(key)
-				if (value!==true)
-					param += "="+url_escape(value)
-				params.push(param)
-			}
-		})
-		if (params.length!=0)
-			url += "?"+params.join("&")
-		if (fragment != null)
-			url += "#"+fragment
-		return url
-	},
-	
 	// no fragment?
 	set_location(type, id, query) {
 		let url = Nav.encode_path({
 			path: id==null ? [type] : [type, String(id)],
 			query: query,
 		})
-		window.history.replaceState(null, "", "?"+url)
+		window.location.hash="#"+url
 	},
 	
 	render(path, callback) {
+		console.log('hello?')
 		Nav.current_path = path
 		path = Nav.decodePath(String(path))
 		let {type, id, query} = path
-		do_when_ready(()=>{
-			$haloopdyLink.href = this.haloopdy_path({
-				path: id==null ? [type] : [type, String(id)],
-				query: query,
-			})
-		})
 		View.handle_view(type, id, query, callback)
 	},
 	
 	reload() {
-		window.location += ""
+		/// TODO: surely there's a better way?
+		window.location.search = window.location.search ? "" : "?"
 	},
 }
 Object.seal(Nav)
 
-window.onpopstate = ()=>{
-	Nav.init = true
-	Nav.initial_pop = true
+window.onhashchange = ()=>{
 	Nav.update_from_location()
 }
