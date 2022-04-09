@@ -85,8 +85,7 @@ time {
 }
 
 #\$categoryDescription.🍂 { /* make sure this is before most things */
-	padding-inline: 1rem;
-	padding-block: .75rem;
+	padding: .75rem 1rem;
 }
 
 .username {
@@ -104,8 +103,7 @@ button {
 	
 	border: 1px solid black;
 	border-radius: 0px;
-	padding-block: 0;
-	padding-inline: 0.5rem;
+	padding: 0 0.5rem;
 	
 	background: var(--button-bg);
 }
@@ -151,7 +149,8 @@ html.f-error .loadBG {
 }
 
 .pathSeparator {
-	padding-inline: 0.2rem;
+	padding-left: 0.2rem;
+	padding-right: 0.2rem;
 }
 
 .bottomBorder {
@@ -329,7 +328,7 @@ message-block {
 	--chat-gutter: 3.4rem;
 	--chat-avatar-size: calc(var(--chat-gutter) - 0.5rem);
 	--chat-message-gap: 0.6rem;
-	padding-inline: 0.5rem;
+	padding: 0 0.5rem;
 	padding-top: var(--chat-message-gap);
 	min-height: var(--chat-avatar-size);
 	/*border-left: 0.5em solid rgb(255,153,153);; */
@@ -440,7 +439,8 @@ message-controls:hover + message-part {
 
 .messageGap {
 	border: 1px dashed gray; /*♥*/
-	margin-block: 0.3rem;
+	margin-top: 0.3rem;
+	margin-bottom: 0.3rem;
 }
 
 .chatScroller {
@@ -552,7 +552,8 @@ table {
 	border-collapse: collapse;
 }
 th {
-	padding-inline: 0.3rem;
+	padding-left: 0.3rem;
+	padding-right: 0.3rem;
 }
 .permissionRow > th {
 	padding: 0;
@@ -563,7 +564,8 @@ th {
 	text-align: center;
 }
 .permission-table thead th {
-	padding-inline: 0.5rem
+	padding-left: 0.5rem;
+	padding-right: 0.5rem;
 }
 .permission-table td {
 	text-align: center;
@@ -603,7 +605,8 @@ button.voteButton[data-selected][data-vote="o"] {
 }
 
 .pageInfoPane {
-	padding-inline: 0.3rem;
+	padding-left: 0.3rem;
+	padding-right: 0.3rem;
 	border-bottom: 1px solid var(--border-color);
 	background: var(--bar-bg);
 	box-shadow: var(--normal-shadow);
@@ -645,7 +648,8 @@ html:not(.f-fileSelected) .fileSelected {
 	background-repeat: no-repeat;
 	background-size: contain;
 	background-position: center;
-	margin-inline: 0.1rem;
+	margin-left: 0.1rem;
+	margin-right: 0.1rem;
 }
 
 /*************
@@ -690,8 +694,7 @@ input:invalid {
 }
 
 .registerBox {
-	padding-inline: 0.5rem;
-	padding-block: 0.3rem;
+	padding: 0.3rem 0.5rem;
 }
 
 /* ehhh */
@@ -739,7 +742,8 @@ textarea-container, textarea-container > textarea {
 
 .gallery-inner {
 	position: relative;
-	margin-inline: auto;
+	margin-left: auto;
+	margin-right: auto;
 }
 .gallery-inner canvas {
 	width: 100%;
@@ -755,15 +759,15 @@ textarea-container, textarea-container > textarea {
 	height: 100%;
 }
 .gallery-title {
-	margin-inline: auto;
+	margin-left: auto;
+	margin-right: auto;
 	text-align: center;
 	background: var(--bar-bg);
 }
 
 .debugMessage {
 	background: var(--bar-bg);
-	padding-inline: 3px;
-	padding-block: 2px;
+	padding: 2px 3px;
 }
 
 .category-childs {
@@ -799,7 +803,8 @@ textarea-container, textarea-container > textarea {
 	border-bottom: 1px solid var(--border-color);
 	border-top: 1px solid white;
 	padding-left: 0.2rem;
-	padding-block: 1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
 	background: var(--mainbgcolor);
 }
 
