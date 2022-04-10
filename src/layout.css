@@ -249,6 +249,7 @@ but, then we can't add a border to the image
 }
 .slide-box > :not(.shown) {
 	visibility: hidden;
+	content-visibility: hidden; /* not supported yet */
 	/* we use visibility:hidden instead of display:none so the element keeps its size/layout when hidden */
 }
 
