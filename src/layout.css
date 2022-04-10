@@ -191,8 +191,12 @@ scroll-middle {
 	min-height: 100%;
 	justify-content: flex-end;
 }
+scroll-middle * {
+	contain: paint;
+}
 scroll-inner {
 	display: block;
+	flex: 0 0 0;
 }
 
 /***************
