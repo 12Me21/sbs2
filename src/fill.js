@@ -72,14 +72,6 @@ if (!Array.prototype.findLast)
 		return undefined
 	}
 
-String.prototype.split1 = function(sep) {
-	let n = this.indexOf(sep)
-	if (n == -1)
-		return [this, null]
-	else
-		return [this.substr(0,n), this.substr(n+sep.length)]
-}
-
 // similar to replaceChildren, except:
 //  - only 0 or 1 args
 //  - can pass null/undefined to empty the node

@@ -53,6 +53,8 @@ for (let type_name in ABOUT.details.types) {
 	TYPES[type_name] = cons
 }
 
+ABOUT = null
+
 function map_user(obj, prop, users) {
 	let user = users[obj[prop+"Id"]]
 	obj[prop] = user || null
@@ -68,7 +70,7 @@ function map_date(obj, prop) {
 // DATA PROCESSOR
 let Entity = (()=>{"use strict"; return singleton({
 	
-	onCategoryUpdate(cats) {
+/*	onCategoryUpdate(cats) {
 		Sidebar.redraw_category_tree(cats)
 	},
 	
@@ -79,14 +81,14 @@ let Entity = (()=>{"use strict"; return singleton({
 		description: "",
 		values: {}
 	}},
-	got_new_category: false,
+	got_new_category: false,*/
 	
 	// official page types
 	CONTENT_TYPES: [
 		'resource', 'chat', 'program', 'tutorial', 'documentation', 'userpage'
 	],
 	// I don't like the way the iterator works here...
-	safe_map(map, fake) {
+/*	safe_map(map, fake) {
 		// `fake` accessed as nonlocal
 		return new Proxy(map, {
 			get(map, id) {
@@ -102,6 +104,7 @@ let Entity = (()=>{"use strict"; return singleton({
 		})
 	},
 	
+,*/
 	has_perm(perms, uid, perm) {
 		return perms && perms[uid] && perms[uid].includes(perm)
 	},
@@ -224,7 +227,7 @@ let Entity = (()=>{"use strict"; return singleton({
 		}))
 	},*/
 	
-	rebuildCategoryTree() {
+	/*rebuildCategoryTree() {
 		this.got_new_category = false
 		Object.for(this.category_map, (cat)=> cat.children = [])
 		// todo: make sure root category doesn't have parent
@@ -235,7 +238,7 @@ let Entity = (()=>{"use strict"; return singleton({
 				cat.parent = parent
 			}
 		})
-	},
+	},*/
 	// return: [text, metadata]
 	is_new_comment(c) {
 		return !c.deleted && (+c.editDate == +c.createDate)

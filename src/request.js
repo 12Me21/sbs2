@@ -120,17 +120,6 @@ ${resp}`)
 	}
 }
 
-function arrayToggle(array, value) {
-	let i = array.indexOf(value)
-	if (i<0) {
-		array.push(value)
-		return true
-	}
-	array.splice(i, 1)
-	return false
-}
-
-
 const Req = { // this stuff can all be static methods on ApiRequest maybe?
 	server: "qcs.shsbs.xyz/api",
 //	server: "oboy.smilebasicsource.com/api",
@@ -230,7 +219,21 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 		return this.request("User/me", Entity.process_item.bind(Entity, 'user'))
 	},
 	
-	set_basic(data) {
+	send_message(message) {
+		return this.request('Write/message', null, message)
+	},
+	
+	delete_message(id) {
+		return this.request(`Delete/message/${id}`, null, null)
+	},
+	
+	file_url(id, query) {
+		if (query)
+			return `https://${this.server}/File/raw/${id}?${query}`
+		return `https://${this.server}/File/raw/${id}`
+	},
+	
+	/*set_basic(data) {
 		return this.request2("User/basic", Entity.process_item.bind(Entity, 'user'), 'PUT', data)
 		// maybe it would be better to just pass the typename or something here? instead of entity.whatever
 	},
@@ -317,21 +320,6 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 		])
 	},
 	
-	send_message(message) {
-		return this.request('Write/message', null, message)
-	},
-	
-	delete_message(id) {
-		return this.request(`Delete/message/${id}`, null, null)
-	},
-	
-	file_url(id, query) {
-		if (query)
-			return `https://${this.server}/File/raw/${id}?${query}`
-		return `https://${this.server}/File/raw/${id}`
-	},
+,*/
 }
 Object.seal(Req)
-
-if (0)
-	server = protocol+"//newdev.smilebasicsource.com/api"

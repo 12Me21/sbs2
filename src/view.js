@@ -250,8 +250,13 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 			} else {
 				handle(attempt.bind(
 					null,
-					"render failed in view.render",
-					view.render.bind(view, entitys, data.ext)))
+					"render failed in view.render", ()=>{
+						if (!view.did_init && view.init) {
+							view.init()
+							view.did_init = true
+						}
+						view.render(entitys, data.ext)
+					}))
 			}
 		})
 /*		, (e, resp)=>{
@@ -275,18 +280,6 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 	},
 	
 	onload() {
-		// initialize all views
-		Object.for(views, (view)=>{
-			try {
-				view.init && view.init()
-			} catch(e) {
-				print("error in view init! ", view.name)
-				console.error("Error in view init!", e)
-			}
-			// maybe we can just call these the first time the view is visited instead of right away,
-			// though none of them should really take a significant amount of time, so whatver
-		})
-		
 		// draw buttons
 		// i really don't like this
 		for (let button of document.querySelectorAll("button:not([data-noreplace])")) {
@@ -351,6 +344,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 		if (!data.className)
 			data.className = name
 		views[name] = data
+		data.did_init = false
 		Object.seal(data)
 	},
 	

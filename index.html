@@ -306,13 +306,15 @@
 
 </body>
 <script hidden>
-	// whitespace between nodes in html (due to line breaks, indentation, etc.) creates text nodes which need to be stripped:
-	let walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {acceptNode: node => !node.textContent.trim()})
-	let blank_nodes = []
-	while (walker.nextNode())
-		blank_nodes.push(walker.currentNode)
-	// remove in 1 step rather than calling .remove() one at a time
-	document.createElement('gay-baby-jail').append(...blank_nodes)
-	//console.log("removed "+blank_nodes.length+" blank text nodes")
-	console.log("🌅 removed blank textnodes")
+	{
+		// whitespace between nodes in html (due to line breaks, indentation, etc.) creates text nodes which need to be stripped:
+		let walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {acceptNode: node => !node.textContent.trim()})
+		let blank_nodes = []
+		while (walker.nextNode())
+			blank_nodes.push(walker.currentNode)
+		// remove in 1 step rather than calling .remove() one at a time
+		document.createElement('gay-baby-jail').append(...blank_nodes)
+		//console.log("removed "+blank_nodes.length+" blank text nodes")
+		console.log("🌅 removed blank textnodes")
+	}
 </script>
