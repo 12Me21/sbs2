@@ -7,12 +7,26 @@ let Act = function(){"use strict"; return singleton({
 	// i.e. pages with recent activity, displayed in the sidebar
 	items: {},
 	
-	// might be worth speeding up in entity.js (100ms)
 	pull_recent() {
-		let day = 1000*60*60*24
-		let start = new Date(Date.now() - day).toISOString()
-		// "except no that won't work if site dies lol"
-		Req.chain([
+		let start = new Date()
+		start.setDate(start.getDate() - 1)
+		Lp.chain({
+			values: {
+				yesterday: start,
+			},
+			requests: [
+				{type:'message_aggregate', fields:"contentId, createUserId, maxCreateDate, count", query:"createDate > @yesterday"},
+				{type:'message', fields:"*", query:"!notdeleted()", order:'id_desc', limit:50},
+				{type:'content', fields:"name, id, permissions, contentType", query:"id in @message_aggregate.contentId or id in @message.contentId"},
+				{type:'user', fields:"*", query:"id in @message_aggregate.createUserId or id in @message.createUserId"},
+				// todo: activity
+			]
+		}, ({message})=>{
+			Sidebar.display_messages(message.reverse(), true)
+		})
+		
+		
+		/*Req.chain([
 			['activity', {createStart: start}],
 			['comment~Mall', {reverse: true, limit: 1000}],
 			['activity~Awatching', {contentLimit:{watches:true}}],
@@ -30,7 +44,7 @@ let Act = function(){"use strict"; return singleton({
 			})
 		}, (e, resp)=>{
 			print("initial activity failed!")
-		})
+		})*/
 	},
 	
 	// if an item exists for that id, return it
