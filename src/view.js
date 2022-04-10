@@ -137,9 +137,9 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 		View.flag('mobileSidebar', false) //bad (should be function on Sidebar)
 		// todo: why are we doing this NOW instead of preemptively?
 		if (Req.auth) {
-			Lp.set_listening(ChatRoom.listening_rooms())
-			Lp.set_statuses(ChatRoom.generateStatus())
-			Lp.refresh()
+			//Lp.set_listening(ChatRoom.listening_rooms())
+			//Lp.set_statuses(ChatRoom.generateStatus())
+			//Lp.refresh()
 		}
 		//$main.scrollTop = 0 TODO, scroll the correct element here
 		// todo: scroll to fragment element

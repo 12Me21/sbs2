@@ -378,7 +378,6 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 	
 })}()
 
-
 // todo: when starting to render any page
 //- run generatestatus and generatelisteners
 //- if changed, refresh long poller with new data
