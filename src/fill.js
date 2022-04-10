@@ -1,50 +1,29 @@
 // this file runs first (probably lol)
-
-// relatively safe
-delete Array.prototype.toString
-//delete Object.prototype.toString
 // ⚠ DANGER! ⚠ //
-window.hasOwnProperty = Object.prototype.hasOwnProperty // firefox dev tools break otherwise
-Object.proto = Object.create(null)
-for (let key of Object.getOwnPropertyNames(Object.prototype)) {
-	Object.proto[key] = Object.prototype[key]
-	delete Object.prototype[key]
-}
-//Object.freeze(Object.prototype)
-/////////////////
 
-//usage:
-/*
-constructor(...) {
-	super() // do not pass args here!
-	this.trim_stack()
-	this.message = "..." // set message like this instead
-	...
-}
-*/
+// ⚡ Remove all properties of `Object.prototype`
+// - create backups:
+window.hasOwnProperty = {}.hasOwnProperty // (ff devtools needs this)
+Object.proto = Object.getOwnPropertyDescriptors(Object.prototype)
+// - remove properties:
+for (let key of Object.getOwnPropertyNames(Object.prototype))
+	delete Object.prototype[key]
+//Object.freeze(Object.prototype)
+
+// ⚡ Custom errors
+// call this immediately after super() (do not pass args to super)
 Error.prototype.trim_stack = function(levels=1) {
 	while (levels-->0)
 		this.stack = this.stack.replace(/^(?!Error\n).*\n/, "")
 }
-
-// missing parameter detector
-// usage: function heck(a, b, c=~E) { ... }  -- c is now required
-function Unhandled_Callback(err, ...x) {
-	console.error("Unhandled Callback\n", err, ...x);
-}
 class ParamError extends Error {
-	constructor() {
+	constructor(name) {
 		super()
 		this.trim_stack(2)
+		this.message = `Undefined Argument: “${name}”`
 	}
 }
-ParamError.prototype.name = "Undefined Argument"
-const E = {
-	[Symbol.toPrimitive]: function Missing_Arg() {
-		throw new ParamError()
-	}
-}
-
+ParamError.prototype.name = "ParamError"
 class FieldError extends Error {
 	constructor(message, ...args) {
 		super()
@@ -53,14 +32,49 @@ class FieldError extends Error {
 		console.error(...args)
 	}
 }
+function Unhandled_Callback(err, ...x) {
+	console.error("Unhandled Callback\n", err, ...x);
+}
+
+// ⚡ Missing argument detector
+// use like: function heck(name=E.name) { ... } -- now `name` is required
+let E = new Proxy({}, {
+	get(t, name) { throw new ParamError(name) }
+})
+
+// ⚡ STRICT prototype - throws when accessing nonexistant fields
+function field_name(name) {
+	if (typeof name != 'string')
+		return `[${String(name)}]`
+	return `.${name}`
+}
 let STRICT = new Proxy(Object.create(null), {
 	get(t, name, obj) {
-		throw new FieldError("🚮 invalid field read", obj, "⛔."+String(name))
+		name = field_name(name)
+		throw new FieldError(
+			`🚮 invalid field read: ${name}`, obj, `⛔${name}`)
 	},
 	set(t, name, value, obj) {
-		throw new FieldError("🚮 invalid field write", obj, "⛔."+String(name)+" =", value)
+		name = field_name(name)
+		throw new FieldError(
+			`🚮 invalid field write: ${name}`, obj, `⛔${name} =`, value)
 	},
 })
+// ⚡ NO_CONVERT - prevents type conversions
+// assign to Type.prototype[Symbol.toPrimitive]
+// note: will override .toString/.valueOf on any inheriting types
+function NO_CONVERT(type) {
+	if (type=='default') type='Primitive'
+	if (type=='number') type='Number'
+	if (type=='string') type='String'
+	throw new FieldError("🚮 invalid type conversion", this, "⛔ to "+type)
+}
+Error.prototype[Symbol.toPrimitive] = Error.prototype.toString
+Object.prototype[Symbol.toPrimitive] = NO_CONVERT
+
+
+// (end of scary part)
+
 
 // wow an actual 
 if (!Array.prototype.findLast)
