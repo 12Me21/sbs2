@@ -43,8 +43,6 @@ class ApiSocket {
 		delete this.requests[id]
 	}
 	handle_response({type, id, data:body, error}) {
-		let entitys = body.data
-		
 		let request
 		if (id) {
 			request = this.requests[id]
@@ -56,6 +54,7 @@ class ApiSocket {
 			console.error("error from", request, "\n→", error)
 			throw new Error("invalid websocket request!")
 		}
+		let entitys = body.data
 		if (type=='live') {
 			this.last_id = body.lastId
 			if (entitys.message)

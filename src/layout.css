@@ -387,7 +387,7 @@ sidebar-panel
 /* maybe also .resize-box > .grow ? */
 {
 	contain: strict;
-	background: var(--mainbgcolor);
+	background: var(--mainbg);
 }
 /* this element isn't sized based on contents */
 .resize-box > .grow {

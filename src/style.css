@@ -2,7 +2,7 @@
 
 html {
 	background: #FEE; /* for debug */
-	color: var(--maintxtcolor);
+	color: var(--maincolor);
 	font-family: roboto, sans-serif;
 	/*line-height: 1.2;*/
 	/* disable ligatures like fi ffi etc. */
@@ -63,8 +63,8 @@ textarea {
 	box-shadow: 0.1rem 0.2rem 0.3rem -0.2rem rgba(13,13,13,0.5);
 	font-family: roboto, sans-serif;
 	font-size: 0.8em;
-	color: var(--maintxtcolor);
-	background-color: var(--mainbgcolor);
+	color: var(--maincolor);
+	background-color: var(--mainbg);
 	white-space: break-spaces; /* optional */
 }
 
@@ -256,7 +256,7 @@ html:not(.f-canEdit) .canEdit {
 }
 
 sidebar-container {
-	background: var(--mainbgcolor);
+	background: var(--mainbg);
 	width: 30vw; /* just a default */
 	min-width: 10vw;
 	z-index: 20;
@@ -284,7 +284,7 @@ sidebar-container {
  *******************/
 .linkBar {
 	display: block;
-	background: var(--mainbgcolor);
+	background: var(--mainbg);
 	
 	padding: 0.2rem;
 	padding-top: 0.15rem;
@@ -380,7 +380,7 @@ message-contents {
 	/* do we need all these */
 	overflow-y: hidden; /* i think this one is for compat? */
 	overflow-y: clip;
-	background: var(--mainbgcolor);
+	background: var(--mainbg);
 	
 	contain: none; /* because of overlapping with avatar */
 }
@@ -668,7 +668,7 @@ input, output, select {
 	border-style: solid;
 	border-color: var(--input-border-color);
 	border-radius: 1px;
-	background-color: var(--mainbgcolor);
+	background-color: var(--mainbg);
 }
 input, select { /* this is old & probably not needed */
 	min-width: 0;
@@ -716,7 +716,7 @@ input:invalid {
 textarea-container {
 	border: 2px solid #00C8B4;
 	padding: 5px;
-	background: var(--mainbgcolor);
+	background: var(--mainbg);
 }
 textarea-container > textarea {
 	height: 2.5em;
@@ -806,7 +806,7 @@ textarea-container, textarea-container > textarea {
 	padding-left: 0.2rem;
 	padding-top: 1px;
 	padding-bottom: 1px;
-	background: var(--mainbgcolor);
+	background: var(--mainbg);
 }
 
 activity-users {

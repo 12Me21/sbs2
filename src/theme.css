@@ -7,7 +7,7 @@ todo: look into https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#sys
 html {
 	color-scheme: light;
 	/* text colors (black) */
-	--maintxtcolor: black;
+	--maincolor: black;
 	--linkcolor: #045;
 	--link-hover-color: rgb(0,150,136);
 	--link-bg-color: #E5E5FF;
@@ -16,7 +16,7 @@ html {
 	--chat-dim-color: #666;
 	--image-border-color: silver;
 	/* background colors (white) */
-	--mainbgcolor: white;
+	--mainbg: white;
 	--avatar-bg: white;
 	--button-hover-color: #59E;
 	--message-hover-bg: #DDD;
@@ -50,7 +50,7 @@ html {
 
 html[data-theme="dark"], html.f-dark:not([data-theme]) {
 	color-scheme: dark;
-	--maintxtcolor: white;
+	--maincolor: white;
 	--linkcolor: #9CE;
 	--link-hover-color: #5CE;
 	--link-bg-color: #156;
@@ -59,7 +59,7 @@ html[data-theme="dark"], html.f-dark:not([data-theme]) {
 	--chat-dim-color: #666;
 	--image-border-color: gray;
 	
-	--mainbgcolor: #292929;
+	--mainbg: #292929;
 	--avatar-bg: gray;
 	--button-hover-color: #59E;
 	--bar-bg: #555;
@@ -78,7 +78,7 @@ html[data-theme="dark"], html.f-dark:not([data-theme]) {
 	--edit-textarea-bg: #750;
 	--normal-shadow: 0 2px 3px rgba(0,0,0,0.3);
 	/* in dark theme, the inverted colors are just normal dark */
-	--databartxtcolor: var(--maintxtcolor);
+	--databartxtcolor: var(--maincolor);
 	--link-invert-color: var(--linkcolor);
 	--link-invert-hover-color: var(--link-hover-color);
 	
