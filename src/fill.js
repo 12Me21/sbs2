@@ -13,29 +13,11 @@ for (let key of Object.getOwnPropertyNames(Object.prototype)) {
 //Object.freeze(Object.prototype)
 /////////////////
 
-function Unhandled_Callback(err, ...x) {
-	console.error("Unhandled Callback\n", err, ...x);
-}
-
-class ParamError extends Error {
-	constructor() {
-		super()
-		this.trim_stack(2)
-	}
-}
-ParamError.prototype.name = "Undefined Argument"
-
-const E = {
-	[Symbol.toPrimitive]: function Missing_Arg() {
-		throw new ParamError()
-	}
-}
-
 //usage:
 /*
 constructor(...) {
 	super() // do not pass args here!
-	this.trim_stack(1)
+	this.trim_stack()
 	this.message = "..." // set message like this instead
 	...
 }
@@ -43,6 +25,24 @@ constructor(...) {
 Error.prototype.trim_stack = function(levels=1) {
 	while (levels-->0)
 		this.stack = this.stack.replace(/^(?!Error\n).*\n/, "")
+}
+
+// missing parameter detector
+// usage: function heck(a, b, c=~E) { ... }  -- c is now required
+function Unhandled_Callback(err, ...x) {
+	console.error("Unhandled Callback\n", err, ...x);
+}
+class ParamError extends Error {
+	constructor() {
+		super()
+		this.trim_stack(2)
+	}
+}
+ParamError.prototype.name = "Undefined Argument"
+const E = {
+	[Symbol.toPrimitive]: function Missing_Arg() {
+		throw new ParamError()
+	}
 }
 
 class FieldError extends Error {
@@ -53,7 +53,6 @@ class FieldError extends Error {
 		console.error(...args)
 	}
 }
-
 let STRICT = new Proxy(Object.create(null), {
 	get(t, name, obj) {
 		throw new FieldError("🚮 invalid field read", obj, "⛔."+String(name))
@@ -63,6 +62,7 @@ let STRICT = new Proxy(Object.create(null), {
 	},
 })
 
+// wow an actual 
 if (!Array.prototype.findLast)
 	Array.prototype.findLast = function(filter) {
 		for (let i=this.length-1; i>=0; i--) {
@@ -124,24 +124,11 @@ JSON.to_blob = function(obj) {
 	return new Blob([JSON.stringify(obj)], {type: "application/json;charset=UTF-8"})
 }
 
-// creating our own storage system, to deal with compatibility + exceptions
+// do we really need this...
 let Store = {
-	// value: string
-	set(name, value) {
-		try {
-			localStorage.setItem(name, value)
-		} catch(e) {
-			return false
-		}
-		return true
-	},
-	// returns a string if the value exists, otherwise null
-	get(name) {
-		return localStorage.getItem(name)
-	},
-	remove(name) {
-		localStorage.removeItem(name)
-	},
+	set: localStorage.setItem.bind(localStorage),
+	get: localStorage.getItem.bind(localStorage),
+	remove: localStorage.getItem.bind(localStorage),
 }
 
 // these are kinda bad, both based on Array.forEach() which is [value,key] while here [key,value] would make more sense.
@@ -168,7 +155,7 @@ Object.is_plain = function(x) {
 	return x && Object.getPrototypeOf(x)==Object.prototype
 }
 
-// use this instead of String.prototype.match(regexp)
+// this is just exec but safer i guess...
 RegExp.prototype.rmatch = function(str) {
 	if (typeof str != 'string')
 		throw new TypeError("RegExp.rmatch() expects string")
