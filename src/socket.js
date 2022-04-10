@@ -54,7 +54,7 @@ class ApiSocket {
 			console.error("error from", request, "\n→", error)
 			throw new Error("invalid websocket request!")
 		}
-		let entitys = body.data
+		let entitys = body.objects
 		if (type=='live') {
 			this.last_id = body.lastId
 			if (entitys.message)
