@@ -74,7 +74,7 @@ class ApiSocket {
 		for (let {refId, type, action, userId, date, id} of events) {
 			let elistmap = entitys[type]
 			switch (type) {
-			case 'message':
+			case 'message_event':
 				let m = elistmap.message["-"+refId]
 				Sidebar.display_messages([m])
 				ChatRoom.display_messages([m])
