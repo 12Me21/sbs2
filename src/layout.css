@@ -22,7 +22,7 @@ html {
 	line-height: inherit;
 	font-variant-ligatures: inherit;
 	/* to be safe */
-	contain: content; /* optional */
+	contain: paint; /* optional */
 }
 
 /* always display images at correct aspect ratio, even if the element is the wrong size */
