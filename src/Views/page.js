@@ -63,11 +63,10 @@ View.add_view('page', {
 		room.pinned = z
 		this.render_page(page)
 	},
-	render(resp, ext) {
-		let comments = resp.message
-		comments.reverse()
-		let page = resp.content[0]
-//		let pinned = resp.Mpinned
+	render(objects, ext) {
+		let comments = objects.message.reverse()
+		let page = objects.content[0]
+//		let pinned = objects.Mpinned
 		
 		// TODO: should we be calling this again every time?
 //		Act.new_page_comments(page, comments)

@@ -5,12 +5,13 @@ for (let type_name in ABOUT.details.types) {
 	let field_defaults = ABOUT.details.objects[type_name]
 	let writables = {}
 	let proto = {
-		toJSON: {}, //idea: keep track of whether an object was requested with fields=*, and prevent posting it otherwise
-		then: {},
+		// common methods
+		toJSON: {}, // JSON.stringify() etc.
+		then: {}, // Promise, await
+		[Symbol.toPrimitive]: {value:NO_CONVERT}, // conversions
+		// type info
 		Type: {value: type_name},
 		Fields: {value: field_datas},
-		// temp: 
-		name: {get() { return this.username }},
 	}
 	if (type_name == 'message') {
 		proto.Author = {value: Object.freeze({
@@ -96,7 +97,7 @@ let Entity = (()=>{"use strict"; return singleton({
 	},
 	
 	comment_merge_hash(comment) {
-		let user = comment.createUser || {}
+		let user = comment.Author
 		return `${comment.contentId},${comment.createUserId},${user.avatar},${user.bigAvatar||""},${user.username} ${user.nickname || ""}`
 	},
 	
@@ -119,6 +120,8 @@ let Entity = (()=>{"use strict"; return singleton({
 	
 	do_listmap(listmap) {
 		Object.for(listmap, (list, name) => this.do_list(list, name))
+		if (listmap.message && listmap.user)
+			this.link_comments(listmap)
 	},
 	
 	do_list(list, name) {
@@ -137,23 +140,22 @@ let Entity = (()=>{"use strict"; return singleton({
 			let user = users[~message.createUserId]
 			if (!user)
 				continue
-			message.Author = {
-				bigAvatar: message.values.big,
+			// maybe just have a setter so you can do message.Author = user and then it assigns the fields...
+			let author = {
 				username: user.username,
 			}
-			
-			let av = data.values.a
+			// normal avatar
+			let av = message.values.a
 			if (av && ('string'==typeof av || 'number'==typeof av))
-				message.Author.avatar = av
+				author.avatar = av
 			else
-				message.Author.avatar = user.avatar
-			
-			let ab = data.values.big
+				author.avatar = user.avatar
+			// bigavatar
+			let ab = message.values.big
 			if (ab && ('string'==typeof ab || 'number'==typeof ab))
-				message.Author.bigAvatar = ab
-			
-			// == name ==
-			message.Author.username = user.username
+				author.bigAvatar = ab
+			// == names ==
+			author.username = user.username
 			let nick = null
 			// message from discord bridge
 			let bridge = 'string'==typeof message.values.b
@@ -166,17 +168,12 @@ let Entity = (()=>{"use strict"; return singleton({
 			if (nick != null) {
 				nick = this.filter_nickname(nick)
 				if (bridge)
-					message.Author.username = nick
-				message.Author.nick = nick
-				message.Author.realname = user.username
+					author.username = nick
+				author.nickname = nick
+				author.realname = user.username
 			}
 			
-			// we need:
-			// - avatar
-			// - bigavatar
-			// - realname (usually = username, except for bridge messages)
-			// - nickname
-			// - username
+			Object.defineProperty(message, 'Author', {value:author, writable:true});
 		}
 	},
 	

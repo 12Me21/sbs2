@@ -234,42 +234,34 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	//   <message-contents></message-contents>
 	// </message-block>
 	message_block(comment) {
-		let user = comment.createUser
+		let author = comment.Author
 		let date = comment.createDate2
 		//outer
 		let div = E`message-block`
 		div.dataset.uid = comment.createUserId
 		div.dataset.merge = Entity.comment_merge_hash(comment)
 		// avatar
-		if (user.bigAvatar) {
+		if (author.bigAvatar) {
 			let d = div.child('div', 'bigAvatar')
-			d.style.backgroundImage = "url("+Req.file_url(user.bigAvatar, "size=500")+")"
+			d.style.backgroundImage = "url("+Req.file_url(author.bigAvatar, "size=500")+")"
 		} else {
-			div.append(avatar(user))
+			div.append(avatar(author))
 		}
 		// username
 		let label = div.child('message-header')
 		let name = label.child('span')
 		let n = name.child('span', 'pre username')
-		let v = comment.values
-		let nickname, realname
-		if (v) {
-			if (v.n!=undefined) {
-				nickname = v.n
-				realname = user.username
-			}
-		}
 		// if nickname is set, render as "nickname (realname):"
-		if (nickname != null) {
-			n.textContent = nickname
+		if (author.nickname != null) {
+			n.textContent = author.nickname
 			let ns = EC('span', 'real-name-label')
 			name.append(":", ns)
 			let real = EC('span', 'pre')
-			real.textContent = realname
+			real.textContent = author.realname
 			ns.append(" (", real, ")")
 		} else {
 			// otherwise render as "name:"
-			n.textContent = user.username
+			n.textContent = author.username
 			name.append(":")
 		}
 		// time
@@ -820,16 +812,16 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	sidebar_comment(comment) {
 		let d = EC('div', 'bar rem1-5 sidebarComment ellipsis')
 		d.dataset.id = comment.id
-		d.title = `${comment.createUserId.name} in ${comment.contentId}:\n${comment.text}` // todo: page name 🥺  oh︕ emojis render in italic? don't remember adding that...   we should store refs to pages but like intern them so its not a memory leak...
+		d.title = `${comment.Author.username} in ${comment.contentId}:\n${comment.text}` // todo: page name 🥺  oh︕ emojis render in italic? don't remember adding that...   we should store refs to pages but like intern them so its not a memory leak...
 		
-		if (comment.editDate && comment.editUserId!=comment.createUserId) {
+/*		if (comment.editDate && comment.editUserId!=comment.createUserId) {
 			d.append(
 				entity_title_link(comment.editUser),
 				" edited ",
 			)
-		}
+		}*/
 		d.append(
-			entity_title_link(comment.createUser),
+			//entity_title_link(comment.createUser),
 			": ",
 			comment.text.replace(/\n/g, "  "),
 		)

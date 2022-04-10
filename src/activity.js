@@ -21,9 +21,9 @@ let Act = function(){"use strict"; return singleton({
 				{type:'user', fields:"*", query:"id in @message_aggregate.createUserId or id in @message.createUserId"},
 				// todo: activity
 			]
-		}, ({message})=>{
+		}, (objects)=>{
 			// TODO: ensure that these are displayed BEFORE any websocket new messages
-			Sidebar.display_messages(message.reverse(), true)
+			Sidebar.display_messages(objects.message.reverse(), true)
 		})
 		
 		

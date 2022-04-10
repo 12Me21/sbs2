@@ -79,8 +79,7 @@ class ApiSocket {
 			switch (type) { default: {
 				console.warn("unhandled event: ", type, events)
 			} break; case 'message_event': {
-				Entity.link_comments(elistmap)
-				let message = elistmap.message[~refId]
+				let message = [elistmap.message[~refId]]
 				Sidebar.display_messages(message)
 				ChatRoom.display_messages(message)
 			} break; case 'user_event': {

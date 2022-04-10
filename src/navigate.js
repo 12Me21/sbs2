@@ -70,11 +70,7 @@ const Nav = {
 		View.handle_view(location, callback)
 	},
 	
-	reload() {
-		let url = document.location.href
-		window.history.replaceState(null, "", "?⌛")
-		document.location.replace(url)
-	},
+	reload: RELOAD,
 }
 Object.seal(Nav)
 

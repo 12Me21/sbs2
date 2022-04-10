@@ -154,6 +154,7 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 			return ""
 		return "?"+params.join("&")
 	},
+	//idea: keep track of whether an object was requested with fields=*, and prevent posting it otherwise
 	
 	// idk having all brackets bold + dimgray was kinda nice...
 	// i dont like how proc is required but h

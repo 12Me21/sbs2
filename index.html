@@ -15,8 +15,15 @@
 <script>
 	window.onerror = function(message, source, line, col, error) {
 		window.setTimeout(function() {
-			alert("ERROR DURING PAGE LOAD!\n"+message+"\nin "+source+"\nat "+line+":"+col)
+			if (confirm("ERROR DURING PAGE LOAD!\n"+message+"\nin "+source+"\nat "+line+":"+col+"\n[Cancel] = reload page"))
+				return
+			RELOAD()
 		}, 0)
+	}
+	function RELOAD() {
+		var l=window.location.href
+		window.history.replaceState(null, "", "?⌛")
+		window.location.replace(l)
 	}
 </script>
 
@@ -257,7 +264,7 @@
 			</sidebar-panel>
 			<sidebar-panel id=$sidebarUserPanel>
 				<div class='registerBox'>
-					<button onclick='var l=location.href;history.replaceState(null, "", "?⌛");location.replace(l)'>Reload Page</button>
+					<button onclick='RELOAD()'>Reload Page</button>
 					<button class='rightAlign' id=$logOut>Log out</button>
 				</div>
 				<div class='loggedOut'>
