@@ -11,9 +11,15 @@ for (let type_name in ABOUT.details.types) {
 		Fields: {value: field_datas},
 		// temp: 
 		name: {get() { return this.username }},
-		bigAvatar: {value: null},
-		nickname: {value: null},
-		realname: {value: null},
+	}
+	if (type_name == 'message') {
+		proto.Author = {value: Object.freeze({
+			avatar: "0",
+			bigAvatar: null,
+			realname: "",
+			nickname: "",
+			username: "",
+		})}
 	}
 	for (let field_name in field_datas) {
 		let field_data = field_datas[field_name]
@@ -26,30 +32,10 @@ for (let type_name in ABOUT.details.types) {
 			}}
 	}
 	proto = Object.create(STRICT, proto)
-	let cons
-	if (type_name=='message')
-		cons = (o=~E, u)=>{
-			// TODO: this is kinda a memory leak, 
-			// we really only need like, avatar and etc.
-			map_user(o, 'createUser', u)
-			map_user(o, 'editUser', u)
-			Object.setPrototypeOf(o, proto)
-			return o
-		}
-	else 
-		cons = (o=~E, u)=>{
-			/*for (let field_name in o) {
-			  let field_data = field_datas[field_name]
-			  let writable = field_data.writableOnInsert || field_data.writableOnUpdate
-			  Object.defineProperty(o, field_name, {
-			  value: o[field_name], 
-			  })
-			  }*/
-			
-			Object.setPrototypeOf(o, proto)
-			return o
-			//Object.defineProperties(this, Object.getOwnPropertyDescriptors(o))
-		}
+	let cons = (o=~E)=>{
+		Object.setPrototypeOf(o, proto)
+		return o
+	}
 	TYPES[type_name] = cons
 }
 
@@ -127,55 +113,83 @@ let Entity = (()=>{"use strict"; return singleton({
 		return x.split(/[, ]+/).filter(x=>/^\d+$/.test(x)).map(x=>+x)
 	},
 	
-	process(data=~E) {
-		// build user map first
-		let user_map = {}
-		
-		if (data.user)
-			for (let user of data.user)
-				user_map[user.id] = user
-		
-		Object.for(data, (list, name)=>{
-			let type = this.key_type(name)
-			this.process_list(type, list, user_map)
-		})
-		
-		/*if (resp.Ctree)
-			this.process_list('category', resp.Ctree, users)*/
-		
-		data.user_map = user_map
-		
-		/*if (this.got_new_category) {
-			this.rebuildCategoryTree()
-			window.setTimeout(()=>{
-				this.onCategoryUpdate && this.onCategoryUpdate(this.category_map)
-			}, 0)
-		}*/
-		return data // for convenienece
+	do_listmapmap(listmapmap) {
+		Object.for(listmapmap, (listmap) => this.do_listmap(listmap))
 	},
+	
+	do_listmap(listmap) {
+		Object.for(listmap, (list, name) => this.do_list(list, name))
+	},
+	
+	do_list(list, name) {
+		let type = this.key_type(name)
+		let cons = TYPES[type]
+		for (let entity of list)
+			list[~entity.id] = cons(entity)
+		// using ~ on the id will map 0 → -1, 1 → -2, 2 → -3 etc.
+		// this avoids nonnegative integer keys,
+		// since the order of those isn't preserved,
+	},
+	
+	// link user data with comments
+	link_comments({message:messages, user:users}) {
+		for (let message of messages) {
+			let user = users[~message.createUserId]
+			if (!user)
+				continue
+			message.Author = {
+				bigAvatar: message.values.big,
+				username: user.username,
+			}
+			
+			let av = data.values.a
+			if (av && ('string'==typeof av || 'number'==typeof av))
+				message.Author.avatar = av
+			else
+				message.Author.avatar = user.avatar
+			
+			let ab = data.values.big
+			if (ab && ('string'==typeof ab || 'number'==typeof ab))
+				message.Author.bigAvatar = ab
+			
+			// == name ==
+			message.Author.username = user.username
+			let nick = null
+			// message from discord bridge
+			let bridge = 'string'==typeof message.values.b
+			if (bridge)
+				nick = message.values.b
+			// regular nickname
+			if ('string'==typeof message.values.n)
+				nick = message.values.n
+			
+			if (nick != null) {
+				nick = this.filter_nickname(nick)
+				if (bridge)
+					message.Author.username = nick
+				message.Author.nick = nick
+				message.Author.realname = user.username
+			}
+			
+			// we need:
+			// - avatar
+			// - bigavatar
+			// - realname (usually = username, except for bridge messages)
+			// - nickname
+			// - username
+		}
+	},
+	
 	key_type(key) {
 		return {
 			A: 'activity',
 			U: 'user',
 			C: 'content',
 			M: 'message',
-			G: 'commentaggregate', // ran out of letters
+			G: 'message_aggregate', // ran out of letters
 		}[key[0]] || key
 	},
-	process_item(type=~E, item=~E, users) {
-		if (TYPES[type])
-			TYPES[type](item, users)
-		return item
-	},
-	process_list(type=~E, list=~E, users) {
-		if (TYPES[type])
-			for (let item of list) {
-				list["-"+item.id] = TYPES[type](item, users)
-				// we use a "-" prefix for the map keys, since
-				// we want to preserve the order
-				// so the keys can't be nonnegative integers
-			}
-	},
+	
 	// editUserId -> editUser
 	// createUserId -> createUser
 	// editDate
@@ -241,6 +255,6 @@ let Entity = (()=>{"use strict"; return singleton({
 	},*/
 	// return: [text, metadata]
 	is_new_comment(c) {
-		return !c.deleted && (+c.editDate == +c.createDate)
+		return !c.deleted && !c.editDate
 	},
 })})()

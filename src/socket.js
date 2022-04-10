@@ -1,10 +1,10 @@
 class ApiSocket {
 	constructor() {
-		this.requests = {}
+		this.handlers = {}
 		this.ready = false
 		this.last_id = ""
 		this.processed_listeners = {}
-		this.request_id = 1
+		this.handler_id = 1
 	}
 	set_listening(){}
 	set_statuses(){}
@@ -16,8 +16,8 @@ class ApiSocket {
 		this.websocket = new WebSocket(`wss://${Req.server}/live/ws?lastId=${this.last_id}&token=${encodeURIComponent(Req.auth)}`)
 		this.websocket.onopen = (e)=>{
 			console.log("🌄 websocket open")
-			for (let i in this.requests)
-				this.send(this.requests[i].data)
+			for (let i in this.handlers)
+				this.send(this.handlers[i].data)
 			this.ready = true
 		}
 		this.websocket.onclose = (e)=>{
@@ -33,50 +33,60 @@ class ApiSocket {
 		this.websocket.send(JSON.stringify(data))
 	}
 	chain(data, callback=console.info) {
-		data = {type:'request', data, id:this.request_id++}
-		this.requests[data.id] = {data, callback}
+		data = {type:'request', data, id:this.handler_id++}
+		this.handlers[data.id] = {data, callback}
 		if (this.ready)
 			this.send(data)
 		return {id: data.id}
 	}
 	cancel({id}) {
-		delete this.requests[id]
+		delete this.handlers[id]
 	}
 	handle_response({type, id, data:body, error}) {
-		let request
+		let handler
 		if (id) {
-			request = this.requests[id]
-			delete this.requests[id]
-			if (!request)
+			handler = this.handlers[id]
+			delete this.handlers[id]
+			if (!handler)
 				console.warn("got response without callback! id:"+id)
 		}
 		if (error) {
-			console.error("error from", request, "\n→", error)
+			console.error("error from", handler, "\n→", error)
 			throw new Error("invalid websocket request!")
 		}
-		let entitys = body.objects
-		if (type=='live') {
-			this.last_id = body.lastId
-			for (let ev in entitys)
-				Entity.process(entitys[ev])
-			this.process_live(body.events, entitys)
-		} else if (type=='userlistupdate') {
-			Entity.process(entitys)
-		} else if (type=='request') {
-			Entity.process(entitys)
-			if (request)
-				request.callback(entitys)
-		}
+		
+		switch (type) { default: {
+			console.warn("unhandled response: ", type, body)
+		} break;case 'live': {
+			let {objects:entitys, events, lastId} = body
+			this.last_id = lastId
+			Entity.do_listmapmap(entitys)
+			this.process_live(events, entitys)
+		} break;case 'userlistupdate': {
+			let {objects:entitys} = body
+			Entity.do_listmap(entitys)
+			// todo:
+		} break;case 'request': {
+			let {objects:entitys} = body
+			Entity.do_listmap(entitys)
+			if (handler)
+				handler.callback(entitys)
+		}}
 	}
 	process_live(events, entitys) {
 		for (let {refId, type, action, userId, date, id} of events) {
 			let elistmap = entitys[type]
-			switch (type) {
-			case 'message_event':
-				let m = elistmap.message["-"+refId]
-				Sidebar.display_messages([m])
-				ChatRoom.display_messages([m])
-			}
+			switch (type) { default: {
+				console.warn("unhandled event: ", type, events)
+			} break; case 'message_event': {
+				Entity.link_comments(elistmap)
+				let message = elistmap.message[~refId]
+				Sidebar.display_messages(message)
+				ChatRoom.display_messages(message)
+			} break; case 'user_event': {
+				let user = elistmap.user[~refId]
+				ChatRoom.update_avatar(user)
+			}}
 		}
 	}
 }

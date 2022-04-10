@@ -22,6 +22,7 @@ let Act = function(){"use strict"; return singleton({
 				// todo: activity
 			]
 		}, ({message})=>{
+			// TODO: ensure that these are displayed BEFORE any websocket new messages
 			Sidebar.display_messages(message.reverse(), true)
 		})
 		

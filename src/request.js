@@ -166,7 +166,7 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 	// idea: function.valueOf calls the function and returns um ..   something.. .chaining .. mmmm
 	
 	chain(data) {
-		return ApiRequest.bind(null, 'request', 'POST', JSON.to_blob(data), {proc: resp=>Entity.process(resp.data)})
+		return ApiRequest.bind(null, 'request', 'POST', JSON.to_blob(data), {proc: resp=>Entity.do_listmap(resp.data)})
 	},
 	
 	/////////////////////////
@@ -216,7 +216,7 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 		// we can just tell it what type of data to expect
 		// this will just be like either
 		// a single entity, or ws response, or api/request response
-		return this.request("User/me", Entity.process_item.bind(Entity, 'user'))
+		return this.request("User/me", TYPES.user)
 	},
 	
 	send_message(message) {
