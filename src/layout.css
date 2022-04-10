@@ -43,13 +43,7 @@ img {
  ** Positioning **
  *****************/
 
-html {
-	position: fixed;
-	overflow: hidden;
-	contain: none;
-}
-
-body {
+tml, body {
 	position: fixed;
 	overflow: hidden;
 	top: 0;
