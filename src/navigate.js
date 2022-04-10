@@ -1,5 +1,6 @@
 // todo: navigate and view could maybe be merged?
 
+history.scrollRestoration = 'manual' // idk..
 
 Markup.url_scheme["sbs:"] = function(url) {
 	return "#"+url.pathname+url.search+url.hash
