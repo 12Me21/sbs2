@@ -389,11 +389,6 @@ sidebar-panel
 	contain: strict;
 }
 
-/* safari JUST broke this oh my god */
-scroll-outer {
-	contain: content !important;
-}
-
 /* their scrolling contents */
 .resize-box > *,
 scroll-outer > *,
