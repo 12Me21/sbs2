@@ -57,10 +57,8 @@ class ApiSocket {
 		let entitys = body.objects
 		if (type=='live') {
 			this.last_id = body.lastId
-			if (entitys.message)
-				Entity.process(entitys.message)
-			if (entitys.activity)
-				Entity.process(entitys.activity)
+			for (let ev in entitys)
+				Entity.process(entitys[ev])
 			this.process_live(body.events, entitys)
 		} else if (type=='userlistupdate') {
 			Entity.process(entitys)
