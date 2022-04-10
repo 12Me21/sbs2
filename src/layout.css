@@ -192,11 +192,11 @@ scroll-middle {
 	justify-content: flex-end;
 }
 scroll-middle * {
-	contain: paint;
+	contain: paint; /* safari */
 }
 scroll-inner {
 	display: block;
-	flex: 0 0 0;
+	flex: 0 0 0; /* safari */
 }
 
 /***************
