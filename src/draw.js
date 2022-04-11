@@ -203,50 +203,41 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return element
 	},
 	
-	// <chat-pane class='resize-box'>
-	//   <div class='sized page-container'>
-	//     [page info]
-	//     <div class='pageContents'></div>
-	//   </div>
-	//   <resize-handle></resize-handle>
-	//   <div class='bar rem2-3 userlist'>
-	//     <span></span>
-	//     [button]
-	//   </div>
-	//   <scroll-outer class='grow'>
-	//     <scroll-inner class='chatScroller'></scroll-inner>
-	//   </scroll-outer>
-	// </chat-pane>
-	chat_pane(page) {
-		// outer box element
-		let box = EC('chat-pane', 'resize-box')
+	chat_pane: function(page) {
+		let e = this.block()
 		// page element
-		let page1 = box.child('scroll-outer', 'sized page-container')
-		let info = page_info(page)
-		page1.append(info)
-		let page2 = page1.child('div', 'pageContents')
+		let page1 = e.firstChild
+		let page2 = page1.lastChild
 		// resize handle
-		let resize = box.child('resize-handle')
+		let resize = e.querySelector('resize-handle')
 		let height = null
-//		if (page.type == 'resource')
-//			height = 1000 //whatever
-//		else if (page.type == 'chat')
 		height = 0
-		View.attach_resize(page1, resize, false, 1, 'setting--divider-pos-'+page.id, null, height) // todo: save?
+		View.attach_resize(page1, resize, false, 1, 'setting--divider-pos-'+page.id, null, height)
 		// userlist
-		let list1 = box.child('div', 'bar rem2-3 userlist')
-		let list2 = list1.child('span')
-		list2.textContent = "..."
+		let list1 = e.querySelector('.userlist')
+		let list2 = list1.firstChild
 		let [b0,b1] = button()
 		b1.textContent = "Hide"
 		b0.className += " rightAlign item loggedIn"
 		list1.append(b0)
 		// scroller
-		let outer = box.child('scroll-outer', 'grow')
-		let inner = outer.child('scroll-inner', 'chatScroller')
-		//
-		return [box, page1, page2, outer, inner, list2, b1]
-	},
+		let outer = e.lastChild
+		let inner = outer.firstChild
+		return [e, page1, page2, outer, inner, list2, b1]
+	}.bind({
+		block: 𐀶`
+<chat-pane class='resize-box'>
+	<scroll-outer class='sized page-container'>
+		<div class='pageInfoPane rem2-3 bar'></div>
+		<div class='pageContents'></div>
+	</scroll-outer>
+	<resize-handle></resize-handle>
+	<div class='bar rem2-3 userlist'><span>...</span></div>
+	<scroll-outer class='grow'>
+		<scroll-inner class='chatScroller'></scroll-inner>
+	</scroll-outer>
+</chat-pane>
+`}),
 	
 	userlist_avatar(status) {
 		let a = link_avatar(status.user)
