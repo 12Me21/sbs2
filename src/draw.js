@@ -1,12 +1,46 @@
 /*Element.prototype.make = function() {
 	return this.cloneNode(true).getElementsByTagName('*')
-}
+}*/
 
 function 𐀶([html]) {
 	let temp = document.createElement('template')
-	temp.innerHTML = html
-	return temp.content.firstChild
+	temp.innerHTML = html.replace(/\n\s*/g,"")
+	let node = temp.content
+	if (node.childNodes.length==1)
+		node = node.firstChild
+	return node.cloneNode.bind(node, true)
+}
+
+
+/*
+	
+	let refs = {
+		clone() { return this.root.cloneNode(true) },
+		root: fragment,
+	}
+	if (fragment.childNodes.length==1)
+		refs.root = fragment.firstChild
+/*
+	let walker = document.createTreeWalker(fragment, NodeFilter.SHOW_ELEMENT)
+	for (let elem; elem=walker.nextNode(); ) {
+		let x = elem.getAttribute("@")
+		if (x) {
+			refs[x] = elem
+			elem.removeAttribute("@")
+		}
+		for (let attr of elem.attributes) {
+			if (attr.value.startsWith("@"))
+				refs[attr.value.substr(1)] = attr
+		}
+	}
+	
+	return refs
 }*/
+// idea: what if we did something like:
+// 𐀶`<div><span title=🕯a🕯>🕯b🕯</span></div>`
+// then, after parsing, we scan for those markers
+// <img src="🕯"
+
 
 // HTML RENDERING
 let Draw = Object.create(null)
@@ -221,18 +255,103 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return a
 	},
 	
-	// <message-block data-uid=... data-merge="...">
-	//   ? <div class='bigAvatar' style="background-image: ..."></div>
-	//   ? [avatar]
-	//   <message-header>
-	//     <span>
-	//       ? <span class='pre username'>...</span>: 
-	//       ? <span class='pre username'>...</span>: <span class='real-name-label'>(<span class='pre'>...</span>)</span>
-	//     </span>
-	//     <time datetime=...>...</time>
-	//   </message-header>
-	//   <message-contents></message-contents>
-	// </message-block>
+	message_block3: function(comment) {
+		let e = this.block()
+		let coll = e.getElementsByTagName('*')
+		
+		let author = comment.Author
+		
+		e.dataset.uid = comment.createUserId
+		e.dataset.merge = Entity.comment_merge_hash(comment)
+		
+		let avatar
+		if (author.bigAvatar) {
+			avatar = this.big_avatar()
+			avatar.style.backgroundImage = `url("${Req.file_url(author.bigAvatar, "size=500")}")`
+		} else {
+			avatar = this.avatar()
+			avatar.src = Req.file_url(author.avatar, "size=100&crop=true")
+		}
+		e.prepend(avatar)
+		
+		let name = e.querySelector('message-username') // todo: is queryselector ok?
+		if (author.nickname == null) {
+			coll[3].textContent = author.username
+		} else {
+			coll[3].textContent = author.realname
+			let nickname = this.nickname()
+			nickname.querySelector('.pre').textContent = author.nickname
+			coll[2].append(nickname)
+		}
+		
+		let time = coll[4]
+		time.setAttribute('datetime', comment.createDate)
+		time.textContent = timeString(comment.createDate2)
+		
+		return [e, coll[5]]
+	}.bind({
+		block: 𐀶`
+<message-block>
+	<message-header>
+		<message-username><span class='pre username'></span>:</message-username>
+		<time></time>
+	</message-header>
+	<message-contents></message-contents>
+</message-block>`,
+		nickname: 𐀶` <span class='real-name-label'>(<span class='pre'></span>)</span>`,
+		avatar: 𐀶`<img class='avatar' width=100 height=100 alt="">`,
+		big_avatar: 𐀶`<div class='bigAvatar'></div>`,
+	}),
+	
+	message_block2: function(comment) {
+		let e = this.block()
+		
+		let author = comment.Author
+		
+		e.dataset.uid = comment.createUserId
+		e.dataset.merge = Entity.comment_merge_hash(comment)
+		
+		let avatar
+		if (author.bigAvatar) {
+			avatar = this.big_avatar()
+			avatar.style.backgroundImage = `url("${Req.file_url(author.bigAvatar, "size=500")}")`
+		} else {
+			avatar = this.avatar()
+			avatar.src = Req.file_url(author.avatar, "size=100&crop=true")
+		}
+		e.prepend(avatar)
+		
+		let name = e.querySelector('message-username') // todo: is queryselector ok?
+		let username
+		if (author.nickname == null) {
+			username = author.username
+		} else {
+			username = author.realname
+			let nickname = this.nickname()
+			nickname.querySelector('.pre').textContent = author.nickname
+			name.append(nickname)
+		}
+		name.firstChild.textContent = username
+		
+		let time = e.querySelector('time')
+		time.setAttribute('datetime', comment.createDate)
+		time.textContent = timeString(comment.createDate2)
+		
+		return [e, e.lastChild]
+	}.bind({
+		block: 𐀶`
+<message-block>
+	<message-header>
+		<message-username><span class='pre username'></span>:</message-username>
+		<time></time>
+	</message-header>
+	<message-contents></message-contents>
+</message-block>`,
+		nickname: 𐀶` <span class='real-name-label'>(<span class='pre'></span>)</span>`,
+		avatar: 𐀶`<img class='avatar' width=100 height=100 alt="">`,
+		big_avatar: 𐀶`<div class='bigAvatar'></div>`,
+	}),
+	
 	message_block(comment) {
 		let author = comment.Author
 		let date = comment.createDate2
