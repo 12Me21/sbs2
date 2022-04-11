@@ -69,8 +69,14 @@ function NO_CONVERT(type) {
 	if (type=='string') type='String'
 	throw new FieldError("🚮 invalid type conversion", this, "⛔ to "+type)
 }
-Error.prototype[Symbol.toPrimitive] = Error.prototype.toString
-Object.prototype[Symbol.toPrimitive] = NO_CONVERT
+function set_tc(type, tc) {
+	Object.defineProperty(type.prototype, Symbol.toPrimitive, {
+		value: tc || type.prototype.toString,
+		configurable: true,
+	})
+}
+set_tc(Object, NO_CONVERT)
+set_tc(Error)
 
 //const toBlob = new Symbol('toBlob')
 
