@@ -1,7 +1,3 @@
-/*Element.prototype.make = function() {
-	return this.cloneNode(true).getElementsByTagName('*')
-}*/
-
 function 𐀶([html]) {
 	let temp = document.createElement('template')
 	temp.innerHTML = html.replace(/\n\s*/g,"")
@@ -10,37 +6,6 @@ function 𐀶([html]) {
 		node = node.firstChild
 	return node.cloneNode.bind(node, true)
 }
-
-
-/*
-	
-	let refs = {
-		clone() { return this.root.cloneNode(true) },
-		root: fragment,
-	}
-	if (fragment.childNodes.length==1)
-		refs.root = fragment.firstChild
-/*
-	let walker = document.createTreeWalker(fragment, NodeFilter.SHOW_ELEMENT)
-	for (let elem; elem=walker.nextNode(); ) {
-		let x = elem.getAttribute("@")
-		if (x) {
-			refs[x] = elem
-			elem.removeAttribute("@")
-		}
-		for (let attr of elem.attributes) {
-			if (attr.value.startsWith("@"))
-				refs[attr.value.substr(1)] = attr
-		}
-	}
-	
-	return refs
-}*/
-// idea: what if we did something like:
-// 𐀶`<div><span title=🕯a🕯>🕯b🕯</span></div>`
-// then, after parsing, we scan for those markers
-// <img src="🕯"
-
 
 // HTML RENDERING
 let Draw = Object.create(null)
@@ -95,19 +60,17 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return element
 	},
 	
-	// <span class='textItem pre'>...</span>
-	text_item(text) {
-		let element = EC('span', 'textItem pre')
-		element.textContent = text
-		return element
-	},
+	text_item: function(text) {
+		let e = this()
+		e.textContent = text
+		return e
+	}.bind(𐀶`<span class='textItem pre'>`),
 	
-	// <div class='debugMessage pre'>...</div>
-	sidebar_debug(text) {
-		let x = EC('div', 'debugMessage pre')
-		x.textContent = text
-		return x
-	},
+	sidebar_debug: function(text) {
+		let e = this()
+		e.textContent = text
+		return e
+	}.bind(𐀶`<div class='debugMessage pre'>`),
 	
 	link_avatar(user) {
 		let a = entity_link(user)
@@ -116,38 +79,29 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return a
 	},
 	
-	// <img class='item avatar' width=100 height=100 alt="" src=...>
-	avatar(user) {
-		let element = EC('img', 'item avatar')
-		element.src = avatar_url(user, "size=100&crop=true")
-		element.width = element.height = 100
-		element.alt = ""
-		return element
-	},
+	avatar: function(user) {
+		let e = this()
+		e.src = avatar_url(user, "size=100&crop=true")
+		return e
+	}.bind(𐀶`<img class='item avatar' width=100 height=100 alt="">`),
 	
-	// <div class='fileThumbnail item' data-id=...>
-	//  <img src=... alt=... title=...>
-	// </div>
-	file_thumbnail(file, onclick) {
-		let div = EC('div', 'fileThumbnail item')
-		div.dataset.id = file.id
-		let img = div.child('img')
+	file_thumbnail: function(file, onclick) {
+		let e = this()
+		e.dataset.id = file.id
+		let img = e.firstChild
 		img.src = Req.file_url(file.id, "size=50")
 		img.alt = file.name
 		img.title = file.name
 		if (onclick)
-			div.onclick = (e)=>{ onclick(file, e) }
-		return div
-	},
+			e.onclick = (event) => { onclick(file, event) } // bad
+		return e
+	}.bind(𐀶`<div class='fileThumbnail item'><img>`),
 	
-	// <span class='item icon iconBg' role=img style="background-image: url(...);" alt="">
-	bg_icon(url) {
-		let element = EC('span', 'item icon iconBg')
-		element.setAttribute('role', 'img')
-		element.style.backgroundImage = 'url("'+url+'")'
-		element.alt = "" // todo
-		return element
-	},
+	bg_icon: function(url) {
+		let e = this()
+		e.style.backgroundImage = `url("${url}")`
+		return e
+	}.bind(𐀶`<span class='item icon iconBg' role=img alt="">`), //todo:alt
 	
 	// ? <img class='item icon avatar' src=... width=100 height=100>
 	// ? [bg-icon]
@@ -239,12 +193,14 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 </chat-pane>
 `}),
 	
-	userlist_avatar(status) {
-		let a = link_avatar(status.user)
+	userlist_avatar: function(status) {
+		let e = this()
+		e.href = `#user/${status.user.id}`
+		e.firstChild.src = Req.file_url(status.user.avatar, "size=100&crop=true")
 		if (status.status == "idle")
-			a.className += ' status-idle'
-		return a
-	},
+			e.classList.add('status-idle')
+		return e
+	}.bind(𐀶`<a><img class='item avatar' width=100 height=100 alt="">`),
 	
 	message_block: function(comment) {
 		let e = this.block()
@@ -411,21 +367,10 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return outer
 	},
 	
-	// <button-container>
-	//   <button></button>
-	// </button-container>
-	button() {
-		let container = EC('button-container')
-		let button = container.child('button')
-		return [container, button]
-	}, // BAD ↕
-	// unused also
-	linkButton() {
-		let container = EC('button-container')
-		let a = container.child('a')
-		let button = a.child('button')
-		return [container, button]
-	},
+	button: function() {
+		let e = this()
+		return [e, e.firstChild]
+	}.bind(𐀶`<button-container><button>`), // BAD ↕
 	
 	// <div class='pageInfoPane rem2-3 bar'>
 	//   [author box] [vote box]
@@ -574,14 +519,13 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return b
 	},
 	
-	// <time class='time-ago' datetime=... title="...">...</time>
-	time_ago(time) {
-		let t = EC('time', 'time-ago')
-		t.setAttribute('datetime', time.toISOString())
-		t.textContent = time_ago_string(time)
-		t.title = time.toString()
-		return t
-	},
+	time_ago: function(time) {
+		let e = this()
+		e.setAttribute('datetime', time.toISOString())
+		e.textContent = time_ago_string(time)
+		e.title = time.toString()
+		return e
+	}.bind(𐀶`<time class='time-ago'>`),
 	
 	time_ago_string(date) {
 		let seconds = (Date.now() - date.getTime()) / 1000
@@ -735,22 +679,12 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return x
 	},
 	
-	message_controls(info, edit) {
-		let elem = E`message-controls`
-		let x = {
-			elem: elem
-		}
-		let btn = elem.child('button')
-		btn.onclick = info
-		btn.setAttribute('tabindex', "-1")
-		btn.textContent = "⚙"
-		
-		btn = elem.child('button')
-		btn.onclick = edit
-		btn.setAttribute('tabindex', "-1")
-		btn.textContent = "✏"
-		return x
-	},
+	message_controls: function(info, edit) {
+		let e = this()
+		e.firstChild.onclick = info
+		e.lastChild.onclick = edit
+		return {elem: e}
+	}.bind(𐀶`<message-controls><button tab-index=-1>⚙</button><button tab-index=-1>✏</button>`),
 	
 	// todo: replace this
 	settings(settings) {
@@ -801,16 +735,6 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			x.elem.child('br')
 		})
 		return x
-	},
-	
-	gallery_label(entity) {
-		let element = entity_link(entity)
-		element.className += " bar rem1-5"
-		
-		let icon = icon_title(entity)
-		element.append(icon)
-		
-		return element
 	},
 	
 	// <div class='bar rem1-5 sidebarComment ellipsis'>
