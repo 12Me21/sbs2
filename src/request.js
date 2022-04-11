@@ -219,11 +219,10 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 		// a single entity, or ws response, or api/request response
 		return this.request("User/me", TYPES.user)
 	},
-	
+	// messages
 	send_message(message) {
 		return this.request('Write/message', null, message)
 	},
-	
 	delete_message(id) {
 		return this.request(`Delete/message/${id}`, null, null)
 	},
@@ -232,6 +231,14 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 		if (query)
 			return `https://${this.server}/File/raw/${id}?${query}`
 		return `https://${this.server}/File/raw/${id}`
+	},
+	
+	upload_file(file, params) {
+		let form = new FormData()
+		form.set('file', file)
+		for (let name in params)
+			form.set(name, params[name])
+		return this.request('File', TYPES.content, form)
 	},
 	
 	/*set_basic(data) {
@@ -245,12 +252,6 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 	
 	put_file(file) {
 		return this.request2("File/"+file.id, null, 'PUT', file)
-	},
-	
-	upload_file(file, params) {
-		let form = new FormData() // no you can't just pass fields to the constructor
-		form.append('file', file)
-		return this.request2("File"+this.query_string(params), Entity.process_item.bind(Entity, 'file'), 'POST', form)
 	},
 	
 	toggle_hiding(id, callback) {

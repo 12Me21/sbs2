@@ -20,9 +20,10 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 			fields: [
 				['size', 'output', {output: true, label: "Size"}], //todo: separate set of output fields?
 				['name', 'text', {label: "File Name"}],
+				['hash', 'text', {label: "Hash"}],
 				['bucket', 'text', {label: "Bucket"}],
 				['quantize', 'select', {label: "Quantize", default: ""}, {
-					options: [["","no"], ["2","2"], ["4","4"], ["8","8"], ["16","16"], ["32","32"], ["64","64"], ["256","256"]] //todo: check which quantization levels are actually allowed
+					options: [["","no"], ["2","2"], ["4","4"], ["8","8"], ["16","16"], ["32","32"], ["64","64"], ["256","256"]]
 				}],// todo: maybe store js values in the dropdown, rather than strings?
 			]
 		})
@@ -50,15 +51,24 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 				$file_upload.disabled = true
 				
 				let data = file_upload_form.get()
+				
 				let params = {
-					bucket: data.bucket,
-					name: data.name,
 					tryresize: true,
+					name: data.name,
+				}
+				
+				if (data.bucket) {
+					params['values[bucket]'] = data.bucket
+					params.globalPerms = ""
 				}
 				if (data.quantize)
 					params.quantize = +data.quantize
+				if (data.hash)
+					params.hash = data.hash
 				
-				Req.upload_file(selected_file, params).then((file)=>{
+				new (Req.upload_file(selected_file, params))(file=>{
+					$file_upload.disabled = false
+					
 					selected_file = null
 					
 					$file_url.hidden = false
@@ -68,10 +78,10 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 					$file_cancel.parentNode.hidden = true
 					$file_upload.parentNode.hidden = true
 					
-					$file_url.value = Req.file_url(file.id)
+					$file_url.value = Req.file_url(file.hash)
 					$file_image.src = ""
-					$file_image.src = Req.file_url(file.id)
-				}).finally(()=>{
+					$file_image.src = Req.file_url(file.hash)
+				}, err=>{
 					$file_upload.disabled = false
 				})
 			}
@@ -260,6 +270,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		file_upload_form.set_some({
 			size: (file.size/1000)+" kB",
 			name: file.name,
+			hash: null,
 		})
 		selected_file = file
 		select_tab(3) //hack HACK
