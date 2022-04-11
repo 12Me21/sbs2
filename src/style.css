@@ -92,6 +92,9 @@ time {
 	font-weight: bold;
 	line-height: 1.2;
 }
+message-username { /* khhhh */
+	line-height: 1.2;
+}
 
 /**********************
  ** Button Container **

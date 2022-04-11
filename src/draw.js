@@ -278,9 +278,9 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		if (author.nickname == null) {
 			username = author.username
 		} else {
-			username = author.realname
+			username = author.nickname
 			let nickname = this.nickname()
-			nickname.querySelector('.pre').textContent = author.nickname
+			nickname.querySelector('.pre').textContent = author.realname
 			name.append(nickname)
 		}
 		name.firstChild.textContent = username
