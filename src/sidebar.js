@@ -100,7 +100,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		y.textContent = "log in"
 		let sidebar_tabs = Draw.sidebar_tabs([
 			{label: document.createTextNode("✨"), elem: $sidebarActivityPanel},
-			{label: document.createTextNode("W"), elem: $sidebarWatchPanel},
+			//{label: document.createTextNode("W"), elem: $sidebarWatchPanel},
 			{label: document.createTextNode("🔍"), elem: $sidebarNavPanel},
 			{label: document.createTextNode("📷"), elem: $sidebarFilePanel},
 			{label: x, elem: $sidebarUserPanel},
@@ -109,21 +109,25 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		if (Req.auth)
 			sidebar_tabs.select(0)
 		else
-			sidebar_tabs.select(4)
+			sidebar_tabs.select(3)
 		select_tab = sidebar_tabs.select
 		
 		$searchButton.onclick = ()=>{
 			$searchButton.disabled = true
-			Req.search1($searchInput.value).then(({Usearch:users, content:pages})=>{
+			
+			Lp.chain({
+				values: {
+					search: `%${$searchInput.value}%`,
+					pagetype: 1,
+				},
+				requests: [
+					{type:'content', fields:"name,id,contentType,permissions,createUserId", query:"contentType = @pagetype AND name LIKE @search", limit:50},
+				],
+			},resp=>{
 				$searchButton.disabled = false
 				$searchResults.fill()
-				for (let item of pages) {
+				for (let item of resp.content) {
 					let bar = Draw.page_bar(item)
-					bar.className += " linkBar bar rem1-5"
-					$searchResults.append(bar)
-				}
-				for (let item of users) {
-					let bar = Draw.entity_title_link(item)
 					bar.className += " linkBar bar rem1-5"
 					$searchResults.append(bar)
 				}

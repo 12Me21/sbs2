@@ -45,11 +45,11 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	// page (or category) wiht user
 	page_bar(page) {
 		let bar = entity_title_link(page)
-		if (page.createUser) {
+		/*if (page.createUser) {
 			let usr = entity_title_link(page.createUser, true)
 			usr.className += ' rightAlign'
 			bar.append(usr)
-		}
+		}*/
 		return bar
 	},
 	
@@ -282,6 +282,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			options = {hour:'numeric', minute:'2-digit'}
 		return date.toLocaleString([], options)
 	},
+	
 	// block: Element
 	// comment: Comment
 	// time: Date
@@ -292,6 +293,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		}
 		return false
 	},
+	
 	// elem: Element - container to insert message blocks into
 	// part: Element - new message part
 	// comment: Comment - data used to generate `part`
@@ -310,6 +312,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		}
 		contents[backwards?'prepend':'append'](part)
 	},
+	
 	// this needs to be improved
 	search_comment(comment) {
 		let outer = EC('div', 'bottomBorder')
@@ -367,10 +370,10 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return outer
 	},
 	
-	button: function() {
+	button: function() { // BAD 
 		let e = this()
 		return [e, e.firstChild]
-	}.bind(𐀶`<button-container><button>`), // BAD ↕
+	}.bind(𐀶`<button-container><button>`),
 	
 	// <div class='pageInfoPane rem2-3 bar'>
 	//   [author box] [vote box]
@@ -384,7 +387,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	// <button role=tab aria-selected=false id=... aria-controls=...>
 	//   ...
 	// </button>
-	sidebar_tabs(list, callback) {
+	sidebar_tabs: function(list, callback) {
 		let btns = []
 		let frag = F()
 		let x = {
@@ -400,19 +403,16 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			item.elem.setAttribute('role', "tabpanel")
 			item.elem.setAttribute('aria-labelledby', "sidebar-tab-"+i)
 			
-			let btn = frag.child('button')
-			btn.setAttribute('role', "tab")
-			btn.setAttribute('aria-selected', "false")
+			let btn = this()
+			frag.append(btn)
 			btn.id = "sidebar-tab-"+i
 			btn.setAttribute('aria-controls', "sidebar-panel-"+i) // um did i forgot the corresponding property? TODO
 			btns[i] = btn
-			btn.onclick = ()=>{
-				x.select(i)
-			}
+			btn.onclick = ()=>{ x.select(i) }
 			btn.append(item.label)
 		})
 		return x
-	},
+	}.bind(𐀶`<button role=tab aria-selected=false>`),
 	
 	// <??? class='... activity-page'>
 	//   <div class='bar rem1-5 ellipsis'>
@@ -451,6 +451,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		
 		return outer
 	},
+	
 	// todo: create a special system for pagination
 	nav_buttons(callback) {
 		let prev = button()
