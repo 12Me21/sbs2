@@ -329,7 +329,7 @@ message-block {
 	display: block;
 	position: relative;
 	box-sizing: content-box;
-	--chat-gutter: 3.4rem;
+	--chat-gutter: 4rem;
 	--chat-avatar-size: calc(var(--chat-gutter) - 0.5rem);
 	--chat-message-gap: 0.6rem;
 	padding: 0 0.5rem;
