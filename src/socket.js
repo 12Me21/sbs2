@@ -57,6 +57,8 @@ class ApiSocket {
 		
 		switch (type) { default: {
 			console.warn("unhandled response: ", type, body)
+		} break;case 'lastId': {
+			this.last_id = body
 		} break;case 'live': {
 			let {objects:entitys, events, lastId} = body
 			this.last_id = lastId

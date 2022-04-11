@@ -72,9 +72,10 @@ function NO_CONVERT(type) {
 Error.prototype[Symbol.toPrimitive] = Error.prototype.toString
 Object.prototype[Symbol.toPrimitive] = NO_CONVERT
 
+//const toBlob = new Symbol('toBlob')
+
 
 // (end of scary part)
-
 
 // wow an actual 
 if (!Array.prototype.findLast)

@@ -372,7 +372,7 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 	
 	/* static */
 	title_notification(comment) {
-		View.title_notification(comment.text, Draw.avatar_url(comment.createUser, "size=120&crop=true"))
+		View.title_notification(comment.text, Draw.avatar_url(comment.Author, "size=120&crop=true"))
 		// todo: also call if the current comment being shown in the title is edited
 	},
 	

@@ -9,6 +9,10 @@ for (let type_name in ABOUT.details.types) {
 		toJSON: {}, // JSON.stringify() etc.
 		then: {}, // Promise, await
 		[Symbol.toPrimitive]: {value:NO_CONVERT}, // conversions
+		/*[Symbol.toBlob]:*/
+		Blob: {value() {
+			return new Blob([JSON.stringify(this)], {type:"application/json;charset=UTF-8"})
+		}},
 		// type info
 		Type: {value: type_name},
 		Fields: {value: field_datas},
@@ -186,57 +190,6 @@ let Entity = (()=>{"use strict"; return singleton({
 			G: 'message_aggregate', // ran out of letters
 		}[key[0]] || key
 	},
-	
-	// editUserId -> editUser
-	// createUserId -> createUser
-	// editDate
-	// createDate
-	// TODO: instead of this silly user modifying thing, just render the damn message directly, based on its own data
-/*	process_comment_user_meta(data) {
-		let override = {}
-		// avatar override
-		if (+data.meta.a)
-			override.avatar = {value: +data.meta.a}
-		if (+data.meta.big)
-			override.bigAvatar = {value: +data.meta.big}
-		// nicknames
-		let nick = null
-		let bridge = null
-		if (typeof data.meta.b == 'string') {
-			nick = data.meta.b
-			bridge = nick
-			// strip bridge nickname from old discord messages
-			if (data.meta.m=='12y' && data.content.substr(0, nick.length+3) == "<"+nick+"> ")
-				data.content = data.content.substring(nick.length+3, data.content.length)
-		}
-		if (typeof data.meta.n == 'string')
-			nick = data.meta.n
-		if (nick != undefined) {
-			override.nickname = {value: this.filter_nickname(nick)}
-			override.realname = {value: data.createUser.name}
-			// if the bridge name is set, we set the actual .name property to that, so it will render as the true name in places where nicknames aren't handled (i.e. in the sidebar)
-			// and it's kinda dangerous that .b property is trusted so much..
-			if (bridge != undefined)
-				override.name = {value: bridge}
-		}
-		// todo: we should render the nickname in other places too (add this to the title() etc. functions.
-		// and then put like, some icon or whatever to show that they're nicked, I guess.
-		
-		// won't this fail on comments without a createuser for whatever reason??
-		if (Object.first_key(override) != undefined)
-			data.createUser = Object.create(data.createUser, override)
-	},
-	
-/*	page_map(pages) {
-		let map = {}
-		pages && pages.forEach(p => map[p.id] = p)
-		return this.safe_map(map, (id)=>({
-			Type: 'content',
-			name: `{content: ${id}}`,
-			id: id,
-			fake: true,
-		}))
-	},*/
 	
 	/*rebuildCategoryTree() {
 		this.got_new_category = false
