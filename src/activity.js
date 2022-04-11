@@ -26,7 +26,6 @@ let Act = function(){"use strict"; return singleton({
 			Sidebar.display_messages(objects.message.reverse(), true)
 		})
 		
-		
 		/*Req.chain([
 			['activity', {createStart: start}],
 			['comment~Mall', {reverse: true, limit: 1000}],

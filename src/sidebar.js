@@ -281,7 +281,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 			hash: null,
 		})
 		selected_file = file
-		select_tab(3) //hack HACK
+		select_tab(2) //hack HACK
 	},
 	
 	toggle() {

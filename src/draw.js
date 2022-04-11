@@ -72,12 +72,13 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return e
 	}.bind(𐀶`<div class='debugMessage pre'>`),
 	
-	link_avatar(user) {
-		let a = entity_link(user)
+	link_avatar: function(user) {
+		let a = this()
+		a.href = Nav.entityPath(user)
+		a.title = user.username
 		a.append(avatar(user))
-		a.title = user.name
 		return a
-	},
+	}.bind(𐀶`<a>`),
 	
 	avatar: function(user) {
 		let e = this()
@@ -182,7 +183,6 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		block: 𐀶`
 <chat-pane class='resize-box'>
 	<scroll-outer class='sized page-container'>
-		<div class='pageInfoPane rem2-3 bar'></div>
 		<div class='pageContents'></div>
 	</scroll-outer>
 	<resize-handle></resize-handle>
@@ -192,6 +192,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	</scroll-outer>
 </chat-pane>
 `}),
+//		<div class='pageInfoPane rem2-3 bar'></div>
 	
 	userlist_avatar: function(status) {
 		let e = this()
@@ -251,9 +252,6 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		big_avatar: 𐀶`<div class='bigAvatar'></div>`,
 	}),
 	
-	// <message-part class='...' tab-index=0 data-id=... data-time=...>
-	//   ...
-	// </message-part>
 	message_part: function(comment) {
 		let e = this()
 		
@@ -414,18 +412,29 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return x
 	}.bind(𐀶`<button role=tab aria-selected=false>`),
 	
-	// <??? class='... activity-page'>
-	//   <div class='bar rem1-5 ellipsis'>
-	//      ???
-	//   </div>
-	//   <div class='bar rem1-5'> 
-	//     <activity-users class='rightAlign'>
-	//       <??? class='... textItem'>...</???>
-	//         
-	//       ...
-	//     </activity-users>
-	//   </div>
-	// <???>
+	activity_item: function(item) {
+		let e = this()
+		e.href = Nav.entityPath(item.content)
+		e.firstChild.append(icon_title(item.content))
+		
+		let userContainer=e.lastChild.firstChild
+		let time = time_ago(item.lastDate)
+		time.className += " textItem"
+		
+		for (let u of item.users)
+			if (u && u.user)
+				userContainer.append(link_avatar(u.user))
+		
+		return e
+	}.bind(𐀶`
+<a class='activity-page'>
+	<div class='bar rem1-5 ellipsis'></div>
+	<div class='bar rem1-5'> 
+		<activity-users class='rightAlign'></activity-users>
+	</div>
+<a>
+`),
+	
 	activity_item(item) {
 		let outer = entity_link(item.text)
 		outer.className += " activity-page"

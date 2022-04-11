@@ -790,7 +790,7 @@ textarea-container, textarea-container > textarea {
 
 /*   idk   */
 .page-container:not(#a) {
-	min-height: 2.3rem;
+	min-height: 1rem;
 	height: 40vh;
 }
 

@@ -1,7 +1,5 @@
 // todo: navigate and view could maybe be merged?
 
-history.scrollRestoration = 'manual' // idk..
-
 Markup.url_scheme["sbs:"] = function(url) {
 	return "#"+url.pathname+url.search+url.hash
 }
@@ -71,14 +69,25 @@ const Nav = {
 	},
 	
 	reload: RELOAD,
+	
+	update_from_location() {
+		if (Nav.ignore)
+			return
+		current_url = window.location
+		let location = Nav.get_url()
+		Nav.render(location)
+	},
+	
+	init() {
+		window.onhashchange = ()=>{
+			Nav.update_from_location()
+		}
+		
+		// send users at ?page/123 to #page/123
+		if (window.location.hash=="" && window.location.search.length>1)
+			Nav.replace_url(window.location.search.substr(1))
+		
+		Nav.update_from_location()
+	},
 }
 Object.seal(Nav)
-
-window.onhashchange = ()=>{
-	if (Nav.ignore)
-		return
-	current_url = window.location
-	let location = Nav.get_url()
-	Nav.render(location)
-}
-// todo: we also need to check onpopstate, perhaps.. because sometimes there's like, a break in the history and forward/back cause a page reload.

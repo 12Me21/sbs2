@@ -91,6 +91,7 @@ class ApiRequest extends XMLHttpRequest {
 			case 0:
 				print("Request failed!")
 				return this.fail('connection')
+				// todo: maybe have some way to trigger a retry here?
 			case 502:
 				return this.retry(5000, 'bad gateway')
 			case 408: case 204: case 524:
@@ -240,7 +241,9 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 			form.set(name, params[name])
 		return this.request('File', TYPES.content, form)
 	},
-	
+}
+Object.seal(Req)
+
 	/*set_basic(data) {
 		return this.request2("User/basic", Entity.process_item.bind(Entity, 'user'), 'PUT', data)
 		// maybe it would be better to just pass the typename or something here? instead of entity.whatever
@@ -270,21 +273,6 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 		return this.chain([
 			['user', {limit: count, usernameLike: "%"+like+"%", sort: 'editDate', reverse: true}]
 		])
-	},
-	
-	search1(text) {
-		let like = text.replace(/%/g,"_") //the best we can do...
-		let count = 20
-		let page = 0
-		page = page*count
-		return this.chain([
-			['user~Usearch', {limit: count, skip: page, usernameLike: like+"%"}],
-			['content', {limit: count, skip: page, nameLike: "%"+like+"%"}],
-			['content', {limit: count, skip: page, keyword: like}],
-			['user.1createUserId.2createUserId'],
-		], {
-			content: 'name,id,type,permissions,createUserId', //eh
-		})
 	},
 	
 	setVote(id, state) {
@@ -323,5 +311,5 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 	},
 	
 ,*/
-}
-Object.seal(Req)
+
+

@@ -13,12 +13,6 @@ window.onerror = function(message, source, line, col, error) {
 	}
 }
 
-window.onbeforeunload = (event)=>{
-	// this is to prevent the websocket.onclose event
-	// from trying to reopen it
-	Lp.dead = true
-}
-
 immediate()
 
 if (document.readyState == 'loading')
@@ -42,12 +36,13 @@ function immediate() {
 		console.warn("🌇 Not logged in!")
 		return
 	}
-	//console.log("🌄 is logged in")
+	
 	View.flag('loggedIn', true)
 	
 	Settings.early()
 	
-	Lp.chain({values:{uid:Req.uid}, requests:[{type:'user',fields:'*',query:'id = @uid'}]}, resp=>{
+	// get own user
+	Lp.chain({values:{uid:Req.uid}, requests:[{type:'user', fields:'*', query:'id = @uid'}]}, resp=>{
 		let me = resp.user[0]
 		if (!me) {
 			console.error(resp, 'me?"')
@@ -62,17 +57,69 @@ function immediate() {
 	
 	Act.pull_recent()
 	
-	if (window.location.hash=="" && window.location.search.length>1)
-		Nav.replace_url(window.location.search.substr(1))
-	
-	window.onhashchange()
-	
+	Nav.init()
 }
 
 function dom_ready() {
 	console.log("🌄 DOCUMENT READY")
 	
-	View.onload()
+	// draw buttons
+	// i really don't like this
+	for (let button of document.querySelectorAll("button:not([data-noreplace])")) {
+		let container = document.createElement('button-container')
+		button.replaceWith(container)
+		container.className += " "+button.className
+		button.className = ""
+		if (button.dataset.staticLink != undefined) {
+			button.setAttribute('tabindex', "-1")
+			let a = document.createElement('a')
+			container.append(a)
+			container = a
+		}
+		container.append(button)
+	}
+	
+	// set up event handlers:
+	
+	// video player does not fire 'click' events so instead
+	// need to detect when the video is played
+	// using a custom event
+	document.addEventListener('videoclicked', (e)=>{
+		image_focus_click_handler(e.target, true)
+	})
+	document.onmousedown = (e)=>{
+		if (!e.button && e.target) // 0 or none (prevent right click etc.)
+			image_focus_click_handler(e.target)
+	}
+	
+	let embiggened_image
+	// clicking outside an image shrinks it
+	// maybe could block this if the click is on a link/button?
+	document.onclick = (e)=>{
+		let element = e.target
+		if (!(element instanceof HTMLTextAreaElement)) {
+			if (embiggened_image && element != embiggened_image) {
+				delete embiggened_image.dataset.big
+				embiggened_image = null
+			}
+		}
+	}
+	
+	function image_focus_click_handler(element, grow_only) {
+		if (element.dataset.shrink != null) {
+			// if click on image that's already big:
+			if (embiggened_image && embiggened_image == element) {
+				if (!grow_only) {
+					delete embiggened_image.dataset.big
+					embiggened_image = null
+				}
+			} else if (element != embiggened_image) { // if click on new iamge
+				embiggened_image && delete embiggened_image.dataset.big
+				element.dataset.big = ""
+				embiggened_image = element
+			}
+		}
+	}
 	
 	Sidebar.onload()
 	

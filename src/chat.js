@@ -108,8 +108,8 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 			this.show_controls(null)
 		}
 		this.update_page(page)
-		let l = Lp.processed_listeners[id] //should this be done with id -1? // what?
-		l && this.update_userlist(l)
+	//	let l = Lp.processed_listeners[id] //should this be done with id -1? // what?
+	//	l && this.update_userlist(l)
 		ChatRoom.addRoom(this)
 		
 		Object.seal(this)
@@ -331,13 +331,6 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 		if (this.rooms[room.id] == room)
 			delete this.rooms[room.id]
 		//ChatRoom.setViewing(Object.keys(ChatRoom.rooms))
-	},
-	
-	// unused
-	/* static */
-	setViewing(ids) {
-		Lp.set_listening(ids)
-		Lp.refresh()
 	},
 	
 	/* static */
