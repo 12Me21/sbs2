@@ -255,55 +255,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return a
 	},
 	
-	message_block3: function(comment) {
-		let e = this.block()
-		let coll = e.getElementsByTagName('*')
-		
-		let author = comment.Author
-		
-		e.dataset.uid = comment.createUserId
-		e.dataset.merge = Entity.comment_merge_hash(comment)
-		
-		let avatar
-		if (author.bigAvatar) {
-			avatar = this.big_avatar()
-			avatar.style.backgroundImage = `url("${Req.file_url(author.bigAvatar, "size=500")}")`
-		} else {
-			avatar = this.avatar()
-			avatar.src = Req.file_url(author.avatar, "size=100&crop=true")
-		}
-		e.prepend(avatar)
-		
-		let name = e.querySelector('message-username') // todo: is queryselector ok?
-		if (author.nickname == null) {
-			coll[3].textContent = author.username
-		} else {
-			coll[3].textContent = author.realname
-			let nickname = this.nickname()
-			nickname.querySelector('.pre').textContent = author.nickname
-			coll[2].append(nickname)
-		}
-		
-		let time = coll[4]
-		time.setAttribute('datetime', comment.createDate)
-		time.textContent = timeString(comment.createDate2)
-		
-		return [e, coll[5]]
-	}.bind({
-		block: 𐀶`
-<message-block>
-	<message-header>
-		<message-username><span class='pre username'></span>:</message-username>
-		<time></time>
-	</message-header>
-	<message-contents></message-contents>
-</message-block>`,
-		nickname: 𐀶` <span class='real-name-label'>(<span class='pre'></span>)</span>`,
-		avatar: 𐀶`<img class='avatar' width=100 height=100 alt="">`,
-		big_avatar: 𐀶`<div class='bigAvatar'></div>`,
-	}),
-	
-	message_block2: function(comment) {
+	message_block: function(comment) {
 		let e = this.block()
 		
 		let author = comment.Author
@@ -352,78 +304,24 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		big_avatar: 𐀶`<div class='bigAvatar'></div>`,
 	}),
 	
-	message_block(comment) {
-		let author = comment.Author
-		let date = comment.createDate2
-		//outer
-		let div = E`message-block`
-		div.dataset.uid = comment.createUserId
-		div.dataset.merge = Entity.comment_merge_hash(comment)
-		// avatar
-		if (author.bigAvatar) {
-			let d = div.child('div', 'bigAvatar')
-			d.style.backgroundImage = "url("+Req.file_url(author.bigAvatar, "size=500")+")"
-		} else {
-			div.append(avatar(author))
-		}
-		// username
-		let label = div.child('message-header')
-		let name = label.child('span')
-		let n = name.child('span', 'pre username')
-		// if nickname is set, render as "nickname (realname):"
-		if (author.nickname != null) {
-			n.textContent = author.nickname
-			let ns = EC('span', 'real-name-label')
-			name.append(":", ns)
-			let real = EC('span', 'pre')
-			real.textContent = author.realname
-			ns.append(" (", real, ")")
-		} else {
-			// otherwise render as "name:"
-			n.textContent = author.username
-			name.append(":")
-		}
-		// time
-		let timeStamp = label.child('time')
-		timeStamp.setAttribute("datetime", date+"")
-		timeStamp.textContent = timeString(date)
-		// contents
-		let contentBox = div.child('message-contents')
-		//
-		return [div, contentBox]
-	},
-	
 	// <message-part class='...' tab-index=0 data-id=... data-time=...>
 	//   ...
 	// </message-part>
-	message_part(comment) {
-		let element = EC('message-part')
-		element.setAttribute('tabindex', "0")
+	message_part: function(comment) {
+		let e = this()
 		
 		if (comment.editDate)
-			element.className += " edited"
+			e.className += " edited"
 		
-		// this is a hack.
-		// we set as few properties as possible for what is needed
-		// don't want to set too many to avoid memory usage
+		// this is a hack, maybe
+		e.x_data = comment
 		
-		// the real issue here is, we use too many methods of referring to displayed messages
-		// sometimes id, indexed in message_parts, sometimes the comment data, sometimes the element, etc.
-		// need to be more consistent.
-		element.x_data = {
-			createUserId: comment.createUserId,
-			editUserId: comment.editUserId,
-			id: comment.id,
-			contentId: comment.contentId,
-			text: comment.text,
-			values: comment.values,
-		}
-		
-		element.dataset.id = comment.id
-		element.dataset.time = comment.createDate2.getTime()
-		Markup.convert_lang(comment.text, comment.values.m, element)
-		return element
-	},
+		e.dataset.id = comment.id
+		e.dataset.time = comment.createDate2.getTime()
+		Markup.convert_lang(comment.text, comment.values.m, e)
+		return e
+	}.bind(𐀶`<message-part tab-index=0>`),
+	
 	// date: Date
 	// return: String
 	timeString(date) {
@@ -928,24 +826,28 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	//   ? [entity-title-link] edited
 	//   [entity-title-link] : ...
 	// </div>
-	sidebar_comment(comment) {
-		let d = EC('div', 'bar rem1-5 sidebarComment ellipsis')
+	sidebar_comment: function(comment) {
+		let d = this()
 		d.dataset.id = comment.id
-		d.title = `${comment.Author.username} in ${comment.contentId}:\n${comment.text}` // todo: page name 🥺  oh︕ emojis render in italic? don't remember adding that...   we should store refs to pages but like intern them so its not a memory leak...
+		
+		let author = comment.Author
+		d.title = `${author.username} in ${comment.contentId}:\n${comment.text}` // todo: page name 🥺  oh︕ emojis render in italic? don't remember adding that...   we should store refs to pages but like intern them so its not a memory leak...
 		
 /*		if (comment.editDate && comment.editUserId!=comment.createUserId) {
 			d.append(
 				entity_title_link(comment.editUser),
 				" edited ",
 			)
-		}*/
-		d.append(
-			//entity_title_link(comment.createUser),
-			": ",
-			comment.text.replace(/\n/g, "  "),
-		)
+			}*/
+		let nl = d.firstChild
+		nl.href = "#user/"+comment.createUserId
+		nl.firstChild.src = Req.file_url(author.avatar, "size=100&crop=true")
+		nl.lastChild.textContent = author.username
+		
+		d.append(comment.text.replace(/\n/g, "  "))
+		//entity_title_link(comment.createUser),
 		return d
-	},
+	}.bind(𐀶`<div class='bar rem1-5 sidebarComment ellipsis'><a><img class='item icon avatar' width=100 height=100><span class='textItem pre entity-title'></span></a>: </div>`),
 	
 	//todo:
 	sidebarPageLabel(content) {
