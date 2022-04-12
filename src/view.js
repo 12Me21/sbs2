@@ -188,6 +188,11 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 				if (first) {
 					console.log("🌄 Rendering first page")
 				}
+				// hack, i need to rewrite this whole "handle" crap
+				if (!view.did_init && view.init) {
+					view.init()
+					view.did_init = true
+				}
 				cleanup(location)
 				callback()
 				current_view = view
@@ -221,7 +226,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 			return
 		
 		// NO VIEW
-		if (!view || view!=View.views.page)
+		if (!view)
 			return handle_error("Unknown page type: \""+location.type+"\"")
 		
 		// call view.start
@@ -244,7 +249,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 			Lp.cancel(x)
 			cancelled = true //mrhh
 		}
-		x = Lp.chain(data, entitys=>{
+		x = Lp.chain(data.chain, entitys=>{
 			if (data.check && !data.check(entitys, data.ext)) {// try/catch here?
 				handle_error("content not found?")
 			} else {
@@ -286,6 +291,8 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 		views[name] = data
 		data.did_init = false
 		Object.seal(data)
+		if (data.early)
+			data.early()
 	},
 	
 	/// HELPER FUNCTIONS ///

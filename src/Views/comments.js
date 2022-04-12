@@ -3,7 +3,7 @@
 View.add_view('comments', {
 	form: null,
 	
-	init() {
+	early() {
 		this.form = new Form({
 			fields: [
 				['search', 'text', {label: "Search", convert: CONVERT.string, param: 's'}],
@@ -13,9 +13,11 @@ View.add_view('comments', {
 				['end', 'date', {label: "End Date", convert: CONVERT.date, param: 'end'}],
 				['range', 'range', {label: "Id Range", convert: CONVERT.range, param: 'ids'}],
 				['reverse', 'checkbox', {label: "Newest First", convert: CONVERT.flag, param: 'r'}],
-				['raw', 'checkbox', {label: "Raw Search", convert: CONVERT.flag, param: 'raw'}],
 			]
 		})
+	},
+	
+	init() {
 		$commentSearchForm.replaceWith(this.form.elem)
 		$commentSearchButton.onclick = ()=>{
 			let data = this.form.get()
@@ -25,7 +27,7 @@ View.add_view('comments', {
 				delete data.pages
 			}
 			let query = this.form.to_query(data)
-			Nav.go(name+query)
+			window.location.hash = "#"+name+query// todo: proper function
 		}
 		View.bind_enter($commentSearch, $commentSearchButton.onclick)
 	},
@@ -39,17 +41,7 @@ View.add_view('comments', {
 			return {quick: true, ext: {data}}
 		
 		return {
-			request: {
-				values: {},
-				requests: [
-					
-				],
-			},
-			chains: [
-				['comment', search],
-				['content.0parentId'],
-				['user.0createUserId'],
-			],
+			chain: search,
 			ext: {data, merge},
 		}
 	},
@@ -57,9 +49,10 @@ View.add_view('comments', {
 		View.set_title("Comments")
 		this.form.set(data)
 		$commentSearchResults.fill()
+		$commentSearchResults.textContent = "(no query)"
 	},
 	render(resp, {data, merge}) {
-		let comments = resp.comment
+		let comments = resp.message
 		let pages = resp.content
 		
 		View.set_title("Comments")
@@ -67,9 +60,8 @@ View.add_view('comments', {
 		
 		$commentSearchResults.fill()
 		if (!comments.length) {
-			$commentSearchResults.textContent = "(no result)"
+			$commentSearchResults.textContent = "(no results)"
 		} else {
-			let map = Entity.page_map(pages)
 			if (merge) {
 				let last_time = 0
 				for (let comment of comments) {
@@ -81,8 +73,8 @@ View.add_view('comments', {
 				}
 			} else {
 				for (let c of comments) {
-					c.parent = map[c.parentId]
-					$commentSearchResults.append(Draw.search_comment(c))
+					let parent = pages[~c.contentId]
+					$commentSearchResults.append(Draw.search_comment(c, parent))
 					// idea:
 					// put all these into a normal comment scroller
 					// then add some kind of "history separator" between
@@ -100,45 +92,68 @@ View.add_view('comments', {
 		if (!data.search && !(data.users && data.users.length) && !data.range && !data.start && !data.end)
 			return [null, null]
 		
+		let values = {}
+		let query = []
+		let order = "id"
+		
 		let merge = true
-		let search = {limit: 200}
 		
 		if (data.reverse) {
-			search.reverse = true
+			order = "id_desc"
 			merge = false
 		}
 		let text = data.search
 		if (text) {
-			if (!data.raw)
-				text = "%\n%"+text+"%"
-			search.contentLike = text
+			values.text = `%${text}%`
+			query.push("text LIKE @text")
 			merge = false
 		}
-		if (data.pages)
-			search.parentIds = data.pages
+		if (data.pages) {
+			values.pids = data.pages.join(",")
+			query.push("contentId = @pids")
+		}
 		if (data.users) { // todo: is an empty list [] or null?
-			search.userIds = data.users
+			values.uids = data.users
+			query.push("createUserId IN @uids")
 			merge = false
 		}
 		let range = data.range
 		if (range) {
 			if (range.ids) {
-				search.ids = range.ids
+				values.ids = range.ids
+				query.push("id IN @ids")
 				if (range.ids.length > 1)
 					merge = false
 			} else {
-				if (range.min != null)
-					search.minId = range.min-1
-				if (range.max != null)
-					search.maxId = range.max+1
+				if (range.min != null) {
+					values.min_id = range.min-1
+					query.push("id > @min_id")
+				} if (range.max != null) {
+					values.max_id = range.max+1
+					query.push("id < @max_id")
+				}
 			}
 		}
-		if (data.start)
-			search.createStart = data.start.toISOString()
-		if (data.end)
-			search.createEnd = data.end.toISOString()
+		if (data.start) {
+			values.start = data.start.toISOString()
+			query.push("createDate > @start") // should these be ≥/≤?
+		}
+		if (data.end) {
+			values.end = data.end.toISOString()
+			query.push("createDate < @end")
+		}
 		
-		return [search, merge]
+		return [
+			{
+				values,
+				requests: [
+					{type:'message', fields:'*', query:query.join(" AND ")},
+					{type:'content', fields:'name,id,createUserId', query:"id in @message.contentId"},
+					{type:'user', fields:'*', query:"id IN @message.createUserId OR id IN @content.createUserId"}
+				]
+			},
+			merge,
+		]
 	},
 })
 

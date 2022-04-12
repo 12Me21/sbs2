@@ -312,9 +312,9 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	},
 	
 	// this needs to be improved
-	search_comment(comment) {
+	search_comment(comment, parent) {
 		let outer = EC('div', 'bottomBorder')
-		let pg = entity_title_link(comment.parent)
+		let pg = entity_title_link(parent)
 		pg.className += " bar rem1-5 linkBar"
 		outer.append(pg)
 		

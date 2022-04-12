@@ -24,6 +24,7 @@ for (let type_name in ABOUT.details.types) {
 			realname: "",
 			nickname: "",
 			username: "",
+//			content_name: "",
 		})}
 	}
 	for (let field_name in field_datas) {

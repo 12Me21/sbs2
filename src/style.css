@@ -678,7 +678,7 @@ input, select { /* this is old & probably not needed */
 	max-width: 100%;
 }
 input, select, button, input::placeholder {
-	color: var(--maintxtcolor);
+	color: var(--maincolor);
 }
 
 input::placeholder {

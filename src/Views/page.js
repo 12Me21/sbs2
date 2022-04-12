@@ -35,15 +35,17 @@ View.add_view('page', {
 		// we might get messages from long polling before
 		// loading the initial messages :(
 		return {
-			values: {
-				pid: id,
+			chain: {
+				values: {
+					pid: id,
+				},
+				requests: [
+					{type: 'content', fields: "*", query: "id = @pid"},
+					{type: 'message', fields: "*", query: "contentId = @pid and !notdeleted()", order: "id_desc", limit: 30},
+					//				{name: 'Mpinned', type: 'message', fields: "*", query: "id in @content.values.pinned"},
+					{type: 'user', fields: "*", query: "id in @content.createUserId or id in @message.createUserId or id in @message.editUserId"},
+				],
 			},
-			requests: [
-				{type: 'content', fields: "*", query: "id = @pid"},
-				{type: 'message', fields: "*", query: "contentId = @pid and !notdeleted()", order: "id_desc", limit: 30},
-//				{name: 'Mpinned', type: 'message', fields: "*", query: "id in @content.values.pinned"},
-				{type: 'user', fields: "*", query: "id in @content.createUserId or id in @message.createUserId or id in @message.editUserId"},
-			],
 /*			chains: [
 				['content', {ids: [id], IncludeAbout: ["votes","watches"]}],
 				['comment', {parentIds: [id], limit: 30, reverse: true}],

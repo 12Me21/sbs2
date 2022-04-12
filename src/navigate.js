@@ -54,10 +54,10 @@ const Nav = {
 		return Nav.to_location(window.location.hash.substr(1))
 	},
 	
+	// replace = modify address bar without calling render()
 	replace_location(location) {
 		Nav.replace_url(Nav.from_location(location))
 	},
-	
 	replace_url(url) {
 		Nav.ignore = true
 		window.location.replace("#"+url)

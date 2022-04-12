@@ -10,6 +10,11 @@ for (let key of Object.getOwnPropertyNames(Object.prototype))
 	delete Object.prototype[key]
 //Object.freeze(Object.prototype)
 
+function throw2(err) {
+	throw err
+}
+// ex: function callback(resp=throw2(err), err) ??
+
 // ⚡ Custom errors
 // call this immediately after super() (do not pass args to super)
 Error.prototype.trim_stack = function(levels=1) {
