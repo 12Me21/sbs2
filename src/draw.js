@@ -13,9 +13,12 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	
 	//📥 content‹Content›
 	//📤 ‹ParentNode›
-	content_link: function(content) {
+	content_link: function(content, block) {
 		let e = this()
 		e.href = Nav.entity_link(content)
+		if (block)
+			e.className += " bar rem1-5 linkBar"
+		
 		let hidden = !Entity.has_perm(content.permissions, 0, 'R')
 		let bg
 		if (hidden)
@@ -256,7 +259,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	//📥 comment‹Message› - comment to insert
 	//📥 backwards‹Boolean› - whether to insert at beginning
 	//📤 ‹ParentNode› - the newly drawn message-part
-	insert_comment_merge(elem, comment, backwards) { // too many args
+	insert_comment_merge(elem, comment, backwards) {
 		let contents
 		// check whether comment can be merged
 		let block = elem[backwards?'firstChild':'lastChild']
@@ -287,63 +290,66 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return part
 	},
 	
+	// todo: make a class for message container
+	// used for chat + search
+	load_messages_near(pid, elem, newer, amount, callback) {
+		//":scope > message-block:last-of-type > message-contents > message-part:last-of-type"
+		//":scope > message-block > message-contents > message-part"
+		//":scope > message-block:last-of-type[data-merge="..."]
+		
+		let block = elem[newer?'lastChild':'firstChild']
+		if (!block)
+			return null
+		let content = block.querySelector('message-contents')
+		let part = content[newer?'lastChild':'firstChild']
+		if (!part)
+			return null
+		let id = part.x_data.id
+		return ChatRoom.load_messages_near(pid, id, newer, amount, resp=>{
+			let first = true
+			for (let c of resp.message) {
+				if (c.deleted) continue
+				let part = insert_comment_merge(elem, c, !newer)
+				if (first) {
+					part.className += " boundary-"+(newer?"top":"bottom")
+					first = false
+				}
+			}
+			callback()
+		})
+	},
+	
 	// this needs to be improved
-	search_comment(comment, parent) {
-		let outer = EC('div', 'bottomBorder')
+	search_comment: function(comment, parent) {
+		let outer = this()
+		
 		let pg = content_link(parent)
 		pg.className += " bar rem1-5 linkBar"
 		outer.append(pg)
 		
-		let firstId = comment.id
-		let lastId = comment.id
-		let firstElem
-		let lastElem
+		let pid = comment.contentId
 		
-		{
-			let b = button()
-			b[1].textContent = "Load Older"
-			outer.append(b[0])
-			b[1].onclick = ()=>{
-				ChatRoom.load_messages_near(comment.contentId, firstId, false, 10, resp=>{
-					for (let c of resp.message) {
-						firstId = c.id
-						if (c.deleted)
-							continue
-						let d = message_block(c)
-						d[1].append(message_part(c))
-						outer.insertBefore(d[0], firstElem)
-						firstElem = d[0]
-					}
-				})
-			}
-		}
+		outer.append(button2("Load Older", ()=>{
+			load_messages_near(pid, inner, false, 10, ()=>{})
+		}))
 		
-		let d = message_block(comment)
-		d[1].append(message_part(comment))
-		outer.append(d[0])
-		firstElem = lastElem = d[0]
+		let inner = outer.child('div')
 		
-		{
-			let b = button()
-			b[1].textContent = "Load Newer"
-			outer.append(b[0])
-			b[1].onclick = ()=>{
-				ChatRoom.load_messages_near(comment.contentId, lastId, true, 10, resp=>{
-					for (let c of resp.message) {
-						lastId = c.id
-						if (c.deleted)
-							continue
-						let d = message_block(c)
-						d[1].append(message_part(c))
-						outer.insertBefore(d[0], b[0]) // yes
-					}
-				})
-			}
-		}
+		outer.append(button2("Load Newer", ()=>{
+			load_messages_near(pid, inner, true, 10, ()=>{})
+		}))
+		
+		let [block, content] = message_block(comment)
+		content.append(message_part(comment))
+		inner.append(block)
 		
 		return outer
-	},
+	}.bind(𐀶`
+<div class='bottomBorder'>
+</div>
+`),
 	
+	//todo; like, request_button which disables/enables automatically
 	button2: function(label, onclick) {
 		let e = this()
 		let btn = e.firstChild

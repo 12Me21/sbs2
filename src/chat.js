@@ -44,18 +44,14 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 		
 		extra.prepend(label)
 		
-		{
-			let b = Draw.button()
-			let btn = b[1]
-			btn.textContent = "load older messages"
-			btn.onclick = ()=>{
-				if (btn.disabled)
-					return
-				btn.disabled = true
-				this.load_older(50, ()=>{btn.disabled = false}) //todo: lock
-			}
-			extra.prepend(b[0])
-		}
+		extra.prepend(Draw.button2("load older messages", (e)=>{
+			if (e.target.disabled) return
+			e.target.disabled = true
+			// todo: preserve scroll position
+			Draw.load_messages_near(this.id, this.messageList, false, 50, ()=>{
+				e.target.disabled = false
+			})
+		}))
 		
 		if (page.values.pinned) { //todo: check if actually we have any real pinned messages
 			let pinnedSeparator = document.createElement('div')

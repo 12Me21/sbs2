@@ -128,8 +128,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 				$searchResults.fill()
 				let first = true
 				for (let item of resp.content) {
-					let bar = Draw.page_bar(item)
-					bar.className += " linkBar bar rem1-5"
+					let bar = Draw.content_link(item, true)
 					$searchResults.append(bar)
 					if (first)
 						bar.focus()

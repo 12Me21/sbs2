@@ -417,6 +417,12 @@ message-part:focus {
 	background: var(--message-focus-bg);
 	outline: none;
 }
+message-part.boundary-top {
+	border-top: 2px solid red;
+}
+message-part.boundary-bottom {
+	border-bottom: 2px solid red;
+}
 
 .real-name-label {
 	color: gray
