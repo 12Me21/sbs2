@@ -11,67 +11,57 @@ function 𐀶([html]) {
 let Draw = Object.create(null)
 with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	
+	//📥 content‹Content›
+	//📤 ‹ParentNode›
+	content_link: function(content) {
+		let e = this()
+		e.href = Nav.entity_link(content)
+		let hidden = !Entity.has_perm(content.permissions, 0, 'R')
+		let bg
+		if (hidden)
+			bg = 'resource/hiddenpage.png'
+		else
+			bg = 'resource/page-resource.png'
+		let icon = e.firstChild
+		icon.style.backgroundImage = `url("${bg}")`
+		
+		e.lastChild.textContent = content.name
+		
+		return e
+	}.bind(𐀶`
+<a>
+	<span class="item icon iconBg" role="img" alt=""></span>
+	<span class="textItem pre entity-title">...</span>
+</a>
+`),
+	
+	//📥 user‹User›
+	//📥 params‹String›
+	//📤 ‹String›
 	avatar_url(user, params) {
 		if (!user || !user.avatar)
 			return "resource/avatar.png"
 		return Req.file_url(user.avatar, params)
 	},
 	
-	// todo: these are all kinda gross
-	// I thought it was clever but now it's like
-	// why do i have the same function for drawing user labels and page/category... idk
-	
-	// icon + name
-	icon_title(entity, reverse) {
-		let elem = F()
-		let title = EC('span', 'textItem pre entity-title')
-		title.textContent = entity ? entity.name : "MISSINGNO."
-		let i = icon(entity)
-		if (reverse)
-			elem.append(title, i)
-		else
-			elem.append(i, title)
-		return elem
-	},
-	
-	entity_link(entity) {
-		let path = Nav.entityPath(entity)
-		let element = E`a`
-		if (path)
-			element.href = "#"+path
-		return element
-	},
-	
-	// page (or category) wiht user
-	page_bar(page) {
-		let bar = entity_title_link(page)
-		/*if (page.createUser) {
-			let usr = entity_title_link(page.createUser, true)
-			usr.className += ' rightAlign'
-			bar.append(usr)
-		}*/
-		return bar
-	},
-	
-	entity_title_link(entity, reverse) {
-		let element = entity_link(entity)
-		let icon = icon_title(entity, reverse)
-		element.append(icon)
-		return element
-	},
-	
+	//📥 text‹String›
+	//📤 ‹ParentNode›
 	text_item: function(text) {
 		let e = this()
 		e.textContent = text
 		return e
 	}.bind(𐀶`<span class='textItem pre'>`),
 	
+	//📥 text‹String›
+	//📤 ‹ParentNode›
 	sidebar_debug: function(text) {
 		let e = this()
 		e.textContent = text
 		return e
 	}.bind(𐀶`<div class='debugMessage pre'>`),
 	
+	//📥 user‹User›
+	//📤 ‹ParentNode›
 	link_avatar: function(user) {
 		let a = this()
 		a.href = Nav.entityPath(user)
@@ -80,12 +70,17 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return a
 	}.bind(𐀶`<a>`),
 	
+	//📥 user‹User›
+	//📤 ‹ParentNode›
 	avatar: function(user) {
 		let e = this()
 		e.src = avatar_url(user, "size=100&crop=true")
 		return e
 	}.bind(𐀶`<img class='item avatar' width=100 height=100 alt="">`),
 	
+	//📥 file‹Content›
+	//📥 onclick‹Function›
+	//📤 ‹ParentNode›
 	file_thumbnail: function(file, onclick) {
 		let e = this()
 		e.dataset.id = file.id
@@ -98,46 +93,15 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return e
 	}.bind(𐀶`<div class='fileThumbnail item'><img>`),
 	
-	bg_icon: function(url) {
-		let e = this()
-		e.style.backgroundImage = `url("${url}")`
-		return e
-	}.bind(𐀶`<span class='item icon iconBg' role=img alt="">`), //todo:alt
-	
-	// ? <img class='item icon avatar' src=... width=100 height=100>
-	// ? [bg-icon]
-	icon(entity) {
-		let element
-		let type = entity && entity.Type
-		if (type == 'user') {
-			element = EC('img', 'item icon avatar')
-			element.src = avatar_url(entity, "size=100&crop=true")
-			element.width = element.height = 100
-		} else if (type=='content') {
-			let hidden = !Entity.has_perm(entity.permissions, 0, 'r')
-			if (hidden) {
-				element = bg_icon('resource/hiddenpage.png')
-			} else { //TODO: make this better!
-				let pageType = entity.type
-				if (['chat','documentation','program','resource','tutorial','userpage'].includes(pageType))
-					element = bg_icon('resource/page-'+pageType+'.png')
-				else
-					element = bg_icon('resource/unknownpage.png')
-			}
-		} else if (type=='category') {
-			element = bg_icon('resource/category.png')
-		} else {
-			element = bg_icon('resource/unknownpage.png')
-		}
-		return element
-	},
-	
-	// returns a documentFragment
+	//📥 page‹Content›
+	//📤 ‹ParentNode›
 	markup(page) {
 		let lang = page.values ? page.values.markupLang : null
 		return Markup.convert_lang(page.text, lang, undefined)
 	},
 	
+	//📥 path‹???›
+	//📤 ‹ParentNode›
 	title_path(path) {
 		let element = F()
 		if (!path)
@@ -158,6 +122,8 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return element
 	},
 	
+	//📥 page‹Content›
+	//📤 ...
 	chat_pane: function(page) {
 		let e = this.block()
 		// page element
@@ -171,14 +137,13 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		// userlist
 		let list1 = e.querySelector('.userlist')
 		let list2 = list1.firstChild
-		let [b0,b1] = button()
-		b1.textContent = "Hide"
-		b0.className += " rightAlign item loggedIn"
-		list1.append(b0)
+		let b = button2("Hide", null)
+		b.className += " rightAlign item loggedIn"
+		list1.append(b)
 		// scroller
 		let outer = e.lastChild
 		let inner = outer.firstChild
-		return [e, page1, page2, outer, inner, list2, b1]
+		return [e, page1, page2, outer, inner, list2, b.firstChild/*hack*/]
 	}.bind({
 		block: 𐀶`
 <chat-pane class='resize-box'>
@@ -194,15 +159,19 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 `}),
 //		<div class='pageInfoPane rem2-3 bar'></div>
 	
-	userlist_avatar: function(status) {
+	//📥 user‹User›
+	//📤 ‹ParentNode›
+	userlist_avatar: function(user) {
 		let e = this()
-		e.href = `#user/${status.user.id}`
-		e.firstChild.src = Req.file_url(status.user.avatar, "size=100&crop=true")
-		if (status.status == "idle")
-			e.classList.add('status-idle')
+		e.href = Nav.entity_link(user)
+		e.firstChild.src = Req.file_url(user.avatar, "size=100&crop=true")
+		//if (status.status == "idle")
+		//	e.classList.add('status-idle')
 		return e
 	}.bind(𐀶`<a><img class='item avatar' width=100 height=100 alt="">`),
 	
+	//📥 comment‹Message›
+	//📤 ‹ParentNode›
 	message_block: function(comment) {
 		let e = this.block()
 		
@@ -234,8 +203,8 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		name.firstChild.textContent = username
 		
 		let time = e.querySelector('time')
-		time.setAttribute('datetime', comment.createDate)
-		time.textContent = timeString(comment.createDate2)
+		time.dateTime = comment.createDate
+		time.textContent = time_string(comment.createDate2)
 		
 		return [e, e.lastChild]
 	}.bind({
@@ -252,6 +221,8 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		big_avatar: 𐀶`<div class='bigAvatar'></div>`,
 	}),
 	
+	//📥 comment‹Message›
+	//📤 ‹ParentNode›
 	message_part: function(comment) {
 		let e = this()
 		
@@ -267,9 +238,9 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return e
 	}.bind(𐀶`<message-part tab-index=0>`),
 	
-	// date: Date
-	// return: String
-	timeString(date) {
+	//📥 date‹Date›
+	//📤 ‹String›
+	time_string(date) {
 		// time string as something like: (depends on locale)
 		// today: "10:37 AM"
 		// older: "December 25, 2021, 4:09 PM"
@@ -281,40 +252,45 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return date.toLocaleString([], options)
 	},
 	
-	// block: Element
-	// comment: Comment
-	// time: Date
-	can_merge_comment(block, comment, time) {
-		if (block) {
-			let hash = block.dataset.merge
-			return hash && hash==Entity.comment_merge_hash(comment) && (!time || comment.createDate2-time <= 1000*60*5)
-		}
-		return false
-	},
-	
-	// elem: Element - container to insert message blocks into
-	// part: Element - new message part
-	// comment: Comment - data used to generate `part`
-	// time: Date - date of last message
-	// backwards: Boolean - whether to insert at beginning
-	insert_comment_merge(elem, part, comment, time, backwards) { // too many args
-		// todo: get the time from the block itself
-		let block = elem[backwards?'firstChild':'lastChild']
+	//📥 elem‹ParentNode› - container to insert message blocks into
+	//📥 comment‹Message› - comment to insert
+	//📥 backwards‹Boolean› - whether to insert at beginning
+	//📤 ‹ParentNode› - the newly drawn message-part
+	insert_comment_merge(elem, comment, backwards) { // too many args
 		let contents
-		if (can_merge_comment(block, comment, time))
-			contents = block.getElementsByTagName('message-contents')[0]// not great...
+		// check whether comment can be merged
+		let block = elem[backwards?'firstChild':'lastChild']
+		if (block) {
+			// if the prev block has message-contents
+			let oldcontents = block.querySelector('message-contents')
+			if (oldcontents) {
+				// and the merge-hashes match
+				let oldhash = block.dataset.merge
+				let newhash = Entity.comment_merge_hash(comment)
+				if (oldhash == newhash) {
+					// aand the time isn't > 5 minutes
+					let last = oldcontents[backwards?'firstChild':'lastChild']
+					let oldtime = last.x_data.createDate2
+					if (Math.abs(comment.createDate2-oldtime) <= 1000*60*5)
+						contents = oldcontents
+				}
+			}
+		}
+		// otherwise create a new message-block
 		if (!contents) {
-			let block
-			([block, contents] = message_block(comment))
+			;[block, contents] = message_block(comment)
 			elem[backwards?'prepend':'append'](block)
 		}
+		// draw+insert the new message-part
+		let part = message_part(comment)
 		contents[backwards?'prepend':'append'](part)
+		return part
 	},
 	
 	// this needs to be improved
 	search_comment(comment, parent) {
 		let outer = EC('div', 'bottomBorder')
-		let pg = entity_title_link(parent)
+		let pg = content_link(parent)
 		pg.className += " bar rem1-5 linkBar"
 		outer.append(pg)
 		
@@ -367,6 +343,14 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		
 		return outer
 	},
+	
+	button2: function(label, onclick) {
+		let e = this()
+		let btn = e.firstChild
+		btn.append(label)
+		btn.onclick = onclick
+		return e
+	}.bind(𐀶`<button-container><button>`),
 	
 	button: function() { // BAD 
 		let e = this()
@@ -779,94 +763,11 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		
 	},
 	
-	// FIXME: There is no live updating of the vote count. It only adds
-	// the user's count to the user vote when the user votes,
-	// which is clearly an awful way of doing things. I don't
-	// understand how listener is implemented 	in this, so I don't
-	// feel like touching it.
-	
-	// @@ who wrote this comment??
-	vote_button(disptext, state, page) {
-		let b = button()
-		b[0].className += ' item'
-		b[1].className += ' voteButton'
-		if (page.about.myVote == state)
-			b[1].dataset.selected = ""
-		b[1].dataset.vote = state
-		
-		let label = b[1].child('div')
-		label.textContent = disptext
-		
-		let count = b[1].child('div', 'voteCount')
-		count.dataset.vote = state
-		count.textContent = page.about.votes[state].count
-		
-		return b[0]
-	},
-	
-	// <div class='item rightAlign'>
-	//   [vote-button] [vote-button] [vote-button]
-	// </div>
-	vote_box(page) {
-		let element = EC('div', 'item rightAlign')
-		
-		if (!page)
-			return element
-		
-		let buttonStates = [['-', 'b'], ['~', 'o'], ['+', 'g']]
-		let buttons = buttonStates.map(x => vote_button(x[0], x[1], page))
-		
-		for (let x of buttons) {
-			element.append(x)
-			x.onclick = (e)=>{
-				if (!Req.auth)
-					return
-				
-				let button = e.currentTarget.querySelector('button')
-				let state = button.dataset.vote
-				let vote = state
-				let oldButton = element.querySelector('button[data-selected]')
-				// disable button so that it won't increment multiple times while
-				// query is happening
-				button.disabled = true
-				// check if vote was already toggled
-				if (oldButton &&
-					 oldButton.hasAttribute('data-selected') &&
-					 button.hasAttribute('data-selected'))
-					vote = undefined
-				Req.setVote(page.id, vote).then((resp)=>{
-					// if the vote was already toggled, then remove highlight
-					let replaceVote = (q, x)=>{
-						let c = element.querySelector(q)
-						c.textContent = String(Number(c.textContent) + x)
-					}
-					if (!vote) {
-						delete button.dataset.selected
-						replaceVote('.voteCount[data-vote="' + state + '"]', -1)
-					} else {
-						// otherwise, we want to remove the highlight from the
-						// button that was already pressed before and highlight
-						// the new button
-						if (oldButton) {
-							delete oldButton.dataset.selected
-							replaceVote('.voteCount[data-vote="' + oldButton.dataset.vote + '"]', -1)
-						}
-						button.dataset.selected = ""
-						replaceVote('.voteCount[data-vote="' + state + '"]', 1)
-					}
-				}).finally(()=>{
-					button.disabled = false
-				})
-			}
-		}
-		return element
-	},
-	
 	// update the timestamps in the sidebar activity list
 	// (todo: should we update them everywhere else on the site too?)
 	update_timestamps(element) {
 		for (let e of element.querySelectorAll("time.time-ago"))
-			e.textContent = time_ago_string(new Date(e.getAttribute('datetime')))
+			e.textContent = time_ago_string(new Date(e.dateTime))
 	},
 	
 	// <div>
@@ -877,7 +778,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	// </div>
 	nav_category(cat) {
 		let elem = E`div`
-		let label = entity_title_link(cat)
+		let label = content_link(cat)
 		label.className += " bar rem1-5 linkBar"
 		elem.append(label)
 		let elem2 = elem.child('div', 'category-childs')

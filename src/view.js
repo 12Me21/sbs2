@@ -116,7 +116,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 		if (user.id != Req.uid)
 			return //uh oh
 		Req.me = user
-		let icon = Draw.icon(Req.me)
+		let icon = Draw.avatar(Req.me)
 		Sidebar.my_avatar.fill(icon)
 	},
 	
@@ -397,7 +397,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 	
 	// set tab <title>
 	set_entity_title(entity) {
-		$pageTitle.fill(Draw.icon_title(entity))
+		$pageTitle.fill(Draw.content_link(entity))
 		document.title = entity.name
 		real_title = entity.name
 		change_favicon(null)

@@ -217,12 +217,8 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 		this.visible = false
 		this.message_parts = {}
 	}
-	// todo: make renderuserlist etc.
-	// reuse for sidebar + page userlist?
-	//
-	insert_merge(comment, time, backwards) {
-		let part = Draw.message_part(comment)
-		Draw.insert_comment_merge(this.messageList, part, comment, time, backwards)
+	insert_merge(comment, backwards) {
+		let part = Draw.insert_comment_merge(this.messageList, comment, backwards)
 		this.total_messages++
 		this.message_parts[comment.id] = part
 	}
@@ -237,7 +233,7 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 				} else {
 					// `old` should never be set here, I think...
 					let node = Draw.message_part(comment)
-					this.insert_merge(comment, null, true)
+					this.insert_merge(comment, true)
 				}
 			}
 			this.limit_messages()
@@ -265,7 +261,7 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 						this.message_parts[comment.id] = part
 						old.parentNode.replaceChild(part, old)
 					} else { // new comment
-						this.insert_merge(comment, this.last_time, false)
+						this.insert_merge(comment, false)
 						this.last_time = comment.createDate2 //todo: improve
 					}
 				}

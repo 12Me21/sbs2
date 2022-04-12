@@ -7,6 +7,16 @@ Markup.url_scheme["sbs:"] = function(url) {
 const Nav = {
 	ignore: false,
 	
+	entity_link(entity) {
+		let type = {
+			user: 'user',
+			content: 'page',
+		}[entity.Type]
+		if (!type)
+			throw new Error('idk entity type')
+		return "#"+type+"/"+entity.id
+	},
+	
 	entityPath(entity) {
 		if (!entity)
 			return

@@ -249,6 +249,10 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		})
 	},
 	
+	// todo:
+	print_err() {
+	},
+	
 	file_cancel() {
 		selected_file = null
 		$file_browse.hidden = false
