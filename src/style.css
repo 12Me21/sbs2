@@ -783,11 +783,6 @@ textarea-container, textarea-container > textarea {
 	contain: strict;
 }
 
-/* this might be bad */
-.chatScroller, #\$sidebarScroller, #\$sidebarActivity {
-	/*will-change: contents; /* might need to change .chatScroller ? */
-}
-
 /*   idk   */
 .page-container:not(#a) {
 	min-height: 1rem;
