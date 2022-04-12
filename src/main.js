@@ -81,12 +81,6 @@ function dom_ready() {
 	
 	// set up event handlers:
 	
-	// video player does not fire 'click' events so instead
-	// need to detect when the video is played
-	// using a custom event
-	document.addEventListener('videoclicked', (e)=>{
-		image_focus_click_handler(e.target, true)
-	})
 	document.onmousedown = (e)=>{
 		if (!e.button && e.target) // 0 or none (prevent right click etc.)
 			image_focus_click_handler(e.target)

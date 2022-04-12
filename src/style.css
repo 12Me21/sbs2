@@ -823,7 +823,7 @@ activity-users {
 	min-height: 0; /* fixes weird ios safari bug with sidebar bottom panel expanding forever. maybe we need to apply this to all .grow elements? */
 }
 
-.🍂 img {
+.🍂 img, .🍂 video {
 	min-height: var(--image-height);
 	height: unset !important; /* ugh hack..*/
 	-webkit-transition: max-height 0.25s ease;
