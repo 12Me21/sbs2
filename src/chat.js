@@ -369,6 +369,20 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 		// todo: also call if the current comment being shown in the title is edited
 	},
 	
+	/* static */
+	// shouldnt be here, but nowhere else to put it..
+	load_messages_near(page, last, newer, amount, callback) {
+		let order = newer ? 'id' : 'id_desc'
+		let query = `contentId = @pid AND id ${newer?">":"<"} @last`
+		Lp.chain({
+			values: {last:last, pid:page},
+			requests: [
+				{type:'message', fields:'*', query, order, limit: amount},
+				{type:'user', fields:'*', query:"id in @message.createUserId"},
+			]
+		}, callback)
+	}
+	
 })}()
 
 // todo: when starting to render any page

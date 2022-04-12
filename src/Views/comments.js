@@ -109,21 +109,27 @@ View.add_view('comments', {
 			merge = false
 		}
 		if (data.pages) {
-			values.pids = data.pages.join(",")
+			if (data.pages.length>1)
+				alert("can't search multiple pages")
+			values.pids = data.pages[0]
 			query.push("contentId = @pids")
 		}
 		if (data.users) { // todo: is an empty list [] or null?
-			values.uids = data.users
-			query.push("createUserId IN @uids")
+			if (data.pages.length>1)
+				alert("can't search multiple users")
+			values.uids = data.users[0]
+			query.push("createUserId = @uids")
 			merge = false
 		}
 		let range = data.range
 		if (range) {
 			if (range.ids) {
-				values.ids = range.ids
-				query.push("id IN @ids")
-				if (range.ids.length > 1)
+				values.ids = range.ids[0]
+				query.push("id = @ids")
+				if (range.ids.length > 1) {
+					alert("can't search multiple ids")
 					merge = false
+				}
 			} else {
 				if (range.min != null) {
 					values.min_id = range.min-1

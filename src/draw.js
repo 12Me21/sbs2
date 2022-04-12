@@ -255,7 +255,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	message_part: function(comment) {
 		let e = this()
 		
-		if (comment.editDate)
+		if (Entity.is_edited_comment(comment))
 			e.className += " edited"
 		
 		// this is a hack, maybe
@@ -328,8 +328,8 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			b[1].textContent = "Load Older"
 			outer.append(b[0])
 			b[1].onclick = ()=>{
-				Req.get_older_comments(comment.contentId, firstId, 10).then(resp=>{
-					for (let c of resp.comment) {
+				ChatRoom.load_messages_near(comment.contentId, firstId, false, 10, resp=>{
+					for (let c of resp.message) {
 						firstId = c.id
 						if (c.deleted)
 							continue
@@ -352,8 +352,8 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			b[1].textContent = "Load Newer"
 			outer.append(b[0])
 			b[1].onclick = ()=>{
-				Req.get_newer_comments(comment.contentId, lastId, 10).then(resp=>{
-					for (let c of resp.comment) {
+				ChatRoom.load_messages_near(comment.contentId, lastId, true, 10, resp=>{
+					for (let c of resp.message) {
 						lastId = c.id
 						if (c.deleted)
 							continue
