@@ -125,28 +125,33 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return element
 	},
 	
+	//📥 chatroom‹ChatRoom›
 	//📥 page‹Content›
-	//📤 ...
-	chat_pane: function(page) {
+	chat_pane: function(chatroom, page) {
 		let e = this.block()
+		chatroom.chat_pane = e
 		// page element
 		let page1 = e.firstChild
-		let page2 = page1.lastChild
+		chatroom.page_outer = page1
+		chatroom.page_contents = page1.lastChild
 		// resize handle
 		let resize = e.querySelector('resize-handle')
 		let height = null
 		height = 0
 		View.attach_resize(page1, resize, false, 1, 'setting--divider-pos-'+page.id, null, height)
 		// userlist
-		let list1 = e.querySelector('.userlist')
-		let list2 = list1.firstChild
-		let b = button2("Hide", null)
-		b.className += " rightAlign item loggedIn"
-		list1.append(b)
+		chatroom.userlist_elem = e.querySelector('.userlist')
 		// scroller
 		let outer = e.lastChild
 		let inner = outer.firstChild
-		return [e, page1, page2, outer, inner, list2, b.firstChild/*hack*/]
+		chatroom.messages_outer = outer
+		chatroom.scroll_inner = inner
+		chatroom.messageList = inner.lastChild
+		// 
+		let extra = inner.firstChild
+		chatroom.extra = extra
+		chatroom.limit_checkbox = extra.querySelector('input')
+		chatroom.load_more_button = extra.querySelector('button')
 	}.bind({
 		block: 𐀶`
 <chat-pane class='resize-box'>
@@ -154,9 +159,15 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		<div class='pageContents'></div>
 	</scroll-outer>
 	<resize-handle></resize-handle>
-	<div class='bar rem2-3 userlist'><span>...</span></div>
+	<div class='bar rem2-3 userlist'></div>
 	<scroll-outer class='grow'>
-		<scroll-inner class='chatScroller'></scroll-inner>
+		<scroll-inner class='chatScroller'>
+			<div>
+				<button-container><button>load older messages</button></button-container>
+				<label><input type=checkbox>disable limit</label>
+			</div>
+			<div></div>
+		</scroll-inner>
 	</scroll-outer>
 </chat-pane>
 `}),
@@ -172,6 +183,12 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		//	e.classList.add('status-idle')
 		return e
 	}.bind(𐀶`<a><img class='item avatar' width=100 height=100 alt="">`),
+	
+	single_message(comment) {
+		let [block, contents] = message_block(comment)
+		contents.append(message_part(comment))
+		return block
+	},
 	
 	//📥 comment‹Message›
 	//📤 ‹ParentNode›
@@ -281,7 +298,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		}
 		// otherwise create a new message-block
 		if (!contents) {
-			;[block, contents] = message_block(comment)
+			;[block, contents] = message_block(comment) // TODO: the time will be wrong, if we are displaying backwards!!
 			elem[backwards?'prepend':'append'](block)
 		}
 		// draw+insert the new message-part
@@ -339,9 +356,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			load_messages_near(pid, inner, true, 10, ()=>{})
 		}))
 		
-		let [block, content] = message_block(comment)
-		content.append(message_part(comment))
-		inner.append(block)
+		inner.append(single_message(comment))
 		
 		return outer
 	}.bind(𐀶`
@@ -449,38 +464,6 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		}
 		
 		return outer
-	},
-	
-	// todo: create a special system for pagination
-	nav_buttons(callback) {
-		let prev = button()
-		prev[0].className += " item"
-		prev[1].textContent = "<"
-		let next = button()
-		next[0].className += " item"
-		next[1].textContent = ">"
-		let page = text_item()
-		page.textContent = 1
-		let e = F()
-		e.append(prev[0], next[0], page)
-		let x = {
-			value: 1,
-			element: e,
-			onchange: ()=>{},
-			set: (p)=>{
-				x.value = p
-				page.textContent = p
-			}
-		}
-		let change = (d)=>{
-			if (x.value+d < 1)
-				return
-			x.value += d
-			x.onchange(x.value)
-		}
-		prev[1].onclick = ()=>{change(-1)}
-		next[1].onclick = ()=>{change(1)}
-		return x
 	},
 	
 	// [page_edited_time] [entity_title_link]

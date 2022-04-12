@@ -8,58 +8,34 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 		this.status = "active"
 		this.userlist = []
 		
-		if (id <= 0) {
+		if (id == -1) {
 			this.userlist_elem = $sidebarUserList
 			return
 		}
 		
-		let btn
-		([this.chat_pane, this.page_outer, this.page_contents, this.messages_outer, this.scroll_inner, this.userlist_elem, btn] = Draw.chat_pane(page))
-		this.messageList = document.createElement('div')
-		this.scroll_inner.append(this.messageList)
-		
-		btn.onclick = ()=>{
-			this.toggle_hiding(()=>{
-				ul[2].disabled = false
-			})
-			ul[2].disabled = true
-		}
+		Draw.chat_pane(this, page)
 		
 		// chat
 		this.message_parts = {}
-		this.last_time = 0
 		this.max_messages = 500
 		this.total_messages = 0
 		
-		let extra = document.createElement('div')
-		this.extra = extra
-		this.scroll_inner.prepend(extra)
-		
-		let label = document.createElement('label')
-		let checkbox = label.createChild('input')
-		checkbox.type = 'checkbox'
-		this.limit_checkbox = checkbox
-		let text = document.createTextNode('disable limit')
-		label.append(text)
-		
-		extra.prepend(label)
-		
-		extra.prepend(Draw.button2("load older messages", (e)=>{
+		this.load_more_button.onclick = (e)=>{
 			if (e.target.disabled) return
 			e.target.disabled = true
 			// todo: preserve scroll position
 			Draw.load_messages_near(this.id, this.messageList, false, 50, ()=>{
 				e.target.disabled = false
 			})
-		}))
+		}
 		
 		if (page.values.pinned) { //todo: check if actually we have any real pinned messages
 			let pinnedSeparator = document.createElement('div')
 			pinnedSeparator.className = "messageGap"
-			extra.prepend(pinnedSeparator)
+			this.extra.prepend(pinnedSeparator)
 			
 			this.pinnedList = document.createElement('div')
-			extra.prepend(this.pinnedList)
+			this.extra.prepend(this.pinnedList)
 		}
 		
 		$chatPaneBox.append(this.chat_pane)
@@ -111,48 +87,34 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 		Object.seal(this)
 	}
 	
-	load_older(num, callback) {
-		let firstId = Object.first_key(this.message_parts)
-		Req.get_older_comments(this.id, +firstId, num).then((resp)=>{
-			resp.comment && this.display_old_messages(resp.comment)
-			callback()
-		})
-	}
 	limit_messages() {
+		if (this.total_messages <= this.max_messages)
+			return
 		if (this.limit_checkbox.checked)
 			return
-		for (let id in this.message_parts) {
-			if (this.total_messages <= this.max_messages)
-				break
-			if (!this.remove_message(id))
-				break //fail
-		}
+		this.scroller.print_top(()=>{
+			for (let id in this.message_parts) {
+				if (this.total_messages <= this.max_messages)
+					break
+				if (!this.remove_message(id))
+					break //fail
+			}
+		})
 	}
 	remove_message(id) {
 		let message = this.message_parts[id]
 		if (!message)
 			return false
 		
-		let parent = message.parentNode
-		
+		let contents = message.parentNode // <message-contents>
 		message.remove()
 		delete this.message_parts[id]
 		this.total_messages--
 		
-		if (!parent.firstChild)
-			parent.parentNode.remove()
+		if (!contents.firstChild)
+			contents.parentNode.remove() // remove <message-block> if empty
 		
 		return true
-	}
-	toggle_hiding(callback) {
-		Req.toggle_hiding(this.id, (hidden)=>{
-			if (hidden)
-				delete this.userlist[Req.uid]
-			else
-				this.userlist[Req.uid] = {user: Req.me, status: "unknown"}
-			this.update_userlist(this.userlist)
-			callback && callback()
-		})
 	}
 	update_avatar(user) {
 		let item = this.userlist.find(item => item.user.id == user.id)
@@ -167,15 +129,10 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 	display_initial_messages(comments, pinned) {
 		this.display_messages(comments, false)
 		// show pinned comments
-		if (pinned instanceof Array && this.pinnedList) {
+		if (pinned instanceof Array && this.pinnedList)
 			this.scroller.print_top(()=>{
-				this.pinnedList.fill(pinned.map((comment)=>{
-					let b = Draw.message_block(comment)
-					b[1].append(Draw.message_part(comment))
-					return b[0]
-				}))
+				this.pinnedList.fill(pinned.map(m=>Draw.single_message(m)))
 			})
-		}
 	}
 	update_page(page) {
 		this.page = page
@@ -218,23 +175,6 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 		this.total_messages++
 		this.message_parts[comment.id] = part
 	}
-	// "should be called in reverse order etc. etc. you know
-	// times will be incorrect oh well"
-	display_old_messages(comments) {
-		this.scroller.print_top(()=>{
-			for (let comment of comments) {
-				let old = this.message_parts[comment.id]
-				if (comment.deleted) {
-					this.remove_message(comment.id)
-				} else {
-					// `old` should never be set here, I think...
-					let node = Draw.message_part(comment)
-					this.insert_merge(comment, true)
-				}
-			}
-			this.limit_messages()
-		})
-	}
 	my_last_message() {
 		return Object.values(this.message_parts).findLast((msg)=>{
 			return msg && msg.x_data.createUserId == Req.uid
@@ -255,15 +195,14 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 					if (old) { // edited
 						let part = Draw.message_part(comment)
 						this.message_parts[comment.id] = part
-						old.parentNode.replaceChild(part, old)
+						old.replaceWith(part)
 					} else { // new comment
 						this.insert_merge(comment, false)
-						this.last_time = comment.createDate2 //todo: improve
 					}
 				}
 			}
-			this.limit_messages()
 		}, animate)
+		this.limit_messages()
 	}
 	
 	show_controls(elem) {
@@ -282,6 +221,11 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 	}
 	
 }, { // STATIC METHODS
+	/* static */
+	rooms: {},
+	global: null,
+	currentRoom: null,
+	
 	/* static */ 
 	listening_rooms() {
 		let list = [-1]
@@ -298,11 +242,6 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 		status[-1] = this.global.status
 		return status
 	},
-	
-	/* static */
-	rooms: {},
-	global: null,
-	currentRoom: null,
 	
 	/* static */
 	update_avatar(user) {

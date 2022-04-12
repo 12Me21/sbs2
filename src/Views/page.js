@@ -19,7 +19,7 @@ View.add_view('page', {
 		//View.set_entity_path(page.parent)
 		View.flag('canEdit', /u/i.test(page.permissions[Req.uid]))
 		$chatTextarea.disabled = !(page.createUserId==Req.uid || /c/i.test(page.permissions[Req.uid] || page.permissions[0])) // don't use myperms here
-		$pageEditLink.href = "#editpage/"+page.id
+		//$pageEditLink.href = "#editpage/"+page.id
 		$pageCommentsLink.href = "#comments/"+page.id
 	},
 	
@@ -46,12 +46,6 @@ View.add_view('page', {
 					{type: 'user', fields: "*", query: "id in @content.createUserId or id in @message.createUserId or id in @message.editUserId"},
 				],
 			},
-/*			chains: [
-				['content', {ids: [id], IncludeAbout: ["votes","watches"]}],
-				['comment', {parentIds: [id], limit: 30, reverse: true}],
-				['comment.0values_pinned~Mpinned'],//: {parentIds: [id]}},
-				['user.0createUserId.0editUserId.1createUserId.1editUserId.2createUserId.2editUserId'],
-			],*/
 			ext: {},
 			check(resp) {
 				return resp.content[0]
@@ -110,18 +104,6 @@ View.add_view('page', {
 		// the long poller could technically start before onload
 		ChatRoom.global = new ChatRoom(-1)
 		
-		// TODO: this is a really common pattern for buttons
-		// (disable, then reenable when an action finishes)
-		// would be nice to have a system for that
-		$hideGlobalStatusButton.onclick = (e)=>{
-			if ($hideGlobalStatusButton.disabled)
-				return
-			$hideGlobalStatusButton.disabled = true
-			ChatRoom.global.toggle_hiding(()=>{
-				$hideGlobalStatusButton.disabled = false
-			})
-		}
-		
 		$chatCancelEdit.onclick = ()=>{
 			this.cancel_edit()
 		}
@@ -150,14 +132,16 @@ View.add_view('page', {
 		if (!room)
 			return
 		
-		let data = this.read_input(this.editing_comment, !!this.editing_comment)
+		let data = this.read_input(this.editing_comment)
 		if (this.editing_comment) { // editing comment
 			let last_edit = this.editing_comment
 			this.cancel_edit()
 			$chatTextarea.focus()
 			
 			if (data.text) { // input not blank
-				new (Req.send_message({id:last_edit.id, contentId:last_edit.contentId, text:data.text, values:data.values}))(resp=>{
+				last_edit.text = data.text
+				last_edit.values = data.values //mmn
+				new (Req.send_message(last_edit))(resp=>{
 					//
 				},err=>{
 					alert("Editing comment failed")
@@ -174,7 +158,11 @@ View.add_view('page', {
 		} else { // posting new comment
 			if (data.text) { // input is not blank
 				let old = data
-				new (Req.send_message({contentId:room.id, text:data.text, values:data.values}))(resp=>{
+				new (Req.send_message({
+					contentId:room.id,
+					text:data.text,
+					values:data.values
+				}))(resp=>{
 					// 
 				}, err=>{
 					//error sending message
@@ -186,14 +174,14 @@ View.add_view('page', {
 		}
 	},
 	
-	read_input(old, editing) {
+	read_input(old) {
 		let values = old ? old.values : {}
 		
 		if ($chatMarkupSelect.checked)
 			values.m = Settings.values.chat_markup
 		else
 			values.m = 'plaintext'
-		if (!editing) {
+		if (!old) {
 			if (Req.me)
 				values.a = Req.me.avatar
 			if (Settings.values.nickname)

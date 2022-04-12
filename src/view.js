@@ -1,3 +1,25 @@
+// so really what we need is like, 
+// for Content, a few different views
+
+// per Content:
+// - chat
+// - editing
+// - page contents
+// - children (category view)
+
+// per User:
+// - user (show userpage + ???)
+
+// other:
+// - message search
+// - content search
+// - user search?
+// - page create
+
+// personal:
+// - user register / password change etc.
+// - user info change (avatar etc.)
+
 // todo: View class (oops name collision though...)
 
 // TODO:!!!!!!!!
@@ -44,33 +66,6 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 			quick() {
 				set_title("Testing")
 			},
-		},
-		users: {
-			start(id, query) {
-				return {
-					chains: [
-						['user'],
-					],
-					fields: {},
-					ext: {},
-				}
-			},
-			name: 'users',
-			render(resp) {
-				let users = resp.user
-				set_title("Users")
-				$memberList.fill(users.map((user)=>{
-					let bar = Draw.entity_title_link(user)
-					bar.className += " linkBar bar rem2-3"
-					return bar
-				}))
-			},
-			cleanup() { // clean_up...
-				$memberList.fill()
-			},
-			init() {
-				$memberNav.append(Draw.nav_buttons().element)
-			}
 		},
 		pages: {
 			redirect: (id, query) => ['page', id, query]
