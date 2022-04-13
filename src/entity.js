@@ -39,18 +39,18 @@ for (let type_name in ABOUT.details.types) {
 	}
 	proto = Object.create(STRICT, proto)
 	let cons 
-	if (type_name == 'message')
+	/*if (type_name == 'message')
 		cons = (o)=>{
 			if (o.editDate == o.createDate) // correction for old comments
 				o.editDate = null
 			Object.setPrototypeOf(o, proto)
 			return o
 		}
-	else
-		cons = (o)=>{
-			Object.setPrototypeOf(o, proto)
-			return o
-		}
+	else*/
+	cons = (o)=>{
+		Object.setPrototypeOf(o, proto)
+		return o
+	}
 	TYPES[type_name] = cons
 }
 
@@ -215,14 +215,7 @@ let Entity = (()=>{"use strict"; return singleton({
 	},*/
 	// return: [text, metadata]
 	
-	
 	is_new_comment(c) {
-		return !c.deleted && !c.editDate
+		return !c.deleted && !c.edited
 	},
-	
-	// new comments: editDate is null until edited
-	// old comments: editDate==createDate until edited
-	is_edited_comment(c) {
-		return c.editDate// && c.editDate != c.createDate
-	}
 })})()

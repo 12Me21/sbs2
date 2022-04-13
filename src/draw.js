@@ -250,7 +250,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	message_part: function(comment) {
 		let e = this()
 		
-		if (Entity.is_edited_comment(comment))
+		if (comment.edited)
 			e.className += " edited"
 		
 		// this is a hack, maybe
