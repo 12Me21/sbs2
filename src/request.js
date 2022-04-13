@@ -239,7 +239,7 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 		form.set('file', file)
 		for (let name in params)
 			form.set(name, params[name])
-		return ApiRequest.bind(null, 'File', 'POST', form, {proc})
+		return ApiRequest.bind(null, 'File', 'POST', form, {proc: TYPES.content})
 	},
 }
 Object.seal(Req)
