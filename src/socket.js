@@ -84,18 +84,23 @@ class ApiSocket {
 		}}
 	}
 	process_live(events, entitys) {
+		let comments = []
 		for (let {refId, type, action, userId, date, id} of events) {
-			let elistmap = entitys[type]
 			switch (type) { default: {
 				console.warn("unhandled event: ", type, events)
 			} break; case 'message_event': {
-				let message = [elistmap.message[~refId]]
-				Sidebar.display_messages(message)
-				ChatRoom.display_messages(message)
+				let message = entitys.message_event.message[~refId]
+				comments.push(message)
 			} break; case 'user_event': {
-				let user = elistmap.user[~refId]
+				let user = entitys.user_event.user[~refId]
 				ChatRoom.update_avatar(user)
 			}}
+		}
+		if (comments.length) {
+			Act.process_messages(comments, entitys.message_event)
+			Sidebar.display_messages(comments)
+			ChatRoom.display_messages(comments)
+			Act.redraw()
 		}
 	}
 }

@@ -128,7 +128,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 				$searchResults.fill()
 				let first = true
 				for (let item of resp.content) {
-					let bar = Draw.content_link(item, true)
+					let bar = Draw.content_label(item, true)
 					$searchResults.append(bar)
 					if (first)
 						bar.focus()
@@ -193,14 +193,10 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	// TODO TODO
 	on_aggregate_change(aggregate) {
 		let items = Object.values(aggregate)//.filter(a=>a.content) //HACK (what did i mean by this?)
-		items.sort((a, b)=> -(a.lastDate - b.lastDate))
+		items.sort((a, b)=> -(a.date - b.date))
 		$sidebarActivity.fill()
-		$sidebarWatch.fill()
-		for (let item of items) {
+		for (let item of items)
 			$sidebarActivity.append(Draw.activity_item(item))
-			if (item.watching)
-				$sidebarWatch.append(Draw.activity_item(item))
-		}
 		refresh_time_interval(aggregate)
 	},
 	

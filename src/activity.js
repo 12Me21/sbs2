@@ -24,6 +24,8 @@ let Act = function(){"use strict"; return singleton({
 		}, (objects)=>{
 			// TODO: ensure that these are displayed BEFORE any websocket new messages
 			Sidebar.display_messages(objects.message.reverse(), true)
+			this.process_message_aggregate(objects.message_aggregate, objects)
+			this.redraw()
 		})
 		
 		/*Req.chain([
@@ -49,23 +51,59 @@ let Act = function(){"use strict"; return singleton({
 	
 	// if an item exists for that id, return it
 	// otherwise create a new one and return it
-	get_item(id, pageMap, date) {
-		if (this.items[id])
-			return this.items[id]
-		return this.items[id] = {
-			content: pageMap[id],
-			users: [],
-			count: 0,
-			firstDate: date,
-			lastDate: date,
-		}
+	update_item(id, content, date) {
+		let item = this.items[id]
+		if (item) {
+			item.content = content
+			if (date > item.date)
+				item.date = date
+		} else
+			this.items[id] = item = {
+				content,
+				users: {},
+				date,
+			}
+		return item
+	},
+	
+	update_user(item, uid, user, date) {
+		let u = item.users[uid]
+		if (u) {
+			u.user = user
+			if (date > u.date)
+				u.date = date
+		} else
+			item.users[uid] = {user, date}
 	},
 	
 	redraw() {
 		Sidebar.on_aggregate_change(this.items)
 	},
 	
-	process_stuff(act, comments, watching, pages) {
+	// todo: a lot of places just need whatever the newest instance of a user is
+	// so we could intern users, content, etc. to save memory
+	process_message_aggregate(message_aggregate, {content, user}) {
+		for (let {
+			contentId:pid, createUserId:uid,
+			maxCreateDate2:date,
+		} of message_aggregate) {
+			let item = this.update_item(pid, content[~pid], date)
+			this.update_user(item, uid, user[~uid], date)
+		}
+	},
+	
+	process_messages(message, {content, user}) {
+		for (let {
+			contentId:pid, createUserId:uid,
+			createDate2:date, deleted,
+		} of message) {
+			if (deleted) continue // mmnn
+			let item = this.update_item(pid, content[~pid], date)
+			this.update_user(item, uid, user[~uid], date)
+		}
+	},
+	
+/*		process_stuff(act, comments, watching, pages) {
 		if (act || comments || watching) {
 			let p = Entity.page_map(pages)
 			act && this.new_activity(act, p)
@@ -73,7 +111,7 @@ let Act = function(){"use strict"; return singleton({
 			watching && this.new_activity(watching, p, true)
 			this.redraw()
 		}
-	},
+	},*/
 	
 	// ew
 	// this system merges Activity, Comment, ~and CommentAggregate~

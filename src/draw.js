@@ -1,6 +1,6 @@
 function 𐀶([html]) {
 	let temp = document.createElement('template')
-	temp.innerHTML = html.replace(/\n\s*/g,"")
+	temp.innerHTML = html.replace(/\s*\n\s*/g,"")
 	let node = temp.content
 	if (node.childNodes.length==1)
 		node = node.firstChild
@@ -13,11 +13,10 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	
 	//📥 content‹Content›
 	//📤 ‹ParentNode›
-	content_link: function(content, block) {
-		let e = this()
-		e.href = Nav.entity_link(content)
+	content_label: function(content, block) {
+		let e = this[block?1:0]()
 		if (block)
-			e.className += " bar rem1-5 linkBar"
+			e.href = Nav.entity_link(content)
 		
 		let hidden = !Entity.has_perm(content.permissions, 0, 'R')
 		let bg
@@ -31,12 +30,17 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		e.lastChild.textContent = content.name
 		
 		return e
-	}.bind(𐀶`
-<a>
-	<span class="item icon iconBg" role="img" alt=""></span>
-	<span class="textItem pre entity-title">...</span>
+	}.bind([𐀶`
+<span class="item icon iconBg" role="img" alt=""></span>
+<span class="textItem pre entity-title">...</span>
+`,
+𐀶`
+<a class='bar rem1-5 linkBar'>
+<span class="item icon iconBg" role="img" alt=""></span>
+<span class="textItem pre entity-title">...</span>
 </a>
-`),
+`
+]),
 	
 	//📥 user‹User›
 	//📥 params‹String›
@@ -340,7 +344,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	search_comment: function(comment, parent) {
 		let outer = this()
 		
-		let pg = content_link(parent)
+		let pg = content_label(parent)
 		pg.className += " bar rem1-5 linkBar"
 		outer.append(pg)
 		
@@ -419,28 +423,31 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	
 	activity_item: function(item) {
 		let e = this()
-		e.href = Nav.entityPath(item.content)
-		e.firstChild.append(icon_title(item.content))
+		e.href = Nav.entity_link(item.content)
+		e.firstChild.append(content_label(item.content))
 		
-		let userContainer=e.lastChild.firstChild
-		let time = time_ago(item.lastDate)
-		time.className += " textItem"
+		let userlist = e.lastChild.firstChild
 		
-		for (let u of item.users)
-			if (u && u.user)
-				userContainer.append(link_avatar(u.user))
+		let users = Object.values(item.users)
+		users.sort((a, b)=> -(a.date - b.date))
+		for (let u of users) {
+			if (u.user)
+				userlist.append(link_avatar(u.user))
+		}
+		
+		let time = time_ago(item.date)
+		time.className += " ellipsis"
+		e.lastChild.prepend(time)
 		
 		return e
 	}.bind(𐀶`
 <a class='activity-page'>
 	<div class='bar rem1-5 ellipsis'></div>
-	<div class='bar rem1-5'> 
-		<activity-users class='rightAlign'></activity-users>
-	</div>
-<a>
+	<div class='bar rem1-5 activity-page-bottom'>
+		<activity-users class='grow'>
 `),
 	
-	activity_item(item) {
+/*	activity_item(item) {
 		let outer = entity_link(item.text)
 		outer.className += " activity-page"
 		
@@ -464,7 +471,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		}
 		
 		return outer
-	},
+	},*/
 	
 	// [page_edited_time] [entity_title_link]
 	// ? [page_edited_time] [entity_title_link]
@@ -767,7 +774,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	// </div>
 	nav_category(cat) {
 		let elem = E`div`
-		let label = content_link(cat)
+		let label = content_label(cat)
 		label.className += " bar rem1-5 linkBar"
 		elem.append(label)
 		let elem2 = elem.child('div', 'category-childs')

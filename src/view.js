@@ -392,7 +392,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 	
 	// set tab <title>
 	set_entity_title(entity) {
-		$pageTitle.fill(Draw.content_link(entity))
+		$pageTitle.fill(Draw.content_label(entity))
 		document.title = entity.name
 		real_title = entity.name
 		change_favicon(null)
