@@ -111,7 +111,6 @@ let Entity = (()=>{"use strict"; return singleton({
 	},
 	
 	comment_merge_hash(comment) {
-		console.log(comment)
 		let user = comment.Author
 		return `${comment.contentId},${comment.createUserId},${user.avatar},${user.bigAvatar||""},${user.username} ${user.nickname || ""}`
 	},

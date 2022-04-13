@@ -215,57 +215,6 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	
 	//📥 comment‹Message›
 	//📤 ‹ParentNode›
-	message_block2: function(comment) {
-		let e = this.block()
-		let ee = e.querySelectorAll("[q]")
-		
-		let author = comment.Author
-		
-		e.dataset.uid = comment.createUserId
-		e.dataset.merge = Entity.comment_merge_hash(comment)
-		
-		let avatar
-		if (author.bigAvatar) {
-			avatar = this.big_avatar()
-			avatar.style.backgroundImage = `url("${Req.file_url(author.bigAvatar, "size=500")}")`
-		} else {
-			avatar = this.avatar()
-			avatar.src = Req.file_url(author.avatar, "size=100&crop=true")
-		}
-		e.prepend(avatar)
-		
-		let username
-		if (author.nickname == null) {
-			username = author.username
-		} else {
-			username = author.nickname
-			let nickname = this.nickname()
-			nickname.querySelector('.pre').textContent = author.realname
-			ee[0].append(nickname)
-		}
-		ee[1].textContent = username
-		
-		let time = ee[2]
-		time.dateTime = comment.createDate
-		time.textContent = time_string(comment.createDate2)
-		
-		return [e, ee[3]]
-	}.bind({
-		block: 𐀶`
-<message-block>
-	<message-header>
-		<message-username q><span class='pre username' q></span>:</message-username>
-		<time q></time>
-	</message-header>
-	<message-contents q></message-contents>
-</message-block>`,
-		nickname: 𐀶` <span class='real-name-label'>(<span class='pre'></span>)</span>`,
-		avatar: 𐀶`<img class='avatar' width=100 height=100 alt="">`,
-		big_avatar: 𐀶`<div class='bigAvatar'></div>`,
-	}),
-	
-	//📥 comment‹Message›
-	//📤 ‹ParentNode›
 	message_block: function(comment) {
 		let e = this.block()
 		
