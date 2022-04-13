@@ -160,11 +160,11 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 	// idk having all brackets bold + dimgray was kinda nice...
 	// i dont like how proc is required but h
 	request(url, proc, data) {
-		if (Object.is_plain(data)) // todo: with custom classes this doesn't work. we need a better solution..
-			data = JSON.to_blob(data)
+		data = JSON.to_blob(data)
 		let method = data===undefined ? 'GET' : 'POST'
 		return ApiRequest.bind(null, url, method, data, {proc})
 	},
+	
 	// idea: function.valueOf calls the function and returns um ..   something.. .chaining .. mmmm
 	
 	chain(data) {
@@ -239,7 +239,7 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 		form.set('file', file)
 		for (let name in params)
 			form.set(name, params[name])
-		return this.request('File', TYPES.content, form)
+		return ApiRequest.bind(null, 'File', 'POST', form, {proc})
 	},
 }
 Object.seal(Req)
