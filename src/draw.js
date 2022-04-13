@@ -332,6 +332,8 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	
 	// todo: make a class for message container
 	// used for chat + search
+	// need to prevent this from loading messages multiple times at once
+	// and inserting out of order...x
 	load_messages_near(pid, elem, newer, amount, callback) {
 		//":scope > message-block:last-of-type > message-contents > message-part:last-of-type"
 		//":scope > message-block > message-contents > message-part"

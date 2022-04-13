@@ -19,7 +19,13 @@ class ApiSocket {
 		window.addEventListener('beforeunload', e=>{
 			this.dead = true
 		})
-//		this.processed_listeners = {}
+/*		;['online','offline','focus','blur'].forEach(x=>{
+			window.addEventListener('online', e=>
+		})
+		window.addEventListener('online', e=>{
+			this.dead = true
+		})*/
+		//		this.processed_listeners = {}
 	}
 	set_listening(){}
 	set_statuses(){}
