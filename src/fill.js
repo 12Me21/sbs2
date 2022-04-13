@@ -13,6 +13,11 @@ for (let key of Object.getOwnPropertyNames(Object.prototype))
 function throw2(err) {
 	throw err
 }
+function SELF_DESTRUCT(err, ...args) {
+	let x = {"💥💥💥💥💥"(){ throw new err(...args) }}["💥💥💥💥💥"]
+	return new Proxy({}, {get:x, set:x, has:x})
+}
+
 // ex: function callback(resp=throw2(err), err) ??
 
 // ⚡ Custom errors

@@ -204,23 +204,6 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		$sidebarCategories.fill(Draw.nav_category(cats[0]))
 	},
 	
-	// garbage shit
-	safe_tostring(val) {
-		try {
-			return ""+val
-		} catch(e) {
-			try {
-				let type = Object.getPrototypeOf(val)
-				if (type && type.constructor) {
-					let c = type.constructor
-					if (c && c.name && typeof c.name == 'string')
-						return "<"+cname+">"
-				}
-			} catch(e) {
-			}
-			return "<???>"
-		}
-	},
 	printing: false,
 	// messy messy messy...
 	print(...args) {
@@ -231,21 +214,18 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 					return
 				}
 				printing = true;
-				let text = args.map(x => safe_tostring(x)).join("\n")
 				scroller.print(()=>{
-					message_count++
-					limit_messages()
-					return Draw.sidebar_debug(text)
+					for (let arg of args) {
+						$sidebarScroller.append(Draw.sidebar_debug(arg))
+						message_count++
+					}
 				}, true)
+				limit_messages()
 			} catch (e) {
 				console.error("print error", e, "\n", args)
 			}
 			printing = false;
 		})
-	},
-	
-	// todo:
-	print_err() {
 	},
 	
 	file_cancel() {

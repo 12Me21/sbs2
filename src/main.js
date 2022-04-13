@@ -1,12 +1,6 @@
 window.onerror = function(message, source, line, col, error) {
 	try {
-		// sometimes we don't get any useful information other than the filename
-		if (error)
-			Sidebar.print(error.stack)
-		if (line)
-			Sidebar.print(`ERROR: ${message}\nin ${source}\nat ${line}:${col}`)
-		else
-			Sidebar.print(`ERROR: ${message}\nin ${source}`)
+		Sidebar.print(error)
 	} catch(e) {
 		console.error("error in window.onerror:", e, arguments)
 		// yeah no

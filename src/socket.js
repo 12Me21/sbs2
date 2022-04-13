@@ -1,3 +1,14 @@
+// only call this through SELFDESTRUCT
+class SocketRequestError extends TypeError {
+	constructor(resp, extra) {
+		super()
+		this.trim_stack(2)
+		this.resp = resp
+		this.message = "\n"+resp.error
+	}
+}
+SocketRequestError.prototype.name = "SocketRequestError"
+
 class ApiSocket {
 	constructor() {
 		this.handlers = {}
@@ -48,36 +59,38 @@ class ApiSocket {
 	cancel({id}) {
 		delete this.handlers[id]
 	}
-	handle_response({type, id, data:body, error}) {
+	handle_response(response) {
 		let handler
-		if (id) {
-			handler = this.handlers[id]
-			delete this.handlers[id]
+		if (response.id) {
+			handler = this.handlers[response.id]
+			delete this.handlers[response.id]
 			if (!handler)
-				console.warn("got response without callback! id:"+id)
-		}
-		if (error) {
-			console.error("error from", handler, "\n→", error)
-			if (handler)
-				handler.callback(undefined, error)
-			throw new Error("invalid websocket request!")
+				console.warn("got response without callback! id:"+response)
 		}
 		
-		switch (type) { default: {
-			console.warn("unhandled response: ", type, body)
+		if (response.error) {
+			let x = SELF_DESTRUCT(SocketRequestError, response)
+			if (handler)
+				handler.callback(x)
+			x.throw
+			return
+		}
+		
+		switch (response.type) { default: {
+			console.warn("unhandled response: ", response)
 		} break;case 'lastId': {
-			this.last_id = body
+			this.last_id = response.data
 		} break;case 'live': {
-			let {objects:entitys, events, lastId} = body
-			this.last_id = lastId
+			let {objects:entitys, events, lastId} = response.data
+			this.last_id = response.lastId
 			Entity.do_listmapmap(entitys)
 			this.process_live(events, entitys)
 		} break;case 'userlistupdate': {
-			let {objects:entitys} = body
+			let {objects:entitys} = response.data
 			Entity.do_listmap(entitys)
 			// todo:
 		} break;case 'request': {
-			let {objects:entitys} = body
+			let {objects:entitys} = response.data
 			Entity.do_listmap(entitys)
 			if (handler)
 				handler.callback(entitys)
@@ -104,11 +117,5 @@ class ApiSocket {
 		}
 	}
 }
-
-// entity types:
-// entity
-// elist - list of entity
-// elistmap - map of type -> elist
-// elistmapmap - map of type -> elist
 
 let Lp = new ApiSocket()

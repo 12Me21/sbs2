@@ -780,6 +780,12 @@ textarea-container, textarea-container > textarea {
 	padding: 2px 3px;
 }
 
+.debugMessage > pre {
+	font-family: monospace;
+	overflow-x: auto;
+	white-space: pre;
+}
+
 .category-childs {
 	margin-left: 1rem;
 }

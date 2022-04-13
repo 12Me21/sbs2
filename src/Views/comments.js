@@ -63,13 +63,10 @@ View.add_view('comments', {
 			$commentSearchResults.textContent = "(no results)"
 		} else {
 			if (merge) {
-				let last_time = 0
 				for (let comment of comments) {
 					if (comment.deleted)
 						continue
-					let part = Draw.message_part(comment)
-					Draw.insert_comment_merge($commentSearchResults, part, comment, last_time, false)
-					last_time = comment.createDate
+					Draw.insert_comment_merge($commentSearchResults, comment, false)
 				}
 			} else {
 				for (let c of comments) {
