@@ -468,32 +468,6 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		<activity-users class='grow'>
 `),
 	
-/*	activity_item(item) {
-		let outer = entity_link(item.text)
-		outer.className += " activity-page"
-		
-		let bar = outer.child('div', 'bar rem1-5 ellipsis')
-		bar.append(icon_title(item.text))
-		
-		let bar2 = outer.child('div', 'bar rem1-5')
-		
-		let userContainer = bar2.child('activity-users', 'rightAlign')
-		
-		let time = time_ago(item.lastDate)
-		time.className += " textItem"
-		userContainer.append(time, " ")
-		
-		for (let u of item.users) {
-			if (u && u.user) {
-				let l = entity_link(u.user)
-				l.append(icon(u.user))
-				userContainer.append(l)
-			}
-		}
-		
-		return outer
-	},*/
-	
 	// [page_edited_time] [entity_title_link]
 	// ? [page_edited_time] [entity_title_link]
 	// ? [page_edited_time]
@@ -748,10 +722,6 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return x
 	},
 	
-	// <div class='bar rem1-5 sidebarComment ellipsis'>
-	//   ? [entity-title-link] edited
-	//   [entity-title-link] : ...
-	// </div>
 	sidebar_comment: function(comment) {
 		let d = this()
 		d.dataset.id = comment.id
@@ -786,24 +756,6 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		for (let e of element.querySelectorAll("time.time-ago"))
 			e.textContent = time_ago_string(new Date(e.dateTime))
 	},
-	
-	// <div>
-	//   [entity title link]
-	//   <div class='category-childs'>
-	//     ...
-	//   </div>
-	// </div>
-	nav_category(cat) {
-		let elem = E`div`
-		let label = content_label(cat)
-		label.className += " bar rem1-5 linkBar"
-		elem.append(label)
-		let elem2 = elem.child('div', 'category-childs')
-		cat.children && elem2.fill(
-			cat.children.map((c) => nav_category(c))
-		)
-		return elem
-	}
 	
 })<!-- PRIVATE })
 Object.seal(Draw)
