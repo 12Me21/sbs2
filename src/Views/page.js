@@ -99,10 +99,6 @@ View.add_view('page', {
 				this.send_message()
 			}
 		}
-		// TODO: make sure this is ready when the long poller starts!
-		// right now it PROBABLY will be but that isn't certain
-		// the long poller could technically start before onload
-		ChatRoom.global = new ChatRoom(-1)
 		
 		$chatCancelEdit.onclick = ()=>{
 			this.cancel_edit()

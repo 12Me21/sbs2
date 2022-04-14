@@ -80,6 +80,10 @@ const Nav = {
 	
 	reload: RELOAD,
 	
+	fix_url() {
+		
+	},
+	
 	update_from_location() {
 		if (Nav.ignore)
 			return
@@ -94,8 +98,14 @@ const Nav = {
 		}
 		
 		// send users at ?page/123 to #page/123
-		if (window.location.hash=="" && window.location.search.length>1)
-			Nav.replace_url(window.location.search.substr(1))
+		if (window.location.hash=="" && window.location.search.length>1) {
+			let x = new URL(window.location)
+			x.hash = "#"+x.search.substr(1)
+			x.search = ""
+			Nav.ignore = true
+			window.history.replaceState(null, "", x.href)
+			Nav.ignore = false
+		}
 		
 		Nav.update_from_location()
 	},
