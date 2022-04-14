@@ -139,16 +139,10 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 	
 	handle_view(location, callback) {
 		cancel()
-		//loading_view = handle_view2.run(callback, location)
-		let l = loading_view = handle_view2(location)
-		!function step(ret) {
-			let {done, value} = l.next(ret)
-			console.log(this)
-			done ? callback&&callback(value) : value(step)
-		}()
+		loading_view = handle_view2.run(callback, location)
 	},
 	
-	handle_view2: function*(location) {
+	handle_view2: function*(STEP, location) {
 		let phase = "..."
 		let view
 		
@@ -175,14 +169,15 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 				render = view.quick.bind(view, data.ext)
 			} else {
 				phase = "starting request"
-				let resp = yield fn=>Lp.chain(data.chain, fn)
+				let resp = yield Lp.chain(data.chain, STEP)
 				
 				phase = "view.check"
 				if (data.check && !data.check(resp, data.ext))
 					throw "data not found"
 				render = view.render.bind(view, resp, data.ext)
 			}
-			yield do_when_ready
+			if (run_on_load)
+				yield do_when_ready(STEP)
 			
 			if (first)
 				console.log("🌄 Rendering first page")
@@ -195,7 +190,8 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 			phase = "render"
 			render()
 		} catch(e) {
-			yield do_when_ready
+			if (run_on_load)
+				yield do_when_ready(STEP)
 			
 			cleanup(location)
 			view = errorView
