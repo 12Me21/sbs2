@@ -214,12 +214,17 @@ button[aria-selected="true"] {
 	filter: grayscale(1);
 }
 
+html.f-loading {
+	/*--databarbgcolor: var(--loading-invert-bg);*/
+}
 html.f-loading .loadBG {
 	background: var(--loading-invert-bg);
 }
-
-.loadBG {
-	transition: background-color 0.1s ease;
+html {
+	/*transition: --databarbgcolor 0.1s ease; I wish*/
+}
+.loadBG/*, resize-handle*/ {
+	transition: background 0.1s ease;
 }
 
 .titlePane .iconBg {

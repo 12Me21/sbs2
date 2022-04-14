@@ -43,7 +43,7 @@ html {
 	/* inverted bg colors (black) */
 	--databarbgcolor: #222;
 	--light-invert-bg: #333;
-	--loading-invert-bg: #327070; /*linear-gradient(#225450, #327070); removed because of flicker ? i think we need to animate to another gradient or? */
+	--loading-invert-bg: rgb(0,150,136); /*linear-gradient(#225450, #327070); removed because of flicker ? i think we need to animate to another gradient or? */
 	--error-invert-bg: #800;
 	--input-border-color: #BBB #DDD #DDD #BBB;
 }
