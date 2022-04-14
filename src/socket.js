@@ -9,27 +9,22 @@ class SocketRequestError extends TypeError {
 }
 SocketRequestError.prototype.name = "SocketRequestError"
 
-class ApiSocket {
-	constructor() {
-		this.handlers = {}
-		this.handler_id = 1
-		this.ready = false
-		this.last_id = ""
-		this.dead = false
-		window.addEventListener('beforeunload', e=>{
-			this.dead = true
-		})
+let Lp = {
+	handlers: {},
+	handler_id: 1,
+	ready: false,
+	last_id: "",
+	dead: false,
 /*		;['online','offline','focus','blur'].forEach(x=>{
 			window.addEventListener('online', e=>
-		})
-		window.addEventListener('online', e=>{
+		})*/
+		/*window.addEventListener('online', e=>{
 			this.dead = true
 		})*/
 		//		this.processed_listeners = {}
-	}
-	set_listening(){}
-	set_statuses(){}
-	refresh(){}
+	set_listening(){},
+	set_statuses(){},
+	refresh(){},
 	start_websocket() {
 		if (this.websocket && this.websocket.readyState <= WebSocket.OPEN)
 			throw new Error("Tried to open multiple websockets")
@@ -38,52 +33,77 @@ class ApiSocket {
 		this.websocket.onopen = (e)=>{
 			console.log("🌄 websocket open")
 			for (let i in this.handlers)
-				this.send(this.handlers[i].data)
+				this.send(this.handlers[i].request)
 			this.ready = true
 		}
-		this.websocket.onclose = (e)=>{
+		this.websocket.onclose = (event)=>{
 			this.ready = false
 			if (this.dead)
 				return
-			alert('websocket died,,')
+			let {code, reason, wasClean} = event
+			console.warn("websocket closed", code, reason, wasClean)
+			alert('websocket died,,'+reason)
 			//this.make_websocket()
 		}
 		this.websocket.onmessage = (event)=>{
 			this.handle_response(JSON.parse(event.data))
 		}
-	}
+	},
+	/*************************
+	 ** Requests (internal) **
+	 *************************/
 	send(data) {
 		this.websocket.send(JSON.stringify(data))
-	}
-	chain(data, callback=console.info) {
-		data = {type:'request', data, id:this.handler_id++}
-		this.handlers[data.id] = {data, callback}
+	},
+	next_id() {
+		return "🧦"+this.handler_id++
+	},
+	/***************************
+	 ** Requests (high level) **
+	 ***************************/
+	request(request, callback=console.info) {
+		request.id = this.next_id()
+		this.handlers[request.id] = {request, callback}
 		if (this.ready)
-			this.send(data)
-		return {id: data.id}
-	}
+			this.send(request)
+		return {id:request.id}
+	},
+	chain(data, callback) {
+		return this.request({type:'request', data}, callback)
+	},
+	ping(callback) {
+		return this.request({type:'ping'}, callback)
+	},
 	cancel({id}) {
+		this.pop_handler(id)
+	},
+	/***********************
+	 ** Response Handling **
+	 ***********************/
+	pop_handler(id) {
+		let handler = this.handlers[id]
 		delete this.handlers[id]
-	}
+		return handler
+	},
 	handle_response(response) {
 		let handler
 		if (response.id) {
-			handler = this.handlers[response.id]
-			delete this.handlers[response.id]
+			handler = this.pop_handler(response.id)
 			if (!handler)
-				console.warn("got response without callback! id:"+response)
+				console.warn("got response without handler:", response)
 		}
-		
 		if (response.error) {
 			let x = SELF_DESTRUCT(SocketRequestError, response)
-			if (handler)
+			if (handler && handler.request.type == response.type)
 				handler.callback(x)
 			x.throw
 			return
 		}
-		
 		switch (response.type) { default: {
-			console.warn("unhandled response: ", response)
+			console.warn("unknown response type: ", response)
+		} break;case 'ping': {
+			if (handler)
+				handler.callback(response)
 		} break;case 'lastId': {
 			this.last_id = response.data
 		} break;case 'live': {
@@ -92,21 +112,21 @@ class ApiSocket {
 			Entity.do_listmapmap(entitys)
 			this.process_live(events, entitys)
 		} break;case 'userlistupdate': {
-			let {objects:entitys} = response.data
+			let entitys = response.data.objects
 			Entity.do_listmap(entitys)
-			// todo:
+			// todo
 		} break;case 'request': {
-			let {objects:entitys} = response.data
+			let entitys = response.data.objects
 			Entity.do_listmap(entitys)
 			if (handler)
 				handler.callback(entitys)
 		}}
-	}
+	},
 	process_live(events, entitys) {
 		let comments = []
 		for (let {refId, type, action, userId, date, id} of events) {
 			switch (type) { default: {
-				console.warn("unhandled event: ", type, events)
+				console.warn("unknown event type:", type, events)
 			} break; case 'message_event': {
 				let message = entitys.message_event.message[~refId]
 				comments.push(message)
@@ -121,7 +141,9 @@ class ApiSocket {
 			ChatRoom.display_messages(comments)
 			Act.redraw()
 		}
-	}
+	},
 }
 
-let Lp = new ApiSocket()
+window.addEventListener('beforeunload', e=>{
+	Lp.dead = true
+})
