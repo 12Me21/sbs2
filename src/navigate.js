@@ -32,25 +32,29 @@ const Nav = {
 	// all paths are in the form
 	// name[/id][?query][#fragment]
 	to_location(url_str) {
-		// /^(.*?)(|[?].*?)(|[#].*)$/.exec(url)
-		let url = new URL("sbs:"+url_str)
-		// replace ? with &, so, ex: "?x?y" parses as 2 items
-		url.search = url.search.replace(/^|[?]/g, "")
-		let query = Object.fromEntries(url.searchParams.entries())
-		
-		let [, type, id=null, num_id] = /^([^/]*)[/]?((-?\d+$)|[^]*)?$/.exec(url.pathname)
+		// todo: make this a standard part of Markup
+		let [, type, id, num_id, query_str, fragment] = /^(.*?)([/](-?\d+?)|[/][^]*?)?([?&].*?)?([#].*)?$/.exec(url_str)
 		if (num_id)
 			id = +num_id
+		else
+			id = id.substr(1)
+		
+		let query
+		if (query_str)
+			query = Object.fromEntries(query_str.substr(1).split(/[?&]/g).map(x=>/^[^=]*(?==?(.*)$)/.exec(x).map(decodeURIComponent)))
 		
 		// todo: we should have our own (global) location object or something, rather than passing around urls which are all just the current url anyway
-		return {type, id, query, fragment:url.hash.substr(1)}
+		if (fragment)
+			fragment = fragment.substr(1)
+		
+		return {type, id, query, fragment}
 	},
 	
 	// convert back to url
 	from_location(location) {
 		let url = url_escape(location.type)
 		if (location.id != null)
-			url += "/"+url_escape(location.id)
+			url += "/"+url_escape(""+location.id)
 		let query = new URLSearchParams(location.query).toString()
 		if (query)
 			url += "?"+query
@@ -60,7 +64,7 @@ const Nav = {
 		return url
 	},
 	
-	get_url() {
+	get_location() {
 		return Nav.to_location(window.location.hash.substr(1))
 	},
 	
@@ -74,22 +78,15 @@ const Nav = {
 		Nav.ignore = false
 	},
 	
-	render(location, callback) {
-		View.handle_view(location, callback)
-	},
-	
 	reload: RELOAD,
-	
-	fix_url() {
-		
-	},
 	
 	update_from_location() {
 		if (Nav.ignore)
 			return
 		current_url = window.location
-		let location = Nav.get_url()
-		Nav.render(location)
+		let location = Nav.get_location()
+		View.handle_view(location)
+		Nav.replace_location(location) // normalize
 	},
 	
 	init() {
