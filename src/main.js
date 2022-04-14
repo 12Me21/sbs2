@@ -47,6 +47,8 @@ function immediate() {
 		do_when_ready(()=> View.update_my_user(Req.me))
 	})
 	
+	ChatRoom.global = new ChatRoom(-1)
+	
 	Lp.start_websocket()
 	
 	Act.pull_recent()
@@ -113,6 +115,7 @@ function dom_ready() {
 	
 	print("running "+run_on_load.length+" deferred items")
 	do_when_ready = x=>x()
+	do_when_ready.then = null
 	run_on_load.forEach(x=>x())
 	run_on_load = null
 	

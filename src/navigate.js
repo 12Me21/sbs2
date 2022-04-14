@@ -75,7 +75,7 @@ const Nav = {
 	},
 	
 	render(location, callback) {
-		View.handle_view(location).then(callback)
+		View.handle_view(location, callback)
 	},
 	
 	reload: RELOAD,

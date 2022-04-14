@@ -90,6 +90,16 @@ set_tc(Error)
 
 //const toBlob = new Symbol('toBlob')
 
+let GeneratorFunction = function*(){}.constructor
+GeneratorFunction.prototype.run = function(callback, ...args) {
+	let iter = this(ret => {
+		let y = iter.next(ret)
+		y.done && callback && callback(y.value)
+	}, ...args)
+	iter.next()
+	return iter
+}
+
 
 // (end of scary part)
 
@@ -219,6 +229,7 @@ const singleton = (obj) => Object.seal(obj)
 // shouldn't really be here but this needs to be defined pretty early..
 let run_on_load = []
 let do_when_ready = func => run_on_load.push(func)
+do_when_ready.then = do_when_ready
 //console.log("deferring render", go)
 
 if (!window.devicePixelRatio)

@@ -115,15 +115,6 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 		Sidebar.my_avatar.fill(icon)
 	},
 	
-	cstate: null,
-	cancel(newc) {
-		if (cstate) {
-			cstate.is = true
-			load_end()
-			cstate = newc
-		}
-	},
-	
 	cleanup(new_location) {
 		if (current_view && current_view.cleanup)
 			try {
@@ -136,13 +127,32 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 		current_view = null
 	},
 	
-	async handle_view(location) {
-		let cancel2 = {}
+	cancel() {
+		if (loading_view) {
+			loading_view.return()
+			loading_view = null
+			load_end()
+		}
+	},
+	
+	loading_view: null,
+	
+	handle_view(location, callback) {
+		cancel()
+		//loading_view = handle_view2.run(callback, location)
+		let l = loading_view = handle_view2(location)
+		!function step(ret) {
+			let {done, value} = l.next(ret)
+			console.log(this)
+			done ? callback&&callback(value) : value(step)
+		}()
+	},
+	
+	handle_view2: function*(location) {
 		let phase = "..."
 		let view
 		
 		try {
-			cancel(cancel2)
 			
 			load_start()
 			phase = "getting view"
@@ -165,18 +175,14 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 				render = view.quick.bind(view, data.ext)
 			} else {
 				phase = "starting request"
-				let x
-				let resp = await {then:fn=>x=Lp.chain(data.chain, fn)}
-				if (cancel2.is) return
+				let resp = yield fn=>Lp.chain(data.chain, fn)
 				
 				phase = "view.check"
 				if (data.check && !data.check(resp, data.ext))
 					throw "data not found"
 				render = view.render.bind(view, resp, data.ext)
 			}
-			await do_when_ready
-			if (cancel2.is) return
-			cstate = null
+			yield do_when_ready
 			
 			if (first)
 				console.log("🌄 Rendering first page")
@@ -189,9 +195,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 			phase = "render"
 			render()
 		} catch(e) {
-			await do_when_ready
-			if (cancel2.is) return
-			cstate = null
+			yield do_when_ready
 			
 			cleanup(location)
 			view = errorView
