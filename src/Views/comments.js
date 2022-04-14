@@ -112,7 +112,7 @@ View.add_view('comments', {
 			query.push("contentId = @pids")
 		}
 		if (data.users) { // todo: is an empty list [] or null?
-			if (data.pages.length>1)
+			if (data.users.length>1)
 				alert("can't search multiple users")
 			values.uids = data.users[0]
 			query.push("createUserId = @uids")
@@ -150,7 +150,7 @@ View.add_view('comments', {
 			{
 				values,
 				requests: [
-					{type:'message', fields:'*', query:query.join(" AND ")},
+					{type:'message', fields:'*', query:query.join(" AND "), order},
 					{type:'content', fields:'name,id,createUserId', query:"id in @message.contentId"},
 					{type:'user', fields:'*', query:"id IN @message.createUserId OR id IN @content.createUserId"}
 				]
