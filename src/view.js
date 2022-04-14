@@ -115,168 +115,106 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 		Sidebar.my_avatar.fill(icon)
 	},
 	
-	after() {
-		load_end()
-		
-		// children instead of childNodes, because we only want elements (real)
-		for (let elem of $main_slides.children)
-			elem.classList.toggle('shown', elem.dataset.slide == current_view.className)
-		
-		for (let elem of $titlePane.children) {
-			let list = elem.dataset.view
-			if (list)
-				elem.classList.toggle('shown', list.split(",").includes(current_view.className))
+	cstate: null,
+	cancel(newc) {
+		if (cstate) {
+			cstate.is = true
+			load_end()
+			cstate = newc
 		}
-		
-		View.flag('viewReady', true)
-		View.flag('mobileSidebar', false) //bad (should be function on Sidebar)
-		// todo: why are we doing this NOW instead of preemptively?
-		if (Req.auth) {
-			//Lp.set_listening(ChatRoom.listening_rooms())
-			//Lp.set_statuses(ChatRoom.generateStatus())
-			//Lp.refresh()
-		}
-		//$main.scrollTop = 0 TODO, scroll the correct element here
-		// todo: scroll to fragment element
 	},
 	
-	// rn the `after2` callback is never used, but it's meant to be like,
-	// called after rendering, to handle scrolling down to fragment links and whatever, I think
-	handle_view(location, after2) {
-		if (cancel_request) {
-			cancel_request()
-			cancel_request = null
-		}
-		
-		load_start()
-		
-		let cancelled = false
-		cancel_request = ()=>{
-			load_end()
-			cancelled = true
-		}
-		
-		let view
-		
-		function cleanup() {
-			if (!current_view)
-				return
+	cleanup(new_location) {
+		if (current_view && current_view.cleanup)
 			try {
-				if (current_view.cleanup)
-					current_view.cleanup(location)
+				current_view.cleanup(new_location)
 			} catch(e) {
 				// we ignore this error, because it's probably not important
 				// and also cleanup gets called during error handling so we don't want to get into a loop of errors
 				console.error(e, "error in cleanup function")
 			}
-			current_view = null
-		}
+		current_view = null
+	},
+	
+	async handle_view(location) {
+		let cancel2 = {}
+		let phase = "..."
+		let view
 		
-		// must call this exactly once
-		// and must be the last call made
-		function handle(callback) {
-			if (cancelled)
-				return // why do we check this so much
-			do_when_ready(()=>{
-				if (cancelled)
-					return
-				if (first) {
-					console.log("🌄 Rendering first page")
-				}
-				// hack, i need to rewrite this whole "handle" crap
-				if (!view.did_init && view.init) {
-					view.init()
-					view.did_init = true
-				}
-				cleanup(location)
-				callback()
-				current_view = view
-				after()
-				after2 && after2()
-				if (first) {
-					console.log("☀️ First page rendered!")
-					first = false
-				}
-			})
-		}
-		
-		// returns true if failed
-		function attempt(msg, func) {
-			try {
-				func()
-			} catch(e) {
-				handle_error(msg, e)
-				return true
-			}
-			return false
-		}
-		
-		// handle view redirects
-		if (attempt("error during redirect", ()=>{
+		try {
+			cancel(cancel2)
+			
+			load_start()
+			phase = "getting view"
 			let got_redirect = get_view(location)
 			view = views[location.type]
 			if (got_redirect)
 				Nav.replace_url(location)
-		}))
-			return
-		
-		// NO VIEW
-		if (!view)
-			return handle_error("Unknown page type: \""+location.type+"\"")
-		
-		// call view.start
-		let data
-		if (attempt("render failed in view.start", ()=>{
-			data = view.start(location.id, location.query)
-		}))
-			return // TODO:why have this weird attempt/return structure, vs just throwing an error within some nested function?
-		
-		// if we can render the page immediately
-		if (data.quick)
-			return handle(attempt.bind(
-				null,
-				"render failed in view.quick",
-				view.quick.bind(view, data.ext)))
-		// otherwise prepare to make an api request
-		let x
-		cancel_request = ()=>{
-			load_end()
-			Lp.cancel(x)
-			cancelled = true //mrhh
-		}
-		x = Lp.chain(data.chain, entitys=>{
-			if (data.check && !data.check(entitys, data.ext)) {// try/catch here?
-				handle_error("content not found?")
-			} else {
-				handle(attempt.bind(
-					null,
-					"render failed in view.render", ()=>{
-						if (!view.did_init && view.init) {
-							view.init()
-							view.did_init = true
-						}
-						view.render(entitys, data.ext)
-					}))
+			if (!view)
+				throw "can't find page"
+			
+			if (view.early) {
+				phase = "view.early"
+				view.early()
+				view.early = null
 			}
-		})
-/*		, (e, resp)=>{
-			console.error(e)
-			handle_error("error 1")
-		})*/
-		
-		function handle_error(message, e=null) {
-			handle(()=>{
-				view = errorView
-				if (e)
-					console.error(message+"\n", e)
-				else
-					console.error(message)
-				// RENDER
-				set_title(message)
-				$errorMessage.textContent = e ? e+"\n"+e.stack : ""
-			})
+			phase = "view.start"
+			let data = view.start(location.id, location.query)
+			let render
+			if (data.quick) {
+				render = view.quick.bind(view, data.ext)
+			} else {
+				phase = "starting request"
+				let x
+				let resp = await {then:fn=>x=Lp.chain(data.chain, fn)}
+				if (cancel2.is) return
+				
+				phase = "view.check"
+				if (data.check && !data.check(resp, data.ext))
+					throw "data not found"
+				render = view.render.bind(view, resp, data.ext)
+			}
+			await do_when_ready
+			if (cancel2.is) return
+			cstate = null
+			
+			if (first)
+				console.log("🌄 Rendering first page")
+			if (view.init) {
+				phase = "view.init"
+				view.init()
+				view.init = null
+			}
+			cleanup(location)
+			phase = "render"
+			render()
+		} catch(e) {
+			await do_when_ready
+			if (cancel2.is) return
+			cstate = null
+			
+			cleanup(location)
+			view = errorView
+			console.error("error during view handling", e)
+			set_title("error during "+phase)
+			$errorMessage.textContent = e ? e+"\n"+e.stack : ""
 		}
+		current_view = view
+		load_end()
+		for (let elem of $main_slides.children)
+			elem.classList.toggle('shown', elem.dataset.slide == current_view.className)
+		for (let elem of $titlePane.children) {
+			let list = elem.dataset.view
+			if (list)
+				elem.classList.toggle('shown', list.split(",").includes(current_view.className))
+		}
+		View.flag('viewReady', true)
+		View.flag('mobileSidebar', false) //bad (should be function on Sidebar)
 		
+		if (first) {
+			console.log("☀️ First page rendered!")
+			first = false
+		}
 	},
 	
 	add_view(name, data) {
@@ -286,8 +224,6 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 		views[name] = data
 		data.did_init = false
 		Object.seal(data)
-		if (data.early)
-			data.early()
 	},
 	
 	/// HELPER FUNCTIONS ///
