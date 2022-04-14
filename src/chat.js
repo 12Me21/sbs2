@@ -9,7 +9,9 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 		this.userlist = []
 		
 		if (id == -1) {
-			this.userlist_elem = $sidebarUserList
+			do_when_ready(()=>{
+				this.userlist_elem = $sidebarUserList
+			})
 			return
 		}
 		
