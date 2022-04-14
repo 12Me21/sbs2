@@ -34,12 +34,9 @@ const Nav = {
 	},
 	
 	// replace = modify address bar without calling render()
-	replace_location(location) {
-		Nav.replace_url(Markup.unparse_sbs_url(location))
-	},
-	replace_url(url) {
-		//Nav.ignore = encodeURI("#"+url) // NOT encodeURIComponent!
-		history.replaceState(null, "", "#"+url)
+	replace_location(location, push) {
+		let url = Markup.unparse_sbs_url(location)
+		window.history[push?"pushState":"replaceState"](null, "", "#"+url)
 	},
 	
 	reload: RELOAD,
@@ -47,13 +44,21 @@ const Nav = {
 	update_from_location() {
 		let location = Nav.get_location()
 		console.info("location:", location)
-		View.handle_view(location)
-		Nav.replace_location(location) // normalize
+		Nav.goto(location)
+	},
+	
+	goto(location, push) {
+		View.handle_view(location, ()=>{
+			Nav.replace_location(location, push) // normalize
+		}, (e)=>{
+			alert("unhandled error while loading page!\n"+e)
+			console.error(e)
+		})
 	},
 	
 	init() {
 		window.onhashchange = ()=>{
-			console.info("hash change", window.location.hash)
+			console.info("hash change", window.location.hash, performance.now())
 			Nav.update_from_location()
 		}
 		
@@ -62,7 +67,7 @@ const Nav = {
 			let x = new URL(window.location)
 			x.hash = "#"+x.search.substr(1)
 			x.search = ""
-			Nav.replace_url(x.href)
+			window.history.replaceState(null, "", x.href)
 		}
 		
 		Nav.update_from_location()
@@ -76,3 +81,16 @@ Object.seal(Nav)
 - hashchange does NOT fire if the hash is changed by history.replaceState
 
 */
+
+document.addEventListener('click', event=>{
+	let link = event.target.closest('a[href]')
+	if (link) {
+		let href = link.getAttribute('href')
+		if (href.startsWith("#")) {
+			let location = Markup.parse_sbs_url(href.substr(1))
+			//console.info('click', href, performance.now())
+			Nav.goto(location, true)
+			event.preventDefault()
+		}
+	}
+})

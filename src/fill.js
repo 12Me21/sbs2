@@ -90,24 +90,27 @@ set_tc(Error)
 
 //const toBlob = new Symbol('toBlob')
 
+// ⚡ async/await/Promise replacement using function*/yield
 let GeneratorFunction = function*(){}.constructor
-GeneratorFunction.prototype.run = function(args, callback) {
+GeneratorFunction.prototype.run = function(args, callback, onerror) {
 	let iter
 	let y = true
 	let func = data => {
-		while (y) {
-			y = false
-			let r = iter.next(data)
-			if (r.done)
-				return callback && callback(r.value)
+		try { // i wonder if there is an overhead to try/catch...
+			while (y) {
+				y = false
+				let r = iter.next(data)
+				if (r.done) return callback && callback(r.value)
+			}
+			y = true
+		} catch (e) {
+			if (onerror) return onerror(e)
+			throw e
 		}
-		y = true
 	}
 	iter = this(func, ...args)
 	func()
 	return iter
-	//
-	//return cb=>{callback=cb; func()}
 }
 
 ;['anchor','big','blink','bold','fixed','fontcolor','fontsize','italics','link','small','strike','sub','sup'].forEach(x=>delete String.prototype[x])

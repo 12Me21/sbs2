@@ -70,7 +70,10 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 			this.show_controls(null)
 		})
 		
+		// todo: check out relatedTarget?
+		// TODO: IMPORTANT! if we have multiple chats loaded + hidden, does this fire on bg pages or have performance impact?
 		this.messageList.onmouseover = (e)=>{
+			// should we check closest vs composePath?
 			let elem = e.target.closest("message-part, message-controls, scroll-inner")
 			if (!elem || elem.tagName=='SCROLL-INNER')
 				this.show_controls(null)

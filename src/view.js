@@ -137,9 +137,9 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 	
 	loading_view: null,
 	
-	handle_view(location, callback) {
+	handle_view(location, callback, onerror) {
 		cancel()
-		loading_view = handle_view2.run([location], callback)
+		loading_view = handle_view2.run([location], callback, onerror)
 	},
 	
 	// technically STEP could be a global etc. but hhhh ....
@@ -200,6 +200,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 		}
 		current_view = view
 		load_end()
+		//throw "heck darn"
 		for (let elem of $main_slides.children)
 			elem.classList.toggle('shown', elem.dataset.slide == current_view.className)
 		for (let elem of $titlePane.children) {
