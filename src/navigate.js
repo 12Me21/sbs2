@@ -30,12 +30,12 @@ const Nav = {
 	// todo: we should have our own (global) location object or something, rather than passing around urls which are all just the current url anyway
 	
 	get_location() {
-		return Markup.parse_sbs_url(window.location.hash.substr(1))
+		return new SbsLocation(window.location.hash.substr(1))
 	},
 	
 	// replace = modify address bar without calling render()
 	replace_location(location, push) {
-		let url = Markup.unparse_sbs_url(location)
+		let url = location.toString()
 		window.history[push?"pushState":"replaceState"](null, "", "#"+url)
 	},
 	
@@ -58,7 +58,7 @@ const Nav = {
 	
 	init() {
 		window.onhashchange = ()=>{
-			console.info("hash change", window.location.hash, performance.now())
+			console.info("hash change", window.location.hash)
 			Nav.update_from_location()
 		}
 		
@@ -87,7 +87,7 @@ document.addEventListener('click', event=>{
 	if (link) {
 		let href = link.getAttribute('href')
 		if (href.startsWith("#")) {
-			let location = Markup.parse_sbs_url(href.substr(1))
+			let location = new SbsLocation(href.substr(1))
 			//console.info('click', href, performance.now())
 			Nav.goto(location, true)
 			event.preventDefault()
