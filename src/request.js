@@ -113,7 +113,7 @@ ${resp}`)
 				return this.fail('auth', resp)
 			// === ??? some other error ===
 			default:
-				alert(`Request failed! ${this.status} ${url}`)
+				alert(`Request failed! ${this.status} ${this.url}`)
 				console.log("REQUEST FAILED", this)
 				return this.fail('error', resp, this.status)
 			}
@@ -160,8 +160,11 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 	// idk having all brackets bold + dimgray was kinda nice...
 	// i dont like how proc is required but h
 	request(url, proc, data) {
-		data = JSON.to_blob(data)
-		let method = data===undefined ? 'GET' : 'POST'
+		let method = 'GET'
+		if (data!=undefined) {
+			data = JSON.to_blob(data)
+			method = 'POST'
+		}
 		return ApiRequest.bind(null, url, method, data, {proc})
 	},
 	
