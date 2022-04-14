@@ -59,18 +59,17 @@ View.add_view('page', {
 		room.pinned = z
 		this.render_page(page)
 	},
-	render(objects, ext) {
-		let comments = objects.message.reverse()
-		let page = objects.content[0]
+	render({message, content:[page]}, ext) {
+		message.reverse()
 //		let pinned = objects.Mpinned
 		
 		// TODO: should we be calling this again every time?
-//		Act.new_page_comments(page, comments)
+//		Act.new_page_comments(page, message)
 //		Act.redraw()
 		
 		//ChatRoom.setViewing([page.id])
 		this.room = new ChatRoom(page.id, page)
-		this.room.display_initial_messages(comments/*, pinned*/) //todo: when page is edited, update pinned messages
+		this.room.display_initial_messages(message/*, pinned*/) //todo: when page is edited, update pinned messages
 		this.room.show()
 		
 		this.render_page(page)

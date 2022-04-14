@@ -5,8 +5,6 @@ Markup.url_scheme["sbs:"] = function(url) {
 }
 
 const Nav = {
-	ignore: false,
-	
 	entity_link(entity) {
 		let type = {
 			user: 'user',
@@ -29,68 +27,33 @@ const Nav = {
 		return type+"/"+entity.id
 	},
 	
-	// all paths are in the form
-	// name[/id][?query][#fragment]
-	to_location(url_str) {
-		// todo: make this a standard part of Markup
-		let [, type, id, num_id, query_str, fragment] = /^(.*?)([/](-?\d+?)|[/][^]*?)?([?&].*?)?([#].*)?$/.exec(url_str)
-		if (num_id)
-			id = +num_id
-		else
-			id = id.substr(1)
-		
-		let query
-		if (query_str)
-			query = Object.fromEntries(query_str.substr(1).split(/[?&]/g).map(x=>/^[^=]*(?==?(.*)$)/.exec(x).map(decodeURIComponent)))
-		
-		// todo: we should have our own (global) location object or something, rather than passing around urls which are all just the current url anyway
-		if (fragment)
-			fragment = fragment.substr(1)
-		
-		return {type, id, query, fragment}
-	},
-	
-	// convert back to url
-	from_location(location) {
-		let url = url_escape(location.type)
-		if (location.id != null)
-			url += "/"+url_escape(""+location.id)
-		let query = new URLSearchParams(location.query).toString()
-		if (query)
-			url += "?"+query
-		if (location.fragment != null)
-			url += "#"+fragment
-		
-		return url
-	},
+	// todo: we should have our own (global) location object or something, rather than passing around urls which are all just the current url anyway
 	
 	get_location() {
-		return Nav.to_location(window.location.hash.substr(1))
+		return Markup.parse_sbs_url(window.location.hash.substr(1))
 	},
 	
 	// replace = modify address bar without calling render()
 	replace_location(location) {
-		Nav.replace_url(Nav.from_location(location))
+		Nav.replace_url(Markup.unparse_sbs_url(location))
 	},
 	replace_url(url) {
-		Nav.ignore = true
-		window.location.replace("#"+url)
-		Nav.ignore = false
+		//Nav.ignore = encodeURI("#"+url) // NOT encodeURIComponent!
+		history.replaceState(null, "", "#"+url)
 	},
 	
 	reload: RELOAD,
 	
 	update_from_location() {
-		if (Nav.ignore)
-			return
-		current_url = window.location
 		let location = Nav.get_location()
+		console.info("location:", location)
 		View.handle_view(location)
 		Nav.replace_location(location) // normalize
 	},
 	
 	init() {
 		window.onhashchange = ()=>{
+			console.info("hash change", window.location.hash)
 			Nav.update_from_location()
 		}
 		
@@ -99,12 +62,17 @@ const Nav = {
 			let x = new URL(window.location)
 			x.hash = "#"+x.search.substr(1)
 			x.search = ""
-			Nav.ignore = true
-			window.history.replaceState(null, "", x.href)
-			Nav.ignore = false
+			Nav.replace_url(x.href)
 		}
 		
 		Nav.update_from_location()
 	},
 }
 Object.seal(Nav)
+
+// notes:
+/*
+- hashchange fires only when the hash CHANGES, not necessarily when window.location.hash is set, or when a link is clicked
+- hashchange does NOT fire if the hash is changed by history.replaceState
+
+*/

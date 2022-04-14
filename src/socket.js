@@ -77,6 +77,9 @@ let Lp = {
 	cancel({id}) {
 		this.pop_handler(id)
 	},
+	set_status(stati, callback) {
+		return this.request({type:'setuserstatus', data:stati}, callback)
+	},
 	/***********************
 	 ** Response Handling **
 	 ***********************/
@@ -108,7 +111,7 @@ let Lp = {
 			this.last_id = response.data
 		} break;case 'live': {
 			let {objects:entitys, events, lastId} = response.data
-			this.last_id = response.lastId
+			this.last_id = lastId
 			Entity.do_listmapmap(entitys)
 			this.process_live(events, entitys)
 		} break;case 'userlistupdate': {
@@ -121,17 +124,20 @@ let Lp = {
 			if (handler)
 				handler.callback(entitys)
 		}}
+		
 	},
 	process_live(events, entitys) {
 		let comments = []
+		events.reverse()
 		for (let {refId, type, action, userId, date, id} of events) {
+			let maplist = entitys[type]
 			switch (type) { default: {
 				console.warn("unknown event type:", type, events)
 			} break; case 'message_event': {
-				let message = entitys.message_event.message[~refId]
+				let message = maplist.message[~refId]
 				comments.push(message)
 			} break; case 'user_event': {
-				let user = entitys.user_event.user[~refId]
+				let user = maplist.user[~refId]
 				ChatRoom.update_avatar(user)
 			}}
 		}

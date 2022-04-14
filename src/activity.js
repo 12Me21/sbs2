@@ -23,7 +23,8 @@ let Act = function(){"use strict"; return singleton({
 			]
 		}, (objects)=>{
 			// TODO: ensure that these are displayed BEFORE any websocket new messages
-			Sidebar.display_messages(objects.message.reverse(), true)
+			objects.message.reverse()
+			Sidebar.display_messages(objects.message, true)
 			this.process_message_aggregate(objects.message_aggregate, objects)
 			this.redraw()
 		})

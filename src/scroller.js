@@ -131,7 +131,7 @@ class Scroller {
 		this.anim_pos = 0
 		this.inner.style.transform = ""
 	}
-	animate_insertion(dist, prev_time = performance.now()) {
+	animate_insertion(dist, prev_time = document.timeline.currentTime) {
 		// abs allows animation to play backwards (for deleting comments)
 		if (Math.abs(dist) <= 1) {
 			this.end_animation()
@@ -140,8 +140,8 @@ class Scroller {
 		this.inner.style.transform = `translate(0, ${dist}px)`
 		this.anim_pos = dist
 		let id = window.requestAnimationFrame((time)=>{
-			// the argument passed by animationframe is wrong in Chromium browsers
-			time = performance.now()
+			// the argument passed by animationframe is wrong in Chromium browsers (maybe its fine if we use currentTime ?)
+			//time = performance.now()
 			// if the animation was cancelled or another was started
 			if (this.anim_id != id)
 				return

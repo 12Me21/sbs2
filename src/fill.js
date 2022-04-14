@@ -91,14 +91,26 @@ set_tc(Error)
 //const toBlob = new Symbol('toBlob')
 
 let GeneratorFunction = function*(){}.constructor
-GeneratorFunction.prototype.run = function(callback, ...args) {
-	let iter = this(ret => {
-		let y = iter.next(ret)
-		y.done && callback && callback(y.value)
-	}, ...args)
-	iter.next()
+GeneratorFunction.prototype.run = function(args, callback) {
+	let iter
+	let y = true
+	let func = data => {
+		while (y) {
+			y = false
+			let r = iter.next(data)
+			if (r.done)
+				return callback && callback(r.value)
+		}
+		y = true
+	}
+	iter = this(func, ...args)
+	func()
 	return iter
+	//
+	//return cb=>{callback=cb; func()}
 }
+
+;['anchor','big','blink','bold','fixed','fontcolor','fontsize','italics','link','small','strike','sub','sup'].forEach(x=>delete String.prototype[x])
 
 
 // (end of scary part)
@@ -112,6 +124,9 @@ if (!Array.prototype.findLast)
 		}
 		return undefined
 	}
+
+if (!document.timeline)
+	document.timeline = {get currentTime(){return performance.now()}}
 
 // similar to replaceChildren, except:
 //  - only 0 or 1 args

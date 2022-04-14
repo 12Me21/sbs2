@@ -139,10 +139,11 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 	
 	handle_view(location, callback) {
 		cancel()
-		loading_view = handle_view2.run(callback, location)
+		loading_view = handle_view2.run([location], callback)
 	},
 	
-	handle_view2: function*(STEP, location) {
+	// technically STEP could be a global etc. but hhhh ....
+	handle_view2: function*(STEP=E["must be called with .run()"], location) {
 		let phase = "..."
 		let view
 		
@@ -176,8 +177,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 					throw "data not found"
 				render = view.render.bind(view, resp, data.ext)
 			}
-			if (run_on_load)
-				yield do_when_ready(STEP)
+			yield do_when_ready(STEP)
 			
 			if (first)
 				console.log("🌄 Rendering first page")
@@ -190,8 +190,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 			phase = "render"
 			render()
 		} catch(e) {
-			if (run_on_load)
-				yield do_when_ready(STEP)
+			yield do_when_ready(STEP)
 			
 			cleanup(location)
 			view = errorView

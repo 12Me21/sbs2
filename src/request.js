@@ -161,9 +161,10 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 	// i dont like how proc is required but h
 	request(url, proc, data) {
 		let method = 'GET'
-		if (data!=undefined) {
-			data = JSON.to_blob(data)
+		if (data !== undefined) {
 			method = 'POST'
+			if (data != null)
+				data = JSON.to_blob(data)
 		}
 		return ApiRequest.bind(null, url, method, data, {proc})
 	},
