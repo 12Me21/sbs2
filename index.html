@@ -15,8 +15,8 @@
 <script>
 	window.onerror = function(message, source, line, col, error) {
 		window.setTimeout(function() {
-			if (confirm("ERROR DURING PAGE LOAD!\n"+message+"\nin "+source+"\nat "+line+":"+col+"\n[Cancel] = reload page"))
-				return
+			if (confirm("ERROR DURING PAGE LOAD!\n"+message+"\nin "+source+"\nat "+line+":"+col+"\n[Cancel] = reload page, [Ok] = continue"))
+				return window.onerror = null
 			RELOAD()
 		}, 0)
 	}

@@ -1,12 +1,3 @@
-window.onerror = function(message, source, line, col, error) {
-	try {
-		Sidebar.print(error)
-	} catch(e) {
-		console.error("error in window.onerror:", e, arguments)
-		// yeah no
-	}
-}
-
 immediate()
 
 if (document.readyState == 'loading')
@@ -54,6 +45,15 @@ function immediate() {
 	Act.pull_recent()
 	
 	Nav.init()
+	
+	window.onerror = function(message, source, line, col, error) {
+		try {
+			Sidebar.print(error)
+		} catch(e) {
+			console.error("error in window.onerror:", e, arguments)
+			// yeah no
+		}
+	}
 }
 
 function dom_ready() {

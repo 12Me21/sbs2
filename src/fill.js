@@ -79,16 +79,13 @@ function NO_CONVERT(type) {
 	if (type=='string') type='String'
 	throw new FieldError("🚮 invalid type conversion", this, "⛔ to "+type)
 }
-function set_tc(type, tc) {
+function set_tc(type, tc=type.prototype.toString) {
 	Object.defineProperty(type.prototype, Symbol.toPrimitive, {
-		value: tc || type.prototype.toString,
-		configurable: true,
+		value: tc, configurable: true,
 	})
 }
 set_tc(Object, NO_CONVERT)
 set_tc(Error)
-
-//const toBlob = new Symbol('toBlob')
 
 // ⚡ async/await/Promise replacement using function*/yield
 let GeneratorFunction = function*(){}.constructor
@@ -113,10 +110,10 @@ GeneratorFunction.prototype.run = function(args, callback, onerror) {
 	return iter
 }
 
-;['anchor','big','blink','bold','fixed','fontcolor','fontsize','italics','link','small','strike','sub','sup'].forEach(x=>delete String.prototype[x])
-
 
 // (end of scary part)
+
+//const toBlob = new Symbol('toBlob')
 
 // wow an actual 
 if (!Array.prototype.findLast)
