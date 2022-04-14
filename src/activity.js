@@ -25,6 +25,7 @@ let Act = function(){"use strict"; return singleton({
 			// TODO: ensure that these are displayed BEFORE any websocket new messages
 			objects.message.reverse()
 			Sidebar.display_messages(objects.message, true)
+			// should we reverse aggregate?
 			this.process_message_aggregate(objects.message_aggregate, objects)
 			this.redraw()
 		})

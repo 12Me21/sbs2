@@ -29,7 +29,7 @@ let Lp = {
 		if (this.websocket && this.websocket.readyState <= WebSocket.OPEN)
 			throw new Error("Tried to open multiple websockets")
 		
-		this.websocket = new WebSocket(`wss://${Req.server}/live/ws?lastId=${this.last_id}&token=${encodeURIComponent(Req.auth)}`)
+		this.websocket = new WebSocket(`wss://${Req.server}/live/ws?lastId=${this.last_id}&token=${encodeURIComponent(Req.auth)}`/*, 'json'*/)
 		this.websocket.onopen = (e)=>{
 			console.log("🌄 websocket open")
 			for (let i in this.handlers)

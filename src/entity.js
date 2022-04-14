@@ -51,6 +51,7 @@ for (let type_name in ABOUT.details.types) {
 		Object.setPrototypeOf(o, proto)
 		return o
 	}
+	//cons.Fields = field_datas
 	TYPES[type_name] = cons
 }
 
