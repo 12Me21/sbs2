@@ -22,11 +22,13 @@ View.add_view('comments', {
 		$commentSearchButton.onclick = ()=>{
 			let data = this.form.get()
 			let name = "comments"
+			let location = new SbsLocation({type:'comments'})
 			if (data.pages && data.pages.length==1) {
-				name += "/"+data.pages[0]
+				location.id = data.pages[0]
 				delete data.pages
 			}
 			let query = this.form.to_query(data)
+			Nav.goto({type:'comments'})
 			window.location.hash = "#"+name+query// todo: proper function
 		}
 		View.bind_enter($commentSearch, $commentSearchButton.onclick)
@@ -106,27 +108,21 @@ View.add_view('comments', {
 			merge = false
 		}
 		if (data.pages) {
-			if (data.pages.length>1)
-				alert("can't search multiple pages")
-			values.pids = data.pages[0]
-			query.push("contentId = @pids")
+			values.pids = data.pages
+			query.push("contentId in @pids")
 		}
 		if (data.users) { // todo: is an empty list [] or null?
-			if (data.users.length>1)
-				alert("can't search multiple users")
-			values.uids = data.users[0]
-			query.push("createUserId = @uids")
+			values.uids = data.users
+			query.push("createUserId in @uids")
 			merge = false
 		}
 		let range = data.range
 		if (range) {
 			if (range.ids) {
-				values.ids = range.ids[0]
-				query.push("id = @ids")
-				if (range.ids.length > 1) {
-					alert("can't search multiple ids")
+				values.ids = range.ids
+				query.push("id in @ids")
+				if (range.ids.length > 1)
 					merge = false
-				}
 			} else {
 				if (range.min != null) {
 					values.min_id = range.min-1
