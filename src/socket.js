@@ -71,11 +71,16 @@ let Lp = {
 	ping(callback) {
 		return this.request({type:'ping'}, callback)
 	},
-	cancel({id}) {
-		this.pop_handler(id)
+	userlist(callback) {
+		return this.request({type:'userlist'}, callback)
 	},
+	
 	set_status(stati, callback) {
 		return this.request({type:'setuserstatus', data:stati}, callback)
+	},
+	
+	cancel({id}) {
+		this.pop_handler(id)
 	},
 	/***********************
 	 ** Response Handling **
@@ -99,27 +104,27 @@ let Lp = {
 			x.throw
 			return
 		}
+		let data = response.data
 		switch (response.type) { default: {
 			console.warn("unknown response type: ", response)
-		} break;case 'ping': {
-			if (handler)
-				handler.callback(response)
-		} break;case 'lastId': {
-			this.last_id = response.data
-		} break;case 'live': {
-			let {objects:entitys, events, lastId} = response.data
-			this.last_id = lastId
-			Entity.do_listmapmap(entitys)
-			this.process_live(events, entitys)
-		} break;case 'userlistupdate': {
-			let entitys = response.data.objects
-			Entity.do_listmap(entitys)
-			// todo
 		} break;case 'request': {
-			let entitys = response.data.objects
-			Entity.do_listmap(entitys)
-			if (handler)
-				handler.callback(entitys)
+			Entity.do_listmap(data.objects)
+			handler && handler.callback(data.objects)
+		} break;case 'userlist': {
+			Entity.do_listmap(data.objects)
+			handler && handler.callback(data)
+		} break;case 'ping': {
+			handler && handler.callback(response)
+			
+		} break;case 'lastId': {
+			this.last_id = data
+		} break;case 'live': {
+			this.last_id = data.lastId
+			Entity.do_listmapmap(data.objects)
+			this.process_live(data.events, data.objects)
+		} break;case 'userlistupdate': {
+			Entity.do_listmap(data.objects)
+			ChatRoom.update_userlists(data.statuses, data.objects)
 		}}
 		
 	},
@@ -154,4 +159,8 @@ window.addEventListener('beforeunload', e=>{
 window.addEventListener('focus', e=>{
 	if (Lp.ready)
 		Lp.ping()
+})
+
+window.addEventListener('pageshow', e=>{
+	print('show')
 })

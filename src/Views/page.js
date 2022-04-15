@@ -68,8 +68,7 @@ View.add_view('page', {
 //		Act.redraw()
 		
 		//ChatRoom.setViewing([page.id])
-		this.room = new ChatRoom(page.id, page)
-		this.room.display_initial_messages(message/*, pinned*/) //todo: when page is edited, update pinned messages
+		this.room = ChatRoom.obtain_room(page.id, page, message) //n nng
 		this.room.show()
 		
 		this.render_page(page)

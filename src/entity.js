@@ -131,12 +131,14 @@ let Entity = (()=>{"use strict"; return singleton({
 	
 	do_listmapmap(listmapmap) {
 		Object.for(listmapmap, (listmap) => this.do_listmap(listmap))
+		return listmapmap
 	},
 	
 	do_listmap(listmap) {
 		Object.for(listmap, (list, name) => this.do_list(list, name))
 		if (listmap.message && listmap.user)
 			this.link_comments(listmap)
+		return listmap
 	},
 	
 	do_list(list, name) {
@@ -147,6 +149,7 @@ let Entity = (()=>{"use strict"; return singleton({
 		// using ~ on the id will map 0 → -1, 1 → -2, 2 → -3 etc.
 		// this avoids nonnegative integer keys,
 		// since the order of those isn't preserved,
+		return list
 	},
 	
 	// link user data with comments

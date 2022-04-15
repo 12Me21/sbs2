@@ -1,14 +1,14 @@
 let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 	constructor(id, page) {
-		let old = this.constructor.rooms[id]
-		if (old)
-			return old
+		if (this.constructor.rooms[id])
+			throw new Error("tried to create duplicate chatroom")
+		this.constructor.rooms[id] = this
 		
 		this.id = id
 		this.status = "active"
 		this.userlist = []
 		
-		if (id == -1) {
+		if (id == 0) {
 			do_when_ready(()=>{
 				this.userlist_elem = $sidebarUserList
 			})
@@ -112,7 +112,6 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 		this.update_page(page)
 	//	let l = Lp.processed_listeners[id] //should this be done with id -1? // what?
 	//	l && this.update_userlist(l)
-		this.constructor.addRoom(this)
 		
 		Object.seal(this)
 	}
@@ -153,8 +152,8 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 			this.update_userlist(this.userlist)
 		}
 	}
-	update_userlist(list) {
-		this.userlist_elem.fill(Object.values(list).map(item => Draw.userlist_avatar(item)))
+	update_userlist(statusmap, users) {
+		this.userlist_elem.fill(Object.keys(statusmap).map(item => Draw.userlist_avatar(users[~item])))
 	}
 	display_initial_messages(comments, pinned) {
 		this.display_messages(comments, false)
@@ -258,7 +257,7 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 	
 	/* static */ 
 	listening_rooms() {
-		let list = [-1]
+		let list = [0]
 		for (let id in this.rooms)
 			list.push(id)
 		return list
@@ -269,21 +268,19 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 		let status = {}
 		for (let id in this.rooms)
 			status[id] = this.rooms[id].status
-		status[-1] = this.global.status
 		return status
 	},
 	
 	/* static */
 	update_avatar(user) {
 		Object.for(this.rooms, room => room.update_avatar(user))
-		this.global && this.global.update_avatar(user)
 	},
 	
 	/* static */
-	addRoom(room) {
+	/*addRoom(room) {
 		this.rooms[room.id] = room
 		//ChatRoom.setViewing(Object.keys(ChatRoom.rooms))
-	},
+	},*/
 	
 	/* static */
 	removeRoom(room) {
@@ -295,12 +292,13 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 	},
 	
 	/* static */
-	update_userlists(a) {
-		// why don't we just use .rooms[-1] instead of .global?
-		a[-1] && this.global.update_userlist(a[-1])
-		for (let id in a) {
+	update_userlists(statuses, {user}) {
+		for (let id in statuses) {
 			let room = this.rooms[id]
-			room && room.update_userlist(a[id])
+			if (room) {
+				let st = statuses[id]
+				room.update_userlist(st, user)
+			}
 		}
 	},
 	
@@ -342,6 +340,19 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 				{type:'user', fields:'*', query:"id in @message.createUserId"},
 			]
 		}, callback)
+	},
+	
+	// get/create room
+	/* static */
+	obtain_room(id, page, message) {
+		let room = this.rooms[id]
+		if (room)
+			room.update_page(page)
+		else {
+			room = new this(id, page)
+			room.display_initial_messages(message/*, pinned*/) //todo: when page is edited, update pinned messages
+		}
+		return room
 	},
 	
 	HTML: {

@@ -29,7 +29,7 @@ class InvalidRequestError extends TypeError {
 InvalidRequestError.prototype.name = "InvalidRequestError"
 
 class ApiRequest extends XMLHttpRequest {
-	constructor(url, method, body, etc, ok=console.info, fail=Unhandled_Callback) {
+	constructor(url, method, body, etc, ok=console.info, fail) {
 		super()
 		super.onreadystatechange = this.onreadystatechange
 		
@@ -40,9 +40,14 @@ class ApiRequest extends XMLHttpRequest {
 		this.proc = etc.proc
 		
 		this.ok = ok
-		this.fail = fail
+		this.onerror = fail
 		
 		this.go()
+	}
+	fail(...e) {
+		console.error("request error:", ...e)
+		if (this.onerror)
+			this.onerror(...e)
 	}
 	go() {
 		this.open(this.method, `https://${Req.server}/${this.url}`)
@@ -76,7 +81,7 @@ class ApiRequest extends XMLHttpRequest {
 			return
 			
 		case XMLHttpRequest.DONE:
-			let resp = this.response
+			let resp = this.response // json or text
 			
 			switch (this.status) {
 			// === Success ===
@@ -172,7 +177,7 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 	// idea: function.valueOf calls the function and returns um ..   something.. .chaining .. mmmm
 	
 	chain(data) {
-		return ApiRequest.bind(null, 'request', 'POST', JSON.to_blob(data), {proc: resp=>Entity.do_listmap(resp.data)})
+		return ApiRequest.bind(null, 'request', 'POST', JSON.to_blob(data), {proc: resp=>Entity.do_listmap(resp.objects)})
 	},
 	
 	/////////////////////////

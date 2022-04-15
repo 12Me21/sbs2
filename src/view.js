@@ -308,7 +308,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 			favicon_element = document.createElement('link')
 			favicon_element.rel = "icon"
 			favicon_element.href = src
-			document.head.append(favicon_element)
+			document.head.prepend(favicon_element)
 		} else if (favicon_element.href != src) {
 			if (src == null)
 				src = "resource/icon16.png"
