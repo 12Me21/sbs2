@@ -48,8 +48,9 @@ const Nav = {
 	},
 	
 	goto(location, push) {
+		Nav.replace_location(location, push)
 		View.handle_view(location, ()=>{
-			Nav.replace_location(location, push) // normalize
+			//
 		}, (e)=>{
 			alert("unhandled error while loading page!\n"+e)
 			console.error(e)
