@@ -1,12 +1,3 @@
-function 𐀶([html]) {
-	let temp = document.createElement('template')
-	temp.innerHTML = html.replace(/\s*\n\s*/g,"")
-	let node = temp.content
-	if (node.childNodes.length==1)
-		node = node.firstChild
-	return node.cloneNode.bind(node, true)
-}
-
 // HTML RENDERING
 let Draw = Object.create(null)
 with(Draw)((window)=>{"use strict";Object.assign(Draw,{
@@ -119,13 +110,6 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return e
 	}.bind(𐀶`<div class='fileThumbnail item'><img>`),
 	
-	//📥 page‹Content›
-	//📤 ‹ParentNode›
-	markup(page) {
-		let lang = page.values ? page.values.markupLang : null
-		return Markup.convert_lang(page.text, lang, undefined)
-	},
-	
 	//📥 path‹???›
 	//📤 ‹ParentNode›
 	title_path(path) {
@@ -147,54 +131,6 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		})
 		return element
 	},
-	
-	//📥 chatroom‹ChatRoom›
-	//📥 page‹Content›
-	chat_pane: function(chatroom, page) {
-		let e = this.block()
-		chatroom.chat_pane = e
-		// page element
-		let page1 = e.firstChild
-		chatroom.page_outer = page1
-		chatroom.page_contents = page1.lastChild
-		// resize handle
-		let resize = e.querySelector('resize-handle')
-		let height = null
-		height = 0
-		View.attach_resize(page1, resize, false, 1, 'setting--divider-pos-'+page.id, null, height)
-		// userlist
-		chatroom.userlist_elem = e.querySelector('.userlist')
-		// scroller
-		let outer = e.lastChild
-		let inner = outer.firstChild
-		chatroom.messages_outer = outer
-		chatroom.scroll_inner = inner
-		chatroom.messageList = inner.lastChild
-		// 
-		let extra = inner.firstChild
-		chatroom.extra = extra
-		chatroom.limit_checkbox = extra.querySelector('input')
-		chatroom.load_more_button = extra.querySelector('button')
-	}.bind({
-		block: 𐀶`
-<chat-pane class='resize-box'>
-	<scroll-outer class='sized page-container'>
-		<div class='pageContents'></div>
-	</scroll-outer>
-	<resize-handle></resize-handle>
-	<div class='bar rem2-3 userlist'></div>
-	<scroll-outer class='grow'>
-		<scroll-inner class='chatScroller'>
-			<div>
-				<button-container><button>load older messages</button></button-container>
-				<label><input type=checkbox>disable limit</label>
-			</div>
-			<div></div>
-		</scroll-inner>
-	</scroll-outer>
-</chat-pane>
-`}),
-//		<div class='pageInfoPane rem2-3 bar'></div>
 	
 	//📥 user‹User›
 	//📤 ‹ParentNode›

@@ -213,6 +213,15 @@ RegExp.prototype.rmatch = function(str) {
 
 let 𖹭 = Object.create.bind(Object,null,{𖹭:{set(f){Object.seal(Object.assign(this,f))}}})
 
+function 𐀶([html]) {
+	let temp = document.createElement('template')
+	temp.innerHTML = html.replace(/\s*\n\s*/g,"")
+	let node = temp.content
+	if (node.childNodes.length==1)
+		node = node.firstChild
+	return node.cloneNode.bind(node, true)
+}
+
 // we aren't ready to use `static` yet, so we
 // assign our static fields this way instead
 const new_class = (cls, stat) => Object.seal(Object.assign(cls, stat))

@@ -1,6 +1,6 @@
 let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 	constructor(id, page) {
-		let old = ChatRoom.rooms[id]
+		let old = this.constructor.rooms[id]
 		if (old)
 			return old
 		
@@ -15,7 +15,32 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 			return
 		}
 		
-		Draw.chat_pane(this, page)
+		{
+			let e = this.constructor.HTML.block()
+			this.chat_pane = e
+			// page element
+			let page1 = e.firstChild
+			this.page_outer = page1
+			this.page_contents = page1.lastChild
+			// resize handle
+			let resize = e.querySelector('resize-handle')
+			let height = null
+			height = 0
+			View.attach_resize(page1, resize, false, 1, 'setting--divider-pos-'+page.id, null, height)
+			// userlist
+			this.userlist_elem = e.querySelector('.userlist')
+			// scroller
+			let outer = e.lastChild
+			let inner = outer.firstChild
+			this.messages_outer = outer
+			this.scroll_inner = inner
+			this.messageList = inner.lastChild
+			// 
+			let extra = inner.firstChild
+			this.extra = extra
+			this.limit_checkbox = extra.querySelector('input')
+			this.load_more_button = extra.querySelector('button')
+		} //		<div class='pageInfoPane rem2-3 bar'></div>
 		
 		// chat
 		this.message_parts = {}
@@ -87,7 +112,7 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 		this.update_page(page)
 	//	let l = Lp.processed_listeners[id] //should this be done with id -1? // what?
 	//	l && this.update_userlist(l)
-		ChatRoom.addRoom(this)
+		this.constructor.addRoom(this)
 		
 		Object.seal(this)
 	}
@@ -317,7 +342,27 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 				{type:'user', fields:'*', query:"id in @message.createUserId"},
 			]
 		}, callback)
-	}
+	},
+	
+	HTML: {
+		block: 𐀶`
+<chat-pane class='resize-box'>
+	<scroll-outer class='sized page-container'>
+		<div class='pageContents'></div>
+	</scroll-outer>
+	<resize-handle></resize-handle>
+	<div class='bar rem2-3 userlist'></div>
+	<scroll-outer class='grow'>
+		<scroll-inner class='chatScroller'>
+			<div>
+				<button-container><button>load older messages</button></button-container>
+				<label><input type=checkbox>disable limit</label>
+			</div>
+			<div></div>
+		</scroll-inner>
+	</scroll-outer>
+</chat-pane>
+`},
 	
 })}()
 
