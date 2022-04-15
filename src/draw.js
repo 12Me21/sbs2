@@ -64,17 +64,16 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			}
 			text = String(thing)
 		} catch (error) {
-			try {
-				let type = Object.getPrototypeOf(thing)
-				if (type && type.constructor) {
-					let c = type.constructor
-					if (c && c.name && typeof c.name == 'string')
-						text = `<${cname}>`
-				}
-			} catch (error) {}
+			let type = Object.getPrototypeOf(thing)
+			if (type && type.constructor) {
+				let c = type.constructor
+				if (c && c.name && typeof c.name == 'string')
+					text = `<${cname}>`
+			}
+		} finally {
+			e.append(text)
+			return e
 		}
-		e.append(text)
-		return e
 	}.bind({message:𐀶`<div class='debugMessage pre'>`, stack:𐀶`<pre>`}),
 	
 	//📥 user‹User›
