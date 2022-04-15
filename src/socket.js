@@ -43,7 +43,7 @@ let Lp = {
 			let {code, reason, wasClean} = event
 			console.warn("websocket closed", code, reason, wasClean)
 			alert('websocket died,,'+reason+"\n[OK] - start")
-			this.make_websocket()
+			this.start_websocket()
 		}
 		this.websocket.onmessage = (event)=>{
 			this.handle_response(JSON.parse(event.data))
