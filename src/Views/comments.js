@@ -21,19 +21,17 @@ View.add_view('comments', {
 		$commentSearchForm.replaceWith(this.form.elem)
 		$commentSearchButton.onclick = ()=>{
 			let data = this.form.get()
-			let name = "comments"
 			let location = new SbsLocation({type:'comments'})
 			if (data.pages && data.pages.length==1) {
 				location.id = data.pages[0]
-				delete data.pages
+				delete data.pages // ghh
 			}
-			let query = this.form.to_query(data)
-			Nav.goto({type:'comments'})
-			window.location.hash = "#"+name+query// todo: proper function
+			location.query = this.form.to_query(data)
+			Nav.goto(location)
 		}
 		View.bind_enter($commentSearch, $commentSearchButton.onclick)
 	},
-	start(id, query) {
+	start(id, query) { // todo: location here!
 		let data = this.form.from_query(query)
 		if (id)
 			data.pages = [id]

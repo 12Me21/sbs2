@@ -39,13 +39,6 @@
 
 // DATA must contain the correct type
 
-// nicer replacement for encodeURIComponent
-function url_escape(s) {
-	s = s.replace(/[^\w$.+!*',;/:@~-]|[,.?!:]$/gu, x=>encodeURIComponent(x))
-	return s
-}
-// todo: also make a full query string encode function, to use instead of Req.query_string
-
 // maybe instead of specifying the layout in Form, we just provide a list of locations of where to insert the fields. this is necessary for, ex: the page title input which is outside the main element
 
 class Form {
@@ -121,22 +114,20 @@ class Form {
 	}
 	// maybe shouldn't be in this class
 	to_query(p) {
-		let params = []
+		let params = {}
 		for (let [name, type, opt] of this.fields) {
 			let value = p[name]
 			if (value != null && opt.convert)
 				value = opt.convert.encode(value)
 			if (value != null) {
-				let key = url_escape(opt.param)
+				let key = opt.param
 				if (value === true)
-					params.push(key)
+					params[key] = ""
 				else if (value !== false)
-					params.push(key+"="+url_escape(value))
+					params[key] = value
 			}
 		}
-		if (params.length == 0)
-			return ""
-		return "?"+params.join("&")
+		return params
 	}
 	from_query(query) {
 		let p = {}
