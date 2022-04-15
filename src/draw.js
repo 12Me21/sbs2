@@ -90,7 +90,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	//📤 ‹ParentNode›
 	link_avatar: function(user) {
 		let a = this()
-		a.href = Nav.entityPath(user)
+		a.href = Nav.entity_link(user)
 		a.title = user.username
 		a.append(avatar(user))
 		return a

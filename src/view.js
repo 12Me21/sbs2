@@ -344,7 +344,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 	set_path(path) {
 		$path.fill(Draw.title_path(path))
 	},
-	set_entity_path(page) {
+	/*set_entity_path(page) {
 		if (!page) {
 			set_path([])
 			return
@@ -360,7 +360,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 		else
 			path.push([Nav.entityPath(page), page.name])
 		set_path(path)
-	},
+	},*/
 	
 })<!-- PRIVATE })
 

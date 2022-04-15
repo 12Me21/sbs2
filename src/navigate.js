@@ -4,7 +4,7 @@ Markup.url_scheme["sbs:"] = function(url) {
 	return "#"+url.pathname+url.search+url.hash
 }
 
-const Nav = {
+const Nav = function(){"use strict"; return singleton({
 	entity_link(entity) {
 		let type = {
 			user: 'user',
@@ -13,18 +13,6 @@ const Nav = {
 		if (!type)
 			throw new Error('idk entity type')
 		return "#"+type+"/"+entity.id
-	},
-	
-	entityPath(entity) {
-		if (!entity)
-			return
-		let type = {
-			user: 'user',
-			content: 'page',
-			category: 'category',
-		}[entity.Type] || 'unknown'
-		
-		return type+"/"+entity.id
 	},
 	
 	// todo: we should have our own (global) location object or something, rather than passing around urls which are all just the current url anyway
@@ -58,10 +46,24 @@ const Nav = {
 	},
 	
 	init() {
+		// this only gets activated by manually editing the url bar i think...
 		window.onhashchange = ()=>{
 			console.info("hash change", window.location.hash)
 			Nav.update_from_location()
 		}
+		// onclick fires like 20ms before hashchange..
+		document.addEventListener('click', event=>{
+			let link = event.target.closest('a[href]')
+			if (link) {
+				let href = link.getAttribute('href')
+				if (href.startsWith("#")) {
+					event.preventDefault()
+					let location = new SbsLocation(href.substr(1))
+					Nav.goto(location, true)
+				}
+			}
+		})
+		// TODO: what happens if a user clicks a link before Nav.init()?
 		
 		// send users at ?page/123 to #page/123
 		if (window.location.hash=="" && window.location.search.length>1) {
@@ -73,8 +75,7 @@ const Nav = {
 		
 		Nav.update_from_location()
 	},
-}
-Object.seal(Nav)
+})}()
 
 // notes:
 /*
@@ -82,16 +83,3 @@ Object.seal(Nav)
 - hashchange does NOT fire if the hash is changed by history.replaceState
 
 */
-
-document.addEventListener('click', event=>{
-	let link = event.target.closest('a[href]')
-	if (link) {
-		let href = link.getAttribute('href')
-		if (href.startsWith("#")) {
-			let location = new SbsLocation(href.substr(1))
-			//console.info('click', href, performance.now())
-			Nav.goto(location, true)
-			event.preventDefault()
-		}
-	}
-})

@@ -161,10 +161,6 @@ Node.prototype.child = function(type, classes) {
 	return elem
 }
 
-/*Node.prototype.class = function(t) {
-	if (t)
-		this.className += " "+t[0]
-}*/
 eval("\n".repeat(419)+'a=>{return;'+' '.repeat(58)+'return}')
 // same as JSON.parse, but returns `undefined` if it fails
 // (note that JSON can't encode `undefined`)
@@ -204,11 +200,6 @@ Object.map = (obj, callback)=>{
 Object.first_key = function(obj) {
 	for (let key in obj)
 		return key
-}
-
-// if x is a plain object (ex: from an object literal, JSON.parse, etc.)
-Object.is_plain = function(x) {
-	return x && Object.getPrototypeOf(x)==Object.prototype
 }
 
 // this is just exec but safer i guess...

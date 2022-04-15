@@ -22,9 +22,6 @@ let Lp = {
 			this.dead = true
 		})*/
 		//		this.processed_listeners = {}
-	set_listening(){},
-	set_statuses(){},
-	refresh(){},
 	start_websocket() {
 		if (this.websocket && this.websocket.readyState <= WebSocket.OPEN)
 			throw new Error("Tried to open multiple websockets")
