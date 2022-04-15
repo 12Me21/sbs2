@@ -42,8 +42,8 @@ let Lp = {
 				return
 			let {code, reason, wasClean} = event
 			console.warn("websocket closed", code, reason, wasClean)
-			alert('websocket died,,'+reason)
-			//this.make_websocket()
+			alert('websocket died,,'+reason+"\n[OK] - start")
+			this.make_websocket()
 		}
 		this.websocket.onmessage = (event)=>{
 			this.handle_response(JSON.parse(event.data))
@@ -152,4 +152,9 @@ let Lp = {
 
 window.addEventListener('beforeunload', e=>{
 	Lp.dead = true
+})
+
+window.addEventListener('focus', e=>{
+	if (Lp.ready)
+		Lp.ping()
 })
