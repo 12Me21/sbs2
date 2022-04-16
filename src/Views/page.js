@@ -23,17 +23,16 @@ View.add_view('page', {
 		$pageCommentsLink.href = "#comments/"+page.id
 	},
 	
-	start(id, query) {
+	start({id, query}) {
+		// todo: we should manually request the userlist.
+		// right now it generally appears automatically due to your own status
+		
 		let room = ChatRoom.rooms[id]
 		if (room) {
 			let z = room.pinned
 			room.pinned = true
 			return {quick: true, ext: {room, z}}
 		}
-		//todo: maybe we can request the user list early too?
-		// the problem is, if we create the room early,
-		// we might get messages from long polling before
-		// loading the initial messages :(
 		return {
 			chain: {
 				values: {
@@ -54,7 +53,6 @@ View.add_view('page', {
 	},
 	quick({room, z}) {
 		let page = room.page
-		//ChatRoom.setViewing([page.id])
 		room.show()
 		room.pinned = z
 		this.render_page(page)
@@ -63,11 +61,10 @@ View.add_view('page', {
 		message.reverse()
 //		let pinned = objects.Mpinned
 		
-		// TODO: should we be calling this again every time?
+// TODO: should we be calling this again every time?
 //		Act.new_page_comments(page, message)
 //		Act.redraw()
 		
-		//ChatRoom.setViewing([page.id])
 		this.room = ChatRoom.obtain_room(page.id, page, message) //n nng
 		this.room.show()
 		

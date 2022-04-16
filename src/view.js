@@ -164,18 +164,15 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 				view.early = null
 			}
 			phase = "view.start"
-			let data = view.start(location.id, location.query)
-			let render
-			if (data.quick) {
-				render = view.quick.bind(view, data.ext)
-			} else {
+			let data = view.start(location)
+			let resp
+			if (!data.quick) {
 				phase = "starting request"
-				let resp = yield Lp.chain(data.chain, STEP)
+				resp = yield Lp.chain(data.chain, STEP)
 				
 				phase = "view.check"
 				if (data.check && !data.check(resp, data.ext))
 					throw "data not found"
-				render = view.render.bind(view, resp, data.ext)
 			}
 			yield do_when_ready(STEP)
 			
@@ -188,17 +185,20 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 			}
 			cleanup(location)
 			phase = "render"
-			render()
+			current_view = view
+			if (data.quick)
+				view.quick(data.ext, location)
+			else
+				view.render(resp, data.ext, location)
 		} catch(e) {
 			yield do_when_ready(STEP)
 			
 			cleanup(location)
-			view = errorView
+			current_view = view = errorView
 			console.error("error during view handling", e)
 			set_title("error during "+phase)
 			$errorMessage.textContent = e ? e+"\n"+e.stack : ""
 		}
-		current_view = view
 		load_end()
 		//throw "heck darn"
 		for (let elem of $main_slides.children)
@@ -210,6 +210,9 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 		}
 		View.flag('viewReady', true)
 		View.flag('mobileSidebar', false) //bad (should be function on Sidebar)
+		
+		let s = ChatRoom.get_statuses()
+		Lp.set_status(s)		
 		
 		if (first) {
 			console.log("☀️ First page rendered!")

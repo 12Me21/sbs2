@@ -17,21 +17,25 @@ View.add_view('comments', {
 		})
 	},
 	
+	location: null,
+	
 	init() {
 		$commentSearchForm.replaceWith(this.form.elem)
 		$commentSearchButton.onclick = ()=>{
+			if (!this.location) return
 			let data = this.form.get()
-			let location = new SbsLocation({type:'comments'})
 			if (data.pages && data.pages.length==1) {
-				location.id = data.pages[0]
+				this.location.id = data.pages[0]
 				delete data.pages // ghh
+			} else {
+				this.location.id = null
 			}
-			location.query = this.form.to_query(data)
-			Nav.goto(location)
+			this.location.query = this.form.to_query(data)
+			Nav.goto(this.location)
 		}
 		View.bind_enter($commentSearch, $commentSearchButton.onclick)
 	},
-	start(id, query) { // todo: location here!
+	start({id, query}) {
 		let data = this.form.from_query(query)
 		if (id)
 			data.pages = [id]
@@ -45,23 +49,26 @@ View.add_view('comments', {
 			ext: {data, merge},
 		}
 	},
-	quick({data}) {
+	quick({data}, location) {
+		this.location = location
 		View.set_title("Comments")
 		this.form.set(data)
 		$commentSearchResults.fill()
 		$commentSearchResults.textContent = "(no query)"
 	},
-	render(resp, {data, merge}) {
+	render(resp, {data, merge}, location) {
+		this.location = location
+		
 		let comments = resp.message
 		let pages = resp.content
 		
 		View.set_title("Comments")
 		this.form.set(data)
 		
-		$commentSearchResults.fill()
 		if (!comments.length) {
 			$commentSearchResults.textContent = "(no results)"
 		} else {
+			$commentSearchResults.textContent = "results: "+comments.length
 			if (merge) {
 				for (let comment of comments) {
 					if (comment.deleted)
@@ -82,6 +89,7 @@ View.add_view('comments', {
 	},
 	cleanup() {
 		$commentSearchResults.fill()
+		this.location = null
 	},
 	
 	build_search(data) {
@@ -144,7 +152,7 @@ View.add_view('comments', {
 			{
 				values,
 				requests: [
-					{type:'message', fields:'*', query:query.join(" AND "), order},
+					{type:'message', fields:'*', query:query.join(" AND "), order, limit: 200},
 					{type:'content', fields:'name,id,createUserId', query:"id in @message.contentId"},
 					{type:'user', fields:'*', query:"id IN @message.createUserId OR id IN @content.createUserId"}
 				]

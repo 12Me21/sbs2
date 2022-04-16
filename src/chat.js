@@ -264,7 +264,7 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 	},
 	
 	/* static */
-	generateStatus() {
+	get_statuses() {
 		let status = {}
 		for (let id in this.rooms)
 			status[id] = this.rooms[id].status
@@ -362,7 +362,7 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 		<div class='pageContents'></div>
 	</scroll-outer>
 	<resize-handle></resize-handle>
-	<div class='bar rem2-3 userlist'></div>
+	<div class='bar rem2-3 userlist'>...</div>
 	<scroll-outer class='grow'>
 		<scroll-inner class='chatScroller'>
 			<div>
