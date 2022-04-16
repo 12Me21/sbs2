@@ -387,8 +387,11 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		let users = Object.values(item.users)
 		users.sort((a, b)=> -(a.date - b.date))
 		for (let u of users) {
-			if (u.user)
-				userlist.append(link_avatar(u.user))
+			if (u.user) {
+				let x = link_avatar(u.user)
+				x.title += "\n"+time_ago_string(u.date)
+				userlist.append(x)
+			}
 		}
 		
 		let time = time_ago(item.date)
