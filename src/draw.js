@@ -461,7 +461,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		].find(desc => seconds > desc[0]*0.96)
 		if (!desc)
 			return "Just now"
-		let round = (seconds/desc[0]).toFixed(desc[1]).replace(/\.0$/,"") // only works with 0 or 1 digit of precision oops
+		let round = (seconds/desc[0]).toFixed(desc[1]).replace(/[.]0/, "")
 		let units = +round==1 ? desc[2] : desc[3]
 		return `${round} ${units} ago`
 		/*if (seconds <= -0.5)
