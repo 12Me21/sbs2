@@ -130,7 +130,8 @@ let Lp = {
 	},
 	process_live(events, entitys) {
 		let comments = []
-		events.reverse()
+		if (events.length && events[0].id > events[1].id)
+			events.reverse()
 		for (let {refId, type, action, userId, date, id} of events) {
 			let maplist = entitys[type]
 			switch (type) { default: {
