@@ -381,9 +381,7 @@ td, th {  /* border renders outside */
 .resize-box,
 .slide-box, .slide-box > *,
 scroll-outer,
-sidebar-panel
-/* maybe also .resize-box > .grow ? */
-{
+sidebar-panel {
 	contain: strict;
 	background: var(--mainbg);
 }
@@ -396,8 +394,7 @@ sidebar-panel
 .resize-box > *,
 sidebar-panel > *,
 scroll-outer > *,
-scroll-middle, scroll-inner, message-list
-{
+scroll-middle, scroll-inner, message-list {
 	background: inherit;
 }
 
