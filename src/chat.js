@@ -369,7 +369,7 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 				<button-container><button>load older messages</button></button-container>
 				<label><input type=checkbox>disable limit</label>
 			</div>
-			<div></div>
+			<message-list></message-list>
 		</scroll-inner>
 	</scroll-outer>
 </chat-pane>

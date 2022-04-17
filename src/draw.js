@@ -300,27 +300,27 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	search_comment: function(comment, parent) {
 		let outer = this()
 		
-		let pg = content_label(parent)
-		pg.className += " bar rem1-5 linkBar"
-		outer.append(pg)
+		let pg = content_label(parent, true)
+		outer.prepend(pg)
+		
+		let inner = outer.lastChild
 		
 		let pid = comment.contentId
 		
-		outer.append(button2("Load Older", ()=>{
+		inner.before(button2("Load Older", ()=>{
 			load_messages_near(pid, inner, false, 10, ()=>{})
-		}))
-		
-		let inner = outer.child('div')
-		
-		outer.append(button2("Load Newer", ()=>{
-			load_messages_near(pid, inner, true, 10, ()=>{})
 		}))
 		
 		inner.append(single_message(comment))
 		
+		inner.after(button2("Load Newer", ()=>{
+			load_messages_near(pid, inner, true, 10, ()=>{})
+		}))
+		
 		return outer
 	}.bind(𐀶`
 <div class='bottomBorder'>
+	<message-list></message-list>
 </div>
 `),
 	
