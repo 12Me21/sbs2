@@ -47,6 +47,10 @@ ActivityItem.get = function(map, id, content, date) {
 	item.update_date(date)
 	return item
 }
+ActivityItem.handle = function(map, pid, content, uid, user, date) {
+	let item = this.get(map, pid, content[~pid], date)
+	item.update_user(uid, user[~uid], date)
+}
 ActivityItem.HTML = 𐀶`
 <a class='activity-page'>
 	<div class='bar rem1-5 ellipsis'></div>
@@ -78,7 +82,7 @@ Act = function(){"use strict"; return singleton({
 				{type:'message', fields:'*', query:"!notdeleted()", order:'id_desc', limit:50},
 				{type:'content', fields:'name, id, permissions, contentType, lastRevisionId', query:"id IN @message_aggregate.contentId OR id IN @message.contentId"},
 				{type:'user', fields:'*', query:"id IN @message_aggregate.createUserId OR id IN @message.createUserId"},
-				// todo: activity
+				// todo: activity_aggregate
 			]
 		}, (objects)=>{
 			console.log('🌄 got initial activity')
@@ -95,9 +99,7 @@ Act = function(){"use strict"; return singleton({
 		{contentId:pid, createUserId:uid, maxCreateDate2:date},
 		{content, user}
 	) {
-		let item = ActivityItem.get(this.items, pid, content[~pid], date)
-		console.log(user, uid)
-		item.update_user(uid, user[~uid], date)
+		ActivityItem.handle(this.items, pid, content, uid, user, date)
 	},
 	
 	message(
@@ -105,94 +107,7 @@ Act = function(){"use strict"; return singleton({
 		{content, user}
 	) {
 		if (deleted) return // mmnn
-		let item = ActivityItem.get(this.items, pid, content[~pid], date)
-		item.update_user(uid, user[~uid], date)
+		ActivityItem.handle(this.items, pid, content, uid, user, date)
 	},
 	
-/*		process_stuff(act, comments, watching, pages) {
-		if (act || comments || watching) {
-			let p = Entity.page_map(pages)
-			act && this.new_activity(act, p)
-			comments && this.new_comments(comments, p)
-			watching && this.new_activity(watching, p, true)
-			this.redraw()
-		}
-	},*/
-	
-	// ew
-	// this system merges Activity, Comment, ~and CommentAggregate~
-	// so we need these ~3~ 2 awful functions to handle them slightly differently
-	
-	// this gets called when you visit a page and load the recent comments
-	// if that page is in the activity list, we update its userlist
-	// but, if the page isn't there, we don't add it, because it's old
-	// problem: this can be called before initial activity data is loaded
-	// so this function doesn't work on the first page you visit - TODO
-	new_page_comments(page, comments) {
-		let item = this.items[page.id]
-		if (!item) //old page
-			return
-		for (let {editUser, editDate} of comments)
-			this.user_update(item, editUser, editDate)
-	},
-	
-	new_thing(id, date, user, pageMap, watch, update_pages) {
-		let item = this.get_item(id, pageMap, date)
-		if (update_pages && pageMap[id]) // hopefully this takes care of pages in activity list being updated? (i think we only need to do this on new_activity not new_comments)
-			item.content = pageMap[id]
-		if (watch)
-			item.watching = true
-		this.user_update(item, user, date)
-		item.count++
-		if (date < item.firstDate)
-			item.firstDate = date
-		if (date > item.lastDate)
-			item.lastDate = date
-	},
-	
-	new_comments(comments, pageMap, watch) {
-		// todo: commentaggregate only tracks createDate
-		// so maybe use that here for consistency between reloads
-		for (let {parentId, editDate, editUser, deleted} of comments)
-			this.new_thing(parentId, editDate, editUser, pageMap, watch, false)
-	},
-	
-	new_activity(activity, pageMap, watch) {
-		for (let {contentId, date, user, type} of activity)
-			if (type == 'content')
-				this.new_thing(contentId, date, user, pageMap, watch, true)
-	},
-	
-	//todo: somewhere we are getting Fake users with uid 0/
-	// found on page 2870 date Sun Nov 08 2020 17:55:52 GMT-0500
-	// AFTER loading comments
-	// most likely a deleted comment.
-	// perhaps just filter those out immediately
-	
-	// add or move+update user to start of list
-	// todo: this is probably really bad when called a lot of times
-	// for the initial comments.
-	// would maybe be better to just sort the list after that
-	user_update(item, user, date) {
-		if (!user) return // just in case
-		// i really hate this code
-		
-		// remove old user
-		for (let i=0; i<item.users.length; i++)
-			if (item.users[i].user.id == user.id) {
-				if (date <= item.users[i].date) //old user has newer date, don't remove
-					return
-				item.users.splice(i, 1)
-				break
-			}
-		// insert new user
-		let i
-		for (i=0; i<item.users.length; i++)
-			if (date >= item.users[i].date)
-				break
-		item.users.splice(i, 0, {user:user, date:date})
-		// temp fix maybe? mark unsorted users and render them differentlyyy
-		/*if (!date && !user.unsorted)
-		  user = Object.create(user, {unsorted: {value: true}})*/
-	},
 })}()
