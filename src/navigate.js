@@ -31,11 +31,11 @@ const Nav = function(){"use strict"; return singleton({
 	
 	update_from_location() {
 		let location = Nav.get_location()
-		console.info("location:", location)
 		Nav.goto(location)
 	},
 	
 	goto(location, push) {
+		console.info("location:", location)
 		Nav.replace_location(location, push)
 		View.handle_view(location, ()=>{
 			//
@@ -46,9 +46,7 @@ const Nav = function(){"use strict"; return singleton({
 	},
 	
 	init() {
-		// this only gets activated by manually editing the url bar i think...
 		window.onhashchange = ()=>{
-			console.info("hash change", window.location.hash)
 			Nav.update_from_location()
 		}
 		// onclick fires like 20ms before hashchange..
