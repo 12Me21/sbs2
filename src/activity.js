@@ -1,11 +1,70 @@
+let Act
+
+class ActivityItem {
+	constructor(content) {
+		this.content = content
+		this.users = {}
+		this.date = "0"
+		this.elem = this.constructor.HTML()
+		this.user_elem = this.elem.lastChild.lastChild
+		this.page_elem = this.elem.firstChild
+		Draw.update_activity_page(this)
+		Act.container.prepend(this.elem)
+	}
+	top() {
+		if (this.elem.previousSibling)
+			Act.container.prepend(this.elem)
+	}
+	update_date(date) {
+		if (date > this.date) {
+			this.date = date
+			this.top()
+		}
+	}
+	update_content(content) {
+		if (content.lastRevisionId > this.content.lastRevisionId) {
+			this.content = content
+			Draw.update_activity_page(this)
+		}
+	}
+	update_user(uid, user, date) {
+		// hmm user is almost identical to ActivityItem. could reuse class for both?
+		if (!user) {
+			console.warn('update user uid?', uid)
+			return
+		}
+		let u = this.users[uid] || (this.users[uid] = {user, date:"0", elem: Draw.link_avatar(user)})
+		if (date > u.date) { // todo: update user object. why don't users have editDate...
+			if (u.date=="0" || u.elem.previousSibling) // hack
+				this.user_elem.prepend(u.elem)
+			u.date = date
+		}
+	}
+}
+ActivityItem.get = function(map, id, content, date) {
+	let item = map[id] || (map[id] = new this(content))
+	item.update_content(content)
+	item.update_date(date)
+	return item
+}
+ActivityItem.HTML = 𐀶`
+<a class='activity-page'>
+	<div class='bar rem1-5 ellipsis'></div>
+	<div class='bar rem1-5 activity-page-bottom'>
+		<time class='time-ago ellipsis'></time>
+		<activity-users class='grow'>
+`
+
 // make a class for activity list
 // render new page block only when page added to list
 // handle updating existing page blocks (updating users list, time, etc.)
 // use this for activity and watchlist
-let Act = function(){"use strict"; return singleton({
+Act = function(){"use strict"; return singleton({
 	// this is a list of activity items
 	// i.e. pages with recent activity, displayed in the sidebar
 	items: {},
+	
+	container: document.createElement('scroll-inner'),
 	
 	pull_recent() {
 		let start = new Date()
@@ -15,94 +74,43 @@ let Act = function(){"use strict"; return singleton({
 				yesterday: start,
 			},
 			requests: [
-				{type:'message_aggregate', fields:"contentId, createUserId, maxCreateDate, count", query:"createDate > @yesterday"},
+				{type:'message_aggregate', fields:"contentId, createUserId, maxCreateDate, count, maxId", query:"createDate > @yesterday"},
 				{type:'message', fields:"*", query:"!notdeleted()", order:'id_desc', limit:50},
-				{type:'content', fields:"name, id, permissions, contentType", query:"id in @message_aggregate.contentId or id in @message.contentId"},
+				{type:'content', fields:"name, id, permissions, contentType, lastRevisionId", query:"id in @message_aggregate.contentId or id in @message.contentId"},
 				{type:'user', fields:"*", query:"id in @message_aggregate.createUserId or id in @message.createUserId"},
 				// todo: activity
 			]
 		}, (objects)=>{
-			// TODO: ensure that these are displayed BEFORE any websocket new messages
-			objects.message.reverse()
-			Sidebar.display_messages(objects.message, true)
-			// should we reverse aggregate?
-			this.process_message_aggregate(objects.message_aggregate, objects)
-			this.redraw()
-		})
-		
-		/*Req.chain([
-			['activity', {createStart: start}],
-			['comment~Mall', {reverse: true, limit: 1000}],
-			['activity~Awatching', {contentLimit:{watches:true}}],
-			['content.0contentId.1parentId.2contentId'],
-			['comment', {limit: 50, reverse: true, createStart: start}],
-			['user.0userId.1editUserId.2userId.4createUserId'],
-		], {
-			content: 'name,id,permissions,type',
-			Mall: 'parentId,editUserId,editDate',
-		}).then(({activity, Mall, Awatching, content, comment})=>{
 			console.log('🌄 got initial activity')
-			do_when_ready(()=>{
-				this.process_stuff(activity, Mall, Awatching, content)
-				Sidebar.display_messages(comment.reverse(), true)
-			})
-		}, (e, resp)=>{
-			print("initial activity failed!")
-		})*/
+			Entity.ascending(objects.message, 'id')
+			Sidebar.display_messages(objects.message, true) // TODO: ensure that these are displayed BEFORE any websocket new messages
+			
+			objects.message_aggregate.sort((a,b)=>a.maxId-b.maxId)
+			for (let x of objects.message_aggregate)
+				this.message_aggregate(x, objects)
+		})
 	},
 	
-	// if an item exists for that id, return it
-	// otherwise create a new one and return it
-	update_item(id, content, date) {
-		let item = this.items[id]
-		if (item) {
-			item.content = content
-			if (date > item.date)
-				item.date = date
-		} else
-			this.items[id] = item = {
-				content,
-				users: {},
-				date,
-			}
-		return item
-	},
-	
-	update_user(item, uid, user, date) {
-		let u = item.users[uid]
-		if (u) {
-			u.user = user
-			if (date > u.date)
-				u.date = date
-		} else
-			item.users[uid] = {user, date}
-	},
-	
-	redraw() {
+	/*redraw() {
 		Sidebar.on_aggregate_change(this.items)
+	},*/
+	
+	message_aggregate(
+		{contentId:pid, createUserId:uid, maxCreateDate2:date},
+		{content, user}
+	) {
+		let item = ActivityItem.get(this.items, pid, content[~pid], date)
+		console.log(user, uid)
+		item.update_user(uid, user[~uid], date)
 	},
 	
-	// todo: a lot of places just need whatever the newest instance of a user is
-	// so we could intern users, content, etc. to save memory
-	process_message_aggregate(message_aggregate, {content, user}) {
-		for (let {
-			contentId:pid, createUserId:uid,
-			maxCreateDate2:date,
-		} of message_aggregate) {
-			let item = this.update_item(pid, content[~pid], date)
-			this.update_user(item, uid, user[~uid], date)
-		}
-	},
-	
-	process_messages(message, {content, user}) {
-		for (let {
-			contentId:pid, createUserId:uid,
-			createDate2:date, deleted,
-		} of message) {
-			if (deleted) continue // mmnn
-			let item = this.update_item(pid, content[~pid], date)
-			this.update_user(item, uid, user[~uid], date)
-		}
+	message(
+		{contentId:pid, createUserId:uid, createDate2:date, deleted},
+		{content, user}
+	) {
+		if (deleted) return // mmnn
+		let item = ActivityItem.get(this.items, pid, content[~pid], date)
+		item.update_user(uid, user[~uid], date)
 	},
 	
 /*		process_stuff(act, comments, watching, pages) {

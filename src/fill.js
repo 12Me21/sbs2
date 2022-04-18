@@ -70,6 +70,8 @@ let STRICT = new Proxy(Object.create(null), {
 			`🚮 invalid field write: ${name}`, obj, `⛔${name} =`, value)
 	},
 })
+// idea: class extends STRICT, have some method for defining properties easily (instead of this.x = ...)
+
 // ⚡ NO_CONVERT - prevents type conversions
 // assign to Type.prototype[Symbol.toPrimitive]
 // note: will override .toString/.valueOf on any inheriting types
@@ -135,12 +137,10 @@ if (!document.timeline)
 //  - doesn't allow strings
 Node.prototype.fill = function (x) {
 	this.textContent = ""
-	if (x instanceof Node)
-		this.append(x)
-	else if (x instanceof Array)
+	if (Array.isArray(x))
 		this.append(...x)
-	else if (x!=null)
-		throw "invalid node childs"
+	else if (x != undefined)
+		this.appendChild(x)
 }
 // do not use replaceChildren itself, because it's relatively new
 // and was implemented incorrectly on safari at some point

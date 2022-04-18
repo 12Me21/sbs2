@@ -11,7 +11,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		if (interval)
 			window.clearInterval(interval)
 		interval = window.setInterval(()=>{
-			Draw.update_timestamps($sidebarActivity)
+			Draw.update_timestamps(activity.container)
 		}, 1000*30)
 	},
 	
@@ -194,9 +194,13 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	on_aggregate_change(aggregate) {
 		let items = Object.values(aggregate)//.filter(a=>a.content) //HACK (what did i mean by this?)
 		items.sort((a, b)=> -(a.date - b.date))
-		$sidebarActivity.fill()
-		for (let item of items)
-			$sidebarActivity.append(Draw.activity_item(item))
+		for (let item of items) {
+			if (item.drawn_date != item.content.editDate) {
+				item.drawn_date = item.content.editDate
+				item.elem = Draw.activity_item(item)
+			}
+			$sidebarActivity.append(item.elem)
+		}
 		refresh_time_interval(aggregate)
 	},
 	

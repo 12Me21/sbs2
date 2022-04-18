@@ -377,12 +377,11 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return x
 	}.bind(𐀶`<button role=tab aria-selected=false>`),
 	
-	activity_item: function(item) {
-		let e = this()
-		e.href = Nav.entity_link(item.content)
-		e.firstChild.append(content_label(item.content))
+	update_activity_page: function(item) {
+		item.elem.href = Nav.entity_link(item.content)
+		item.page_elem.fill(content_label(item.content))
 		
-		let userlist = e.lastChild.firstChild
+		/*let userlist = e.lastChild.lastChild
 		
 		let users = Object.values(item.users)
 		users.sort((a, b)=> -(a.date - b.date))
@@ -394,17 +393,9 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			}
 		}
 		
-		let time = time_ago(item.date)
-		time.className += " ellipsis"
-		e.lastChild.prepend(time)
-		
-		return e
-	}.bind(𐀶`
-<a class='activity-page'>
-	<div class='bar rem1-5 ellipsis'></div>
-	<div class='bar rem1-5 activity-page-bottom'>
-		<activity-users class='grow'>
-`),
+		let time = e.lastChild.firstChild
+		//let time = time_ago(item.date)*/
+	},
 	
 	// [page_edited_time] [entity_title_link]
 	// ? [page_edited_time] [entity_title_link]

@@ -222,4 +222,9 @@ let Entity = (()=>{"use strict"; return singleton({
 	is_new_comment(c) {
 		return !c.deleted && !c.edited
 	},
+	
+	ascending(list, field='id') {
+		if (list.length>1 && list[0][field] > list[1][field])
+			list.reverse()
+	}
 })})()

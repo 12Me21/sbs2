@@ -130,14 +130,14 @@ let Lp = {
 	},
 	process_live(events, entitys) {
 		let comments = []
-		if (events.length>1 && events[0].id > events[1].id)
-			events.reverse()
+		Entity.ascending(events)
 		for (let {refId, type, action, userId, date, id} of events) {
 			let maplist = entitys[type]
 			switch (type) { default: {
 				console.warn("unknown event type:", type, events)
 			} break; case 'message_event': {
 				let message = maplist.message[~refId]
+				Act.message(message, maplist)
 				comments.push(message)
 			} break; case 'user_event': {
 				let user = maplist.user[~refId]
@@ -145,10 +145,8 @@ let Lp = {
 			}}
 		}
 		if (comments.length) {
-			Act.process_messages(comments, entitys.message_event)
 			Sidebar.display_messages(comments)
 			ChatRoom.display_messages(comments)
-			Act.redraw()
 		}
 	},
 }
