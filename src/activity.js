@@ -91,10 +91,6 @@ Act = function(){"use strict"; return singleton({
 		})
 	},
 	
-	/*redraw() {
-		Sidebar.on_aggregate_change(this.items)
-	},*/
-	
 	message_aggregate(
 		{contentId:pid, createUserId:uid, maxCreateDate2:date},
 		{content, user}

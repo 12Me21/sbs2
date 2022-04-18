@@ -187,23 +187,6 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		})
 	},
 	
-	// this needs to be optimized
-	// it redraws the entire list of pages in activity + watching, EVERY time they update
-	// TODO
-	// TODO TODO
-	on_aggregate_change(aggregate) {
-		let items = Object.values(aggregate)//.filter(a=>a.content) //HACK (what did i mean by this?)
-		items.sort((a, b)=> -(a.date - b.date))
-		for (let item of items) {
-			if (item.drawn_date != item.content.editDate) {
-				item.drawn_date = item.content.editDate
-				item.elem = Draw.activity_item(item)
-			}
-			$sidebarActivity.append(item.elem)
-		}
-		refresh_time_interval(aggregate)
-	},
-	
 	redraw_category_tree(cats) {
 		$sidebarCategories.fill(Draw.nav_category(cats[0]))
 	},
