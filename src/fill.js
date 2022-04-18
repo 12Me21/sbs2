@@ -91,26 +91,35 @@ set_tc(Error)
 
 // ⚡ async/await/Promise replacement using function*/yield
 let GeneratorFunction = function*(){}.constructor
+let Generator = GeneratorFunction.prototype
 GeneratorFunction.prototype.run = function(args, callback, onerror) {
-	let iter
-	let y = true
-	let func = data => {
-		try { // i wonder if there is an overhead to try/catch...
-			while (y) {
-				y = false
-				let r = iter.next(data)
-				if (r.done) return callback && callback(r.value)
-			}
-			y = true
-		} catch (e) {
-			if (onerror) return onerror(e)
-			throw e
-		}
+	let defer, LOCK = {}
+	let iter, func = ret => {
+		for (let data=ret; defer!==LOCK; data=defer) try {
+			defer = LOCK
+			let r = iter.next(data)
+			r.done && callback && callback(r.value)
+		} catch(e) { onerror(e) }
+		defer = ret
 	}
 	iter = this(func, ...args)
-	func()
+	func(null)
 	return iter
 }
+
+// idea: can only have 1 instance going at a time
+/*GeneratorFunction.prototype.run1 = function(args, callback, onerror) {
+	if (this.iter)
+		this.iter.return()
+	this.iter = this(args)
+	
+	let iter = this(func, ...args)
+	
+	
+	this.step = function() {
+		
+	}
+}*/
 
 
 // (end of scary part)
