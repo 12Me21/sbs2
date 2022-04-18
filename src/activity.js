@@ -74,10 +74,10 @@ Act = function(){"use strict"; return singleton({
 				yesterday: start,
 			},
 			requests: [
-				{type:'message_aggregate', fields:"contentId, createUserId, maxCreateDate, count, maxId", query:"createDate > @yesterday"},
-				{type:'message', fields:"*", query:"!notdeleted()", order:'id_desc', limit:50},
-				{type:'content', fields:"name, id, permissions, contentType, lastRevisionId", query:"id in @message_aggregate.contentId or id in @message.contentId"},
-				{type:'user', fields:"*", query:"id in @message_aggregate.createUserId or id in @message.createUserId"},
+				{type:'message_aggregate', fields:'contentId, createUserId, maxCreateDate, maxId', query:"createDate > @yesterday"},
+				{type:'message', fields:'*', query:"!notdeleted()", order:'id_desc', limit:50},
+				{type:'content', fields:'name, id, permissions, contentType, lastRevisionId', query:"id IN @message_aggregate.contentId OR id IN @message.contentId"},
+				{type:'user', fields:'*', query:"id IN @message_aggregate.createUserId OR id IN @message.createUserId"},
 				// todo: activity
 			]
 		}, (objects)=>{

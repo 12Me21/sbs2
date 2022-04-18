@@ -99,12 +99,12 @@ View.add_view('comments', {
 		
 		let values = {}
 		let query = []
-		let order = "id"
+		let order = 'id'
 		
 		let merge = true
 		
 		if (data.reverse) {
-			order = "id_desc"
+			order = 'id_desc'
 			merge = false
 		}
 		let text = data.search
@@ -115,18 +115,18 @@ View.add_view('comments', {
 		}
 		if (data.pages) {
 			values.pids = data.pages
-			query.push("contentId in @pids")
+			query.push("contentId IN @pids")
 		}
 		if (data.users) { // todo: is an empty list [] or null?
 			values.uids = data.users
-			query.push("createUserId in @uids")
+			query.push("createUserId IN @uids")
 			merge = false
 		}
 		let range = data.range
 		if (range) {
 			if (range.ids) {
 				values.ids = range.ids
-				query.push("id in @ids")
+				query.push("id IN @ids")
 				if (range.ids.length > 1)
 					merge = false
 			} else {
@@ -153,7 +153,7 @@ View.add_view('comments', {
 				values,
 				requests: [
 					{type:'message', fields:'*', query:query.join(" AND "), order, limit: 200},
-					{type:'content', fields:'name,id,createUserId', query:"id in @message.contentId"},
+					{type:'content', fields:'name,id,createUserId', query:"id IN @message.contentId"},
 					{type:'user', fields:'*', query:"id IN @message.createUserId OR id IN @content.createUserId"}
 				]
 			},

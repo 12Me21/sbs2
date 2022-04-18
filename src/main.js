@@ -27,7 +27,7 @@ function immediate() {
 	Settings.early()
 	
 	// get own user
-	Lp.chain({values:{uid:Req.uid}, requests:[{type:'user', fields:'*', query:'id = @uid'}]}, resp=>{
+	Lp.chain({values:{uid:Req.uid}, requests:[{type:'user', fields:'*', query:"id = @uid"}]}, resp=>{
 		let me = resp.user[0]
 		if (!me) {
 			console.error(resp, 'me?"')

@@ -40,9 +40,9 @@ View.add_view('page', {
 				},
 				requests: [
 					{type: 'content', fields: "*", query: "id = @pid"},
-					{type: 'message', fields: "*", query: "contentId = @pid and !notdeleted()", order: "id_desc", limit: 30},
+					{type: 'message', fields: "*", query: "contentId = @pid AND !notdeleted()", order: 'id_desc', limit: 30},
 					//				{name: 'Mpinned', type: 'message', fields: "*", query: "id in @content.values.pinned"},
-					{type: 'user', fields: "*", query: "id in @content.createUserId or id in @message.createUserId or id in @message.editUserId"},
+					{type: 'user', fields: "*", query: "id IN @content.createUserId OR id IN @message.createUserId OR id IN @message.editUserId"},
 				],
 			},
 			ext: {},
