@@ -347,34 +347,32 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return e
 	},
 	
-	// <button role=tab aria-selected=false id=... aria-controls=...>
-	//   ...
-	// </button>
 	sidebar_tabs: function(list, callback) {
-		let btns = []
 		let frag = F()
-		let x = {
-			elem: frag,
-			select: (i)=>{
-				list.forEach((item, i2)=>{
-					btns[i2].setAttribute('aria-selected', i==i2)
-					item.elem.classList.toggle('shown', i==i2)
-				})
-			},
-		}
-		list.forEach((item, i)=>{
+		Object.for(list, (item, name)=>{
 			item.elem.setAttribute('role', "tabpanel")
-			item.elem.setAttribute('aria-labelledby', "sidebar-tab-"+i)
+			item.elem.setAttribute('aria-labelledby', `sidebar-tab-${item.name}`)
 			
-			let btn = this()
-			frag.append(btn)
-			btn.id = "sidebar-tab-"+i
-			btn.setAttribute('aria-controls', "sidebar-panel-"+i) // um did i forgot the corresponding property? TODO
-			btns[i] = btn
-			btn.onclick = ()=>{ x.select(i) }
-			btn.append(item.label)
+			item.select = function() {
+				Object.for(list, (item2, name2)=>{
+					let select = name2==name
+					item2.btn.setAttribute('aria-selected', select)
+					item2.elem.classList.toggle('shown', select)
+				})
+			}
+			
+			item.btn = this()
+			item.btn.id = "sidebar-tab-"+name
+			item.btn.setAttribute('aria-controls', item.elem.id)
+			item.btn.dataset.name = name
+			item.btn.onclick = item.select
+			item.btn.append(item.label)
+			
+			frag.append(item.btn)
 		})
-		return x
+		return {
+			elem: frag,
+		}
 	}.bind(𐀶`<button role=tab aria-selected=false>`),
 	
 	update_activity_page: function(item) {
@@ -682,8 +680,9 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	// update the timestamps in the sidebar activity list
 	// (todo: should we update them everywhere else on the site too?)
 	update_timestamps(element) {
-		for (let e of element.querySelectorAll("time.time-ago"))
+		for (let e of element.querySelectorAll("time.time-ago")) {
 			e.textContent = time_ago_string(new Date(e.dateTime))
+		}
 	},
 	
 })<!-- PRIVATE })

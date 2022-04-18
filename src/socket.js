@@ -110,6 +110,8 @@ let Lp = {
 		} break;case 'request': {
 			Entity.do_listmap(data.objects)
 			handler && handler.callback(data.objects)
+		} break;case 'setuserstatus': {
+			handler && handler.callback(response)
 		} break;case 'userlist': {
 			Entity.do_listmap(data.objects)
 			handler && handler.callback(data)

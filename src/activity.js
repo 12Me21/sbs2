@@ -8,6 +8,7 @@ class ActivityItem {
 		this.elem = this.constructor.HTML()
 		this.user_elem = this.elem.lastChild.lastChild
 		this.page_elem = this.elem.firstChild
+		this.time_elem = this.elem.lastChild.firstChild
 		Draw.update_activity_page(this)
 		Act.container.prepend(this.elem)
 	}
@@ -15,9 +16,15 @@ class ActivityItem {
 		if (this.elem.previousSibling)
 			Act.container.prepend(this.elem)
 	}
+	redraw_time() {
+		this.time_elem.textContent = Draw.time_ago_string(this.date)
+	}
 	update_date(date) {
 		if (date > this.date) {
 			this.date = date
+			this.time_elem.title = this.date.toString()
+			this.time_elem.setAttribute('datetime', this.date.toISOString())
+			this.redraw_time()
 			this.top()
 		}
 	}
@@ -34,6 +41,7 @@ class ActivityItem {
 			return
 		}
 		let u = this.users[uid] || (this.users[uid] = {user, date:"0", elem: Draw.link_avatar(user)})
+		// todo: show user dates on hover?
 		if (date > u.date) { // todo: update user object. why don't users have editDate...
 			if (u.date=="0" || u.elem.previousSibling) // hack
 				this.user_elem.prepend(u.elem)
@@ -95,6 +103,23 @@ Act = function(){"use strict"; return singleton({
 		})
 	},
 	
+	init() {
+		do_when_ready(()=>{
+			$sidebarActivity.fill(this.container)
+			this.refresh_time_interval()
+		})
+	},
+	
+	interval: null,
+	refresh_time_interval() {
+		if (this.interval)
+			window.clearInterval(this.interval)
+		this.interval = window.setInterval(()=>{
+			for (let item of Object.values(this.items))
+				item.redraw_time()
+		}, 1000*30)
+	},
+	
 	message_aggregate(
 		{contentId:pid, createUserId:uid, maxCreateDate2:date},
 		{content, user}
@@ -111,3 +136,5 @@ Act = function(){"use strict"; return singleton({
 	},
 	
 })}()
+
+Act.init()

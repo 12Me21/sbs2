@@ -2,18 +2,10 @@ let Sidebar = Object.create(null)
 with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	selected_file: null,
 	scroller: null,
+	sidebar_tabs: null,
 	select_tab: null,
 	my_avatar: null,
 	file_upload_form: null,
-	
-	interval: null,
-	refresh_time_interval(data) { //unused parameter
-		if (interval)
-			window.clearInterval(interval)
-		interval = window.setInterval(()=>{
-			Draw.update_timestamps(activity.container)
-		}, 1000*30)
-	},
 	
 	onload() {
 		file_upload_form = new Form({
@@ -92,25 +84,28 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		/*document.addEventListener('keydown', function(e) {
 		  
 		  })*/
-		let x = document.createDocumentFragment()
-		let y = x.createChild('span')
-		my_avatar = x.createChild('span')
-		my_avatar.className += " loggedIn"
-		y.className += " loggedOut"
-		y.textContent = "log in"
-		let sidebar_tabs = Draw.sidebar_tabs([
-			{label: document.createTextNode("✨"), elem: $sidebarActivityPanel},
-			//{label: document.createTextNode("W"), elem: $sidebarWatchPanel},
-			{label: document.createTextNode("🔍"), elem: $sidebarNavPanel},
-			{label: document.createTextNode("📷"), elem: $sidebarFilePanel},
-			{label: x, elem: $sidebarUserPanel},
-		])
-		$sidebar_tabs.fill(sidebar_tabs.elem)
+		let user_label
+		if (Req.auth) {
+			user_label = document.createElement('span')
+			my_avatar = user_label
+		} else
+			user_label = "log in"
+		
+		sidebar_tabs = {
+			activity: {label: "✨", elem: $sidebarActivityPanel},
+			//{label: "W", elem: $sidebarWatchPanel},
+			watch: {label: "🔍", elem: $sidebarNavPanel},
+			file: {label: "📷", elem: $sidebarFilePanel},
+			user: {label: user_label, elem: $sidebarUserPanel},
+		}
+		
+		let x = Draw.sidebar_tabs(sidebar_tabs)
+		$sidebar_tabs.fill(x.elem)
+		
 		if (Req.auth)
-			sidebar_tabs.select(0)
+			sidebar_tabs.activity.select()
 		else
-			sidebar_tabs.select(3)
-		select_tab = sidebar_tabs.select
+			sidebar_tabs.user.select()
 		
 		$searchButton.onclick = ()=>{
 			$searchButton.disabled = true
@@ -247,7 +242,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 			hash: null,
 		})
 		selected_file = file
-		select_tab(2) //hack HACK
+		sidebar_tabs.file.select()
 	},
 	
 	toggle() {

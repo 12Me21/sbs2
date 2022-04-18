@@ -111,8 +111,6 @@ function dom_ready() {
 		}
 	}
 	
-	$sidebarActivity.fill(Act.container)
-	
 	Sidebar.onload()
 	
 	print("running "+run_on_load.length+" deferred items")
