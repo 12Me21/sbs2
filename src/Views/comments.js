@@ -56,11 +56,8 @@ View.add_view('comments', {
 		$commentSearchResults.fill()
 		$commentSearchResults.textContent = "(no query)"
 	},
-	render(resp, {data, merge}, location) {
-		this.location = location
-		
-		let comments = resp.message
-		let pages = resp.content
+	render({message:comments, pages:content}, {data, merge}, location) {
+		this.location = location // todo: formal system for this (setting query string when form submit)
 		
 		View.set_title("Comments")
 		this.form.set(data)
@@ -70,10 +67,12 @@ View.add_view('comments', {
 		} else {
 			$commentSearchResults.textContent = "results: "+comments.length
 			if (merge) {
+				x = document.createElement('message-list')
+				$commentSearchResults.append(x)
 				for (let comment of comments) {
 					if (comment.deleted)
 						continue
-					Draw.insert_comment_merge($commentSearchResults, comment, false)
+					Draw.insert_comment_merge(x, comment, false)
 				}
 			} else {
 				for (let c of comments) {
