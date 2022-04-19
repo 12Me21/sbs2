@@ -24,22 +24,21 @@ function SELF_DESTRUCT(err, ...args) {
 // call this immediately after super() (do not pass args to super)
 Error.prototype.trim_stack = function(levels=1) {
 	while (levels-->0)
-		this.stack = this.stack.replace(/^(?!Error\n).*\n/, "")
+		this.stack = this.stack.replace(/^(?!Error:).*\n/, "")
 }
 class ParamError extends Error {
 	constructor(name) {
-		super()
+		super(`Undefined Argument: “${name}”`)
 		this.trim_stack(2)
-		this.message = `Undefined Argument: “${name}”`
 	}
 }
 ParamError.prototype.name = "ParamError"
 class FieldError extends Error {
 	constructor(message, ...args) {
-		super()
+		super(message)
 		this.trim_stack(2)
-		this.name = message
-		console.error(...args)
+		FieldError.last = args
+		//console.error(...args)
 	}
 }
 function Unhandled_Callback(err, ...x) {
@@ -58,6 +57,7 @@ function field_name(name) {
 		return `[${String(name)}]`
 	return `.${name}`
 }
+
 let STRICT = new Proxy(Object.create(null), {
 	get(t, name, obj) {
 		name = field_name(name)
@@ -81,13 +81,14 @@ function NO_CONVERT(type) {
 	if (type=='string') type='String'
 	throw new FieldError("🚮 invalid type conversion", this, "⛔ to "+type)
 }
-function set_tc(type, tc=type.prototype.toString) {
-	Object.defineProperty(type.prototype, Symbol.toPrimitive, {
+function set_tc(type, name, tc) {
+	Object.defineProperty(type.prototype, name, {
 		value: tc, configurable: true,
 	})
 }
-set_tc(Object, NO_CONVERT)
-set_tc(Error)
+set_tc(Object, Symbol.toPrimitive, NO_CONVERT)
+set_tc(Object, Symbol.toStringTag, "Object")
+set_tc(Error, Symbol.toPrimitive, Error.prototype.toString)
 
 // ⚡ async/await/Promise replacement using function*/yield
 let GeneratorFunction = function*(){}.constructor
@@ -108,135 +109,30 @@ GeneratorFunction.prototype.run = function(args, callback, onerror) {
 	return iter
 }
 
-/*Generator.prototype.run = function() {
-	this.step = function main(ret) {
-		this.step = function(ret) {
-			this.defer = ret;
-			this.step = main
-		}
-		let r = this.next(ret)
-		this.step(this.defer)
-		defer = ret
-	}
-	this.next()
-	this.step(this)
-	}*/
-
-/*Generator.prototype.run = function(callback, err) {
-	let step, main = (data)=>{
-		step = (defer)=>{
-			data = defer
-			step = main
-		}
-		let r
-		try {
-			r = this.next(data)
-		} catch (e) {
-			if (!err) throw e
-			return err(e)
-		}
-		if (r.done)
-			return callback && callback(r.value)
-		step(data)
-	}
-	main()
-	step(x=>step(x))
-	return this
-}*/
-
-
 Generator.prototype.run = function(ok=console.info, err=e=>{throw e}) {
 	let step, main = data=>{
-		step = defer=>(data = defer, step = main)
+		step = defer=>{data = defer; step = main}
 		try {
 			let r = this.next(data)
-			if (r.done) data = r.value, step = ok
-		} catch (e) { data = e, step = err }
+			if (r.done) { data = r.value; step = ok }
+		} catch (e) { data = e; step = err }
 		step(data)
 	}
 	main()
 	step(x=>step(x))
 	return this
 }
-
-
-/*Generator.prototype.run = function(ok) {
-	let step, main = (data)=>{
-		step = (defer)=>{
-			data = defer
-			step = main
+/*🌱
+Object.defineProperty(Generator.prototype, 'step', {
+	configurable: true,
+	get() {
+		if (this.current)
+			throw "SEQUENCE ERROR"
+		return this.current = function() {
+			
 		}
-		let r = this.next(data)
-		if (r.done) {
-			data = r.value
-			step = ok
-		}
-		step(data)
-	}
-	main()
-	step(x=>step(x))
-	return this
-}
-
-
-/*Generator.prototype.run = function(ok, err) {
-	let data, step
-	let sub = (d, s = main)=>{
-		data = d
-		step = s
-	}
-	let main = (ret)=>{
-		sub(ret, sub)
-		try {
-			let r = this.next(data)
-			if (r.done) 
-				sub(r.value, ok || console.info)
-		} catch (e) {
-			sub(e, err || e=>{throw e})
-		}
-		step(data)
-	}
-	main()
-	step(x=>step(x))
-	return this
-}*/
-
-/*Generator.prototype.run = function(ok, err) {
-	let data, step
-	let sub = (s, d)=>{
-		data = d
-		step = s
-	}
-	let main = (ret)=>{ //main=sub.bind .?
-		sub(sub.bind(null, main), ret)
-		try {
-			let r = this.next(data)
-			if (r.done) 
-				sub(ok || console.info, r.value)
-		} catch (e) {
-			sub(err || e=>{throw e}, e)
-		}
-		step(data)
-	}
-	main()
-	step(x=>step(x))
-	return this
-}
-*/
-
-// idea: can only have 1 instance going at a time
-/*GeneratorFunction.prototype.run1 = function(args, callback, onerror) {
-	if (this.iter)
-		this.iter.return()
-	this.iter = this(args)
-	
-	let iter = this(func, ...args)
-	
-	
-	this.step = function() {
-		
-	}
-}*/
+	},
+})*/
 
 
 // (end of scary part)

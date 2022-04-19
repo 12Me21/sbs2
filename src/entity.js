@@ -8,7 +8,9 @@ for (let type_name in ABOUT.details.types) {
 		// common methods
 		toJSON: {}, // JSON.stringify() etc.
 		then: {}, // Promise, await
-		[Symbol.toPrimitive]: {value:NO_CONVERT}, // conversions
+		// conversions
+		[Symbol.toPrimitive]: {value: NO_CONVERT},
+		[Symbol.toStringTag]: {value: "Entity:"+type_name},
 		/*[Symbol.toBlob]:*/
 		Blob: {value() {
 			return new Blob([JSON.stringify(this)], {type:"application/json;charset=UTF-8"})
