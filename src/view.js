@@ -143,7 +143,8 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 	},
 	
 	// technically STEP could be a global etc. but hhhh ....
-	*handle_view2(location) {let STEP=yield
+	*handle_view2(location) {
+		let STEP=yield
 		let phase = "..."
 		let view
 		
@@ -212,7 +213,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 		View.flag('mobileSidebar', false) //bad (should be function on Sidebar)
 		
 		let s = ChatRoom.get_statuses()
-		Lp.set_status(s)		
+		Lp.set_status(s, ()=>{})
 		
 		if (first) {
 			console.log("☀️ First page rendered!")

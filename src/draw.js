@@ -248,9 +248,11 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 				if (oldhash == newhash) {
 					// aand the time isn't > 5 minutes
 					let last = oldcontents[backwards?'firstChild':'lastChild']
-					let oldtime = last.x_data.createDate2
-					if (Math.abs(comment.createDate2-oldtime) <= 1000*60*5)
-						contents = oldcontents
+					if (last) {
+						let oldtime = last.x_data.createDate2
+						if (Math.abs(comment.createDate2-oldtime) <= 1000*60*5)
+							contents = oldcontents
+					}
 				}
 			}
 		}

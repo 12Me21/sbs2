@@ -159,7 +159,7 @@ window.addEventListener('beforeunload', e=>{
 
 window.addEventListener('focus', e=>{
 	if (Lp.ready)
-		Lp.ping()
+		Lp.ping(()=>{})
 })
 
 window.addEventListener('pageshow', e=>{

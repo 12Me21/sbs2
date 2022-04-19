@@ -56,7 +56,7 @@ class ResizeTracker {
 	}
 }
 
-let track_scroll_resize = new ResizeTracker('height')
+
 
 class Scroller {
 	constructor(outer, inner) { // constructor todo. take outer element only. create inner element here.
@@ -65,68 +65,97 @@ class Scroller {
 		
 		this.middle = document.createElement('scroll-middle')
 		this.middle.append(this.inner)
-		
 		this.outer.append(this.middle)
 		
+		this.animation = this.new_animation()
 		this.anim_id = null
 		this.anim_pos = 0
 		
-		this.rate = 0.25 //autoscroll rate: amount of remaining distance to scroll per 1/60 second
-		this.bottom_region = 0.25 //if within this distance of bottom, autoscroll is enabled
+		// amount of remaining distance to scroll per 1/60 second
+		this.rate = 0.25
+		// autoscroll is enabled within this distance from the bottom
+		this.bottom_region = 10
 		
-		//outer.addEventListener('scroll', (e)=>{
-		//}, {passive: true})
-		
-		track_scroll_resize.add(this.outer, (old_size)=>{
+		this.track_height.add(this.outer, (old_size)=>{
 			if (this.at_bottom(old_size, undefined))
 				this.scroll_instant()
 		})
-		track_scroll_resize.add(this.inner, (old_size)=>{
+		this.track_height.add(this.inner, (old_size)=>{
 			if (this.at_bottom(undefined, old_size))
 				this.scroll_instant()
 		})
 		
 		Object.seal(this)
 	}
+	new_animation() {
+		return new Animation(new KeyframeEffect(
+			this.inner,
+			[
+				{transform: "translateY(var(--scroll))"},
+				{transform: "initial"},
+			],
+			{duration:401.5, fill:'backwards', composite:'replace', easing:'cubic-bezier(0.16, 1, 0.3, 1)'/*, delay:10*/}
+		))
+	}
 	scroll_height() {
 		return this.inner.getBoundingClientRect().height
 	}
 	at_bottom(outer_height = this.outer.clientHeight, scroll_height = this.outer.scrollHeight) {
-		return scroll_height-outer_height-this.outer.scrollTop < 10//outer_height*this.bottom_region
+		return scroll_height-outer_height-this.outer.scrollTop < this.bottom_region
 	}
 	scroll_instant() {
 		this.outer.scrollTop = 9e9
 	}
+	before_print(animate) {
+		if (this.at_bottom())
+			// only calculate height if we need it for the animation
+			return animate ? this.scroll_height() : true
+		return false
+	}
+	after_print(before) {
+		if (before === false)
+			return // not at bottom
+		this.scroll_instant()
+		if (before === true)
+			return // no animation
+		let diff = this.scroll_height() - before
+		this.start_animation(diff)
+	}
 	print(callback, animate) {
-		let at_bottom = this.at_bottom()
-		// skip height calculation unless needed
-		let height1 = (at_bottom && animate) ? this.scroll_height() : null
-		
+		let height = this.before_print(animate)
 		try {
-			let elem = callback()
-			elem && this.inner.append(elem)
+			callback()
 		} finally {
-			if (at_bottom) {
-				this.scroll_instant()
-				if (animate) {
-					let diff = this.scroll_height() - height1
-					this.start_animation(diff)
-				}
-			}
+			this.after_print(height)
 		}
 	}
 	start_animation(dist) {
-		window.cancelAnimationFrame(this.anim_id)
+		if (Math.abs(dist) <= 1)
+			return
+		//console.log("animating", dist)
+		this.animation.cancel()
+		this.inner.style.setProperty('--scroll', dist+"px")
+		this.animation.play()
+		/*this.animation = this.inner.animate(
+			[
+				{transform: `translate(0, var(--scroll)`},
+				{transform: "translate(0, 0px)"},
+			],
+			{duration:400, fill:'backwards', composite:'replace', easing:'cubic-bezier(0.16, 1, 0.3, 1)'},
+		)*/
+		/*window.cancelAnimationFrame(this.anim_id)
 		this.anim_id = null
-		this.animate_insertion(this.anim_pos + dist)
+		this.animate_insertion(this.anim_pos + dist)*/
 	}
 	cancel_animation() {
-		if (this.anim_id != null) {
+		this.animation.cancel()
+/*		if (this.anim_id != null) {
 			window.cancelAnimationFrame(this.anim_id)
 			this.end_animation()
-		}
+		}*/
 	}
 	end_animation() {
+		this.animation.cancel()
 		this.anim_id = null
 		this.anim_pos = 0
 		this.inner.style.transform = ""
@@ -140,8 +169,7 @@ class Scroller {
 		this.inner.style.transform = `translate(0, ${dist}px)`
 		this.anim_pos = dist
 		let id = window.requestAnimationFrame((time)=>{
-			// the argument passed by animationframe is wrong in Chromium browsers (maybe its fine if we use currentTime ?)
-			//time = performance.now()
+			//time = document.timeline.currentTime
 			// if the animation was cancelled or another was started
 			if (this.anim_id != id)
 				return
@@ -171,12 +199,11 @@ class Scroller {
 		}
 	}
 	destroy() {
-		track_scroll_resize.remove(this.inner)
-		track_scroll_resize.remove(this.outer)
+		this.track_height.remove(this.inner)
+		this.track_height.remove(this.outer)
 	}
 }
-
-
+Scroller.prototype.track_height = new ResizeTracker('height')
 
 // todo: we only want to animate if an element is inserted/removed/resized at the BOTTOM of the screen. but how to detect this? probably best, I suppose, if the chat room handles it?
 

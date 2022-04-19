@@ -37,7 +37,7 @@ class ActivityItem {
 	update_user(uid, user, date) {
 		// hmm user is almost identical to ActivityItem. could reuse class for both?
 		if (!user) {
-			console.warn('update user uid?', uid)
+			//console.warn('update user uid?', uid)
 			return
 		}
 		let u = this.users[uid] || (this.users[uid] = {user, date:"0", elem: Draw.link_avatar(user)})

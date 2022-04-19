@@ -78,9 +78,13 @@ function dom_ready() {
 	// set up event handlers:
 	
 	document.onmousedown = (e)=>{
-		if (!e.button && e.target) // 0 or none (prevent right click etc.)
+		// 0 or none (prevent right click etc.)
+		if (!e.button && e.target)
 			image_focus_click_handler(e.target)
 	}
+	document.addEventListener('videoclicked', (e)=>{
+		image_focus_click_handler(e.target, true)
+	})
 	
 	let embiggened_image
 	// clicking outside an image shrinks it
