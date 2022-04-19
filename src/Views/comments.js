@@ -56,7 +56,7 @@ View.add_view('comments', {
 		$commentSearchResults.fill()
 		$commentSearchResults.textContent = "(no query)"
 	},
-	render({message:comments, pages:content}, {data, merge}, location) {
+	render({message:comments, content:pages}, {data, merge}, location) {
 		this.location = location // todo: formal system for this (setting query string when form submit)
 		
 		View.set_title("Comments")
