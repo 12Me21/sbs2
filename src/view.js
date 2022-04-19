@@ -139,11 +139,11 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 	
 	handle_view(location, callback, onerror) {
 		cancel()
-		loading_view = handle_view2.run([location], callback, onerror)
+		loading_view = handle_view2(location).run(callback, onerror)
 	},
 	
 	// technically STEP could be a global etc. but hhhh ....
-	handle_view2: function*(STEP=E["must be called with .run()"], location) {
+	*handle_view2(location) {let STEP=yield
 		let phase = "..."
 		let view
 		

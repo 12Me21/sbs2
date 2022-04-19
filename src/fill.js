@@ -92,6 +92,7 @@ set_tc(Error)
 // ⚡ async/await/Promise replacement using function*/yield
 let GeneratorFunction = function*(){}.constructor
 let Generator = GeneratorFunction.prototype
+
 GeneratorFunction.prototype.run = function(args, callback, onerror) {
 	let defer, LOCK = {}
 	let iter, func = ret => {
@@ -106,6 +107,122 @@ GeneratorFunction.prototype.run = function(args, callback, onerror) {
 	func(null)
 	return iter
 }
+
+/*Generator.prototype.run = function() {
+	this.step = function main(ret) {
+		this.step = function(ret) {
+			this.defer = ret;
+			this.step = main
+		}
+		let r = this.next(ret)
+		this.step(this.defer)
+		defer = ret
+	}
+	this.next()
+	this.step(this)
+	}*/
+
+/*Generator.prototype.run = function(callback, err) {
+	let step, main = (data)=>{
+		step = (defer)=>{
+			data = defer
+			step = main
+		}
+		let r
+		try {
+			r = this.next(data)
+		} catch (e) {
+			if (!err) throw e
+			return err(e)
+		}
+		if (r.done)
+			return callback && callback(r.value)
+		step(data)
+	}
+	main()
+	step(x=>step(x))
+	return this
+}*/
+
+
+Generator.prototype.run = function(ok=console.info, err=e=>{throw e}) {
+	let step, main = data=>{
+		step = defer=>(data = defer, step = main)
+		try {
+			let r = this.next(data)
+			if (r.done) data = r.value, step = ok
+		} catch (e) { data = e, step = err }
+		step(data)
+	}
+	main()
+	step(x=>step(x))
+	return this
+}
+
+
+/*Generator.prototype.run = function(ok) {
+	let step, main = (data)=>{
+		step = (defer)=>{
+			data = defer
+			step = main
+		}
+		let r = this.next(data)
+		if (r.done) {
+			data = r.value
+			step = ok
+		}
+		step(data)
+	}
+	main()
+	step(x=>step(x))
+	return this
+}
+
+
+/*Generator.prototype.run = function(ok, err) {
+	let data, step
+	let sub = (d, s = main)=>{
+		data = d
+		step = s
+	}
+	let main = (ret)=>{
+		sub(ret, sub)
+		try {
+			let r = this.next(data)
+			if (r.done) 
+				sub(r.value, ok || console.info)
+		} catch (e) {
+			sub(e, err || e=>{throw e})
+		}
+		step(data)
+	}
+	main()
+	step(x=>step(x))
+	return this
+}*/
+
+/*Generator.prototype.run = function(ok, err) {
+	let data, step
+	let sub = (s, d)=>{
+		data = d
+		step = s
+	}
+	let main = (ret)=>{ //main=sub.bind .?
+		sub(sub.bind(null, main), ret)
+		try {
+			let r = this.next(data)
+			if (r.done) 
+				sub(ok || console.info, r.value)
+		} catch (e) {
+			sub(err || e=>{throw e}, e)
+		}
+		step(data)
+	}
+	main()
+	step(x=>step(x))
+	return this
+}
+*/
 
 // idea: can only have 1 instance going at a time
 /*GeneratorFunction.prototype.run1 = function(args, callback, onerror) {
