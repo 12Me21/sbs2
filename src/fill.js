@@ -198,11 +198,10 @@ JSON.to_blob = function(obj) {
 	return new Blob([JSON.stringify(obj)], {type: "application/json;charset=UTF-8"})
 }
 
-// do we really need this...
 let Store = {
 	set: localStorage.setItem.bind(localStorage),
 	get: localStorage.getItem.bind(localStorage),
-	remove: localStorage.getItem.bind(localStorage),
+	remove: localStorage.removeItem.bind(localStorage),
 }
 
 // these are kinda bad, both based on Array.forEach() which is [value,key] while here [key,value] would make more sense.

@@ -187,8 +187,8 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 	// logs the user out and clears the cached token
 	log_out() {
 		Store.remove(this.storage_key)
-		window.location.reload()
-		Lp.stop()
+		Nav.reload()
+		//Lp.stop()
 		this.auth = null
 	},
 	
