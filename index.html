@@ -13,6 +13,11 @@
 <link rel=image_src href=resource/iconbig.png> <!-- large 3 -->
 
 <script>
+	if (window.location.search=="?logout") {
+		localStorage.removeItem("token-qcs.shsbs.xyz/api")
+		window.location.search = ""
+	}
+	
 	window.onerror = function(message, source, line, col, error) {
 		window.setTimeout(function() {
 			if (confirm("ERROR DURING PAGE LOAD!\n"+message+"\nin "+source+"\nat "+line+":"+col+"\n[Cancel] = reload page, [Ok] = continue"))
