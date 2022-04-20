@@ -24,10 +24,13 @@ with(Settings)((window)=>{"use strict"; Object.assign(Settings,{
 			type: 'select',
 			options: ['12y','bbcode','html'],
 		},
-		websocket: {
-			name: "Use Websocket",
+		scroller_anim_type: {
+			name: "scroll animation method",
 			type: 'select',
-			options: ['websocket', 'long polling'],
+			options: ['2', '1', '0'],
+			update(value) {
+				Scroller.anim_type = +value
+			},
 		},
 		big_avatar: {
 			name: "Big Avatar",
