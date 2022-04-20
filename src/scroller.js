@@ -56,8 +56,6 @@ class ResizeTracker {
 	}
 }
 
-
-
 class Scroller {
 	constructor(outer, inner) { // constructor todo. take outer element only. create inner element here.
 		this.outer = outer
@@ -67,7 +65,10 @@ class Scroller {
 		this.middle.append(this.inner)
 		this.outer.append(this.middle)
 		
-		this.animation = this.new_animation()
+		this.anim_type = Scroller.anim_type
+		if (this.anim_type==2) {
+			this.animation = this.new_animation()
+		}
 		this.anim_id = null
 		this.anim_pos = 0
 		
@@ -76,11 +77,11 @@ class Scroller {
 		// autoscroll is enabled within this distance from the bottom
 		this.bottom_region = 10
 		
-		this.track_height.add(this.outer, (old_size)=>{
+		Scroller.track_height.add(this.outer, (old_size)=>{
 			if (this.at_bottom(old_size, undefined))
 				this.scroll_instant()
 		})
-		this.track_height.add(this.inner, (old_size)=>{
+		Scroller.track_height.add(this.inner, (old_size)=>{
 			if (this.at_bottom(undefined, old_size))
 				this.scroll_instant()
 		})
@@ -132,30 +133,28 @@ class Scroller {
 	start_animation(dist) {
 		if (Math.abs(dist) <= 1)
 			return
-		//console.log("animating", dist)
-		this.animation.cancel()
-		this.inner.style.setProperty('--scroll', dist+"px")
-		this.animation.play()
-		/*this.animation = this.inner.animate(
-			[
-				{transform: `translate(0, var(--scroll)`},
-				{transform: "translate(0, 0px)"},
-			],
-			{duration:400, fill:'backwards', composite:'replace', easing:'cubic-bezier(0.16, 1, 0.3, 1)'},
-		)*/
-		/*window.cancelAnimationFrame(this.anim_id)
-		this.anim_id = null
-		this.animate_insertion(this.anim_pos + dist)*/
+		if (this.anim_type==2) {
+			this.animation.cancel()
+			this.inner.style.setProperty('--scroll', dist+"px")
+			this.animation.play()
+		} else if (this.anim_type==1) {
+			window.cancelAnimationFrame(this.anim_id)
+			this.anim_id = null
+			this.animate_insertion(this.anim_pos + dist)
+		}
 	}
 	cancel_animation() {
-		this.animation.cancel()
-/*		if (this.anim_id != null) {
-			window.cancelAnimationFrame(this.anim_id)
-			this.end_animation()
-		}*/
+		if (this.anim_type==2) {
+			this.animation.cancel()
+		} else if (this.anim_type==1) {
+			if (this.anim_id != null) {
+				window.cancelAnimationFrame(this.anim_id)
+				this.end_animation()
+			}
+		}
 	}
+	// only for anim_type 1:
 	end_animation() {
-		this.animation.cancel()
 		this.anim_id = null
 		this.anim_pos = 0
 		this.inner.style.transform = ""
@@ -199,11 +198,15 @@ class Scroller {
 		}
 	}
 	destroy() {
-		this.track_height.remove(this.inner)
-		this.track_height.remove(this.outer)
+		Scroller.track_height.remove(this.inner)
+		Scroller.track_height.remove(this.outer)
 	}
 }
-Scroller.prototype.track_height = new ResizeTracker('height')
+Scroller.track_height = new ResizeTracker('height')
+Scroller.anim_type = 2
+if ('function'==typeof Animation)
+	Scroller.anim_type = 1
+
 
 // todo: we only want to animate if an element is inserted/removed/resized at the BOTTOM of the screen. but how to detect this? probably best, I suppose, if the chat room handles it?
 
