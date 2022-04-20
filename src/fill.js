@@ -10,6 +10,11 @@ for (let key of Object.getOwnPropertyNames(Object.prototype))
 	delete Object.prototype[key]
 //Object.freeze(Object.prototype)
 
+function METHOD(type, name, tc) {
+	Object.defineProperty(type.prototype, name, {
+		value: tc, configurable: true,
+	})
+}
 function throw2(err) {
 	throw err
 }
@@ -22,10 +27,11 @@ function SELF_DESTRUCT(err, ...args) {
 
 // ⚡ Custom errors
 // call this immediately after super() (do not pass args to super)
-Error.prototype.trim_stack = function(levels=1) {
+METHOD(Error, 'trim_stack', function(levels=1) {
 	while (levels-->0)
 		this.stack = this.stack.replace(/^(?!Error:).*\n/, "")
-}
+})
+
 class ParamError extends Error {
 	constructor(name) {
 		super(`Undefined Argument: “${name}”`)
@@ -81,35 +87,15 @@ function NO_CONVERT(type) {
 	if (type=='string') type='String'
 	throw new FieldError("🚮 invalid type conversion", this, "⛔ to "+type)
 }
-function set_tc(type, name, tc) {
-	Object.defineProperty(type.prototype, name, {
-		value: tc, configurable: true,
-	})
-}
-set_tc(Object, Symbol.toPrimitive, NO_CONVERT)
-set_tc(Object, Symbol.toStringTag, "Object")
-set_tc(Error, Symbol.toPrimitive, Error.prototype.toString)
+METHOD(Object, Symbol.toPrimitive, NO_CONVERT)
+METHOD(Object, Symbol.toStringTag, "Object")
+METHOD(Error, Symbol.toPrimitive, Error.prototype.toString)
 
 // ⚡ async/await/Promise replacement using function*/yield
 let GeneratorFunction = function*(){}.constructor
 let Generator = GeneratorFunction.prototype
 
-GeneratorFunction.prototype.run = function(args, callback, onerror) {
-	let defer, LOCK = {}
-	let iter, func = ret => {
-		for (let data=ret; defer!==LOCK; data=defer) try {
-			defer = LOCK
-			let r = iter.next(data)
-			r.done && callback && callback(r.value)
-		} catch(e) { onerror(e) }
-		defer = ret
-	}
-	iter = this(func, ...args)
-	func(null)
-	return iter
-}
-
-Generator.prototype.run = function(ok=console.info, err=e=>{throw e}) {
+METHOD(Generator, 'run', function(ok=console.info, err=e=>{throw e}) {
 	let step, main = data=>{
 		step = defer=>{data = defer; step = main}
 		try {
@@ -121,18 +107,7 @@ Generator.prototype.run = function(ok=console.info, err=e=>{throw e}) {
 	main()
 	step(x=>step(x))
 	return this
-}
-/*🌱
-Object.defineProperty(Generator.prototype, 'step', {
-	configurable: true,
-	get() {
-		if (this.current)
-			throw "SEQUENCE ERROR"
-		return this.current = function() {
-			
-		}
-	},
-})*/
+})
 
 
 // (end of scary part)
@@ -183,7 +158,7 @@ Node.prototype.child = function(type, classes) {
 	return elem
 }
 
-eval("\n".repeat(419)+'a=>{return;'+' '.repeat(58)+'return}')
+//eval("\n".repeat(419)+'a=>{return;'+' '.repeat(58)+'return}')
 // same as JSON.parse, but returns `undefined` if it fails
 // (note that JSON can't encode `undefined`)
 JSON.safe_parse = function(json) { // should be function() not => yeah?
