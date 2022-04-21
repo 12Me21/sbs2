@@ -43,7 +43,7 @@
 
 <script src=markup2/parse.js></script>
 <script src=markup2/render.js></script>
-<script src=markup2/legacy.js></script>
+<script src=markup2/langs.js></script>
 <script src=markup2/helpers.js></script>
 
 <script src=src/fill.js></script>
@@ -64,10 +64,6 @@
 <script src=src/chat.js></script>
 
 <script src=src/Views/page.js></script>
-<script src=src/Views/images.js></script>
-<script src=src/Views/editpage.js></script>
-<script src=src/Views/category.js></script>
-<script src=src/Views/user.js></script>
 <script src=src/Views/comments.js></script>
 
 <script src=src/navigate.js></script>
@@ -88,23 +84,9 @@
 	<div class='textItem rightAlign'>
 		<button id=$openSidebar class='item'><img src=resource/iconbig.png alt="SBS" width=32px height=32px></button>
 	</div>
-	
 	<noscript>This web-site requires JavaScript</noscript>
-	<span data-view=page,category id=$path></span>
 	<h1 id=$pageTitle class='textItem pageTitle'></h1>
-	<span data-view=page>
-		<a class='textItem canEdit' id=$pageEditLink>[Edit]</a>
-		<a class='textItem' id=$pageCommentsLink>[Logs]</a>
-	</span>
-	<span data-view=user><a class='textItem loggedIn myUserPage' id=$editUserPage>Edit User Page</a></span>
-	<span class='item loggedIn myUserPage'>
-		<div id=$userPageStatus class='textItem'></div>
-	</span>
-	<span data-view=editpage,catEditMode>
-		<input class='item' id=$titleInput placeholder="Title" required>
-		<button class='item' id=$submitEdit>Submit</button>
-		<button class='item' id=$deletePage>DELETE</button>
-	</span>
+	<span data-view=page><a class='textItem' id=$pageCommentsLink>[Logs]</a></span>
 </header>
 
 <horizontal-split class='grow resize-box row'>
@@ -176,7 +158,6 @@
 				</div>
 				<br id=$file_upload_form>
 				<div class='image-box grow' style="min-height: 3rem;"><img id=$file_image></div>
-				<a href=#images>Uploaded Images</a> <!-- I want to move this into the upper bar so it takes up less space... -->
 			</sidebar-panel>
 			<sidebar-panel id=$sidebarUserPanel>
 				<div class='registerBox'>
@@ -195,12 +176,6 @@
 					</div>
 				</div>
 				<div class='loggedIn border-list'>
-					<div class='registerBox'>
-						<a href=#images>Change your avatar here</a>
-					</div>
-					<div class='registerBox'>
-						<a href=#users>User list</a>
-					</div>
 					<div class='registerBox'>
 						<div id=$localSettings></div>
 						<button id=$localSettingsSave>Update sitejs/sitecss</button>
