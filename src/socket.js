@@ -154,7 +154,7 @@ let Lp = {
 		let prev_id = -Infinity
 		for (let {refId, type, action, userId, date, id} of events) {
 			if (id < prev_id) {
-				alert("event ids out of order!")
+				alert("event ids out of order! please report this")
 				print(JSON.stringify(events))
 				console.warn(events)
 			}
