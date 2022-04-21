@@ -42,6 +42,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 			if (selected_file) {
 				$file_upload.disabled = true
 				
+				file_upload_form.read()
 				let data = file_upload_form.get()
 				
 				let params = {
@@ -241,6 +242,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 			name: file.name,
 			hash: null,
 		})
+		file_upload_form.write()
 		selected_file = file
 		sidebar_tabs.file.select()
 	},

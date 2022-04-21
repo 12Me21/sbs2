@@ -185,16 +185,18 @@ const INPUTS = (()=>{
 				this.elem = this.input
 				this.input.onchange = this._onchange.bind(this)
 			}
-			get() {
+			read() {
 				let v = this.input.value
 				if (this.options.includes(v))
-					return v
-				if (this.default !== undefined)
-					return this.default
-				return null
+					this.value = v
+				else if (this.default !== undefined)
+					this.value = this.default
+				else
+					this.value = null
 			}
 			// todo: proper null
-			set(v) {
+			write() {
+				let v = this.value
 				if (!this.options.includes(v)) {
 					if (this.default !== undefined)
 						v = this.default
@@ -597,6 +599,9 @@ const INPUTS = (()=>{
 			}
 			write() {
 				this.input.value = this.value || ""
+			}
+			read() {
+				this.value = this.input.value || null
 			}
 		},
 		// type: User/null
