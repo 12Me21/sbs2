@@ -212,7 +212,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		
 		e.dataset.id = comment.id
 		e.dataset.time = comment.createDate2.getTime()
-		Markup.convert(comment.text, comment.values.m, e)
+		Markup.convert_lang(comment.text, comment.values.m, e)
 		return e
 	}.bind(𐀶`<message-part tab-index=0>`),
 	
