@@ -202,7 +202,7 @@ Object.first_key = function(obj) {
 RegExp.prototype.rmatch = function(str) {
 	if (typeof str != 'string')
 		throw new TypeError("RegExp.rmatch() expects string")
-	return String.prototype.match.call(str, this) || [null]
+	return String.prototype.match.call(str, this) || []
 }
 
 

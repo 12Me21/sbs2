@@ -46,7 +46,6 @@ class Form {
 		this.fields = p.fields // list of fields
 		this.in_fields = [] // list of input fields
 		
-		this.map = {} // map of name -> item in this.fields
 		this.inputs = {} // map of name -> INPUT instances
 		
 		this.elem = document.createElement('form-table')
@@ -59,15 +58,13 @@ class Form {
 			// inp: options for the input element itself (ex: list for <select>)
 			// wait how do we change a select's values afterwards then?
 			let [name, type, opt, inp={}] = field
-			this.map[name] = field
 			
 			let input = new (INPUTS[type])(inp)
 			this.inputs[name] = input
-			if (opt.default===undefined)
-				input.set(opt.default)
+			input.value = opt.default
 			
 			if (!opt.output)
-				this.in_fields.push(field)
+				this.in_fields.push(input)
 			
 			let label = body.createChild('label')
 			label.htmlFor = input.html_id
@@ -88,113 +85,57 @@ class Form {
 	reset() {
 		for (let [name, type, opt] of this.fields) {
 			let value = opt.default!==undefined ? opt.default : null
-			this.inputs[name].set(value)
+			this.inputs[name].value = value
+			this.inputs[name].write()
 		}
 	}
+	read() {
+		for (let [name] of this.fields)
+			this.inputs[name].read()
+	}
+	write() {
+		for (let [name] of this.fields)
+			this.inputs[name].write()
+	}
 	get() {
-		return this.in_fields.reduce((a, [name])=>{
-			a[name] = this.inputs[name].get()
-			return a
-		}, {})
+		let a = {}
+		for (let [name] of this.fields)
+			a[name] = this.inputs[name].value
+		return a
 	}
 	set(data) {
 		for (let [name, type, opt] of this.fields) {
 			let value = data[name]
 			if (value===undefined) value = opt.default
 			if (value===undefined) value = null
-			this.inputs[name].set(value)
+			this.inputs[name].value = value
 		}
 	}
 	set_some(data) {
 		for (let [name, type, opt] of this.fields) {
 			let value = data[name]
 			if (value!==undefined)
-				this.inputs[name].set(value)
+				this.inputs[name].value = value
 		}
 	}
 	// maybe shouldn't be in this class
-	to_query(p) {
+	to_query() {
 		let params = {}
 		for (let [name, type, opt] of this.fields) {
-			let value = p[name]
-			if (value != null && opt.convert)
-				value = opt.convert.encode(value)
+			let value = this.inputs[name].to_query()
 			if (value != null) {
 				let key = opt.param
-				if (value === true)
-					params[key] = ""
-				else if (value !== false)
-					params[key] = value
+				params[key] = value
 			}
 		}
 		return params
 	}
 	from_query(query) {
-		let p = {}
 		for (let [name, type, opt] of this.fields) {
 			let value = query[opt.param]
-			if (opt.convert)
-				value = opt.convert.decode(value)
-			if (value != null)
-				p[name] = value
+			this.inputs[name].from_query(value)
 		}
-		return p
 	}
-}
-
-// for converting between query parameters and DATA
-// remember query params can be strings or `true`, or null
-// `decode` MUST return the correct type for DATA, or null
-const CONVERT = {
-	flag: {
-		encode: x => x ? true : null,
-		decode: x => x != null,
-	},
-	number_list: {
-		encode: x => x ? x.join(",") : null,
-		decode: x => typeof x == 'string' ? x.split(",").map(x=>Number(x)) : null, // todo: filter if values aren't valid numbers, allow spaces and other separators? etc
-	},
-	number: {
-		encode: x => x != null ? String(x) : null,
-		decode: x => typeof x == 'string' ? Number(x) : null,
-	},
-	string: {
-		encode: x => x != null ? x : null,
-		decode: x => typeof x == 'string' ? x : null,
-	},
-	date: {
-		encode: x => x != null ? x.toISOString() : null,
-		decode: x => typeof x == 'string' ? new Date(x) : null, // todo: validate the date (how?)
-	},
-	range: {
-		encode: x => {
-			if (x == null)
-				return null
-			if (x.ids!=null)
-				return x.ids.join(",")
-			if (x.min!=null && x.max!=null)
-				return `${x.min}-${x.max}`
-			if (x.min!=null)
-				return `${x.min}-`
-			if (x.max!=null)
-				return `0-${x.max}`
-			return null // idk
-		},
-		decode: x => {
-			//from https://github.com/randomouscrap98/newsbs/blob/42b4c5b383f738f6b492b77d9a7d5d0d92f56761/index.js#L1341
-			if (typeof x != 'string')
-				return null
-			let [match, min, max] = /^(\d*)-(\d*)$/.rmatch(x)
-			if (match) {
-				return {
-					min: min ? Number(min) : null,
-					max: max ? Number(max) : null,
-				} // what if number parse fails? should be null i think
-			} else {
-				return {ids: x.split(",").map(x=>Number(x))}
-			}
-		}
-	},
 }
 
 const INPUTS = (()=>{
@@ -279,12 +220,14 @@ const INPUTS = (()=>{
 				this.elem = this.input
 				this.input.onchange = this._onchange.bind(this)
 			}
-			get() {
-				return this.input.checked
+			read() {
+				this.value = this.input.checked
 			}
-			set(v) {
-				this.input.checked = v
+			write() {
+				this.input.checked = this.value
 			}
+			to_query() { return this.value ? "" : null }
+			from_query(s) { this.value = s != null }
 		},
 		// type: String/null
 		text: class extends GenericInput {
@@ -308,24 +251,26 @@ const INPUTS = (()=>{
 					this.elem.append(this.input, this.input2)
 				}
 			}
-			get() {
+			read() {
 				if (this.confirm) {
 					let v1 = this.input.value
 					let v2 = this.input2.value
 					if (v1 == v2)
-						return v1 || null
+						this.value = v1 || null
 					else
-						return null // failed (todo: different return value?)
+						this.value = null // failed (todo: different return value?)
 				} else {
-					return this.input.value || null
+					this.value = this.input.value || null
 				}
 			}
-			set(v) {
-				this.input.value = v || ""
+			write() {
+				this.input.value = this.value || ""
 				if (this.confirm) {
 					this.input2.value = ""
 				}
 			}
+			to_query() { return this.value }
+			from_query(s) { this.value = s }
 		},
 		// type: {min: Number/null, max: Number/null} / {ids: [Number...]} / null
 		// formats: "min-max"  "min-"  "-max"  "id1,id2,..."
@@ -338,14 +283,43 @@ const INPUTS = (()=>{
 				this.elem = this.input
 				this.input.onchange = this._onchange.bind(this)
 			}
-			get() {
-				if (this.input.value == "")
+			decode(x) {
+				if ('string'!=typeof x || x == "") {
+					this.value = null
+					return
+				}
+				let [match, min, max] = /^(\d*)-(\d*)$/.rmatch(x)
+				if (match) {
+					this.value = {
+						min: min ? Number(min) : null,
+						max: max ? Number(max) : null,
+					} // what if number parse fails? should be null i think
+				} else {
+					this.value = {ids: x.split(",").map(x=>Number(x))}
+				}
+			}
+			encode() {
+				let x = this.value
+				if (x == null)
 					return null
-				return CONVERT.range.decode(this.input.value)
+				if (x.ids!=null)
+					return x.ids.join(",")
+				if (x.min!=null && x.max!=null)
+					return `${x.min}-${x.max}`
+				if (x.min!=null)
+					return `${x.min}-`
+				if (x.max!=null)
+					return `0-${x.max}`
+				return null // idk
 			}
-			set(v) {
-				this.input.value = v==null ? "" : CONVERT.range.encode(v)
+			read() {
+				this.decode(this.input.value)
 			}
+			write() {
+				this.input.value = this.encode() || ""
+			}
+			to_query() { return this.encode() }
+			from_query(s) { this.decode(s) }
 		},
 		// type: Number/null
 		number: class extends GenericInput {
@@ -357,13 +331,20 @@ const INPUTS = (()=>{
 				this.input.type = 'number'
 				this.input.onchange = this._onchange.bind(this)
 			}
-			get() {
-				let v = this.input.value
-				return v=="" ? null : Number(v) // and of course, this can also return NaN
+			read() {
+				if (this.input.value=="")
+					this.value = null
+				else
+					this.value = Number(this.input.value) // and of course, this can also return NaN
 			}
-			set(v) {
-				this.input.value = v==null ? "" : String(v)
+			write() {
+				if (this.value==null)
+					this.input.value = ""
+				else
+					this.input.value = this.value
 			}
+			to_query() { return this.value==null ? null : String(this.value) }
+			from_query(s) { this.value = s==null ? null : Number(s) }
 		},
 		// type: [Number...]/null
 		number_list: class extends GenericInput {
@@ -376,16 +357,25 @@ const INPUTS = (()=>{
 				this.input.placeholder = "list of numbers"
 				this.input.onchange = this._onchange.bind(this)
 			}
-			get() {
-				if (this.input.value=="")
-					return null
-				return this.input.value.split(/[,\s]/g).filter(x=>x.length!=0).map(x=>Number(x)) // todo: make sure the numbers like, exist
-			}
-			set(v) {
-				if (v != null)
-					this.input.value = v.join(',')
+			read() {
+				let m = this.input.value.match(/[^,\s]+/g)
+				if (m)
+					this.value = m.map(x=>Number(x)) // todo: make sure the numbers like, exist
 				else
+					this.value = null
+			}
+			write() {
+				if (this.value == null)
 					this.input.value = ""
+				else
+					this.input.value = this.value.join(",")
+			}
+			to_query() { return this.value ? this.value.join(",") : null }
+			from_query(s) {
+				if (s) // todo: filter if values aren't valid numbers, allow spaces and other separators? etc
+					this.value = s.match(/[^,\s]+/g).map(x=>Number(x))
+				else
+					this.value = null
 			}
 		},
 		// type: [String...]/null
@@ -398,11 +388,16 @@ const INPUTS = (()=>{
 				this.elem = this.input
 				this.input.onchange = this._onchange.bind(this)
 			}
-			get() {
-				return this.input.value.split(/[\s]/g).filter(x=>x.length!=0)
+			read() {
+				this.value = this.input.value.match(/[^\s]+/g)
+				if (!this.value.length)
+					this.value = null
 			}
-			set(v) {
-				this.input.value = v==null ? "" : v.join(' ')
+			write() {
+				if (this.value==null)
+					this.input.value = ""
+				else
+					this.input.value = this.value.join(" ")
 			}
 		},
 		// type:
@@ -435,6 +430,7 @@ const INPUTS = (()=>{
 			_add_row(user, perm) {
 				this.body.append(Draw.permission_row(user, perm))
 			}
+			// TODO:
 			set([perms, users]) {
 				this.body.fill()
 				let d = false
@@ -482,33 +478,43 @@ const INPUTS = (()=>{
 				this.input1.onchange = this._onchange.bind(this)
 				this.input2.onchange = this._onchange.bind(this)
 			}
-			get() {
+			read() {
 				// we can't use the .valueAsNumber or .valueAsDate attributes because these read the times in utc
 				let [m1, year, month, day] = /(\d+)-(\d+)-(\d+)/.rmatch(this.input1.value)
-				if (!m1)
-					return null
-				let [m2, hour, minute, second] = /(\d+):(\d+)(?::([\d.]+))?/.rmatch(this.input2.value)
-				if (!m2)
-					hour = minute = second = 0
-				return new Date(year, month-1, day, hour, minute, Math.floor(second || 0))
+				if (!m1) {
+					this.value = null
+				} else {
+					let [m2, hour, minute, second] = /(\d+):(\d+)(?::([\d.]+))?/.rmatch(this.input2.value)
+					if (!m2)
+						hour = minute = second = 0
+					this.value = new Date(year, month-1, day, hour, minute, Math.floor(second || 0))
+				}
 			}
-			set(v) {
+			write() {
+				let v = this.value
+				let date="", time=""
 				if (v) {
-					function str(x, len) {
+					function str(x, len=2) {
 						return String(x).padStart(len, "0")
 					}
-					this.input1.value =
+					date =
 						str(v.getFullYear(), 4)+"-"+
-						str(v.getMonth()+1, 2)+"-"+
-						str(v.getDate(), 2)
-					this.input2.value =
-						str(v.getHours(), 2)+":"+
-						str(v.getMinutes(), 2)+":"+
-						str(v.getSeconds(), 2)
-				} else {
-					this.input1.value = ""
-					this.input2.value = ""
+						str(v.getMonth()+1)+"-"+
+						str(v.getDate())
+					time =
+						str(v.getHours())+":"+
+						str(v.getMinutes())+":"+
+						str(v.getSeconds())
 				}
+				this.input1.value = date
+				this.input2.value = time
+			}
+			to_query() { return this.value ? this.value.toISOString() : null }
+			from_query(s) {
+				if (s)
+					this.value = new Date(s) // todo: validate the date (how?)
+				else
+					this.value = null
 			}
 		},
 		// type:
@@ -572,14 +578,13 @@ const INPUTS = (()=>{
 				this.input.onchange = this._onchange.bind(this)
 				this.elem = this.input
 			}
-			get() {
-				return this.input.files[0] || null
+			read() {
+				this.value = this.input.files[0] || null
 			}
-			set(v) {
-				if (v==null)
-					this.input.value = ""
-				else
+			write() {
+				if (this.value != null)
 					throw 'cant set file like that'
+				this.input.value = ""
 			}
 		},
 		
@@ -590,8 +595,8 @@ const INPUTS = (()=>{
 				this.input = elem('output')
 				this.elem = this.input
 			}
-			set(v) {
-				this.input.value = v==null ? "" : v
+			write() {
+				this.input.value = this.value || ""
 			}
 		},
 		// type: User/null
@@ -602,8 +607,8 @@ const INPUTS = (()=>{
 				this.input.className = 'bar rem1-5'
 				this.elem = this.input
 			}
-			set(v) {
-				this.input.fill(v ? Draw.entity_title_link(v) : null)
+			write() {
+				this.input.fill(this.value ? Draw.entity_title_link(this.value) : null)
 			}
 		},
 	}

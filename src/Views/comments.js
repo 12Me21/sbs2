@@ -6,13 +6,13 @@ View.add_view('comments', {
 	early() {
 		this.form = new Form({
 			fields: [
-				['search', 'text', {label: "Search", convert: CONVERT.string, param: 's'}],
-				['pages', 'number_list', {label: "Page Ids", convert: CONVERT.number_list, param: 'pid'}],
-				['users', 'number_list', {label: "User Ids", convert: CONVERT.number_list, param: 'uid'}],
-				['start', 'date', {label: "Start Date", convert: CONVERT.date, param: 'start'}],
-				['end', 'date', {label: "End Date", convert: CONVERT.date, param: 'end'}],
-				['range', 'range', {label: "Id Range", convert: CONVERT.range, param: 'ids'}],
-				['reverse', 'checkbox', {label: "Newest First", convert: CONVERT.flag, param: 'r'}],
+				['search', 'text', {label: "Search", param: 's'}],
+				['pages', 'number_list', {label: "Page Ids", param: 'pid'}],
+				['users', 'number_list', {label: "User Ids", param: 'uid'}],
+				['start', 'date', {label: "Start Date", param: 'start'}],
+				['end', 'date', {label: "End Date", param: 'end'}],
+				['range', 'range', {label: "Id Range", param: 'ids'}],
+				['reverse', 'checkbox', {label: "Newest First", param: 'r'}],
 			]
 		})
 	},
@@ -23,20 +23,22 @@ View.add_view('comments', {
 		$commentSearchForm.replaceWith(this.form.elem)
 		$commentSearchButton.onclick = ()=>{
 			if (!this.location) return
+			this.form.read()
 			let data = this.form.get()
+			this.location.query = this.form.to_query()
 			if (data.pages && data.pages.length==1) {
 				this.location.id = data.pages[0]
-				delete data.pages // ghh
+				delete this.location.query.pid
 			} else {
 				this.location.id = null
 			}
-			this.location.query = this.form.to_query(data)
 			Nav.goto(this.location)
 		}
 		View.bind_enter($commentSearch, $commentSearchButton.onclick)
 	},
 	start({id, query}) {
-		let data = this.form.from_query(query)
+		this.form.from_query(query)
+		let data = this.form.get()
 		if (id)
 			data.pages = [id]
 		let [search, merge] = this.build_search(data)
@@ -53,6 +55,7 @@ View.add_view('comments', {
 		this.location = location
 		View.set_title("Comments")
 		this.form.set(data)
+		this.form.write(data)
 		$commentSearchResults.fill()
 		$commentSearchResults.textContent = "(no query)"
 	},
@@ -61,6 +64,7 @@ View.add_view('comments', {
 		
 		View.set_title("Comments")
 		this.form.set(data)
+		this.form.write(data)
 		
 		if (!comments.length) {
 			$commentSearchResults.textContent = "(no results)"
