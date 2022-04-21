@@ -149,9 +149,16 @@ let Lp = {
 	},
 	process_live(events, entitys) {
 		let comments = []
-		//Entity.ascending(events)
-		events.sort((a,b)=>a.id-b.id)
+		Entity.ascending(events)
+		//events.sort((a,b)=>a.id-b.id)
+		let prev_id = -Infinity
 		for (let {refId, type, action, userId, date, id} of events) {
+			if (id < prev_id) {
+				alert("event ids out of order!")
+				print(JSON.stringify(events))
+				console.warn(events)
+			}
+			prev_id = id
 			let maplist = entitys[type]
 			switch (type) { default: {
 				console.warn("unknown event type:", type, events)
