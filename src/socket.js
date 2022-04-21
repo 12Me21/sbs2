@@ -15,6 +15,7 @@ let Lp = {
 	ready: false,
 	last_id: "",
 	dead: false,
+	expected_close: false,
 /*		;['online','offline','focus','blur'].forEach(x=>{
 			window.addEventListener('online', e=>
 		})*/
@@ -27,14 +28,21 @@ let Lp = {
 			throw new Error("Tried to open multiple websockets")
 		
 		this.websocket = new WebSocket(`wss://${Req.server}/live/ws?lastId=${this.last_id}&token=${encodeURIComponent(Req.auth)}`/*, 'json'*/)
+		
 		this.websocket.onopen = (e)=>{
 			console.log("🌄 websocket open")
 			for (let i in this.handlers)
 				this.send(this.handlers[i].request)
 			this.ready = true
 		}
+		
 		this.websocket.onclose = (event)=>{
 			this.ready = false
+			if (this.expected_close) {
+				this.expected_close = false
+				this.start_websocket()
+				return
+			}
 			if (this.dead)
 				return
 			let {code, reason, wasClean} = event
@@ -43,6 +51,7 @@ let Lp = {
 			if (cont)
 				this.start_websocket()
 		}
+		
 		this.websocket.onmessage = (event)=>{
 			this.handle_response(JSON.parse(event.data))
 		}
@@ -92,6 +101,13 @@ let Lp = {
 		return handler
 	},
 	handle_response(response) {
+		if (response.type=='unexpected' && /ExpiredCheckpoint/.test(response.error)) {
+			print("server restart, lastid reset?")
+			this.last_id = 0
+			this.expected_close = true
+			return
+		}
+		
 		let handler
 		if (response.id) {
 			handler = this.pop_handler(response.id)
