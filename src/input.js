@@ -1,3 +1,5 @@
+// I really hate this file.
+
 // TODO:
 // lots of things
 // improve styling (esp element widths)
@@ -40,6 +42,9 @@
 // DATA must contain the correct type
 
 // maybe instead of specifying the layout in Form, we just provide a list of locations of where to insert the fields. this is necessary for, ex: the page title input which is outside the main element
+
+// todo: nullability
+// sometimes we want fields to return null when empty, but other times we don't.
 
 class Form {
 	constructor(p) {
@@ -212,7 +217,7 @@ const INPUTS = (()=>{
 				this.input.value = v
 			}
 		},
-		// type: Boolean
+		// type: Boolean (should this just be true/null?)
 		checkbox: class extends GenericInput {
 			constructor(p) {
 				super()
@@ -267,9 +272,8 @@ const INPUTS = (()=>{
 			}
 			write() {
 				this.input.value = this.value || ""
-				if (this.confirm) {
+				if (this.confirm)
 					this.input2.value = ""
-				}
 			}
 			to_query() { return this.value }
 			from_query(s) { this.value = s }
@@ -286,7 +290,7 @@ const INPUTS = (()=>{
 				this.input.onchange = this._onchange.bind(this)
 			}
 			decode(x) {
-				if ('string'!=typeof x || x == "") {
+				if (x=="" || x==null) {
 					this.value = null
 					return
 				}
@@ -320,8 +324,34 @@ const INPUTS = (()=>{
 			write() {
 				this.input.value = this.encode() || ""
 			}
-			to_query() { return this.encode() }
-			from_query(s) { this.decode(s) }
+			to_query() {
+				return this.encode()
+			}
+			from_query(s) {
+				this.decode(s)
+			}
+		},
+		// type: String/null
+		textarea: class extends GenericInput {
+			constructor(p) {
+				super()
+				this.input = elem('textarea')
+				this.input.id = this.html_id
+				this.elem = this.input
+				this.input.onchange = this._onchange.bind(this)
+			}
+			read() {
+				this.value = this.input.value || null
+			}
+			write() {
+				this.input.value = this.value || ""
+			}
+			to_query() {
+				return this.value
+			}
+			from_query(s) {
+				this.value = s
+			}
 		},
 		// type: Number/null
 		number: class extends GenericInput {
@@ -334,19 +364,18 @@ const INPUTS = (()=>{
 				this.input.onchange = this._onchange.bind(this)
 			}
 			read() {
-				if (this.input.value=="")
-					this.value = null
-				else
-					this.value = Number(this.input.value) // and of course, this can also return NaN
+				// todo: validate? maybe we need a separate invalid/null state
+				this.value = this.input.value=="" ? null : Number(this.input.value)
 			}
 			write() {
-				if (this.value==null)
-					this.input.value = ""
-				else
-					this.input.value = this.value
+				this.input.value = this.value==null ? "" : this.value
 			}
-			to_query() { return this.value==null ? null : String(this.value) }
-			from_query(s) { this.value = s==null ? null : Number(s) }
+			to_query() {
+				return this.value==null ? null : String(this.value)
+			}
+			from_query(s) {
+				this.value = s==null ? null : Number(s)
+			}
 		},
 		// type: [Number...]/null
 		number_list: class extends GenericInput {
@@ -391,18 +420,14 @@ const INPUTS = (()=>{
 				this.input.onchange = this._onchange.bind(this)
 			}
 			read() {
-				this.value = this.input.value.match(/[^\s]+/g)
-				if (!this.value.length)
-					this.value = null
+				let words = this.input.value.match(/[^\s]+/g)
+				this.value = words==null ? null : words
 			}
 			write() {
-				if (this.value==null)
-					this.input.value = ""
-				else
-					this.input.value = this.value.join(" ")
+				this.input.value = this.value==null ? "" : this.value.join(" ")
 			}
 		},
-		// type:
+		// type:  BROKEN
 		permissions: class extends GenericInput {
 			constructor() {
 				super()
@@ -519,77 +544,6 @@ const INPUTS = (()=>{
 					this.value = null
 			}
 		},
-		// type:
-		category: class extends GenericInput {
-			constructor(p) {
-				super()
-				this.input = elem('select')
-				this.input.id = this.html_id
-				this.elem = this.input
-				this.input.onchange = this._onchange.bind(this)
-				//this.update()
-			}
-			
-			// TODO: this is a hack. we need a way for fields to have extra data associated with them,
-			// such as the permission editor's user map and this category tree
-			set([value, tree]) {
-				let option = (value, text)=>{
-					let x = elem('option')
-					x.textContent = text
-					x.value = value
-					return x
-				}
-				
-				this.input.fill(option("", "-- Select Category --"))
-				if (!tree) return // not ready yet :(
-				
-				// recursive function
-				// ⚠ if there are cycles in the data, this will freeze
-				let build_list = (node, ret, depth)=>{
-					ret.push({id: node.id, text: ">".repeat(depth)+" "+node.name})
-					if (node.children)
-						for (let child of node.children)
-							build_list(child, ret, depth+1)
-				}
-				
-				let list = []
-				tree && build_list(tree, list, 0)
-				if (value!=null) {
-					let selected = list.find(item=>item.id==value)
-					if (!selected) {
-						this.input.append(option(value, "Unknown category: "+value))
-					}
-				}
-				this.input.append(...list.map(item=>option(item.id, item.text)))
-				this.input.value = value==null ? "" : value
-			}
-			get() {
-				if (this.input.value=="")
-					return null
-				return +this.input.value
-			}
-		},
-		// type: File/null
-		file: class extends GenericInput {
-			constructor(p) {
-				super()
-				this.input = elem('input')
-				this.input.type = 'file'
-				if (p.accept)
-					this.input.accept = p.accept
-				this.input.onchange = this._onchange.bind(this)
-				this.elem = this.input
-			}
-			read() {
-				this.value = this.input.files[0] || null
-			}
-			write() {
-				if (this.value != null)
-					throw 'cant set file like that'
-				this.input.value = ""
-			}
-		},
-		
 		// type: String/null
 		output: class extends GenericInput {
 			constructor(p) {
