@@ -133,7 +133,8 @@ let Lp = {
 	},
 	process_live(events, entitys) {
 		let comments = []
-		Entity.ascending(events)
+		//Entity.ascending(events)
+		events.sort((a,b)=>a.id-b.id)
 		for (let {refId, type, action, userId, date, id} of events) {
 			let maplist = entitys[type]
 			switch (type) { default: {
