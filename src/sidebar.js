@@ -117,7 +117,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 					pagetype: 1,
 				},
 				requests: [
-					{type:'content', fields:'name,id,contentType,permissions,createUserId', query:"contentType = @pagetype AND name LIKE @search", limit:50},
+					{type:'content', fields:'name,id,contentType,permissions,createUserId,lastCommentId', query:"contentType = @pagetype AND name LIKE @search", limit:50, order:'lastCommentId_desc'},
 				],
 			},resp=>{
 				$searchButton.disabled = false
