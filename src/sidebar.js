@@ -7,6 +7,16 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	my_avatar: null,
 	file_upload_form: null,
 	
+	select_tab(name) {
+		for (let tab of sidebar_tabs) {
+			let select = name==tab.name
+			tab.btn.setAttribute('aria-selected', select)
+			tab.elem.classList.toggle('shown', select)
+			if (select)
+				tab.onswitch && tab.onswitch()
+		}
+	},
+	
 	onload() {
 		file_upload_form = new Form({
 			fields: [
@@ -92,21 +102,41 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		} else
 			user_label = "log in"
 		
-		sidebar_tabs = {
-			activity: {label: "✨", elem: $sidebarActivityPanel},
+		sidebar_tabs = [
+			{name: 'activity', label: "✨", elem: $sidebarActivityPanel},
 			//{label: "W", elem: $sidebarWatchPanel},
-			watch: {label: "🔍", elem: $sidebarNavPanel},
-			file: {label: "📷", elem: $sidebarFilePanel},
-			user: {label: user_label, elem: $sidebarUserPanel},
+			
+			{name: 'search', label: "🔍", elem: $sidebarNavPanel, onswitch: ()=>{
+				$searchInput.value = ""
+				$searchInput.focus()
+			}, accesskey: 's'},
+			{name: 'file', label: "📷", elem: $sidebarFilePanel},
+			{name: 'user', label: user_label, elem: $sidebarUserPanel},
+		]
+		
+		let button_template = 𐀶`<button role=tab aria-selected=false>`
+		
+		for (let tab of sidebar_tabs) {
+			tab.elem.setAttribute('role', "tabpanel")
+			tab.elem.setAttribute('aria-labelledby', `sidebar-tab-${tab.name}`)
+			// todo: tabs need like, label? title name thing 
+			tab.btn = button_template()
+			tab.btn.id = "sidebar-tab-"+tab.name
+			tab.btn.setAttribute('aria-controls', tab.elem.id)
+			tab.btn.dataset.name = tab.name
+			tab.btn.onclick = function(e) {
+				select_tab(this.dataset.name)
+			}
+			tab.btn.append(tab.label)
+			if (tab.accesskey)
+				tab.btn.setAttribute('accesskey', tab.accesskey)
+			$sidebar_tabs.append(tab.btn)
 		}
 		
-		let x = Draw.sidebar_tabs(sidebar_tabs)
-		$sidebar_tabs.fill(x.elem)
-		
 		if (Req.auth)
-			sidebar_tabs.activity.select()
+			select_tab('activity')
 		else
-			sidebar_tabs.user.select()
+			select_tab('user')
 		
 		$searchButton.onclick = ()=>{
 			$searchButton.disabled = true
@@ -119,7 +149,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 				requests: [
 					{type:'content', fields:'name,id,contentType,permissions,createUserId,lastCommentId', query:"contentType = @pagetype AND name LIKE @search", limit:50, order:'lastCommentId_desc'},
 				],
-			},resp=>{
+			}, resp=>{
 				$searchButton.disabled = false
 				$searchResults.fill()
 				let first = true
@@ -244,7 +274,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		})
 		file_upload_form.write()
 		selected_file = file
-		sidebar_tabs.file.select()
+		select_tab('file')
 	},
 	
 	toggle() {

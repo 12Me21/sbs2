@@ -349,34 +349,6 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return e
 	},
 	
-	sidebar_tabs: function(list, callback) {
-		let frag = F()
-		Object.for(list, (item, name)=>{
-			item.elem.setAttribute('role', "tabpanel")
-			item.elem.setAttribute('aria-labelledby', `sidebar-tab-${item.name}`)
-			
-			item.select = function() {
-				Object.for(list, (item2, name2)=>{
-					let select = name2==name
-					item2.btn.setAttribute('aria-selected', select)
-					item2.elem.classList.toggle('shown', select)
-				})
-			}
-			
-			item.btn = this()
-			item.btn.id = "sidebar-tab-"+name
-			item.btn.setAttribute('aria-controls', item.elem.id)
-			item.btn.dataset.name = name
-			item.btn.onclick = item.select
-			item.btn.append(item.label)
-			
-			frag.append(item.btn)
-		})
-		return {
-			elem: frag,
-		}
-	}.bind(𐀶`<button role=tab aria-selected=false>`),
-	
 	update_activity_page: function(item) {
 		item.elem.href = Nav.entity_link(item.content)
 		item.page_elem.fill(content_label(item.content))

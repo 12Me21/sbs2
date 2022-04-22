@@ -184,6 +184,13 @@ Object.for = (obj, callback)=>{
 	for (let [key, value] of Object.entries(obj))
 		callback(value, key, obj)
 }
+let FOR = Symbol('for')
+Object.prototype[FOR] = (callback)=>{
+	for (let [key, value] of Object.entries(this))
+		callback(value, key, this)
+}
+
+
 // are we using this?
 Object.map = (obj, callback)=>{
 	let ret = {}

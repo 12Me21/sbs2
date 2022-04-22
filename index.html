@@ -14,9 +14,10 @@
 
 <script>
 	if (window.location.search=="?logout") {
-		localStorage.removeItem("token-qcs.shsbs.xyz/api")
+		window.localStorage.removeItem("token-qcs.shsbs.xyz/api")
 		window.location.search = ""
 	}
+	window.print = window.alert
 	
 	window.onerror = function(message, source, line, col, error) {
 		window.setTimeout(function() {
@@ -145,7 +146,7 @@
 				<scroll-outer><scroll-inner id=$sidebarWatch class='border-list-2'></scroll-inner></scroll-outer>
 			</sidebar-panel>
 			<sidebar-panel id=$sidebarNavPanel>
-				<div class='bar rem1-5'><input id=$searchInput class='item'><button id=$searchButton class='item'>Search</button></div>
+				<div class='flex-row'><input id=$searchInput class='grow'><button id=$searchButton class='item'>Search</button></div>
 				<div id=$searchResults></div>
 				<div id=$sidebarCategories></div>
 			</sidebar-panel>
