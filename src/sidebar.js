@@ -103,7 +103,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 			user_label = "log in"
 		
 		sidebar_tabs = [
-			{name: 'activity', label: "✨", elem: $sidebarActivityPanel},
+			{name: 'activity', label: "✨", elem: $sidebarActivityPanel, accesskey: 'a'},
 			//{label: "W", elem: $sidebarWatchPanel},
 			
 			{name: 'search', label: "🔍", elem: $sidebarNavPanel, onswitch: ()=>{

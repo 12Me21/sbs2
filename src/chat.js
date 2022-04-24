@@ -5,7 +5,7 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 		this.constructor.rooms[id] = this
 		
 		this.id = id
-		this.status = "active"
+		this.set_status("active")
 		this.userlist = []
 		
 		if (id == 0) {
@@ -115,7 +115,10 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 		
 		Object.seal(this)
 	}
-	
+	set_status(s) {
+		this.status = s
+		ChatRoom.statuses[this.id] = s
+	}
 	limit_messages() {
 		if (this.total_messages <= this.max_messages)
 			return
@@ -254,6 +257,7 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 	rooms: {},
 	global: null,
 	currentRoom: null,
+	statuses: {},
 	
 	/* static */ 
 	listening_rooms() {
@@ -265,10 +269,14 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 	
 	/* static */
 	get_statuses() {
-		let status = {}
-		for (let id in this.rooms)
-			status[id] = this.rooms[id].status
-		return status
+		for (let id in this.statuses)
+			this.statuses[id] = null
+		return this.statuses
+	},
+	flush_statuses() {
+		for (let id in this.statuses)
+			//if (this.statuses[id]==null)
+			delete this.statuses[id]
 	},
 	
 	/* static */
@@ -288,6 +296,8 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 			this.currentRoom = null
 		if (this.rooms[room.id] == room)
 			delete this.rooms[room.id]
+		if (room.status!=undefined)
+			this.statuses[room.id] = null
 		//ChatRoom.setViewing(Object.keys(ChatRoom.rooms))
 	},
 	

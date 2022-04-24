@@ -212,8 +212,9 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 		View.flag('viewReady', true)
 		View.flag('mobileSidebar', false) //bad (should be function on Sidebar)
 		
-		let s = ChatRoom.get_statuses()
-		Lp.set_status(s, ()=>{})
+		Lp.set_status(ChatRoom.statuses, ({x})=>{
+			ChatRoom.flush_statuses()
+		})
 		
 		if (first) {
 			console.log("☀️ First page rendered!")
