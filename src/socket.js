@@ -16,6 +16,18 @@ let Lp = {
 	last_id: "",
 	dead: false,
 	expected_close: false,
+	statuses: {},
+	status_queue: {},
+	set_status(id, s) {
+		this.statuses[id] = s
+		this.status_queue[id] = s
+	},
+	flush_statuses(callback) {
+		this.request({type:'setuserstatus', data:this.status_queue}, ({x})=>{
+			this.status_queue = {}
+			callback()
+		})
+	},
 /*		;['online','offline','focus','blur'].forEach(x=>{
 			window.addEventListener('online', e=>
 		})*/
@@ -31,6 +43,8 @@ let Lp = {
 		
 		this.websocket.onopen = (e)=>{
 			console.log("🌄 websocket open")
+			Object.assign(this.status_queue, this.statuses)
+			this.flush_statuses(()=>{})
 			for (let i in this.handlers)
 				this.send(this.handlers[i].request)
 			this.ready = true
@@ -83,10 +97,6 @@ let Lp = {
 	},
 	userlist(callback) {
 		return this.request({type:'userlist'}, callback)
-	},
-	
-	set_status(stati, callback) {
-		return this.request({type:'setuserstatus', data:stati}, callback)
 	},
 	
 	cancel({id}) {
