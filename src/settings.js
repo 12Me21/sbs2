@@ -64,7 +64,7 @@ for this to work,, we need:
 		chat_markup: {
 			name: "Chat Markup Language",
 			type: 'select',
-			options: ['12y','bbcode','html'],
+			options: ['12y','12y2','plaintext'],
 		},
 		scroller_anim_type: {
 			name: "scroll animation method",
