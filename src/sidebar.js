@@ -89,7 +89,11 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 				})
 			}
 		}
-		$file_url.onfocus = function() { $file_url.select() }
+		$file_url.onfocus = function() {
+			window.setTimeout(()=>{
+				$file_url.select()
+			},0)
+		}
 		scroller = new Scroller($sidebarScroller.parentNode, $sidebarScroller)
 		// todo: maybe a global ESC handler?
 		/*document.addEventListener('keydown', function(e) {
