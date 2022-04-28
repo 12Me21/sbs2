@@ -386,8 +386,7 @@ message-contents {
 	min-height: 1.5rem; /* this is so the message controls always have somewhere to be shown */
 	margin-block: 0.1rem;
 	/* do we need all these */
-	overflow-y: hidden; /* i think this one is for compat? */
-	overflow-y: clip;
+	overflow-y: hidden;
 	background: var(--mainbg);
 	
 	contain: none; /* because of overlapping with avatar */
@@ -854,4 +853,10 @@ activity-users {
 
 .🍂 [data-big] {
 	max-height: 75vh;
+}
+
+.🍂 {
+	line-height: 1.2;
+	overflow-y: hidden;
+	overflow-x: auto;
 }

@@ -32,10 +32,16 @@
 }
 /* monospaced font */
 /* I loaded/saved this with fontforge and the filesize reduced from 105k to 63k... not sure why (see: old/cm2.woff2) */
-/* update: I think it's because of the ligature glyphs? or not... seems to just get smaller when i re-encode it, regardless... so i'm afraid there's data being lost */
 @font-face{
 	font-family: 'cascadia code';
 	src: url(cascadia-mono.woff2) format('woff2');
 	font-weight: normal;
 	font-style: normal;
 }/* CascadiaCode.woff2 */
+
+/*@font-face{
+	font-family: twemoji;
+	/* todo: look into font-display, unicode-range
+	font-weight: 100 900;
+	src: url(twemoji.woff2) format('woff2');
+}*/
