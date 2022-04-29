@@ -1,56 +1,56 @@
-.🍂 pre {
+.Markup pre {
 	background-color: #000;
 	color: #EEE;
 }
-.🍂 pre * {
+.Markup pre * {
 	background-color: transparent;
 }
-.🍂 pre .name {
+.Markup pre .name {
 	color: #7FF5EF;
 }
-.🍂 pre .string {
+.Markup pre .string {
 	color: #59EE79;
 }
-.🍂 pre .number {
+.Markup pre .number {
 	color: #f359ab;
 }
-.🍂 pre .keyword {
+.Markup pre .keyword {
 	font-weight: bold;
 	color: #2494f0;
 }
-.🍂 pre .comment {
+.Markup pre .comment {
 	color: #a1f198;
 }
-.🍂 pre .variable {
+.Markup pre .variable {
 	color: #fbf4cb;
 }
-.🍂 pre .function {
+.Markup pre .function {
 	color: #8d7ff5;
 }
-.🍂 pre .statement {
+.Markup pre .statement {
 	color: #7ff5ef;
 }
-.🍂 pre .backslash {
+.Markup pre .backslash {
 	color: #777;
 }
-.🍂 pre .operator {
+.Markup pre .operator {
 	color: #EEE;
 }
-.🍂 pre .equals {
+.Markup pre .equals {
 	color: #EEE;
 }
 
-.🍂 pre .label {
+.Markup pre .label {
 	color: #f4963e;
 }
 
-.🍂 pre .word-operator {
+.Markup pre .word-operator {
 	color: #2494f0;
 }
-.🍂 pre .to-step {
+.Markup pre .to-step {
 	color: #2494f0;
 }
-.🍂 pre .constant {
+.Markup pre .constant {
 	color: #aeb5c2;
 }
 

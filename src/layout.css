@@ -7,8 +7,8 @@ html {
 	-webkit-text-size-adjust: none; /* this fixes an ios safari bug where some text is "stuck" at larger sizes after rotating the screen */
 }
 
-:not(.🍂 *) {
-	vertical-align: top; /* if this isn't `top`, the .bar system's inline elements will oveflow */
+:not(.Markup *) {
+	vertical-align: top; /* if this isn't `top`, the .bar system's inline elements will overflow */
 	/* the real solution here is to use flex instead. but ehh */
 }
 

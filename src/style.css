@@ -84,7 +84,7 @@ time {
 	vertical-align: baseline;
 }
 
-#\$categoryDescription.🍂 { /* make sure this is before most things */
+#\$categoryDescription.Markup { /* make sure this is before most things */
 	padding: .75rem 1rem;
 }
 
@@ -844,18 +844,18 @@ activity-users {
 	min-height: 0; /* fixes weird ios safari bug with sidebar bottom panel expanding forever. maybe we need to apply this to all .grow elements? */
 }
 
-.🍂 img, .🍂 video {
+.Markup img, .Markup video {
 	min-height: var(--image-height);
 	height: unset !important; /* ugh hack..*/
 	-webkit-transition: max-height 0.25s ease;
 	transition: max-height 0.25s ease;
 }
 
-.🍂 [data-big] {
+.Markup [data-big] {
 	max-height: 75vh;
 }
 
-.🍂 {
+.Markup {
 	line-height: 1.2;
 	overflow-y: hidden;
 	overflow-x: auto;
