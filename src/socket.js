@@ -149,6 +149,9 @@ let Lp = {
 			this.last_id = data
 		} break;case 'live': {
 			this.last_id = data.lastId
+			// activity parent object field
+			let a = data.objects.activity_event
+			if (a && a.parent) a.parent.Type = 'content'
 			Entity.do_listmapmap(data.objects)
 			this.process_live(data.events, data.objects)
 		} break;case 'userlistupdate': {

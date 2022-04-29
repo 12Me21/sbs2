@@ -132,20 +132,23 @@ let Entity = (()=>{"use strict"; return singleton({
 	},
 	
 	do_listmapmap(listmapmap) {
-		Object.for(listmapmap, (listmap) => this.do_listmap(listmap))
+		for (let name in listmapmap)
+			this.do_listmap(listmapmap[name])
 		return listmapmap
 	},
 	
 	do_listmap(listmap) {
-		Object.for(listmap, (list, name) => this.do_list(list, name))
+		for (let name in listmap)
+			this.do_list(listmap[name], name)
 		if (listmap.message && listmap.user)
 			this.link_comments(listmap)
 		return listmap
 	},
 	
 	do_list(list, name) {
-		let type = this.key_type(name)
-		let cons = TYPES[type]
+		// todo: better system for mapping types
+		let type = list.Type || this.key_type(name)
+		let cons = TYPES[type] || (x=>x) // fallback (bad)
 		for (let entity of list)
 			list[~entity.id] = cons(entity)
 		// using ~ on the id will map 0 → -1, 1 → -2, 2 → -3 etc.
