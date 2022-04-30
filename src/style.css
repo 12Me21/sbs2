@@ -840,10 +840,6 @@ activity-users {
 	padding-left: 0.2rem;
 }
 
-#\$sidebarBottom {
-	min-height: 0; /* fixes weird ios safari bug with sidebar bottom panel expanding forever. maybe we need to apply this to all .grow elements? */
-}
-
 .Markup img, .Markup video {
 	min-height: var(--image-height);
 	height: unset !important; /* ugh hack..*/

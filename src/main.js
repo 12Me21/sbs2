@@ -1,5 +1,6 @@
 immediate()
 
+// this could be handled by a <script defer>
 if (document.readyState == 'loading')
 	document.addEventListener('DOMContentLoaded', dom_ready)
 else

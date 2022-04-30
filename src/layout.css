@@ -73,11 +73,12 @@ html, body {
 .flex > *, .flex-row > * {
 	flex-shrink: 0;
 }
+.flex-row > .grow { min-width: 0; }
+.flex > .grow { min-height: 0; }
 .grow {
 	flex-grow: 1;
 	flex-shrink: 1;
 	flex-basis: 0;
-	min-width: 0;
 }
 .justify-between {
 	justify-content: space-between;
@@ -270,8 +271,21 @@ but, then we can't add a border to the image
 	flex-shrink: 1;
 	flex-basis: 0;
 }
+/* this is messy. we should share code between resize-box and flex.
+maybe have like,
+.Col - normal flex
+.Row - flex row ⿲ ⿰ 🔛 ⟷  ⿳ ⿱ 𑩄 ▢ 𑨚 ▥ 🚦 🁢 🁣 🀰 🀱 🀹 🁫 🚥 ⛿ ⭜ ⬬ ⬭ ⬯ ⬮
+.Col.resize - vert resize  🔺⧏ ⌄⌃ 🮰
+.Row.resize - horiz resize 🚩
+*/
+.resize-box:not(.row) > .grow {
+	min-height: 0;
+}
+.resize-box.row > .grow {
+	min-width: 0;
+}
 .resize-box > .sized {
-	flex-shrink: 1;
+	flex-shrink: 1; /* ? */
 }
 
 .resize-box > resize-handle {
