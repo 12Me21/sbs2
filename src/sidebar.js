@@ -57,20 +57,27 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 				
 				let params = {
 					tryresize: true,
-					name: data.name,
+					name: data.name || "",
+					values: {},
 				}
-				
-				if (data.bucket) {
-					params['values[bucket]'] = data.bucket
-					params.globalPerms = ""
+				let priv = false
+				if (data.bucket!=null) {
+					params.values.bucket = data.bucket || ""
+					priv = true
 				}
 				if (data.quantize)
 					params.quantize = +data.quantize
 				if (data.hash)
 					params.hash = data.hash
+				if (priv)
+					params.globalPerms = ""
+				print(`uploading ${priv?"private":"public"} file...`)
 				
 				new (Req.upload_file(selected_file, params))(file=>{
 					$file_upload.disabled = false
+					
+					if (priv && file.permissions[0])
+						alert("file permissions not set correctly!\nid:"+file.id)
 					
 					selected_file = null
 					

@@ -248,8 +248,22 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 	upload_file(file, params) {
 		let form = new FormData()
 		form.set('file', file)
-		for (let name in params)
-			form.set(name, params[name])
+		function set(name, value) {
+			if (value==="")
+				console.warn(`form[‘${name}’]: empty string will be treated as null`)
+			form.set(name, value)
+		}
+		for (let name in params) {
+			let value = params[name]
+			if (name=='values')
+				for (let name in value)
+					set(`values[${name}]`, value[name])
+			else {
+				if (name=='globalPerms' && value==="")
+					value="."
+				set(name, value)
+			}
+		}
 		return ApiRequest.bind(null, 'File', 'POST', form, {proc: TYPES.content})
 	},
 }
