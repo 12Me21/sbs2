@@ -841,7 +841,7 @@ activity-users {
 }
 
 .Markup img, .Markup video {
-	min-height: var(--image-height);
+	/*min-height: var(--image-height);*/
 	height: unset !important; /* ugh hack..*/
 	-webkit-transition: max-height 0.25s ease;
 	transition: max-height 0.25s ease;
@@ -852,7 +852,7 @@ activity-users {
 }
 
 .Markup {
-	line-height: 1.2;
+	/*line-height: 1.2;*/
 	overflow-y: hidden;
 	overflow-x: auto;
 }
