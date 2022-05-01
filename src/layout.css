@@ -61,20 +61,18 @@ html, body {
 /**********
  ** Flex **
  **********/
-.flex {
-	display: block;
+.Col {
 	display: flex;
 	flex-direction: column;
 }
-.flex-row {
-	display: inline-block;
+.Row {
 	display: flex;
 }
-.flex > *, .flex-row > * {
+.Col > *, .Row > * {
 	flex-shrink: 0;
 }
-.flex-row > .grow { min-width: 0; }
-.flex > .grow { min-height: 0; }
+.Row > .grow { min-width: 0; }
+.Col > .grow { min-height: 0; }
 .grow {
 	flex-grow: 1;
 	flex-shrink: 1;
@@ -256,20 +254,7 @@ but, then we can't add a border to the image
  ** Resize Box **
  ****************/
 .resize-box {
-	display: flex;
-	flex-direction: column;
 	--handle-width: 1.2em;
-}
-.resize-box.row {
-	flex-direction: row;
-}
-.resize-box > * {
-	flex-shrink: 0;
-}
-.resize-box > .grow {
-	flex-grow: 1;
-	flex-shrink: 1;
-	flex-basis: 0;
 }
 /* this is messy. we should share code between resize-box and flex.
 maybe have like,
@@ -278,12 +263,6 @@ maybe have like,
 .Col.resize - vert resize  🔺⧏ ⌄⌃ 🮰
 .Row.resize - horiz resize 🚩
 */
-.resize-box:not(.row) > .grow {
-	min-height: 0;
-}
-.resize-box.row > .grow {
-	min-width: 0;
-}
 .resize-box > .sized {
 	flex-shrink: 1; /* ? */
 }
@@ -301,19 +280,19 @@ maybe have like,
 .resize-box > resize-handle[data-dragging] {
 	cursor: grabbing;
 }
-.resize-box:not(.row) > resize-handle {
+.resize-box.Col > resize-handle {
 	height: var(--handle-width);
 	line-height: var(--handle-width);
 	cursor: ns-resize;
 }
-.resize-box.row > resize-handle {
+.resize-box.Row > resize-handle {
 	width: var(--handle-width);
 	cursor: ew-resize;
 }
-.resize-box:not(.row) > resize-handle::before {
+.resize-box.Col > resize-handle::before {
 	content: "↕︎";
 }
-.resize-box.row > resize-handle::before {
+.resize-box.Row > resize-handle::before {
 	display: block;
 	content: "↔︎";
 	text-align: center;

@@ -78,7 +78,7 @@
 
 </head>
 
-<body class='flex'>
+<body class='Col'>
 
 <!--=======\
 || HEADER ||
@@ -93,7 +93,7 @@
 	<span data-view=page><a class='textItem' id=$pageCommentsLink>[Logs]</a></span>
 </header>
 
-<horizontal-split class='grow resize-box row'>
+<horizontal-split class='grow Row resize-box'>
 	<main class='grow slide-box' id=$main_slides>
 		<!--==============\
 		|| MAIN CONTENTS ||
@@ -114,9 +114,9 @@
 			<div id=$testOut class='pre'></div>
 		</div>
 		
-		<div data-slide=page id=$chatContainer class='flex'>
+		<div data-slide=page id=$chatContainer class='Col'>
 			<div id=$chatPaneBox class='grow slide-box'></div>
-			<div class='inputPane loggedIn flex-row'>
+			<div class='inputPane loggedIn Row'>
 				<button class='showWhenEdit' id=$chatCancelEdit>Cancel Edit</button>
 				<textarea-container class='grow'>
 					<div id=$chatTextareaWidth></div>
@@ -135,7 +135,7 @@
 	
 	<resize-handle id=$horizontalResize class='sidebar-element'></resize-handle>
 	
-	<sidebar-container id=$sidebar class='sized resize-box sidebar-element'>
+	<sidebar-container id=$sidebar class='sized Col resize-box sidebar-element'>
 		<button class='closeSidebar' id=$closeSidebar>Close Sidebar</button>
 		<div class='userlist bar rem1-5' id=$sidebarUserList></div>
 		<!--<span id=$longPollStatus></span>-->
@@ -148,12 +148,12 @@
 				<scroll-outer><scroll-inner id=$sidebarWatch class='border-list-2'></scroll-inner></scroll-outer>
 			</sidebar-panel>
 			<sidebar-panel id=$sidebarNavPanel>
-				<div class='flex-row'><input id=$searchInput class='grow'><button id=$searchButton class='item'>Search</button></div>
+				<div class='Row'><input id=$searchInput class='grow'><button id=$searchButton class='item'>Search</button></div>
 				<div id=$searchResults></div>
 				<div id=$sidebarCategories></div>
 			</sidebar-panel>
-			<sidebar-panel id=$sidebarFilePanel class='flex'>
-				<div class='rem1-5 flex-row justify-between'>
+			<sidebar-panel id=$sidebarFilePanel class='Col'>
+				<div class='rem1-5 Row justify-between'>
 					<input type=file accept="image/*" id=$file_browse class='grow item'>
 					<button id=$file_cancel class='item'>Cancel</button>
 					<input readonly id=$file_url class='grow'>
