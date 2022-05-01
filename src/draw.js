@@ -23,12 +23,12 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return e
 	}.bind([𐀶`
 <span class="item icon iconBg" role="img" alt=""></span>
-<span class="textItem pre entity-title">...</span>
+<span class="textItem entity-title" 🪧>...</span>
 `,
 𐀶`
 <a class='bar rem1-5 linkBar'>
 <span class="item icon iconBg" role="img" alt=""></span>
-<span class="textItem pre entity-title">...</span>
+<span class="textItem entity-title" 🪧>...</span>
 </a>
 `
 ]),
@@ -48,7 +48,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		let e = this()
 		e.textContent = text
 		return e
-	}.bind(𐀶`<span class='textItem pre'>`),
+	}.bind(𐀶`<span class='textItem' 🪧>`),
 	
 	//📥 thing‹???›
 	//📤 ‹ParentNode›
@@ -74,7 +74,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			e.append(text)
 			return e
 		}
-	}.bind({message:𐀶`<div class='debugMessage pre'>`, stack:𐀶`<pre>`}),
+	}.bind({message:𐀶`<div class='debugMessage' 🪧>`, stack:𐀶`<pre>`}),
 	
 	//📥 user‹User›
 	//📤 ‹ParentNode›
@@ -120,7 +120,8 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 				let link = E`a`
 				link.href = item[0]
 				link.textContent = item[1]
-				link.className += ' textItem pre entity-title'
+				link.className += ' textItem entity-title'
+				link.setAttribute('🪧', "")
 				element.append(link)
 			}
 			if (i < path.length-1) {
@@ -175,7 +176,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		} else {
 			username = author.nickname
 			let nickname = this.nickname()
-			nickname.querySelector('.pre').textContent = author.realname
+			nickname.querySelector('[🪧]').textContent = author.realname
 			name.append(nickname)
 		}
 		name.firstChild.textContent = username
@@ -189,12 +190,12 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		block: 𐀶`
 <message-block>
 	<message-header>
-		<message-username><span class='pre username'></span>:</message-username>
+		<message-username><span class='username' 🪧></span>:</message-username>
 		<time></time>
 	</message-header>
 	<message-contents></message-contents>
 </message-block>`,
-		nickname: 𐀶` <span class='real-name-label'>(<span class='pre'></span>)</span>`,
+		nickname: 𐀶` <span class='real-name-label'>(<span 🪧></span>)</span>`,
 		avatar: 𐀶`<img class='avatar' width=100 height=100 alt="">`,
 		big_avatar: 𐀶`<div class='bigAvatar'></div>`,
 	}),
@@ -644,7 +645,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		d.append(comment.text.replace(/\n/g, "  "))
 		//entity_title_link(comment.createUser),
 		return d
-	}.bind(𐀶`<div class='bar rem1-5 sidebarComment ellipsis'><a><img class='item icon avatar' width=100 height=100><span class='textItem pre entity-title'></span></a>: </div>`),
+	}.bind(𐀶`<div class='bar rem1-5 sidebarComment ellipsis'><a><img class='item icon avatar' width=100 height=100><span class='textItem entity-title' 🪧></span></a>: </div>`),
 	
 	//todo:
 	sidebarPageLabel(content) {

@@ -78,7 +78,7 @@
 
 </head>
 
-<body class='Col'>
+<body 🁢>
 
 <!--=======\
 || HEADER ||
@@ -93,12 +93,12 @@
 	<span data-view=page><a class='textItem' id=$pageCommentsLink>[Logs]</a></span>
 </header>
 
-<horizontal-split class='grow Row resize-box'>
-	<main class='grow slide-box' id=$main_slides>
+<horizontal-split 𖧠 class='resize-box' 🀰>
+	<main 𖧠 id=$main_slides 📺>
 		<!--==============\
 		|| MAIN CONTENTS ||
 		\===========--==-->
-		<div data-slide=error class='pre errorPage' id=$errorMessage></div>
+		<div data-slide=error class='errorPage' id=$errorMessage 🪧></div>
 		
 		<div data-slide=comments>
 			<div id=$commentSearch class='nav'>
@@ -111,14 +111,14 @@
 		<div data-slide=test>
 			<textarea id=$testTextarea></textarea><br>
 			<button id=$testButton>Run</button><br>
-			<div id=$testOut class='pre'></div>
+			<div id=$testOut 🪧></div>
 		</div>
 		
-		<div data-slide=page id=$chatContainer class='Col'>
-			<div id=$chatPaneBox class='grow slide-box'></div>
-			<div class='inputPane loggedIn Row'>
+		<div data-slide=page id=$chatContainer 🁢>
+			<div 𖧠 id=$chatPaneBox 📺></div>
+			<div class='inputPane loggedIn' 🀰>
 				<button class='showWhenEdit' id=$chatCancelEdit>Cancel Edit</button>
-				<textarea-container class='grow'>
+				<textarea-container 𖧠>
 					<div id=$chatTextareaWidth></div>
 					<textarea class='chatTextarea' id=$chatTextarea accesskey="z"></textarea>
 				</textarea-container>
@@ -135,12 +135,12 @@
 	
 	<resize-handle id=$horizontalResize class='sidebar-element'></resize-handle>
 	
-	<sidebar-container id=$sidebar class='sized Col resize-box sidebar-element'>
+	<sidebar-container id=$sidebar class='sized resize-box sidebar-element' 🁢>
 		<button class='closeSidebar' id=$closeSidebar>Close Sidebar</button>
 		<div class='userlist bar rem1-5' id=$sidebarUserList></div>
 		<!--<span id=$longPollStatus></span>-->
 		<tab-list id=$sidebar_tabs role="tablist" aria-label="sidebar tab"></tab-list>
-		<div id=$sidebarTop class='sized slide-box'>
+		<div id=$sidebarTop class='sized' 📺>
 			<sidebar-panel id=$sidebarActivityPanel>
 				<scroll-outer id=$sidebarActivity></scroll-outer>
 			</sidebar-panel>
@@ -148,20 +148,20 @@
 				<scroll-outer><scroll-inner id=$sidebarWatch class='border-list-2'></scroll-inner></scroll-outer>
 			</sidebar-panel>
 			<sidebar-panel id=$sidebarNavPanel>
-				<div class='Row'><input id=$searchInput class='grow'><button id=$searchButton class='item'>Search</button></div>
+				<div 🀰><input 𖧠 id=$searchInput><button id=$searchButton class='item'>Search</button></div>
 				<div id=$searchResults></div>
 				<div id=$sidebarCategories></div>
 			</sidebar-panel>
-			<sidebar-panel id=$sidebarFilePanel class='Col'>
-				<div class='rem1-5 Row justify-between'>
-					<input type=file accept="image/*" id=$file_browse class='grow item'>
+			<sidebar-panel id=$sidebarFilePanel 🁢>
+				<div class='rem1-5 justify-between' 🀰>
+					<input 𖧠 type=file accept="image/*" id=$file_browse class='item'>
 					<button id=$file_cancel class='item'>Cancel</button>
-					<input readonly id=$file_url class='grow'>
+					<input 𖧠 readonly id=$file_url>
 					<button id=$file_done class='item'>Done</button>
 					<button id=$file_upload class='item'>Upload Image</button>
 				</div>
 				<br id=$file_upload_form>
-				<div class='image-box grow' style="min-height: 3rem;"><img id=$file_image></div>
+				<div 𖧠 class='image-box' style="min-height: 3rem;"><img id=$file_image></div>
 			</sidebar-panel>
 			<sidebar-panel id=$sidebarUserPanel>
 				<div class='registerBox'>
@@ -194,13 +194,13 @@
 							<input placeholder="New Email" name=email type=email><input placeholder="Confirm New Email" name=email2 type=email><br>
 							<button>Save</button>
 						</form>
-						<div id=$userSettingsError class='pre'></div>
+						<div id=$userSettingsError 🪧></div>
 					</div>
 				</div>
 			</sidebar-panel>
 		</div>
 		<resize-handle id=$sidebarResize></resize-handle>
-		<div id=$sidebarBottom class='grow'>
+		<div 𖧠 id=$sidebarBottom>
 			<scroll-outer><scroll-inner id=$sidebarScroller class='border-list'></scroll-inner></scroll-outer>
 		</div>
 	</sidebar-container>

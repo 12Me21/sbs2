@@ -61,19 +61,19 @@ html, body {
 /**********
  ** Flex **
  **********/
-.Col {
+[🁢] {
 	display: flex;
 	flex-direction: column;
 }
-.Row {
+[🀰] {
 	display: flex;
 }
-.Col > *, .Row > * {
+[🁢] > *, [🀰] > * {
 	flex-shrink: 0;
 }
-.Row > .grow { min-width: 0; }
-.Col > .grow { min-height: 0; }
-.grow {
+[🀰] > [𖧠] { min-width: 0; }
+[🁢] > [𖧠] { min-height: 0; }
+[𖧠] {
 	flex-grow: 1;
 	flex-shrink: 1;
 	flex-basis: 0;
@@ -84,7 +84,7 @@ html, body {
 
 /*********/
 /* all elements with user content, must be tied up */
-.pre {
+[🪧] {
 	white-space: pre-wrap;
 	unicode-bidi: embed;
 }
@@ -233,18 +233,18 @@ but, then we can't add a border to the image
 /****************
  ** Slides Box **
  ****************/
-.slide-box {
+[📺] { /* idk about tv... channels */
 	display: block;
 	position: relative;
 	overflow: hidden;
 }
-.slide-box > * {
+[📺] > * {
 	position: absolute;
 	width: 100%;
 	height: 100%;
 	overflow: auto;
 }
-.slide-box > :not(.shown) {
+[📺] > :not(.shown) {
 	visibility: hidden;
 	content-visibility: hidden; /* not widely supported yet */
 	/* we use visibility:hidden instead of display:none so the element keeps its size/layout when hidden */
@@ -280,19 +280,19 @@ maybe have like,
 .resize-box > resize-handle[data-dragging] {
 	cursor: grabbing;
 }
-.resize-box.Col > resize-handle {
+.resize-box[🁢] > resize-handle {
 	height: var(--handle-width);
 	line-height: var(--handle-width);
 	cursor: ns-resize;
 }
-.resize-box.Row > resize-handle {
+.resize-box[🀰] > resize-handle {
 	width: var(--handle-width);
 	cursor: ew-resize;
 }
-.resize-box.Col > resize-handle::before {
+.resize-box[🁢] > resize-handle::before {
 	content: "↕︎";
 }
-.resize-box.Row > resize-handle::before {
+.resize-box[🀰] > resize-handle::before {
 	display: block;
 	content: "↔︎";
 	text-align: center;
@@ -372,14 +372,14 @@ td, th {  /* border renders outside */
 
 /* sized containers */
 .resize-box,
-.slide-box, .slide-box > *,
+[📺], [📺] > *,
 scroll-outer,
 sidebar-panel {
 	contain: strict;
 	background: var(--mainbg);
 }
 /* this element isn't sized based on contents */
-.resize-box > .grow {
+[𖧠] {
 	contain: strict;
 }
 
