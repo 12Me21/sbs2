@@ -16,6 +16,10 @@ let Lp = {
 	last_id: "",
 	dead: false,
 	expected_close: false,
+	state_change(state) {
+		// todo: here, we should graphically indicate the state somehow
+		// as well as when pings are sent
+	},
 	statuses: {},
 	status_queue: {},
 	set_status(id, s) {
@@ -40,8 +44,15 @@ let Lp = {
 			throw new Error("Tried to open multiple websockets")
 		//`wss://${"w".repeat(10000)}:password@${Req.server}/live/ws?lastId=${this.last_id}&token=${encodeURIComponent(Req.auth)}`
 		this.websocket = new WebSocket(`wss://${Req.server}/live/ws?lastId=${this.last_id}&token=${encodeURIComponent(Req.auth)}`/*, 'json'*/)
+		this.state_change('connecting')
+		
+		this.websocket.onerror = (e)=>{
+			e.preventDefault()
+			console.warn('ws error', e)
+		}
 		
 		this.websocket.onopen = (e)=>{
+			this.state_change('open')
 			console.log("🌄 websocket open")
 			Object.assign(this.status_queue, this.statuses)
 			this.flush_statuses(()=>{})
@@ -51,19 +62,19 @@ let Lp = {
 		}
 		
 		this.websocket.onclose = (event)=>{
+			this.state_change('closed')
 			this.ready = false
-			if (this.expected_close) {
-				this.expected_close = false
-				this.start_websocket()
-				return
+			if (!this.expected_close) {
+				if (this.dead)
+					return
+				let {code, reason, wasClean} = event
+				console.warn("websocket closed", code, reason, wasClean)
+				let cont = window.confirm('websocket died,,'+reason+"\n[OK] - start")
+				if (!cont)
+					return
 			}
-			if (this.dead)
-				return
-			let {code, reason, wasClean} = event
-			console.warn("websocket closed", code, reason, wasClean)
-			let cont = window.confirm('websocket died,,'+reason+"\n[OK] - start")
-			if (cont)
-				this.start_websocket()
+			this.expected_close = false
+			this.start_websocket()
 		}
 		
 		this.websocket.onmessage = (event)=>{
