@@ -2,8 +2,8 @@
 
 html {
 	background: #FEE; /* for debug */
-	color: var(--maincolor);
-	font-family: roboto, sans-serif;
+	color: var(--T-col);
+	font-family: var(--T-font);
 	/*line-height: 1.2;*/
 	/* disable ligatures like fi ffi etc. */
 	/* (doesn't affect real languages or emoji)*/
@@ -13,7 +13,7 @@ html {
 }
 
 body {
-	background: var(--mainbgcolor);
+	background: var(--T-bg);
 }
 
 /***********
@@ -63,8 +63,8 @@ textarea {
 	box-shadow: 0.1rem 0.2rem 0.3rem -0.2rem rgba(13,13,13,0.5);
 	font-family: roboto, sans-serif;
 	font-size: 0.8em;
-	color: var(--maincolor);
-	background-color: var(--mainbg);
+	color: var(--T-col);
+	background: var(--T-bg);
 	white-space: break-spaces; /* optional */
 }
 
@@ -103,7 +103,7 @@ button {
 	line-height: normal !important;
 	font-size: 0.8em;
 	cursor: pointer;
-	font-family: roboto, sans-serif;
+	font-family: var(--T-font);
 	
 	border: 1px solid black;
 	border-radius: 0px;
@@ -158,12 +158,12 @@ html.f-error .loadBG {
 }
 
 .bottomBorder {
-	border-bottom: 1px solid var(--border-color);
+	border-bottom: 1px solid var(--T-border-col);
 }
 
 .border-list > *:not(:last-child),
 .border-list-2 > * {
-	border-bottom: 1px solid var(--border-color);
+	border-bottom: 1px solid var(--T-border-col);
 }
 
 /**********
@@ -264,7 +264,7 @@ html:not(.f-canEdit) .canEdit {
 }
 
 sidebar-container {
-	background: var(--mainbg);
+	background: var(--T-bg);
 	width: 30vw; /* just a default */
 	min-width: 10vw;
 	z-index: 20;
@@ -292,12 +292,12 @@ sidebar-container {
  *******************/
 .linkBar {
 	display: block;
-	background: var(--mainbg);
+	background: var(--T-bg);
 	
 	padding: 0.2rem;
 	padding-top: 0.15rem;
 	
-	border-bottom: 1px solid var(--border-color);
+	border-bottom: 1px solid var(--T-border-col);
 	border-top: 1px solid white;
 }
 .linkBar:focus {
@@ -321,7 +321,7 @@ sidebar-container {
 chat-pane .userlist {
 	box-shadow: var(--normal-shadow);
 	z-index: 4;
-	border-bottom: 1px solid var(--border-color);
+	border-bottom: 1px solid var(--T-border-col);
 }
 .userlist {
 	background: var(--bar-bg);
@@ -387,7 +387,7 @@ message-contents {
 	margin-block: 0.1rem;
 	/* do we need all these */
 	overflow-y: hidden;
-	background: var(--mainbg);
+	background: var(--T-bg);
 	
 	contain: none; /* because of overlapping with avatar */
 }
@@ -408,7 +408,7 @@ message-part {
 	min-height: 1rem; /* this is so the message controls always have somewhere to be shown */
 	padding-block: 0.1rem;
 	padding-left: calc(var(--chat-gutter) + 0.2rem);
-	--mainbg: transparent;
+	--T-bg: transparent;
 }
 message-part.edited {
 	/* todo: fix this styling */
@@ -621,7 +621,7 @@ button.voteButton[data-selected][data-vote="o"] {
 .pageInfoPane {
 	padding-left: 0.3rem;
 	padding-right: 0.3rem;
-	border-bottom: 1px solid var(--border-color);
+	border-bottom: 1px solid var(--T-border-col);
 	background: var(--bar-bg);
 	box-shadow: var(--normal-shadow);
 }
@@ -681,14 +681,14 @@ input, output, select {
 	border-style: solid;
 	border-color: var(--input-border-color);
 	border-radius: 1px;
-	background-color: var(--mainbg);
+	background-color: var(--T-bg);
 }
 input, select { /* this is old & probably not needed */
 	min-width: 0;
 	max-width: 100%;
 }
 input, select, button, input::placeholder {
-	color: var(--maincolor);
+	color: var(--T-col);
 }
 
 input::placeholder {
@@ -729,7 +729,7 @@ input:invalid {
 textarea-container {
 	border: 2px solid #00C8B4;
 	padding: 5px;
-	background: var(--mainbg);
+	background: var(--T-bg);
 }
 textarea-container > textarea {
 	height: 2.5em;
@@ -815,12 +815,12 @@ textarea-container, textarea-container > textarea {
 
 .activity-page {
 	display: block;
-	border-bottom: 1px solid var(--border-color);
+	border-bottom: 1px solid var(--T-border-col);
 	border-top: 1px solid white;
 	padding-left: 0.2rem;
 	padding-top: 1px;
 	padding-bottom: 1px;
-	background: var(--mainbg);
+	background: var(--T-bg);
 }
 
 .activity-page-bottom {

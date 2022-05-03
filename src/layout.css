@@ -376,7 +376,7 @@ td, th {  /* border renders outside */
 scroll-outer,
 sidebar-panel {
 	contain: strict;
-	background: var(--mainbg);
+	background: var(--T-bg);
 }
 /* this element isn't sized based on contents */
 [𖧠] {

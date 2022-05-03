@@ -1,22 +1,21 @@
-/*
-todo: look into https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#system_colors
-
-
-*/
+:root {
+	--T-font: roboto, sans-serif;
+}
 
 html {
 	color-scheme: light;
 	/* text colors (black) */
-	--maincolor: black;
+	--T-col: black;
 	--linkcolor: #045;
 	--link-hover-color: rgb(0,150,136);
-	--link-bg-color: #E5E5FF;
+	--T-link-bg: #E5E5FF;
 	--time-color: #333;
-	--border-color: gray;
+	--T-border-col: gray;
 	--chat-dim-color: #666;
 	--image-border-color: silver;
 	/* background colors (white) */
-	--mainbg: white;
+	--T-bg: white;
+	--T-box-bg: #F7F7F7;
 	--avatar-bg: white;
 	--button-hover-color: #59E;
 	--message-hover-bg: #DDD;
@@ -26,14 +25,13 @@ html {
 	--button-active-bg: linear-gradient(#DDD, #EEE);
 	--button-selected-bg: linear-gradient(#888, #AAA);
 	--error-bg: pink;
-	--bgred: #FCC;
-	--bgorange: #FEA;
-	--bgyellow: #FF8;
-	--bggreen: #CFC;
-	--bgblue: #CEF;
-	--bgpurple: #ECF;
-	--bggray: #DDD;
-	--spoiler-bg: #F7F7F7;
+	--T-red-bg: #FCC;
+	--T-orange-bg: #FEA;
+	--T-yellow-bg: #FF8;
+	--T-green-bg: #CFC;
+	--T-blue-bg: #CEF;
+	--T-purple-bg: #ECF;
+	--T-gray-bg: #DDD;
 	--edit-textarea-bg: #FFFF80;
 	--normal-shadow: 0 2px 3px rgba(0,0,0,0.3);
 	/* inverted text colors (white) */
@@ -50,35 +48,35 @@ html {
 
 html[data-theme="dark"], html.f-dark:not([data-theme]) {
 	color-scheme: dark;
-	--maincolor: white;
+	--T-col: white;
 	--linkcolor: #9CE;
 	--link-hover-color: #5CE;
-	--link-bg-color: #156;
+	--T-link-bg: #156;
 	--time-color: #EEE;
-	--border-color: black;
+	--T-border-col: black;
 	--chat-dim-color: #666;
 	--image-border-color: gray;
 	
-	--mainbg: #292929;
+	--T-bg: #292929;
+	--T-box-bg: #444;
 	--avatar-bg: gray;
 	--button-hover-color: #59E;
 	--bar-bg: #555;
-	--spoiler-bg: #444;
 	--button-bg: linear-gradient(#048, #035);
 	--button-active-bg: linear-gradient(#047, #047);
 	--button-selected-bg: linear-gradient(#048, #07A);
 	--error-bg: maroon;
-	--bgred: #6A2C2C;
-	--bgblue: #2C4A6A;
-	--bggreen: #2C6A2C;
-	--bgyellow: #6A6A2C;
-	--bgorange: #6A4A2C;
-	--bggray: #383838;
-	--bgpurple: #592C6A;
+	--T-red-bg: #6A2C2C;
+	--T-blue-bg: #2C4A6A;
+	--T-green-bg: #2C6A2C;
+	--T-yellow-bg: #6A6A2C;
+	--T-orange-bg: #6A4A2C;
+	--T-gray-bg: #383838;
+	--T-purple-bg: #592C6A;
 	--edit-textarea-bg: #750;
 	--normal-shadow: 0 2px 3px rgba(0,0,0,0.3);
 	/* in dark theme, the inverted colors are just normal dark */
-	--databartxtcolor: var(--maincolor);
+	--databartxtcolor: var(--T-col);
 	--link-invert-color: var(--linkcolor);
 	--link-invert-hover-color: var(--link-hover-color);
 	
