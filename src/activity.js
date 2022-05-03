@@ -64,7 +64,7 @@ ActivityItem.HTML = 𐀶`
 	<div class='bar rem1-5 ellipsis'></div>
 	<div class='bar rem1-5 activity-page-bottom'>
 		<time class='time-ago ellipsis'></time>
-		<activity-users class='grow'>
+		<activity-users class='𖧠'>
 `
 
 // make a class for activity list
