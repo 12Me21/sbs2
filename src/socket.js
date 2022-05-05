@@ -1,3 +1,6 @@
+// todo: if we're disconnected for a long time, we might lose sync
+// so, at that point there's really no way to recover (also we need to re-request our user object in case it updated)
+
 // only call this through SELFDESTRUCT
 class SocketRequestError extends TypeError {
 	constructor(resp, extra) {

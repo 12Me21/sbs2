@@ -305,7 +305,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 			if (src == null)
 				return
 			// remove the normal favicons
-			for (let e of document.head.querySelectorAll("link[data-favicon]"))
+			for (let e of document.head.querySelectorAll('link[rel~="icon"]'))
 				e.remove()
 			// add our new one
 			favicon_element = document.createElement('link')
