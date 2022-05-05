@@ -38,7 +38,11 @@ let Lp = {
 		/*window.addEventListener('online', e=>{
 			this.dead = true
 		})*/
-		//		this.processed_listeners = {}
+	//		this.processed_listeners = {}
+	stop() {
+		if (this.websocket)
+			this.websocket.close()
+	},
 	start_websocket() {
 		if (this.websocket && this.websocket.readyState <= WebSocket.OPEN)
 			throw new Error("Tried to open multiple websockets")
@@ -47,7 +51,6 @@ let Lp = {
 		this.state_change('connecting')
 		
 		this.websocket.onerror = (e)=>{
-			e.preventDefault()
 			console.warn('ws error', e)
 		}
 		
@@ -192,7 +195,10 @@ let Lp = {
 				comments.push(message)
 			} break; case 'user_event': {
 				let user = maplist.user[~refId]
+				// messy...
 				ChatRoom.update_avatar(user)
+				if (refId==Req.uid)
+					View.update_my_user(user)
 			}}
 		}
 		if (comments.length) {

@@ -32,8 +32,9 @@ class InvalidRequestError extends TypeError {
 }
 InvalidRequestError.prototype.name = "InvalidRequestError"
 
+// this class seemed clever at the time (and IS) but idk it's kinda gross...
 class ApiRequest extends XMLHttpRequest {
-	constructor(url, method, body, etc, ok=console.info, fail) {
+	constructor(url, method, body, proc, ok=console.info, fail) {
 		super()
 		super.onreadystatechange = this.onreadystatechange
 		
@@ -41,7 +42,7 @@ class ApiRequest extends XMLHttpRequest {
 		this.method = method
 		this.body = body
 		
-		this.proc = etc.proc
+		this.proc = proc
 		
 		this.ok = ok
 		this.onerror = fail
@@ -55,7 +56,7 @@ class ApiRequest extends XMLHttpRequest {
 	}
 	go() {
 		this.open(this.method, `https://${Req.server}/${this.url}`)
-		this.setRequestHeader('CACHE-CONTROL', "L, ratio, no-store, no-cache, must-revalidate")
+		this.setRequestHeader('CACHE-CONTROL', "L, ratio, no-store, no-cache, must-revalidate") // we probably only need no-store here
 		if (Req.auth)
 			this.setRequestHeader('AUTHORIZATION', "Bearer "+Req.auth)
 		this.send(this.body)
@@ -110,7 +111,7 @@ class ApiRequest extends XMLHttpRequest {
 				return this.retry((after+0.5)*1000, `rate limited ${after}sec`)
 			// === Permissions ===
 			case 403:
-				return this.fail('permission', resp)
+				return this.fail('permission', resp) // todo: can these be InvalidRequestError as well?
 			case 418:
 				return this.fail('ban', resp)
 			case 401:
@@ -143,31 +144,15 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 	
 	locked: false, // for testing
 	
-	query_string(obj) {
-		if (!obj)
-			return ""
-		let params = []
-		for (let [key, val] of Object.entries(obj)) {
-			if (val == undefined)
-				continue
-			let item = window.encodeURIComponent(key)+"="
-			// array items are encoded as
-			// ids:[1,2,3] -> ids=1&ids=2&ids=3
-			if (val instanceof Array)
-				for (let x of val)
-					params.push(item+window.encodeURIComponent(x))
-			// otherwise, key=value
-			else
-				params.push(item+window.encodeURIComponent(val))
-		}
-		if (!params.length)
-			return ""
-		return "?"+params.join("&")
-	},
 	//idea: keep track of whether an object was requested with fields=*, and prevent posting it otherwise
 	
 	// idk having all brackets bold + dimgray was kinda nice...
 	// i dont like how proc is required but h
+	
+	// request(url, proc) - GET
+	// request(url, proc, null) - POST
+	// request(url, proc, data) - POST
+	
 	request(url, proc, data) {
 		let method = 'GET'
 		if (data !== undefined) {
@@ -175,32 +160,33 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 			if (data != null)
 				data = JSON.to_blob(data)
 		}
-		return ApiRequest.bind(null, url, method, data, {proc})
+		return ApiRequest.bind(null, url, method, data, proc)
 	},
 	
 	// idea: function.valueOf calls the function and returns um ..   something.. .chaining .. mmmm
 	
 	chain(data) {
-		return ApiRequest.bind(null, 'request', 'POST', JSON.to_blob(data), {proc: resp=>Entity.do_listmap(resp.objects)})
+		return ApiRequest.bind(
+			null, 'request', 'POST',
+			JSON.to_blob(data), resp=>Entity.do_listmap(resp.objects))
 	},
 	
 	/////////////////////////
 	//                     //
 	/////////////////////////
 	
+	// log in using username/password
+	get_auth(username, password) {
+		return this.request('User/login', null, {username, password})
+	},
+	
 	// logs the user out and clears the cached token
 	log_out() {
 		Store.remove(this.storage_key)
+		this.auth = null
+		Lp.stop()
 		window.alert("logged out")
 		View.flag('loggedIn', false)
-		//Nav.reload()
-		//Lp.stop()
-		this.auth = null
-	},
-	
-	// log in using username/password
-	log_in(username, password) {
-		return this.request('User/login', null, {username, password})
 	},
 	
 	// try to load cached auth token from localstorage
@@ -208,33 +194,27 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 	// also doesn't DO anything else. (important, can be called at time 0)
 	// return: Boolean
 	try_load_auth() {
-		let auth, uid
 		try {
-			auth = Store.get(this.storage_key)
-			uid = +JSON.parse(window.atob(auth.split(".")[1])).uid //yeah
-		} catch(e) {
-		}
-		if (auth && uid) {
-			this.auth = auth
-			this.uid = uid
+			this.auth = Store.get(this.storage_key)
+			if (!this.auth)
+				throw "no auth token in localstorage"
+			let data = JSON.parse(window.atob(this.auth.split(".")[1]))//yeah
+			this.uid = +data.uid
+			if (!this.uid)
+				throw "couldn't find uid"
+			//let expire = data.exp
+			//if (expire && Date.now()/1000>=expire) ;
 			return true
+		} catch(e) {
+			this.auth = this.uid = null
+			return false
 		}
-		this.auth = null
-		this.uid = null
-		return false
 	},
 	
 	save_auth(token) {
 		Store.set(this.storage_key, token)
 	},
 	
-	get_me() {
-		// todo: instead of the proc function,
-		// we can just tell it what type of data to expect
-		// this will just be like either
-		// a single entity, or ws response, or api/request response
-		return this.request("User/me", TYPES.user)
-	},
 	// messages
 	send_message(message) {
 		return this.request('Write/message', null, message)
@@ -268,77 +248,7 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 				set(name, value)
 			}
 		}
-		return ApiRequest.bind(null, 'File', 'POST', form, {proc: TYPES.content})
+		return ApiRequest.bind(null, 'File', 'POST', form, TYPES.content)
 	},
 }
 Object.seal(Req)
-
-	/*set_basic(data) {
-		return this.request2("User/basic", Entity.process_item.bind(Entity, 'user'), 'PUT', data)
-		// maybe it would be better to just pass the typename or something here? instead of entity.whatever
-	},
-	
-	set_sensitive(data) {
-		return this.request2("User/sensitive", null, 'POST', data)
-	},
-	
-	put_file(file) {
-		return this.request2("File/"+file.id, null, 'PUT', file)
-	},
-	
-	toggle_hiding(id, callback) {
-		this.get_me().then((me)=>{
-			let hiding = me.hidelist
-			let hidden = arrayToggle(hiding, id)
-			this.set_basic({hidelist:hiding}).then(()=>{
-				callback(hidden)
-			})
-		})
-	},
-	
-	searchUsers(text) {
-		let like = text.replace(/%/g,"_") //the best we can do...
-		let count = 20
-		return this.chain([
-			['user', {limit: count, usernameLike: "%"+like+"%", sort: 'editDate', reverse: true}]
-		])
-	},
-	
-	setVote(id, state) {
-		return this.request2("Vote/"+id+"/"+(state||"delete"), null, 'POST', null)
-	},
-	
-	editPage(page) {
-		if (this.locked) {
-			console.log("editing page:", page)
-			return
-		}
-		if (page.id)
-			return this.request2("Content/"+page.id, null, 'PUT', page)
-		else
-			return this.request2("Content", null, 'POST', page)
-	},
-	
-	get_older_comments(pid, firstId, count) {
-		let fi = {reverse: true, limit: count, parentIds: [pid]}
-		if (firstId != null)
-			fi.maxId = firstId // maxId is EXCLUSIVE
-		return this.chain([
-			['comment', fi],
-			['user.0createUserId.0editUserId'],
-		])
-	},
-	
-	get_newer_comments(pid, lastId, count) {
-		let fi = {limit: count, parentIds: [pid]}
-		if (lastId != null) // isn't it fine if we just pass null though?
-			fi.minId = lastId
-		return this.chain([
-			['comment', fi],
-			['user.0createUserId.0editUserId'],
-		])
-	},
-	
-,*/
-
-
