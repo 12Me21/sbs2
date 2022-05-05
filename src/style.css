@@ -379,6 +379,7 @@ message-block > message-header > time {
 	text-align: right;
 	font-weight: normal;
 	color: var(--chat-dim-color);
+	/*line-height: 1;  this looks better when the time wraps, since it takes up less space, but otherwise, means the time is aligned too low*/
 }
 
 message-contents {

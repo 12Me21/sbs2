@@ -1,3 +1,7 @@
+// todo: how much can we track the request?
+// we probably only see anything once the main response is sent (i.e. after the cors preflight finishes) but that still might be a second before completion
+
+
 class InvalidRequestError extends TypeError {
 	constructor(apir) {
 		super()
