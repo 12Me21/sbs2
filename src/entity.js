@@ -1,5 +1,49 @@
 const TYPES = {}
 
+let Entity
+
+class Author {
+	constructor(message, user) {
+		this.username = user.username
+		// normal avatar
+		let av = message.values.a
+		if (av && ('string'==typeof av || 'number'==typeof av))
+			this.avatar = av
+		else
+			this.avatar = user.avatar
+		// bigavatar
+		let ab = message.values.big
+		if (ab && ('string'==typeof ab || 'number'==typeof ab))
+			this.bigAvatar = ab
+		// == names ==
+		this.username = user.username
+		let nick = null
+		// message from discord bridge
+		let bridge = 'string'==typeof message.values.b
+		if (bridge)
+			nick = message.values.b
+		// regular nickname
+		if ('string'==typeof message.values.n)
+			nick = message.values.n
+		
+		if (nick != null) {
+			nick = Entity.filter_nickname(nick)
+			if (bridge)
+				this.username = nick
+			this.nickname = nick
+			this.realname = user.username
+		}
+	}
+}
+Object.assign(Author.prototype, {
+	avatar: "0",
+	bigAvatar: null,
+	username: "missingno.",
+	realname: null,
+	nickname: null,
+	//			content_name: "",
+})
+
 for (let type_name in ABOUT.details.types) {
 	let field_datas = ABOUT.details.types[type_name]
 	let field_defaults = ABOUT.details.objects[type_name]
@@ -20,19 +64,15 @@ for (let type_name in ABOUT.details.types) {
 		Fields: {value: field_datas},
 	}
 	if (type_name == 'message') {
-		proto.Author = {value: Object.freeze({
-			avatar: "0",
-			bigAvatar: null,
-			realname: "",
-			nickname: "",
-			username: "",
-//			content_name: "",
-		})}
+		proto.Author = {
+			value: Object.freeze(Object.create(Author.prototype)),
+			writable: true,
+		}
 	}
 	for (let field_name in field_datas) {
 		let field_data = field_datas[field_name]
 		let field_default = field_defaults[field_name]
-		proto[field_name] = {value: field_default, enumerable: true}
+		proto[field_name] = {value: field_default, enumerable: true, writable: true}
 		if (field_data.type=='datetime')
 			proto[field_name+"2"] = {get(){
 				let d = this[field_name]
@@ -40,16 +80,7 @@ for (let type_name in ABOUT.details.types) {
 			}}
 	}
 	proto = Object.create(STRICT, proto)
-	let cons 
-	/*if (type_name == 'message')
-		cons = (o)=>{
-			if (o.editDate == o.createDate) // correction for old comments
-				o.editDate = null
-			Object.setPrototypeOf(o, proto)
-			return o
-		}
-	else*/
-	cons = (o)=>{
+	let cons = (o)=>{
 		Object.setPrototypeOf(o, proto)
 		return o
 	}
@@ -72,7 +103,7 @@ function map_date(obj, prop) {
 
 // functions for processing recieved entities/
 // DATA PROCESSOR
-let Entity = (()=>{"use strict"; return singleton({
+Entity = (()=>{"use strict"; return singleton({
 	
 /*	onCategoryUpdate(cats) {
 		Sidebar.redraw_category_tree(cats)
@@ -158,45 +189,12 @@ let Entity = (()=>{"use strict"; return singleton({
 	},
 	
 	// link user data with comments
-	link_comments({message:messages, user:users}) {
-		for (let message of messages) {
-			let user = users[~message.createUserId]
-			if (!user)
+	link_comments({message, user}) {
+		for (let m of message) {
+			let u = user[~m.createUserId]
+			if (!u)
 				continue
-			// maybe just have a setter so you can do message.Author = user and then it assigns the fields...
-			let author = {
-				username: user.username,
-			}
-			// normal avatar
-			let av = message.values.a
-			if (av && ('string'==typeof av || 'number'==typeof av))
-				author.avatar = av
-			else
-				author.avatar = user.avatar
-			// bigavatar
-			let ab = message.values.big
-			if (ab && ('string'==typeof ab || 'number'==typeof ab))
-				author.bigAvatar = ab
-			// == names ==
-			author.username = user.username
-			let nick = null
-			// message from discord bridge
-			let bridge = 'string'==typeof message.values.b
-			if (bridge)
-				nick = message.values.b
-			// regular nickname
-			if ('string'==typeof message.values.n)
-				nick = message.values.n
-			
-			if (nick != null) {
-				nick = this.filter_nickname(nick)
-				if (bridge)
-					author.username = nick
-				author.nickname = nick
-				author.realname = user.username
-			}
-			
-			Object.defineProperty(message, 'Author', {value:author, writable:true});
+			m.Author = new Author(m, u)
 		}
 	},
 	
