@@ -80,7 +80,8 @@ let Lp = {
 					return
 			}
 			this.expected_close = false
-			this.start_websocket()
+			// we use timeout to avoid recursion and leaking stack traces
+			window.setTimeout(()=>this.start_websocket())
 		}
 		
 		this.websocket.onmessage = (event)=>{
