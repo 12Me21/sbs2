@@ -35,7 +35,7 @@ const Nav = function(){"use strict"; return singleton({
 	},
 	
 	goto(location, push) {
-		console.info("location:", location)
+		//console.info("location:", location)
 		Nav.replace_location(location, push)
 		View.handle_view(location, ()=>{
 			//

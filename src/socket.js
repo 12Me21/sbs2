@@ -221,6 +221,6 @@ window.addEventListener('focus', e=>{
 		Lp.ping(()=>{})
 })
 
-window.addEventListener('pageshow', e=>{
+/*window.addEventListener('pageshow', e=>{
 	print('show')
-})
+})*/

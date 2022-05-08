@@ -843,3 +843,7 @@ activity-users {
 	overflow-y: hidden;
 	overflow-x: auto;
 }
+
+[data-slide="comments"] {
+	overflow-y: scroll;
+}

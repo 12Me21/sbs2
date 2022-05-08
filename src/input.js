@@ -71,13 +71,14 @@ class Form {
 			if (!opt.output)
 				this.in_fields.push(input)
 			
-			let label = body.createChild('label')
+			let lc = body.createChild('div')
+			let label = lc.createChild('label')
 			label.htmlFor = input.html_id
 			label.textContent = opt.label+":"
-			label.className += ' label'
+			lc.className += ' label'
 			input.elem.className += ' field'
 			if (opt.span) {
-				label.className += ' wide'
+				lc.className += ' wide'
 				input.elem.className += ' wide'
 			}
 			body.append(input.elem)

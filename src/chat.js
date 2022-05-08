@@ -237,6 +237,10 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 		this.limit_messages()
 	}
 	
+	// TODO; message controls should be a global thing, rather than per chatroom
+	// only one active at a time, and
+	// should also work on search results, so..
+	
 	show_controls(elem) {
 		if (elem) {
 			// why does this fail sometimes?

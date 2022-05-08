@@ -12,6 +12,10 @@ View.add_view('comments', {
 				['start', 'date', {label: "Start Date", param: 'start'}],
 				['end', 'date', {label: "End Date", param: 'end'}],
 				['range', 'range', {label: "Id Range", param: 'ids'}],
+				//todo: combine these 3 into one field type
+				// for page + pagesize + direction
+				['limit', 'number', {label: "Per Page (200)", param: 'limit'}],
+				['page', 'number', {label: "Page (1)", param: 'p'}],
 				['reverse', 'checkbox', {label: "Newest First", param: 'r'}],
 			]
 		})
@@ -21,20 +25,36 @@ View.add_view('comments', {
 	
 	init() {
 		$commentSearchForm.replaceWith(this.form.elem)
-		$commentSearchButton.onclick = ()=>{
+		let go = (dir)=>{
 			if (!this.location) return
 			this.form.read()
-			let data = this.form.get()
+			if (dir) {
+				// pages are kinda bad now... like, p=0, that's actually p=1, so you press next and go to p=2.. i need to add range limits on the fields etc.
+				let p = this.form.inputs.page.value || 1 //rrrr
+				if (p+dir<1) {
+					if (dir>=0)
+						p = 1-dir
+					else
+						return
+				}
+				this.form.inputs.page.value = p + dir
+			}
 			this.location.query = this.form.to_query()
-			if (data.pages && data.pages.length==1) {
-				this.location.id = data.pages[0]
+			let pages = this.form.inputs.pages.value
+			if (pages && pages.length==1) {
+				this.location.id = pages[0]
 				delete this.location.query.pid
 			} else {
 				this.location.id = null
 			}
+			if (this.location.query.page==0)
+				this.location.query.page = "1"
 			Nav.goto(this.location)
 		}
+		$commentSearchButton.onclick = ()=>{ go() }
 		View.bind_enter($commentSearch, $commentSearchButton.onclick)
+		$commentSearchPrev.onclick = ()=>{ go(-1) }
+		$commentSearchNext.onclick = ()=>{ go(+1) }
 	},
 	start({id, query}) {
 		this.form.from_query(query)
@@ -57,7 +77,7 @@ View.add_view('comments', {
 		this.form.set(data)
 		this.form.write(data)
 		$commentSearchResults.fill()
-		$commentSearchResults.textContent = "(no query)"
+		$commentSearchStatus.textContent = "(no query)"
 	},
 	render({message:comments, content:pages}, {data, merge}, location) {
 		this.location = location // todo: formal system for this (setting query string when form submit)
@@ -66,10 +86,11 @@ View.add_view('comments', {
 		this.form.set(data)
 		this.form.write(data)
 		
+		$commentSearchResults.fill()
 		if (!comments.length) {
-			$commentSearchResults.textContent = "(no results)"
+			$commentSearchStatus.textContent = "(no results)"
 		} else {
-			$commentSearchResults.textContent = "results: "+comments.length
+			$commentSearchStatus.textContent = "results: "+comments.length
 			if (merge) {
 				x = document.createElement('message-list')
 				$commentSearchResults.append(x)
@@ -82,10 +103,8 @@ View.add_view('comments', {
 				for (let c of comments) {
 					let parent = pages[~c.contentId]
 					$commentSearchResults.append(Draw.search_comment(c, parent))
-					// idea:
-					// put all these into a normal comment scroller
-					// then add some kind of "history separator" between
-					// them, which gets deleted if enough messages are loaded so that the ids overlap
+					// todo: maybe have them display in a more compact form without controls by default, and then have a button to render a message list 
+					// also, maybe if you load enough comments to reach the adjacent item, it should merge that in,
 				}
 			}
 		}
@@ -97,7 +116,7 @@ View.add_view('comments', {
 	
 	build_search(data) {
 		// check if form is empty
-		if (!data.search && !(data.users && data.users.length) && !data.range && !data.start && !data.end)
+		if (!data.search && !(data.users && data.users.length) && !data.range && !data.start && !data.end && !data.page)
 			return [null, null]
 		
 		let values = {}
@@ -150,12 +169,16 @@ View.add_view('comments', {
 			values.end = data.end.toISOString()
 			query.push("createDate < @end")
 		}
+		let limit = data.limit || 200 // ugh we need a system for default values or something
+		let page = data.page || 1 // 1 indexed
+		let skip = (page-1) * limit
+		// todo: pages kinda suck, 
 		
 		return [
 			{
 				values,
 				requests: [
-					{type:'message', fields:'*', query:query.join(" AND "), order, limit: 200},
+					{type:'message', fields:'*', query:query.join(" AND "), order, limit, skip},
 					{type:'content', fields:'name,id,createUserId', query:"id IN @message.contentId"},
 					{type:'user', fields:'*', query:"id IN @message.createUserId OR id IN @content.createUserId"}
 				]
