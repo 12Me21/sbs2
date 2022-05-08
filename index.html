@@ -13,7 +13,7 @@
 <link rel=apple-touch-icon href=resource/iconbig.png> <!-- large 2 -->
 <link rel=image_src href=resource/iconbig.png> <!-- large 3 -->
 <meta name=color-scheme content="light dark">
-<meta name=theme-color content="#366"> <!-- mobile -->
+<meta name=theme-color content="#888"> <!-- mobile -->
 
 <!--<link rel=dns-prefetch href=https://qcs.shsbs.xyz>
 <link rel=preconnect href=https://qcs.shsbs.xyz crossorigin>-->
@@ -217,17 +217,12 @@
 </body>
 <script hidden>
 	document.currentScript.remove() // 💭
-	{
-		// whitespace between nodes in html (due to line breaks, indentation, etc.) creates text nodes which need to be stripped:
-		let walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {acceptNode: node => !node.textContent.trim()})
-		let blank_nodes = []
-		while (walker.nextNode())
-			blank_nodes.push(walker.currentNode)
-		// remove in 1 step rather than calling .remove() one at a time
-		document.createElement('gay-baby-jail').append(...blank_nodes)
-		//console.log("removed "+blank_nodes.length+" blank text nodes")
-		console.log("🌅 removed blank textnodes")
-	}
+	// whitespace between nodes in html (due to line breaks, indentation, etc.) creates text nodes which need to be stripped:
+	document.createNodeIterator(
+		document.body, NodeFilter.SHOW_TEXT,
+		{acceptNode(node){node.data.trim()||node.remove()}},
+	).nextNode()
+	console.log("🌅 removed blank textnodes")
 	
 	let dcl = Math.random()<0.5
 	if (dcl)
