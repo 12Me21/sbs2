@@ -133,8 +133,7 @@ html, body {
 	max-width: stretch;
 }
 .bar button.item {
-	height: calc(var(--bar-height) - 1px - 1px);
-	margin: 1px;
+	/*height: calc(var(--bar-height) - 1px - 1px);*/
 }
 .bar .avatar {
 	width: var(--bar-height);

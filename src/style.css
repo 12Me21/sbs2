@@ -110,6 +110,7 @@ button {
 	padding: 0 0.5rem;
 	
 	background: var(--button-bg);
+	/*margin: 1px;*/
 }
 button:hover {
 	border-color: var(--button-hover-color);
