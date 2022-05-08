@@ -330,6 +330,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 	},
 	
 	// set tab <title>
+	// todo: now this only works on Content, not all entities?
 	set_entity_title(entity) {
 		$pageTitle.fill(Draw.content_label(entity))
 		document.title = entity.name
