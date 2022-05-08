@@ -1,10 +1,9 @@
 immediate()
 
-// this could be handled by a <script defer>
-if (document.readyState == 'loading')
-	document.addEventListener('DOMContentLoaded', dom_ready)
+/*if (document.readyState == 'loading')
+	document.onreadystatechange = dom_ready
 else
-	dom_ready()
+	dom_ready()*/
 
 function immediate() {
 	console.log("🌅 STARTING INIT")
@@ -62,22 +61,6 @@ function immediate() {
 
 function dom_ready() {
 	console.log("🌄 DOCUMENT READY")
-	
-	// draw buttons
-	// i really don't like this
-	for (let button of document.querySelectorAll("button:not([data-noreplace])")) {
-		let container = document.createElement('button-container')
-		button.replaceWith(container)
-		container.className += " "+button.className
-		button.className = ""
-		if (button.dataset.staticLink != undefined) {
-			button.setAttribute('tabindex', "-1")
-			let a = document.createElement('a')
-			container.append(a)
-			container = a
-		}
-		container.append(button)
-	}
 	
 	// set up event handlers:
 	

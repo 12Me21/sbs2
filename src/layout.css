@@ -118,15 +118,23 @@ html, body {
 }
 .textItem { /* basically anything within a .bar */
 	display: inline;
-	max-width: 100%;
 	min-height: var(--bar-height);
 	line-height: var(--bar-height);
 }
 .item { /* for images and other blocks that can't wrap */
 	display: inline-block;
-	max-width: 100%;
 	height: var(--bar-height);
 	line-height: var(--bar-height);
+}
+.item, .textItem {
+	max-width: 100%;
+	max-width: -webkit-fill-available;
+	max-width: -moz-available;
+	max-width: stretch;
+}
+.bar button.item {
+	height: calc(var(--bar-height) - 1px - 1px);
+	margin: 1px;
 }
 .bar .avatar {
 	width: var(--bar-height);

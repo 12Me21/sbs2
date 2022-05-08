@@ -82,11 +82,11 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 					selected_file = null
 					
 					$file_url.hidden = false
-					$file_done.parentNode.hidden = false
+					$file_done.hidden = false
 					file_upload_form.elem.hidden = true
 					$file_browse.hidden = true
-					$file_cancel.parentNode.hidden = true
-					$file_upload.parentNode.hidden = true
+					$file_cancel.hidden = true
+					$file_upload.hidden = true
 					
 					$file_url.value = Req.file_url(file.hash)
 					$file_image.src = ""
@@ -255,10 +255,10 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	file_cancel() {
 		selected_file = null
 		$file_browse.hidden = false
-		$file_cancel.parentNode.hidden = true // parentnode because buttoncontainer.. messy todo
+		$file_cancel.hidden = true
 		$file_url.hidden = true
-		$file_done.parentNode.hidden = true
-		$file_upload.parentNode.hidden = true
+		$file_done.hidden = true
+		$file_upload.hidden = true
 		file_upload_form.elem.hidden = true
 		cleanup()
 	},
@@ -269,12 +269,12 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	},
 	
 	got_file(file) {
-		$file_cancel.parentNode.hidden = false
-		$file_upload.parentNode.hidden = false
+		$file_cancel.hidden = false
+		$file_upload.hidden = false
 		file_upload_form.elem.hidden = false
 		$file_browse.hidden = true
 		$file_url.hidden = true
-		$file_done.parentNode.hidden = true
+		$file_done.hidden = true
 		
 		$file_image.src = ""
 		$file_image.src = URL.createObjectURL(file)

@@ -248,7 +248,7 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 				set(name, value)
 			}
 		}
-		return ApiRequest.bind(null, 'File', 'POST', form, TYPES.content)
+		return ApiRequest.bind(null, 'File', 'POST', form, x=>TYPES.content(x))
 	},
 }
 Object.seal(Req)

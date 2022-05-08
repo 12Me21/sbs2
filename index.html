@@ -19,6 +19,7 @@
 <link rel=preconnect href=https://qcs.shsbs.xyz crossorigin>-->
 
 <script>
+	let x = []
 	if (window.location.search=="?logout") {
 		window.localStorage.removeItem("token-qcs.shsbs.xyz/api")
 		window.location.search = ""
@@ -91,7 +92,9 @@
 
 <header class='titlePane bar rem2-3 loadBG' id=$titlePane>
 	<div class='textItem rightAlign'>
-		<button id=$openSidebar class='item'><img src=resource/iconbig.png alt="SBS" width=32px height=32px></button>
+		<button id=$openSidebar class='item'>
+			<img src=resource/iconbig.png alt="SBS" width=32px height=32px>
+		</button>
 	</div>
 	<noscript>This web-site requires JavaScript</noscript>
 	<h1 id=$pageTitle class='textItem pageTitle'></h1>
@@ -213,6 +216,7 @@
 
 </body>
 <script hidden>
+	document.currentScript.remove() // 💭
 	{
 		// whitespace between nodes in html (due to line breaks, indentation, etc.) creates text nodes which need to be stripped:
 		let walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {acceptNode: node => !node.textContent.trim()})
@@ -224,4 +228,15 @@
 		//console.log("removed "+blank_nodes.length+" blank text nodes")
 		console.log("🌅 removed blank textnodes")
 	}
+	
+	let dcl = Math.random()<0.5
+	if (dcl)
+		document.addEventListener('DOMContentLoaded', dom_ready)
+	else
+		dom_ready()
+	window.addEventListener('load', e => {
+		let x = localStorage.getItem('LOAD_TIMING')
+		x += "\n"+(dcl?"DCL":"BS")+";"+Object.values(performance.timing.toJSON()).map(x=>x.toString(36)).join(",")
+		localStorage.setItem('LOAD_TIMING', x)
+	})
 </script>
