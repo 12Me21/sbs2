@@ -18,7 +18,7 @@ View.add_view('page', {
 		View.set_entity_title(page)
 		//View.set_entity_path(page.parent)
 		View.flag('canEdit', /u/i.test(page.permissions[Req.uid]))
-		$pageCommentsLink.href = "#comments/"+page.id
+		$pageCommentsLink.href = "#comments/"+page.id+"?r" // todo: location
 		if (page.createUserId==Req.uid || /c/i.test(page.permissions[Req.uid] || page.permissions[0])) {
 			$chatTextarea.disabled = false
 			$chatTextarea.focus()
