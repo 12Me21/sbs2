@@ -3,8 +3,8 @@
 html {
 	background: #FEE; /* for debug */
 	color: var(--T-col);
-	font-family: var(--T-font);
-	/*line-height: 1.2;*/
+	font: var(--T-font);
+	line-height: normal;
 	/* disable ligatures like fi ffi etc. */
 	/* (doesn't affect real languages or emoji)*/
 	font-variant-ligatures: none;
@@ -61,7 +61,7 @@ textarea {
 	border: 2px solid #00C8B4;
 	border-radius: 2px;
 	box-shadow: 0.1rem 0.2rem 0.3rem -0.2rem rgba(13,13,13,0.5);
-	font-family: roboto, sans-serif;
+	font: var(--T-font);
 	font-size: 0.8em;
 	color: var(--T-col);
 	background: var(--T-bg);
@@ -100,10 +100,10 @@ message-username { /* khhhh */
  ** Button **
  **********************/
 button {
-	line-height: normal !important;
-	font-size: 0.8em;
 	cursor: pointer;
-	font-family: var(--T-font);
+	font: var(--T-font);
+	font-size: 0.8em;
+	line-height: normal !important;
 	
 	border: 1px solid black;
 	border-radius: 0px;
@@ -233,7 +233,7 @@ html:not(.f-canEdit) .canEdit {
 /* broken? */
 .errorMode .titlePane {
 	color: var(--error-invert-bg);
-	font-family: monospace;
+	font: var(--T-monospace-font);
 }
 
 .titlePane > :first-child {
@@ -246,7 +246,7 @@ html:not(.f-canEdit) .canEdit {
  *******************************/
 .errorPage {
 	padding: 0.2rem;
-	font-family: monospace;
+	font: var(--T-monospace-font);
 }
 
 sidebar-container {
@@ -772,7 +772,7 @@ textarea-container, textarea-container > textarea {
 }
 
 .debugMessage > pre {
-	font-family: monospace;
+	font: var(--T-monospace-font);
 	overflow-x: auto;
 	white-space: pre;
 }

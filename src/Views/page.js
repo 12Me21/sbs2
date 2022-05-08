@@ -64,10 +64,6 @@ View.add_view('page', {
 		message.reverse()
 //		let pinned = objects.Mpinned
 		
-// TODO: should we be calling this again every time?
-//		Act.new_page_comments(page, message)
-//		Act.redraw()
-		
 		this.room = ChatRoom.obtain_room(page.id, page, message) //n nng
 		this.room.show()
 		
@@ -224,17 +220,3 @@ View.add_view('page', {
 	},
 	
 })
-
-// when joining a room:
-// - create the ChatRoom object
-// - add this room to lastListeners
-// - add status in this room
-// - remove status from prev room(s) (if exists)
-// - refresh long poller
-// - start listening for posted messages
-// - request initial messages
-
-// when leaving a room:
-// - remove status from room
-// - refresh long poller IF we aren't switching to another chat room
-//
