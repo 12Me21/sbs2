@@ -43,9 +43,12 @@ img {
  ** Positioning **
  *****************/
 
+/* HTML lacks a viewport element, and the root element is useless */
+/* because of the root→viewport propagation of certain properties. */
+/* So, we make <body> fill the screen, and use that as our viewport. */
 html, body {
 	position: fixed;
-	overflow: hidden;
+	overflow: clip; overflow: hidden;
 	top: 0;
 	left: 0;
 	right: 0;

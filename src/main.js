@@ -50,12 +50,14 @@ function immediate() {
 	Nav.init()
 	
 	window.onerror = function(message, source, line, col, error) {
+		console.error(error)
 		try {
 			Sidebar.print(error)
 		} catch(e) {
 			console.error("error in window.onerror:", e, arguments)
 			// yeah no
 		}
+		//throw error
 	}
 }
 

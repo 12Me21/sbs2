@@ -122,6 +122,10 @@ button:active {
 	border-style: inset;
 	background: var(--button-active-bg);
 }
+button:disabled {
+	color: var(--chat-dim-color);
+	background: var(--bar-bg);
+}
 
 /**********/
 
