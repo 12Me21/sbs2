@@ -195,14 +195,17 @@ let Lp = {
 				console.warn("unknown event type:", type, events)
 			} break; case 'message_event': {
 				let message = maplist.message[~refId]
-				Act.message(message, maplist)
-				comments.push(message)
+				if (message) {
+					Act.message(message, maplist)
+					comments.push(message)
+				}
 			} break; case 'user_event': {
 				let user = maplist.user[~refId]
-				// messy...
-				ChatRoom.update_avatar(user)
-				if (refId==Req.uid)
-					View.update_my_user(user)
+				if (user) {
+					ChatRoom.update_avatar(user) // messy...
+					if (refId==Req.uid)
+						View.update_my_user(user)
+				}
 			}}
 		}
 		if (comments.length) {

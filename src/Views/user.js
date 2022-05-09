@@ -1,14 +1,14 @@
 View.add_view('user', {
 	start({id, query}) {
-		let userSearch
-		if (typeof id == 'number')
-			userSearch = {ids: [id], limit: 1}
-		else {
+		let user_query
+		if (typeof id == 'number') {
+			user_query = "id = @uid"
+		} else {
 			// todo: maybe username without @ should be invalid?
 			// can potentially collide with id numbers
 			if (id[0]=="@")
 				id = id.substr(1)
-			userSearch = {usernames: [id], limit: 1}
+			user_query = "username = @uid"
 		}
 		console.log(id)
 		return {
@@ -19,7 +19,7 @@ View.add_view('user', {
 					Page: 1,
 				},
 				requests: [
-					{type: 'user', fields: "*", query: "id = @uid", limit: 1},
+					{type: 'user', fields: "*", query: user_query, limit: 1},
 					// ➕ AND, or other template string stuff...
 					{name: 'Puserpage', type: 'content', fields: "*", query: "literalType = @Userpage AND createUserId in @user.id AND contentType = @Page", limit: 1},
 					//['activity.0id$userIds', {limit: 20, reverse: true}],
