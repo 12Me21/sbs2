@@ -56,7 +56,6 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		let e = this.message()
 		let text = "<???>"
 		try {
-			//console.info(thing)
 			if (thing instanceof Error) {
 				let s = this.stack()
 				s.textContent = thing.stack
@@ -250,9 +249,13 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 					// aand the time isn't > 5 minutes
 					let last = oldcontents[backwards?'firstChild':'lastChild']
 					if (last) {
-						let oldtime = last.x_data.createDate2
-						if (Math.abs(comment.createDate2-oldtime) <= 1000*60*5)
-							contents = oldcontents
+						if (!last.x_data) {
+							alert("wrong element in message-contents:", last.nodeName)
+						} else {
+							let oldtime = last.x_data.createDate2
+							if (Math.abs(comment.createDate2-oldtime) <= 1000*60*5)
+								contents = oldcontents
+						}
 					}
 				}
 			}
@@ -276,7 +279,6 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		//":scope > message-block:last-of-type > message-contents > message-part:last-of-type"
 		//":scope > message-block > message-contents > message-part"
 		//":scope > message-block:last-of-type[data-merge="..."]
-		
 		let block = elem[newer?'lastChild':'firstChild']
 		if (!block)
 			return null
@@ -295,7 +297,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 					first = false
 				}
 			}
-			callback()
+			callback(resp.message.length != 0)
 		})
 	},
 	
@@ -310,14 +312,20 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		
 		let pid = comment.contentId
 		
-		inner.before(button2("Load Older", ()=>{
-			load_messages_near(pid, inner, false, 10, ()=>{})
+		inner.before(button2("Load Older", function() {
+			load_messages_near(pid, inner, false, 10, (ok)=>{
+				if (!ok)
+					this.disabled = true
+			})
 		}))
 		
 		inner.append(single_message(comment))
 		
-		inner.after(button2("Load Newer", ()=>{
-			load_messages_near(pid, inner, true, 10, ()=>{})
+		inner.after(button2("Load Newer", function() {
+			load_messages_near(pid, inner, true, 10, (ok)=>{
+				if (!ok)
+					this.disabled = true
+			})
 		}))
 		
 		return outer
@@ -330,11 +338,10 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	//todo; like, request_button which disables/enables automatically
 	button2: function(label, onclick) {
 		let e = this()
-		let btn = e.firstChild
-		btn.append(label)
-		btn.onclick = onclick
+		e.append(label)
+		e.onclick = onclick
 		return e
-	}.bind(𐀶`<button-container><button>`),
+	}.bind(𐀶`<button>`),
 	
 	button: function() { // BAD 
 		let e = this()
