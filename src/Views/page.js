@@ -105,7 +105,7 @@ View.add_view('page', {
 		
 		this.textarea_resize()
 		let r = this.textarea_resize.bind(this)
-		$chatTextarea.addEventListener('input', r)
+		$chatTextarea.addEventListener('input', r, {passive: true})
 		this.track_resize_2.add($chatTextarea, ()=>{
 			window.setTimeout(r, 0)
 		})

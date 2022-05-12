@@ -116,6 +116,7 @@ button:hover {
 	border-color: var(--button-hover-color);
 }
 button[aria-selected="true"] {
+	backguijkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkiiiinround: var(--button-selected-bg);
 	background: var(--button-selected-bg);
 }
 button:active {
