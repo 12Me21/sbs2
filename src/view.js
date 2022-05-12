@@ -58,8 +58,21 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 						$testOut.textContent="Error:\n"+e
 					}
 				}
+				$testInput.onkeypress = e=>{
+					$testOut2.textContent="onkeypress\n"
+					;['shiftKey','ctrlKey','altKey','metaKey','location','isComposing','repeat','code','key','charCode','char','keyCode','which'].forEach(x=>{
+						$testOut2.textContent += x+": "+e[x]+"\n"
+					})
+				}
+				$testInput.onkeydown = e=>{
+					$testOut3.textContent="onkeydown\n"
+					;['shiftKey','ctrlKey','altKey','metaKey','location','isComposing','repeat','code','key','charCode','char','keyCode','which'].forEach(x=>{
+						$testOut3.textContent += x+": "+e[x]+"\n"
+					})
+				}
 			},
 			name: 'test',
+			className: 'test',
 			start() {
 				return {quick: true}
 			},
