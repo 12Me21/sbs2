@@ -58,7 +58,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		try {
 			if (thing instanceof Error) {
 				let s = this.stack()
-				s.textContent = thing.name+": "+thing.message+"\n"+thing.stack
+				s.textContent = thing.stack.split("\n").reverse().join("\n↓")
 				e.append(s)
 			}
 			text = String(thing)

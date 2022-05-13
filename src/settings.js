@@ -93,7 +93,7 @@ for this to work,, we need:
 					eval(value)
 				} catch (e) {
 					console.error("failed to run sitejs", e)
-					print(e.stack)
+					print(e)
 					print("error in sitejs ^")
 				}
 			},
