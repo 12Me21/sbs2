@@ -1,6 +1,6 @@
 // todo: navigate and view could maybe be merged?
 
-Markup.renderer.url_scheme["sbs:"] = function(url) {
+Markup.renderer.url_scheme['sbs:'] = function(url) {
 	return "#"+url.pathname+url.search+url.hash
 }
 
