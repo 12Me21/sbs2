@@ -8,54 +8,6 @@ class MessageList {
 		this.pid = pid
 		this.parts = Object.create(null)
 		this.total_parts = 0
-		
-		// todo: we only need ONE of these, and one set of global event listeners.
-		this.controls_message = null
-		this.controls = Draw.message_controls(()=>{
-			alert(JSON.stringify(this.controls_message.x_data))
-		},()=>{
-			if (this.controls_message)
-				window.editComment(this.controls_message.x_data)
-		}).elem
-		
-		let listen = (ev, fn)=>{
-			this.elem.addEventListener(ev, fn, {passive: true})
-		}
-		
-		listen('focusin', e=>{
-			for (let elem of e.composedPath()) {
-				if (elem==this.elem)
-					return
-				else if (elem.tagName=='MESSAGE-PART')
-					return void this.show_controls(elem)
-			}
-		})
-		listen('focusout', e=>{
-			this.show_controls(null)
-		})
-		
-		// todo: check out relatedTarget?
-		// TODO: IMPORTANT! if we have multiple chats loaded + hidden, does this fire on bg pages or have performance impact?
-		listen('mouseover', e=>{
-			for (let elem of e.composedPath()) {
-				if (elem==this.elem)
-					return void this.show_controls(null)
-				if (elem==this.controls)
-					return
-				if (elem.tagName=='MESSAGE-PART')
-					return void this.show_controls(elem)
-			}
-		})
-		listen('mouseleave', e=>{
-			this.show_controls(null)
-		})
-	}
-	show_controls(elem) {
-		if (elem) // this must be the element where .x_data is set
-			elem.before(this.controls)
-		else
-			this.controls.remove()
-		this.controls_message = elem
 	}
 	get_messages_near(last, newer, amount, callback) {
 		let order = newer ? 'id' : 'id_desc'
@@ -91,6 +43,15 @@ class MessageList {
 			}
 			callback(resp.message.length != 0)
 		})
+	}
+	single_message(comment) {
+		let [block, contents] = Draw.message_block(comment)
+		block.dataset.merge = this.merge_hash(comment)
+		let part = Draw.message_part(comment)
+		this.parts[comment.id] = part
+		this.total_parts = 1
+		contents.append(part)
+		this.elem.append(block)
 	}
 	display_message(message, backwards) {
 		if (message.deleted) {
@@ -171,6 +132,55 @@ class MessageList {
 	merge_hash(message) {
 		let user = message.Author
 		return `${message.contentId},${message.createUserId},${user.avatar},${user.bigAvatar||""},${user.username} ${user.nickname || ""}`
+	}
+	
+	static show_controls(elem) {
+		if (elem == this.controls_message)
+			return
+		if (elem) // this must be the element where .x_data is set
+			elem.before(this.controls)
+		else
+			this.controls.remove()
+		this.controls_message = elem
+	}
+	static onload() {
+		this.controls_message = null
+		this.controls = Draw.message_controls(()=>{
+			alert(JSON.stringify(this.controls_message.x_data))
+		},()=>{
+			if (this.controls_message)
+				window.editComment(this.controls_message.x_data)
+		}).elem
+		
+		let listen = (ev, fn)=>{
+			document.body.addEventListener(ev, fn, {passive: true})
+		}
+		
+		listen('focusin', e=>{
+			let elem = e.target.closest("message-part, .message-list")
+			if (!elem)
+				this.show_controls(null)
+			else if (elem.tagName=='MESSAGE-PART')
+				this.show_controls(elem)
+		})
+		listen('focusout', e=>{
+			//if (e.target.closest(".message-list"))
+			// TODO: fix flickering when button is clicked
+			this.show_controls(null)
+		})
+		
+		// todo: check out relatedTarget?
+		listen('mouseover', e=>{
+			let elem = e.target.closest("message-part, message-controls, .message-list")
+			if (!elem || elem.classList.contains('message-list'))
+				this.show_controls(null)
+			else if (elem.tagName=='MESSAGE-PART')
+				this.show_controls(elem)
+			// otherwise, the element is <message-controls> so we do nothing
+		})
+		listen('mouseleave', e=>{
+			this.show_controls(null)
+		})
 	}
 }
 MessageList.prototype.max_parts = 500

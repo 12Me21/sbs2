@@ -142,12 +142,6 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		return e
 	}.bind(𐀶`<a><img class='item avatar' width=100 height=100 alt="">`),
 	
-	single_message(comment) {
-		let [block, contents] = message_block(comment)
-		contents.append(message_part(comment))
-		return block
-	},
-	
 	//📥 comment‹Message›
 	//📤 ‹ParentNode›
 	message_block: function(comment) {
@@ -239,28 +233,37 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	search_comment: function(comment, parent) {
 		let outer = this()
 		
-		let pg = content_label(parent, true)
+		let pg = content_label(parent, false)
 		outer.prepend(pg)
 		
 		let inner = outer.lastChild
 		
-		let pid = comment.contentId
+		let list = new MessageList(inner, comment.contentId)
+		list.single_message(comment)
+		
+		let ne = button2("Load Newer", function() {
+			if (ne) {
+				inner.after(ne)
+				ne = null
+			}
+			list.draw_messages_near(true, 10, (ok)=>{
+				if (!ok)
+					this.disabled = true
+			})
+		})
 		
 		inner.before(button2("Load Older", function() {
-			load_messages_near(pid, inner, false, 10, (ok)=>{
+			if (ne) {
+				inner.after(ne)
+				ne = null
+			}
+			list.draw_messages_near(false, 10, (ok)=>{
 				if (!ok)
 					this.disabled = true
 			})
 		}))
 		
-		inner.append(single_message(comment))
-		
-		inner.after(button2("Load Newer", function() {
-			load_messages_near(pid, inner, true, 10, (ok)=>{
-				if (!ok)
-					this.disabled = true
-			})
-		}))
+		inner.before(ne)
 		
 		return outer
 	}.bind(𐀶`
