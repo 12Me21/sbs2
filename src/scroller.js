@@ -206,7 +206,8 @@ Scroller.track_height = new ResizeTracker('height')
 Scroller.anim_type = 2
 if ('function'==typeof Animation)
 	Scroller.anim_type = 1
-
+//Object.seal(Scroller)
+//Object.seal(Scroller.prototype)
 
 // todo: we only want to animate if an element is inserted/removed/resized at the BOTTOM of the screen. but how to detect this? probably best, I suppose, if the chat room handles it?
 

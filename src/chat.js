@@ -185,7 +185,7 @@ class MessageList {
 }
 MessageList.prototype.max_parts = 500
 
-let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
+class ChatRoom {
 	constructor(id, page) {
 		if (this.constructor.rooms[id])
 			throw new Error("tried to create duplicate chatroom")
@@ -339,33 +339,17 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 			})
 		}
 	}
-}, { // STATIC METHODS
-	/* static */
-	rooms: {},
-	global: null,
-	currentRoom: null,
-	
-	/* static */ 
-	listening_rooms() {
+	/////
+	static listening_rooms() {
 		let list = [0]
 		for (let id in this.rooms)
 			list.push(id)
 		return list
-	},
-	
-	/* static */
-	update_avatar(user) {
+	}
+	static update_avatar(user) {
 		Object.for(this.rooms, room => room.update_avatar(user))
-	},
-	
-	/* static */
-	/*addRoom(room) {
-		this.rooms[room.id] = room
-		//ChatRoom.setViewing(Object.keys(ChatRoom.rooms))
-	},*/
-	
-	/* static */
-	removeRoom(room) {
+	}
+	static removeRoom(room) {
 		if (this.currentRoom == room)
 			this.currentRoom = null
 		if (this.rooms[room.id] == room)
@@ -373,10 +357,8 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 		if (room.status!=undefined)
 			Lp.set_status(room.id, null)
 		//ChatRoom.setViewing(Object.keys(ChatRoom.rooms))
-	},
-	
-	/* static */
-	update_userlists(statuses, {user}) {
+	}
+	static update_userlists(statuses, {user}) {
 		for (let id in statuses) {
 			let room = this.rooms[id]
 			if (room) {
@@ -384,11 +366,9 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 				room.update_userlist(st, user)
 			}
 		}
-	},
-	
+	}
 	// display a list of messages from multiple rooms
-	/* static */
-	display_messages(comments) {
+	static display_messages(comments) {
 		// for each room, display all of the new comments for that room
 		for (let room of Object.values(this.rooms)) {
 			let c = comments.filter(c => c.contentId==room.id)
@@ -404,17 +384,13 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 			if (last)
 				this.title_notification(last)
 		}
-	},
-	
-	/* static */
-	title_notification(comment) {
+	}
+	static title_notification(comment) {
 		View.title_notification(comment.text, Draw.avatar_url(comment.Author, "size=120&crop=true"))
 		// todo: also call if the current comment being shown in the title is edited
-	},
-	
+	}
 	// get/create room
-	/* static */
-	obtain_room(id, page, message) {
+	static obtain_room(id, page, message) {
 		let room = this.rooms[id]
 		if (room)
 			room.update_page(page)
@@ -423,10 +399,13 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 			room.display_initial_messages(message/*, pinned*/) //todo: when page is edited, update pinned messages
 		}
 		return room
-	},
-	
-	HTML: {
-		block: 𐀶`
+	}
+}
+ChatRoom.rooms = {}
+ChatRoom.global = null
+ChatRoom.currentRoom = null
+ChatRoom.HTML = {
+	block: 𐀶`
 <chat-pane class='resize-box' 🁢>
 	<scroll-outer class='sized page-container'>
 		<div class='pageContents'></div>
@@ -443,9 +422,9 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 		</scroll-inner>
 	</scroll-outer>
 </chat-pane>
-`},
-	
-})}()
+`
+}
+Object.seal(ChatRoom)
 
 // todo: when starting to render any page
 //- run generatestatus and generatelisteners

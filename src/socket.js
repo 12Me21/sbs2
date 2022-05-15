@@ -12,13 +12,14 @@ class SocketRequestError extends TypeError {
 }
 SocketRequestError.prototype.name = "SocketRequestError"
 
-let Lp = {
+let Lp = function(){"use strict"; return singleton({
 	handlers: {},
 	handler_id: 1,
 	ready: false,
 	last_id: "",
 	dead: false,
 	expected_close: false,
+	websocket: null,
 	state_change(state) {
 		// todo: here, we should graphically indicate the state somehow
 		// as well as when pings are sent
@@ -215,7 +216,7 @@ let Lp = {
 			ChatRoom.display_messages(comments)
 		}
 	},
-}
+})}()
 
 window.addEventListener('beforeunload', e=>{
 	Lp.dead = true

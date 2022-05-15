@@ -227,7 +227,6 @@ function 𐀶([html]) {
 
 // we aren't ready to use `static` yet, so we
 // assign our static fields this way instead
-const new_class = (cls, stat) => Object.seal(Object.assign(cls, stat))
 const singleton = (obj) => Object.seal(obj)
 
 // activating strict mode:
@@ -237,11 +236,6 @@ const singleton = (obj) => Object.seal(obj)
 // examples:
 // let MySingleton = function(){"use strict"; return singleton({
 //    <fields>,
-// })}()
-// let MyClass = function(){"use strict"; return new_class(class MyClass{
-//    <class init>
-// }, {
-//    <static fields>,
 // })}()
 
 // shouldn't really be here but this needs to be defined pretty early..
