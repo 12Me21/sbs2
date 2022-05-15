@@ -75,7 +75,7 @@ let Lp = {
 					return
 				let {code, reason, wasClean} = event
 				console.warn("websocket closed", code, reason, wasClean)
-				let cont = window.confirm('websocket died,,'+reason+"\n[OK] - start")
+				let cont = window.confirm(`websocket died,,${reason}\n${new Date()}\n[OK] - start`)
 				if (!cont)
 					return
 			}
@@ -175,6 +175,8 @@ let Lp = {
 		} break;case 'userlistupdate': {
 			Entity.do_listmap(data.objects)
 			ChatRoom.update_userlists(data.statuses, data.objects)
+		} break;case 'badtoken': {
+			//
 		}}
 		
 	},
@@ -227,3 +229,14 @@ window.addEventListener('focus', e=>{
 /*window.addEventListener('pageshow', e=>{
 	print('show')
 })*/
+
+/*
+token expired:
+onmessage:
+message:`Error during token validation: IDX10223: Lifetime validation failed. The token is expired. ValidTo: 'System.DateTime', Current time: 'System.DateTime'.`
+onclose:
+code: 1006
+reason: <empty string>
+wasClean: false
+
+*/
