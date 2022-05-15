@@ -1,3 +1,180 @@
+//todo: read my old notes (in chat) about how to handle edited messages
+// ex: when a message is moved between rooms,
+
+class MessageList {
+	constructor(element, pid) {
+		this.elem = element
+		this.elem.classList.add('message-list') // todo: just create a new elem <message-list> ?
+		this.pid = pid
+		this.parts = Object.create(null)
+		this.total_parts = 0
+		
+		// todo: we only need ONE of these, and one set of global event listeners.
+		this.controls_message = null
+		this.controls = Draw.message_controls(()=>{
+			alert(JSON.stringify(this.controls_message.x_data))
+		},()=>{
+			if (this.controls_message)
+				window.editComment(this.controls_message.x_data)
+		}).elem
+		
+		let listen = (ev, fn)=>{
+			this.elem.addEventListener(ev, fn, {passive: true})
+		}
+		
+		listen('focusin', e=>{
+			for (let elem of e.composedPath()) {
+				if (elem==this.elem)
+					return
+				else if (elem.tagName=='MESSAGE-PART')
+					return void this.show_controls(elem)
+			}
+		})
+		listen('focusout', e=>{
+			this.show_controls(null)
+		})
+		
+		// todo: check out relatedTarget?
+		// TODO: IMPORTANT! if we have multiple chats loaded + hidden, does this fire on bg pages or have performance impact?
+		listen('mouseover', e=>{
+			for (let elem of e.composedPath()) {
+				if (elem==this.elem)
+					return void this.show_controls(null)
+				if (elem==this.controls)
+					return
+				if (elem.tagName=='MESSAGE-PART')
+					return void this.show_controls(elem)
+			}
+		})
+		listen('mouseleave', e=>{
+			this.show_controls(null)
+		})
+	}
+	show_controls(elem) {
+		if (elem) // this must be the element where .x_data is set
+			elem.before(this.controls)
+		else
+			this.controls.remove()
+		this.controls_message = elem
+	}
+	get_messages_near(last, newer, amount, callback) {
+		let order = newer ? 'id' : 'id_desc'
+		let query = `contentId = @pid AND id ${newer?">":"<"} @last`
+		Lp.chain({
+			values: {last: last, pid: this.pid},
+			requests: [
+				{type:'message', fields:'*', query, order, limit:amount},
+				{type:'user', fields:'*', query:"id in @message.createUserId"},
+			]
+		}, callback)
+	}
+	// todo
+	// need to prevent this from loading messages multiple times at once
+	// and inserting out of order...x
+	draw_messages_near(newer, amount, callback) {
+		let block = this.elem[newer?'lastChild':'firstChild']
+		if (!block)
+			return null
+		let content = block.querySelector('message-contents')
+		let part = content[newer?'lastChild':'firstChild']
+		if (!part)
+			return null
+		let id = part.x_data.id
+		return this.get_messages_near(id, newer, amount, resp=>{
+			let first = true
+			for (let c of resp.message) {
+				let part = this.display_message(c, !newer)
+				if (part && first) {
+					part.className += " boundary-"+(newer?"top":"bottom")
+					first = false
+				}
+			}
+			callback(resp.message.length != 0)
+		})
+	}
+	display_message(message, backwards) {
+		if (message.deleted) {
+			this.remove_message(message.id)
+			return null
+		}
+		let old = this.parts[message.id]
+		if (old) {
+			let part = Draw.message_part(message)
+			old.replaceWith(part)
+			this.parts[message.id] = part
+			return part
+		}
+		let contents
+		// check whether message can be merged
+		let block = this.elem[backwards?'firstChild':'lastChild']
+		if (block) {
+			// if the prev block has message-contents
+			let oldcontents = block.querySelector('message-contents')
+			if (oldcontents) {
+				// and the merge-hashes match
+				let oldhash = block.dataset.merge
+				let newhash = this.merge_hash(message)
+				if (oldhash == newhash) {
+					// aand the time isn't > 5 minutes
+					let last = oldcontents[backwards?'firstChild':'lastChild']
+					if (last) {
+						if (!last.x_data) {
+							alert("wrong element in message-contents:", last.nodeName)
+						} else {
+							let oldtime = last.x_data.createDate2
+							if (Math.abs(message.createDate2-oldtime) <= 1000*60*5)
+								contents = oldcontents
+						}
+					}
+				}
+			}
+		}
+		// otherwise create a new message-block
+		if (!contents) {
+			;[block, contents] = Draw.message_block(message) // TODO: the time will be wrong, if we are displaying backwards!!
+			block.dataset.merge = this.merge_hash(message)
+			this.elem[backwards?'prepend':'append'](block)
+		}
+		// draw+insert the new message-part
+		let part = Draw.message_part(message)
+		contents[backwards?'prepend':'append'](part)
+		this.parts[message.id] = part
+		this.total_parts++
+		return part
+	}
+	remove_message(id) {
+		let part = this.parts[id]
+		if (!part)
+			return false
+		
+		let contents = part.parentNode // <message-contents>
+		part.remove()
+		delete this.parts[id]
+		this.total_parts--
+		
+		if (!contents.hasChildNodes())
+			contents.parentNode.remove() // remove <message-block> if empty
+		
+		return true
+	}
+	over_limit() {
+		return this.total_parts > this.max_parts /*&& !this.disable_limit*/
+	}
+	limit_messages() {
+		for (let id in this.parts) {
+			if (this.total_parts <= this.max_parts)
+				break
+			if (!this.remove_message(id))
+				break //fail
+		}
+	}
+	merge_hash(message) {
+		let user = message.Author
+		return `${message.contentId},${message.createUserId},${user.avatar},${user.bigAvatar||""},${user.username} ${user.nickname || ""}`
+	}
+}
+MessageList.prototype.max_parts = 500
+
 let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 	constructor(id, page) {
 		if (this.constructor.rooms[id])
@@ -34,7 +211,7 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 			let inner = outer.firstChild
 			this.messages_outer = outer
 			this.scroll_inner = inner
-			this.messageList = inner.lastChild
+			this.list = new MessageList(inner.lastChild, this.id)
 			// 
 			let extra = inner.firstChild
 			this.extra = extra
@@ -44,14 +221,13 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 		
 		// chat
 		this.message_parts = {}
-		this.max_messages = 500
 		this.total_messages = 0
 		
 		this.load_more_button.onclick = (e)=>{
 			if (e.target.disabled) return
 			e.target.disabled = true
 			// todo: preserve scroll position
-			Draw.load_messages_near(this.id, this.messageList, false, 50, ()=>{
+			this.list.draw_messages_near(false, 50, ()=>{
 				e.target.disabled = false
 			})
 		}
@@ -72,81 +248,13 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 		this.pinned = false
 		this.scroller = new Scroller(this.messages_outer, this.scroll_inner)
 		
-		/////////////////////////////
-		// set up message controls //
-		/////////////////////////////
-		this.controls_message = null
-		let controls = Draw.message_controls(()=>{
-			alert(JSON.stringify(this.controls_message.x_data))
-		},()=>{
-			if (this.controls_message)
-				window.editComment(this.controls_message.x_data)
-		})
-		this.controls = controls.elem
-		
-		this.messageList.addEventListener('focusin', (e)=>{
-			let elem = e.target.closest("message-part, scroll-inner")
-			if (!elem)
-				this.show_controls(null)
-			else if (elem.tagName=='MESSAGE-PART')
-				this.show_controls(elem)
-		})
-		this.messageList.addEventListener('focusout', (e)=>{
-			this.show_controls(null)
-		})
-		
-		// todo: check out relatedTarget?
-		// TODO: IMPORTANT! if we have multiple chats loaded + hidden, does this fire on bg pages or have performance impact?
-		this.messageList.onmouseover = (e)=>{
-			// should we check closest vs composePath?
-			let elem = e.target.closest("message-part, message-controls, scroll-inner")
-			if (!elem || elem.tagName=='SCROLL-INNER')
-				this.show_controls(null)
-			else if (elem.tagName=='MESSAGE-PART')
-				this.show_controls(elem)
-			// otherwise, the element is <message-controls> so we do nothing
-		}
-		this.messageList.onmouseleave = (e)=>{
-			this.show_controls(null)
-		}
 		this.update_page(page)
-	//	let l = Lp.processed_listeners[id] //should this be done with id -1? // what?
-	//	l && this.update_userlist(l)
 		
 		Object.seal(this)
 	}
 	set_status(s) {
 		this.status = s
 		Lp.set_status(this.id, s)
-	}
-	limit_messages() {
-		if (this.total_messages <= this.max_messages)
-			return
-		if (this.limit_checkbox.checked)
-			return
-		this.scroller.print_top(()=>{
-			for (let id in this.message_parts) {
-				if (this.total_messages <= this.max_messages)
-					break
-				if (!this.remove_message(id))
-					break //fail
-			}
-		})
-	}
-	remove_message(id) {
-		let message = this.message_parts[id]
-		if (!message)
-			return false
-		
-		let contents = message.parentNode // <message-contents>
-		message.remove()
-		delete this.message_parts[id]
-		this.total_messages--
-		
-		if (!contents.firstChild)
-			contents.parentNode.remove() // remove <message-block> if empty
-		
-		return true
 	}
 	update_avatar(user) {
 		let item = this.userlist.find(item => item.user.id == user.id)
@@ -200,62 +308,27 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 		this.scroller.destroy()
 		this.scroller = null
 		this.visible = false
-		this.message_parts = {}
-	}
-	insert_merge(comment, backwards) {
-		let part = Draw.insert_comment_merge(this.messageList, comment, backwards)
-		this.total_messages++
-		this.message_parts[comment.id] = part
 	}
 	my_last_message() {
-		return Object.values(this.message_parts).findLast((msg)=>{
+		return Object.values(this.list.parts).findLast((msg)=>{
 			return msg && msg.x_data.createUserId == Req.uid
 		})
 	}
 	// display a list of messages
 	// DON'T call this unless you know what you're doing
-	
 	// comments: [Comment]
 	// animate: Boolean - whether to play the scrolling animation
 	display_messages(comments, animate=true) {
 		this.scroller.print(()=>{
-			for (let comment of comments) {
-				if (comment.deleted) {
-					this.remove_message(comment.id)
-				} else {
-					let old = this.message_parts[comment.id]
-					if (old) { // edited
-						let part = Draw.message_part(comment)
-						this.message_parts[comment.id] = part
-						old.replaceWith(part)
-					} else { // new comment
-						this.insert_merge(comment, false)
-					}
-				}
-			}
+			for (let comment of comments)
+				this.list.display_message(comment, false)
 		}, animate)
-		this.limit_messages()
-	}
-	
-	// TODO; message controls should be a global thing, rather than per chatroom
-	// only one active at a time, and
-	// should also work on search results, so..
-	
-	show_controls(elem) {
-		if (elem) {
-			// why does this fail sometimes?
-			if (!elem.parentNode) {
-				console.error("oops, elem was removed?")
-			} else {
-				elem.parentNode.insertBefore(this.controls, elem)
-				this.controls_message = elem // this must be the element where .x_data is set
-			}
-		} else {
-			this.controls.remove()
-			this.controls_message = null
+		if (this.list.over_limit() && !this.limit_checkbox.checked) {
+			this.scroller.print_top(()=>{
+				this.list.limit_messages()
+			})
 		}
 	}
-	
 }, { // STATIC METHODS
 	/* static */
 	rooms: {},
@@ -327,20 +400,6 @@ let ChatRoom = function(){"use strict"; return new_class(class ChatRoom {
 	title_notification(comment) {
 		View.title_notification(comment.text, Draw.avatar_url(comment.Author, "size=120&crop=true"))
 		// todo: also call if the current comment being shown in the title is edited
-	},
-	
-	/* static */
-	// shouldnt be here, but nowhere else to put it..
-	load_messages_near(page, last, newer, amount, callback) {
-		let order = newer ? 'id' : 'id_desc'
-		let query = `contentId = @pid AND id ${newer?">":"<"} @last`
-		Lp.chain({
-			values: {last:last, pid:page},
-			requests: [
-				{type:'message', fields:'*', query, order, limit: amount},
-				{type:'user', fields:'*', query:"id in @message.createUserId"},
-			]
-		}, callback)
 	},
 	
 	// get/create room
