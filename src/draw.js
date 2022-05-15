@@ -233,7 +233,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	search_comment: function(comment, parent) {
 		let outer = this()
 		
-		let pg = content_label(parent, false)
+		let pg = content_label(parent, !false)
 		outer.prepend(pg)
 		
 		let inner = outer.lastChild
@@ -242,10 +242,6 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		list.single_message(comment)
 		
 		let ne = button2("Load Newer", function() {
-			if (ne) {
-				inner.after(ne)
-				ne = null
-			}
 			list.draw_messages_near(true, 10, (ok)=>{
 				if (!ok)
 					this.disabled = true
@@ -253,17 +249,13 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		})
 		
 		inner.before(button2("Load Older", function() {
-			if (ne) {
-				inner.after(ne)
-				ne = null
-			}
 			list.draw_messages_near(false, 10, (ok)=>{
 				if (!ok)
 					this.disabled = true
 			})
 		}))
 		
-		inner.before(ne)
+		inner.after(ne)
 		
 		return outer
 	}.bind(𐀶`
