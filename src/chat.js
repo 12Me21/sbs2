@@ -146,7 +146,7 @@ class MessageList {
 	static onload() {
 		this.controls_message = null
 		this.controls = Draw.message_controls(()=>{
-			alert(JSON.stringify(this.controls_message.x_data))
+			alert(JSON.stringify(this.controls_message.x_data, null, 1)) // <small heart>
 		},()=>{
 			if (this.controls_message)
 				window.editComment(this.controls_message.x_data)
