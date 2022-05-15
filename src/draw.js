@@ -242,6 +242,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		list.single_message(comment)
 		
 		let ne = button2("Load Newer", function() {
+			// todo: make these buttons part of the message-list class
 			list.draw_messages_near(true, 10, (ok)=>{
 				if (!ok)
 					this.disabled = true
@@ -262,7 +263,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 <div class='bottomBorder'>
 	<message-list></message-list>
 </div>
-`),
+`), // todo: it would be nice to put the older/newer buttons to the left of the message so they dont waste vertical space. or maybe have an initial "load surrounding' button next to the page link?
 	
 	//todo; like, request_button which disables/enables automatically
 	button2: function(label, onclick) {

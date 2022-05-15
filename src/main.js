@@ -106,6 +106,8 @@ function dom_ready() {
 	
 	Sidebar.onload()
 	
+	MessageList.onload()
+	
 	print("running "+run_on_load.length+" deferred items")
 	do_when_ready = x=>x()
 	do_when_ready.then = null
