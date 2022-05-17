@@ -69,7 +69,7 @@ for this to work,, we need:
 		scroller_anim_type: {
 			name: "scroll animation method",
 			type: 'select',
-			options: ['2', '1', '0'],
+			options: ['1', '2', '0'],
 			update(value) {
 				Scroller.anim_type = +value
 			},
