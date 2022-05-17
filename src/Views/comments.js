@@ -94,11 +94,9 @@ View.add_view('comments', {
 			if (merge) {
 				x = document.createElement('message-list')
 				$commentSearchResults.append(x)
-				for (let comment of comments) {
-					if (comment.deleted)
-						continue
-					Draw.insert_comment_merge(x, comment, false)
-				}
+				let list = new MessageList(x, comments[0].contentId) // mmndnhhhgghdhfhdh i sure hope it does (contentId)
+				for (let comment of comments)
+					list.display_message(comment, false)
 			} else {
 				for (let c of comments) {
 					let parent = pages[~c.contentId]
