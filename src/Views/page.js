@@ -86,8 +86,6 @@ View.add_view('page', {
 				if (msg && msg.x_data)
 					this.edit_comment(msg.x_data)
 			}
-		}
-		$chatTextarea.onkeypress = (e)=>{
 			if (!e.shiftKey && e.keyCode == 13) { // enter
 				e.preventDefault()
 				this.send_message()
