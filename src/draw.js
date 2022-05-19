@@ -61,20 +61,30 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			if (thing instanceof Error) {
 				let s = this.stack()
 				let out = ""
-				let pf = "💥"
+				let pf = null
 				for (let line of thing.stack.split("\n")) {
 					if (line=="") continue
 					let at = line.split("@")
 					if (at.length == 2) {
+						let file = at[1].replace(base_url, "")
+						let star = at[0].split("*")
+						if (star.length==2) {
+							at[0] = star[1]
+						}
 						let func = pf
 						pf = at[0]
-						let file = at[1].replace(base_url, "")
-						line = "↓"+func+" @ "+file
+						if (func!=null)
+							line = "🙯"+func+"() 🙘 "+file //🙚❧🙘 
+						else
+							line = "💥 —🙘 "+file
+						if (star.length==2) {
+							out = "⸽<async "+star[0]+">\n"+out
+						}
+						out = line+"\n"+out
 					} else {
 						out = ":(\n"+thing.stack
 						break
 					}
-					out = line+"\n"+out
 				}
 				s.textContent = out
 				e.append(s)
