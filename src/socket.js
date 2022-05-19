@@ -67,12 +67,14 @@ let Lp = function() {"use strict"; return singleton({
 			this.state_change('closed')
 		}
 	},
+	is_alive() {
+		return this.websocket && this.websocket.readyState <= WebSocket.OPEN
+	},
 	start_websocket(force) {
-		if (force)
-			this.kill_websocket()
-		if (this.websocket && this.websocket.readyState <= WebSocket.OPEN) {
+		if (!force && this.is_alive())
 			throw new Error("Tried to open multiple websockets")
-		}
+		this.kill_websocket()
+		print('starting websocket...')
 		//`wss://${"w".repeat(10000)}:password@${Req.server}/live/ws?lastId=${this.last_id}&token=${encodeURIComponent(Req.auth)}`
 		this.websocket = new WebSocket(`wss://${Req.server}/live/ws?lastId=${this.last_id}&token=${encodeURIComponent(Req.auth)}`/*, 'json'*/)
 		this.state_change('connecting')
@@ -88,15 +90,15 @@ let Lp = function() {"use strict"; return singleton({
 		}
 		
 		this.websocket.onclose = ({code, reason, wasClean})=>{
-			this.state_change('closed')
 			this.ready = false
+			this.state_change('closed')
+			print('websocket closed')
 			if (!this.expected_close) {
 				if (this.no_restart)
 					return
-				console.warn("websocket closed", code, reason, wasClean)
-				let cont = window.confirm(`websocket died,,${reason}\n${new Date()}\n${document.visibilityState}[OK] - start`)
-				if (!cont)
-					return
+				//console.warn("websocket closed", code, reason, wasClean)
+				if ('visible'!=document.visibilityState)
+					return // restart later
 			}
 			this.expected_close = false
 			// we use timeout to avoid recursion and leaking stack traces
@@ -242,9 +244,10 @@ window.addEventListener('beforeunload', e=>{
 
 document.addEventListener('visibilitychange', e=>{
 	if ('visible'==document.visibilityState) {
-		print('visible')
-		if (Lp.ready)
+		if (Lp.is_alive())
 			Lp.ping(()=>{})
+		else
+			Lp.open_websocket()
 	}
 })
 
