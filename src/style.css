@@ -871,6 +871,11 @@ html[data-socket-state="ping"] #\$openSidebar {
 	textarea, input {
 		font-size: 16px;
 	}
+	/* give space to the left so the cursor can reach there */
+	textarea-container > textarea {
+		padding-left: 2px;
+		width: -webkit-fill-available; width: -moz-available; width: stretch;
+	}
 }
 /*@media (max-width: 700px), (max-height: 500px) {
 	textarea, input {

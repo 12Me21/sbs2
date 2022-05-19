@@ -1,6 +1,6 @@
 :root {
-	--T-font: 1em / 1.2 roboto, sans-serif;
-	--T-monospace-font: 0.8em / 1.2 'cascadia code', consolas, monospace;
+	--T-font: 1em roboto, sans-serif;
+	--T-monospace-font: 0.8em 'cascadia code', consolas, monospace;
 }
 
 html {
