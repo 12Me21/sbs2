@@ -255,7 +255,7 @@ let Lp = function() {"use strict"; return singleton({
 						this.state_change('open', true)
 					})
 				} else
-					this.open_websocket()
+					this.start_websocket()
 			}
 		})
 	},
