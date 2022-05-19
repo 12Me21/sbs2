@@ -60,14 +60,23 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		try {
 			if (thing instanceof Error) {
 				let s = this.stack()
-				s.textContent = thing.stack.split("\n").filter(x=>x).reverse().map(x=>{
-					let at = x.split("@")
-					if (at.length != 2) return x
-					let func = at[0]
-					let file = at[1].replace(base_url, "")
-					//let star = at[0].split()
-					return "↓"+func+" @ "+file
-				}).join("\n")
+				let out = ""
+				let pf = "💥"
+				for (let line of thing.stack.split("\n")) {
+					if (line=="") continue
+					let at = line.split("@")
+					if (at.length == 2) {
+						let func = pf
+						pf = at[0]
+						let file = at[1].replace(base_url, "")
+						line = "↓"+func+" @ "+file
+					} else {
+						out = ":(\n"+thing.stack
+						break
+					}
+					out = line+"\n"+out
+				}
+				s.textContent = out
 				e.append(s)
 			}
 			text = String(thing)
