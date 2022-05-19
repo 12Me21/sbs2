@@ -49,7 +49,7 @@ View.add_view('comments', {
 			}
 			if (this.location.query.page==0)
 				this.location.query.page = "1"
-			Nav.goto(this.location)
+			Nav.goto(this.location, true)
 		}
 		$commentSearchButton.onclick = ()=>{ go() }
 		View.bind_enter($commentSearch, $commentSearchButton.onclick)

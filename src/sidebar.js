@@ -1,3 +1,5 @@
+delete window.sidebar // obsolete firefox global variable
+
 let Sidebar = Object.create(null)
 with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	selected_file: null,

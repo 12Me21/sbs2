@@ -12,7 +12,7 @@ class SocketRequestError extends TypeError {
 }
 SocketRequestError.prototype.name = "SocketRequestError"
 
-let Lp = function(){"use strict"; return singleton({
+let Lp = function() {"use strict"; return singleton({
 	handlers: {},
 	handler_id: 1,
 	ready: false,

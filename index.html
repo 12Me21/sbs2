@@ -25,7 +25,11 @@
 		window.location.search = ""
 	}
 	window.print = window.alert
-	
+	/* note: when running the page locally (with a file:// url),
+		syntax errors will be "muted" and won't contain any info
+		in firefox, you can disable "security.fileuri.strict_origin_policy"
+		(be VERY careful about viewing local pages with this setting off)
+	 */
 	window.onerror = function(message, source, line, col, error) {
 		window.setTimeout(function() {
 			if (confirm("ERROR DURING PAGE LOAD!\n"+message+"\nin "+source+"\nat "+line+":"+col+"\n[Cancel] = reload page, [Ok] = continue"))

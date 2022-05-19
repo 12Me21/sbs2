@@ -1,5 +1,7 @@
 const TYPES = {}
 
+// permissions class? idk
+
 let Entity
 
 class Author {

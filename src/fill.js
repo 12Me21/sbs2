@@ -2,28 +2,30 @@
 // ⚠ DANGER! ⚠ //
 
 // ⚡ Remove all properties of `Object.prototype`
-// - create backups:
-window.hasOwnProperty = {}.hasOwnProperty // (ff devtools needs this)
+// - first, create backups of useful functions:
+// firefox devtools uses this:
+window.hasOwnProperty = {}.hasOwnProperty
+// Object.prototype.toString.call -> Object.stringify
+Object.stringify = Function.prototype.call.bind({}.toString)
+// polyfill: Object.hasOwn()
+if (!Object.hasOwn)
+	Object.hasOwn = Function.prototype.call.bind({}.hasOwnProperty)
+// everything, just in case
 Object.proto = Object.getOwnPropertyDescriptors(Object.prototype)
+
 // - remove properties:
 for (let key of Object.getOwnPropertyNames(Object.prototype))
 	delete Object.prototype[key]
-//Object.freeze(Object.prototype)
 
 function METHOD(type, name, tc) {
 	Object.defineProperty(type.prototype, name, {
 		value: tc, configurable: true,
 	})
 }
-function throw2(err) {
-	throw err
-}
 function SELF_DESTRUCT(err, ...args) {
 	let x = {"💥💥💥💥💥"(){ throw new err(...args) }}["💥💥💥💥💥"]
 	return new Proxy({}, {get:x, set:x, has:x})
 }
-
-// ex: function callback(resp=throw2(err), err) ??
 
 // ⚡ Custom errors
 // call this immediately after super() (do not pass args to super)
@@ -82,9 +84,7 @@ let STRICT = new Proxy(Object.create(null), {
 // assign to Type.prototype[Symbol.toPrimitive]
 // note: will override .toString/.valueOf on any inheriting types
 function NO_CONVERT(type) {
-	if (type=='default') type='Primitive'
-	if (type=='number') type='Number'
-	if (type=='string') type='String'
+	if (type=='default') type='primitive'
 	throw new FieldError("🚮 invalid type conversion", this, "⛔ to "+type)
 }
 METHOD(Object, Symbol.toPrimitive, NO_CONVERT)
@@ -92,8 +92,8 @@ METHOD(Object, Symbol.toStringTag, "Object")
 METHOD(Error, Symbol.toPrimitive, Error.prototype.toString)
 
 // ⚡ async/await/Promise replacement using function*/yield
-let GeneratorFunction = function*(){}.constructor
-let Generator = GeneratorFunction.prototype
+window.GeneratorFunction = function*(){}.constructor
+window.Generator = GeneratorFunction.prototype
 
 METHOD(Generator, 'run', function(ok=console.info, err=e=>{throw e}) {
 	let step, main = data=>{
@@ -114,7 +114,7 @@ METHOD(Generator, 'run', function(ok=console.info, err=e=>{throw e}) {
 
 //const toBlob = new Symbol('toBlob')
 
-// wow an actual 
+// polyfill: Array.prototype.findLast()
 if (!Array.prototype.findLast)
 	Array.prototype.findLast = function(filter) {
 		for (let i=this.length-1; i>=0; i--) {
@@ -123,9 +123,9 @@ if (!Array.prototype.findLast)
 		}
 		return undefined
 	}
-
+// polyfill: document.timeline.currentTime
 if (!document.timeline)
-	document.timeline = {get currentTime(){return performance.now()}}
+	document.timeline = {get currentTime(){ return performance.now() }}
 
 // similar to replaceChildren, except:
 //  - only 0 or 1 args
@@ -190,7 +190,6 @@ Object.prototype[FOR] = (callback)=>{
 		callback(value, key, this)
 }
 
-
 // are we using this?
 Object.map = (obj, callback)=>{
 	let ret = {}
@@ -214,39 +213,31 @@ RegExp.prototype.rmatch = function(str) {
 
 
 
-let 𖹭 = Object.create.bind(Object,null,{𖹭:{set(f){Object.seal(Object.assign(this,f))}}})
+let 𖹭 = Object.create.bind(Object,null,{𖹭:{set(f){Object.seal(Object.assign(this,f))}}}) // not used anymore :(
 
-function 𐀶([html]) {
-	let temp = document.createElement('template')
-	temp.innerHTML = html.replace(/\s*\n\s*/g,"")
-	let node = temp.content
-	if (node.childNodes.length==1)
-		node = node.firstChild
-	return node.cloneNode.bind(node, true)
-}
-
-// we aren't ready to use `static` yet, so we
-// assign our static fields this way instead
 const singleton = (obj) => Object.seal(obj)
 
 // activating strict mode:
 // x = function(){"use strict"; ... }()
-// 
 
 // examples:
 // let MySingleton = function(){"use strict"; return singleton({
 //    <fields>,
 // })}()
 
+function 𐀶([html]) {
+	let temp = document.createElement('template')
+	temp.innerHTML = html.replace(/\s*?\n\s*/g, "")
+	let node = temp.content
+	if (node.childNodes.length==1)
+		node = node.firstChild
+	return document.importNode.bind(document, node, true)
+}
+
 // shouldn't really be here but this needs to be defined pretty early..
 let run_on_load = []
 let do_when_ready = func => run_on_load.push(func)
 do_when_ready.then = do_when_ready
 //console.log("deferring render", go)
-
-if (!window.devicePixelRatio)
-	window.devicePixelRatio = 1
-
-delete window.sidebar // obsolete firefox global variable
 
 //talking excitedly about javasscript getters and setters for an hour and then crying

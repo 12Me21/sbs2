@@ -50,14 +50,21 @@ function immediate() {
 	Nav.init()
 	
 	window.onerror = function(message, source, line, col, error) {
-		console.error(error)
+		let ok
 		try {
+			// syntax errors may be "muted" for security reasons
+			// in that case, create a fake error with the info we have
+			// (generally, that's only the filename)
+			if (!error) {
+				error = new Error(message)
+				error.stack = "@"+source+":"+line+":"+col
+			}
 			Sidebar.print(error)
-		} catch(e) {
-			console.error("error in window.onerror:", e, arguments)
-			// yeah no
+			ok = true
+		} finally {
+			if (!ok)
+				alert("error while handling error!")
 		}
-		//throw error
 	}
 }
 
