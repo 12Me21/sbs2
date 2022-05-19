@@ -74,11 +74,11 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 						let func = pf
 						pf = at[0]
 						if (func!=null)
-							line = "🙯"+func+"() 🙘 "+file //🙚❧🙘 
+							line = "↓"+func+"() - "+file //🙚❧🙘 //🙯⸽🙘
 						else
-							line = "💥 🙘 "+file
+							line = "💥 - "+file
 						if (star.length==2) {
-							out = "⸽<async "+star[0]+">\n"+out
+							out = ":<async "+star[0]+">\n"+out
 						}
 						out = line+"\n"+out
 					} else {
