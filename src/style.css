@@ -692,13 +692,6 @@ input:invalid {
 	background: var(--error-bg);
 }
 
-/* for devices with small screens */
-@media (max-width: 700px), (max-height: 500px) {
-	textarea, input {
-		font-size: 100%;
-	}
-}
-
 .registerBox {
 	padding: 0.3rem 0.5rem;
 }
@@ -873,3 +866,14 @@ html[data-socket-state="ping"] #\$openSidebar {
 	--button-bg: linear-gradient(#e0c87f, #e0c87f, yellow);
 }
 
+/* ios safari */
+@supports (-webkit-touch-callout: none) {
+	textarea, input {
+		font-size: 16px;
+	}
+}
+/*@media (max-width: 700px), (max-height: 500px) {
+	textarea, input {
+		font-size: 16px;
+	}
+}*/
