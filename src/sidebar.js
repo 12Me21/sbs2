@@ -157,10 +157,10 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 			Lp.chain({
 				values: {
 					search: `%${$searchInput.value}%`,
-					pagetype: 1,
+					pagetype: [1,4],
 				},
 				requests: [
-					{type:'content', fields:'name,id,contentType,permissions,createUserId,lastCommentId', query:"contentType = @pagetype AND name LIKE @search", limit:50, order:'lastCommentId_desc'},
+					{type:'content', fields:'name,id,contentType,permissions,createUserId,lastCommentId', query:"contentType in @pagetype AND name LIKE @search", limit:50, order:'lastCommentId_desc'},
 				],
 			}, resp=>{
 				$searchButton.disabled = false

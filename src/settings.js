@@ -74,6 +74,31 @@ for this to work,, we need:
 				Scroller.anim_type = +value
 			},
 		},
+		lazy_loading: {
+			name: "lazy image loading",
+			type: 'select',
+			options: ['on', 'off'],
+			update(value) {
+				if (value=='off') {
+					if (window.intersection_observer)
+						window.intersection_observer.disconnect()
+					window.intersection_observer = null
+				} else {
+					if (!window.intersection_observer)
+						window.intersection_observer = new IntersectionObserver((data)=>{
+							// todo: load top to bottom on pages
+							data = data.filter(x=>x.isIntersecting).sort((a,b)=>b.boundingClientRect.bottom-a.boundingClientRect.bottom)
+							for (let {target} of data) {
+								if (!target.src) {
+									//console.log('load', target.dataset.src)
+									target.src = target.dataset.src
+									intersection_observer.unobserve(target)
+								}
+							}
+						})
+				}
+			},
+		},
 		big_avatar: {
 			name: "Big Avatar",
 			type: 'select',

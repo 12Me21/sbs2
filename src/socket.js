@@ -94,7 +94,7 @@ let Lp = function() {"use strict"; return singleton({
 		
 		this.websocket.onerror = (e)=>{
 			console.warn("websocket error")
-			print("websocket connection error")
+			print("📶 websocket connection error")
 			this.got_error = true
 		}
 		
