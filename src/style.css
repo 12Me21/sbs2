@@ -856,3 +856,19 @@ activity-users {
 #\$commentSearchResults > div > .linkBar {
 	background: var(--bar-bg);
 }
+
+html[data-socket-state="opening"] #\$openSidebar {
+	background: blue;
+}
+
+html[data-socket-state="dead"] #\$openSidebar {
+	background: red;
+}
+
+html[data-socket-state="open"] #\$openSidebar {
+	background: green;
+}
+
+html[data-socket-state="ping"] #\$openSidebar {
+	background: yellow;
+}

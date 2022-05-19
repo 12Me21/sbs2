@@ -20,9 +20,12 @@ let Lp = function() {"use strict"; return singleton({
 	no_restart: false,
 	expected_close: false,
 	websocket: null,
-	state_change(state) {
+	state_change(state, ping) {
 		// todo: here, we should graphically indicate the state somehow
 		// as well as when pings are sent
+		if (ping && document.documentElement.dataset.socketState!='ping')
+			return
+		document.documentElement.dataset.socketState = state
 	},
 	statuses: {},
 	status_queue: {},
@@ -56,6 +59,7 @@ let Lp = function() {"use strict"; return singleton({
 	},
 	kill_websocket() {
 		if (this.websocket) {
+			this.state_change('dead')
 			this.ready = false
 			this.websocket.onerror = null
 			this.websocket.onopen = null
@@ -64,7 +68,6 @@ let Lp = function() {"use strict"; return singleton({
 			this.expected_close = false
 			this.websocket.close()
 			this.websocket = null
-			this.state_change('closed')
 		}
 	},
 	is_alive() {
@@ -77,7 +80,7 @@ let Lp = function() {"use strict"; return singleton({
 		print('starting websocket...')
 		//`wss://${"w".repeat(10000)}:password@${Req.server}/live/ws?lastId=${this.last_id}&token=${encodeURIComponent(Req.auth)}`
 		this.websocket = new WebSocket(`wss://${Req.server}/live/ws?lastId=${this.last_id}&token=${encodeURIComponent(Req.auth)}`/*, 'json'*/)
-		this.state_change('connecting')
+		this.state_change('opening')
 		
 		this.websocket.onopen = (e)=>{
 			this.state_change('open')
@@ -91,18 +94,21 @@ let Lp = function() {"use strict"; return singleton({
 		
 		this.websocket.onclose = ({code, reason, wasClean})=>{
 			this.ready = false
-			this.state_change('closed')
+			this.state_change('dead')
 			print('websocket closed')
+			let restart = true
+			if (this.no_restart)
+				restart = false
 			if (!this.expected_close) {
-				if (this.no_restart)
-					return
-				//console.warn("websocket closed", code, reason, wasClean)
 				if ('visible'!=document.visibilityState)
-					return // restart later
+					restart = false
 			}
 			this.expected_close = false
 			// we use timeout to avoid recursion and leaking stack traces
-			window.setTimeout(()=>this.start_websocket())
+			if (restart) {
+				this.state_change('opening')
+				window.setTimeout(()=>this.start_websocket())
+			}
 		}
 		
 		this.websocket.onmessage = ({origin, data})=>{
@@ -236,20 +242,26 @@ let Lp = function() {"use strict"; return singleton({
 			ChatRoom.display_messages(comments)
 		}
 	},
+	init() {
+		window.addEventListener('beforeunload', e=>{
+			this.no_restart = true
+		})
+		
+		document.addEventListener('visibilitychange', e=>{
+			if ('visible'==document.visibilityState) {
+				if (this.is_alive()) {
+					this.state_change('ping')
+					this.ping(()=>{
+						this.state_change('open', true)
+					})
+				} else
+					this.open_websocket()
+			}
+		})
+	},
 })}()
 
-window.addEventListener('beforeunload', e=>{
-	Lp.no_restart = true
-})
-
-document.addEventListener('visibilitychange', e=>{
-	if ('visible'==document.visibilityState) {
-		if (Lp.is_alive())
-			Lp.ping(()=>{})
-		else
-			Lp.open_websocket()
-	}
-})
+Lp.init()
 
 /*
 idea: when socket dies, if page isn't visible, we do nothing
@@ -260,3 +272,12 @@ if socket is alive on visiblechange, but it's been a while since the last messag
 also, some http requests are expected to produce a websocket response.
 so, if we don't get one, then something is up
 */
+
+/*
+websocket state indication
+1: dead (nothing is happening)
+2: starting (socket has been created, hasn't opened yet)
+3: open (normal)
+
+*/
+
