@@ -858,18 +858,18 @@ activity-users {
 }
 
 html[data-socket-state="opening"] #\$openSidebar {
-	--button-bg: linear-gradient(#6fb7c0, blue);
+	--button-bg: linear-gradient(#6fb7c0, #6fb7c0, blue);
 }
 
 html[data-socket-state="dead"] #\$openSidebar {
-	--button-bg: linear-gradient(#f86060, red);
+	--button-bg: linear-gradient(#f86060, #f86060, red);
 }
 
 html[data-socket-state="open"] #\$openSidebar {
-	--button-bg: linear-gradient(#3f9f5f, green);
+	--button-bg: linear-gradient(#3f9f5f, #3f9f5f, green);
 }
 
 html[data-socket-state="ping"] #\$openSidebar {
-	--button-bg: linear-gradient(#e0c87f, yellow);
+	--button-bg: linear-gradient(#e0c87f, #e0c87f, yellow);
 }
 
