@@ -111,7 +111,11 @@ let Lp = function() {"use strict"; return singleton({
 			}
 		}
 		
-		this.websocket.onmessage = ({origin, data})=>{
+		this.websocket.onmessage = ({origin, data, target})=>{
+			if (target !== this.websocket) {
+				alert("websocket wrong event target? multiple sockets still open?")
+				return
+			}
 			this.handle_response(JSON.parse(data))
 		}
 	},
