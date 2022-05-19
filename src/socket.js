@@ -17,7 +17,7 @@ let Lp = function() {"use strict"; return singleton({
 	handler_id: 1,
 	ready: false,
 	last_id: "",
-	dead: false,
+	no_restart: false,
 	expected_close: false,
 	websocket: null,
 	state_change(state) {
@@ -47,34 +47,52 @@ let Lp = function() {"use strict"; return singleton({
 		if (this.websocket)
 			this.websocket.close()
 	},
-	start_websocket() {
-		if (this.websocket && this.websocket.readyState <= WebSocket.OPEN)
+	on_ready() {
+		Object.assign(this.status_queue, this.statuses)
+		this.flush_statuses(()=>{})
+		for (let i in this.handlers)
+			this.send(this.handlers[i].request)
+		this.ready = true
+	},
+	kill_websocket() {
+		if (this.websocket) {
+			this.ready = false
+			this.websocket.onerror = null
+			this.websocket.onopen = null
+			this.websocket.onclose = null
+			this.websocket.onmessage = null
+			this.expected_close = false
+			this.websocket.close()
+			this.websocket = null
+			this.state_change('closed')
+		}
+	},
+	start_websocket(force) {
+		if (force)
+			this.kill_websocket()
+		if (this.websocket && this.websocket.readyState <= WebSocket.OPEN) {
 			throw new Error("Tried to open multiple websockets")
+		}
 		//`wss://${"w".repeat(10000)}:password@${Req.server}/live/ws?lastId=${this.last_id}&token=${encodeURIComponent(Req.auth)}`
 		this.websocket = new WebSocket(`wss://${Req.server}/live/ws?lastId=${this.last_id}&token=${encodeURIComponent(Req.auth)}`/*, 'json'*/)
 		this.state_change('connecting')
 		
-		this.websocket.onerror = (e)=>{
-			console.warn('ws error', e)
-		}
-		
 		this.websocket.onopen = (e)=>{
 			this.state_change('open')
 			console.log("🌄 websocket open")
-			Object.assign(this.status_queue, this.statuses)
-			this.flush_statuses(()=>{})
-			for (let i in this.handlers)
-				this.send(this.handlers[i].request)
-			this.ready = true
+			this.on_ready()
 		}
 		
-		this.websocket.onclose = (event)=>{
+		this.websocket.onerror = (e)=>{
+			console.warn('ws error')
+		}
+		
+		this.websocket.onclose = ({code, reason, wasClean})=>{
 			this.state_change('closed')
 			this.ready = false
 			if (!this.expected_close) {
-				if (this.dead)
+				if (this.no_restart)
 					return
-				let {code, reason, wasClean} = event
 				console.warn("websocket closed", code, reason, wasClean)
 				let cont = window.confirm(`websocket died,,${reason}\n${new Date()}\n[OK] - start`)
 				if (!cont)
@@ -85,8 +103,8 @@ let Lp = function() {"use strict"; return singleton({
 			window.setTimeout(()=>this.start_websocket())
 		}
 		
-		this.websocket.onmessage = (event)=>{
-			this.handle_response(JSON.parse(event.data))
+		this.websocket.onmessage = ({origin, data})=>{
+			this.handle_response(JSON.parse(data))
 		}
 	},
 	/*************************
@@ -219,25 +237,13 @@ let Lp = function() {"use strict"; return singleton({
 })}()
 
 window.addEventListener('beforeunload', e=>{
-	Lp.dead = true
+	Lp.no_restart = true
 })
 
-window.addEventListener('focus', e=>{
-	if (Lp.ready)
-		Lp.ping(()=>{})
+document.addEventListener('visibilitychange', e=>{
+	if ('visible'==document.visibilityState) {
+		print('visible')
+		if (Lp.ready)
+			Lp.ping(()=>{})
+	}
 })
-
-/*window.addEventListener('pageshow', e=>{
-	print('show')
-})*/
-
-/*
-token expired:
-onmessage:
-message:`Error during token validation: IDX10223: Lifetime validation failed. The token is expired. ValidTo: 'System.DateTime', Current time: 'System.DateTime'.`
-onclose:
-code: 1006
-reason: <empty string>
-wasClean: false
-
-*/
