@@ -858,17 +858,18 @@ activity-users {
 }
 
 html[data-socket-state="opening"] #\$openSidebar {
-	background: blue;
+	--button-bg: linear-gradient(#6fb7c0, blue);
 }
 
 html[data-socket-state="dead"] #\$openSidebar {
-	background: red;
+	--button-bg: linear-gradient(#f86060, red);
 }
 
 html[data-socket-state="open"] #\$openSidebar {
-	background: green;
+	--button-bg: linear-gradient(#3f9f5f, green);
 }
 
 html[data-socket-state="ping"] #\$openSidebar {
-	background: yellow;
+	--button-bg: linear-gradient(#e0c87f, yellow);
 }
+

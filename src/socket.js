@@ -21,10 +21,11 @@ let Lp = function() {"use strict"; return singleton({
 	expected_close: false,
 	websocket: null,
 	state_change(state, ping) {
-		// todo: here, we should graphically indicate the state somehow
-		// as well as when pings are sent
 		if (ping && document.documentElement.dataset.socketState!='ping')
 			return
+		// TODO: also use yellow state for when a request has been sent but not recieved yet.
+		// (maybe use a less annoying color)
+		// and maybe combine this all with the header color instead of the button. (also, display in mobile sidebar somehow?)
 		document.documentElement.dataset.socketState = state
 	},
 	statuses: {},
