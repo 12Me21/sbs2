@@ -76,7 +76,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 						if (func!=null)
 							line = "🙯"+func+"() 🙘 "+file //🙚❧🙘 
 						else
-							line = "💥 —🙘 "+file
+							line = "💥 🙘 "+file
 						if (star.length==2) {
 							out = "⸽<async "+star[0]+">\n"+out
 						}
