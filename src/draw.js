@@ -1,3 +1,5 @@
+let base_url = new URL("./", window.location.href).href
+
 // HTML RENDERING
 let Draw = Object.create(null)
 with(Draw)((window)=>{"use strict";Object.assign(Draw,{
@@ -58,11 +60,19 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		try {
 			if (thing instanceof Error) {
 				let s = this.stack()
-				s.textContent = thing.stack.split("\n").reverse().join("\n↓")
+				s.textContent = thing.stack.split("\n").filter(x=>x).reverse().map(x=>{
+					let at = x.split("@")
+					if (at.length != 2) return x
+					let func = at[0]
+					let file = at[1].replace(base_url, "")
+					//let star = at[0].split()
+					return "↓"+func+" @ "+file
+				}).join("\n")
 				e.append(s)
 			}
 			text = String(thing)
 		} catch (error) {
+			console.warn('error in print', error)
 			let type = Object.getPrototypeOf(thing)
 			if (type && type.constructor) {
 				let c = type.constructor
