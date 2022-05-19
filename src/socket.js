@@ -94,7 +94,7 @@ let Lp = function() {"use strict"; return singleton({
 				if (this.no_restart)
 					return
 				console.warn("websocket closed", code, reason, wasClean)
-				let cont = window.confirm(`websocket died,,${reason}\n${new Date()}\n[OK] - start`)
+				let cont = window.confirm(`websocket died,,${reason}\n${new Date()}\n${document.visibilityState}[OK] - start`)
 				if (!cont)
 					return
 			}
@@ -247,3 +247,13 @@ document.addEventListener('visibilitychange', e=>{
 			Lp.ping(()=>{})
 	}
 })
+
+/*
+idea: when socket dies, if page isn't visible, we do nothing
+(otherwise, try restarting right away)
+then, when page becomes visible, start socket if it's dead.
+if socket is alive on visiblechange, but it's been a while since the last message or visiblechange, just kill and restart it, or maybe send a ping idk.
+
+also, some http requests are expected to produce a websocket response.
+so, if we don't get one, then something is up
+*/
