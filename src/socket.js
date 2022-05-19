@@ -20,6 +20,7 @@ let Lp = function() {"use strict"; return singleton({
 	no_restart: false,
 	expected_close: false,
 	websocket: null,
+	got_error: false,
 	state_change(state, ping) {
 		if (ping && document.documentElement.dataset.socketState!='ping')
 			return
@@ -75,12 +76,14 @@ let Lp = function() {"use strict"; return singleton({
 		return this.websocket && this.websocket.readyState <= WebSocket.OPEN
 	},
 	start_websocket(force) {
+		if (this.no_restart)
+			return
 		if (!force && this.is_alive())
 			throw new Error("Tried to open multiple websockets")
 		this.kill_websocket()
 		print('starting websocket...')
-		//`wss://${"w".repeat(10000)}:password@${Req.server}/live/ws?lastId=${this.last_id}&token=${encodeURIComponent(Req.auth)}`
-		this.websocket = new WebSocket(`wss://${Req.server}/live/ws?lastId=${this.last_id}&token=${encodeURIComponent(Req.auth)}`/*, 'json'*/)
+		this.got_error = false
+		this.websocket = new WebSocket(`wss://${Req.server}/live/ws?lastId=${this.last_id}&token=${encodeURIComponent(Req.auth)}`)
 		this.state_change('opening')
 		
 		this.websocket.onopen = (e)=>{
@@ -90,15 +93,19 @@ let Lp = function() {"use strict"; return singleton({
 		}
 		
 		this.websocket.onerror = (e)=>{
-			console.warn('ws error')
+			console.warn("websocket error")
+			print("websocket connection error")
+			this.got_error = true
 		}
 		
 		this.websocket.onclose = ({code, reason, wasClean})=>{
+			console.log("ws closed", code, reason, wasClean)
 			this.ready = false
 			this.state_change('dead')
-			print('websocket closed')
 			let restart = true
 			if (this.no_restart)
+				restart = false
+			if (this.got_error) // network error
 				restart = false
 			if (!this.expected_close) {
 				if ('visible'!=document.visibilityState)
@@ -262,6 +269,11 @@ let Lp = function() {"use strict"; return singleton({
 				} else
 					this.start_websocket()
 			}
+		})
+		
+		window.addEventListener('online', e=>{
+			print('online')
+			this.start_websocket(true)
 		})
 	},
 })}()
