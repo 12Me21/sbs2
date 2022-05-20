@@ -80,6 +80,8 @@ View.add_view('page', {
 		
 		// up arrow = edit last comment
 		$chatTextarea.onkeydown = (e)=>{
+			if (e.isComposing)
+				return
 			if (e.keyCode==38 && $chatTextarea.value=="") { // up arrow
 				let room = ChatRoom.currentRoom
 				let msg = room && room.my_last_message()
