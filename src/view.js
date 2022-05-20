@@ -65,10 +65,13 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 					})
 				}
 				$testInput.onkeydown = e=>{
-					$testOut3.textContent="onkeydown\n"
+					let p = ""
 					;['shiftKey','ctrlKey','altKey','metaKey','location','isComposing','repeat','code','key','charCode','char','keyCode','which'].forEach(x=>{
-						$testOut3.textContent += x+": "+e[x]+"\n"
+						p += x+": "+e[x]+"\n"
 					})
+					$testOut3.textContent="onkeydown\n"+p
+					if (e.keyCode == 13)
+						$testOut4.textContent = "last enter press\n"+p
 				}
 			},
 			name: 'test',
