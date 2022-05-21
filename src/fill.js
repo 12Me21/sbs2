@@ -22,13 +22,12 @@ function METHOD(type, name, tc) {
 		value: tc, configurable: true,
 	})
 }
-function SELF_DESTRUCT(err, ...args) {
-	let x = {"💥💥💥💥💥"(){ throw new err(...args) }}["💥💥💥💥💥"]
+function SELF_DESTRUCT(err) {
+	let x = ()=>{throw err}
 	return new Proxy({}, {get:x, set:x, has:x})
 }
 
 // ⚡ Custom errors
-// call this immediately after super() (do not pass args to super)
 METHOD(Error, 'trim_stack', function(levels=1) {
 	while (levels-->0)
 		this.stack = this.stack.replace(/^(?!Error:).*\n/, "")

@@ -75,8 +75,9 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 					params.globalPerms = ""
 				print(`uploading ${priv?"private":"public"} file...`)
 				
-				new (Req.upload_file(selected_file, params))(file=>{
+				Req.upload_file(selected_file, params).do = (file, err)=>{
 					$file_upload.disabled = false
+					if (err) return
 					
 					if (priv && file.permissions[0])
 						alert("file permissions not set correctly!\nid:"+file.id)
@@ -93,9 +94,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 					$file_url.value = Req.file_url(file.hash)
 					$file_image.src = ""
 					$file_image.src = Req.file_url(file.hash)
-				}, err=>{
-					$file_upload.disabled = false
-				})
+				}
 			}
 		}
 		$file_url.onfocus = function() {
@@ -179,16 +178,15 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		
 		$loginForm.onsubmit = function(e) {
 			e.preventDefault()
-			new (Req.get_auth($loginForm.username.value, $loginForm.password.value))(
-				resp=>{
+			Req.get_auth($loginForm.username.value, $loginForm.password.value).do = (resp, err)=>{
+				if (err) {
+					alert("❌ logging in failed\n"+err)
+				} else {
 					Req.save_auth(resp)
 					alert("✅ logged in!")
 					Nav.reload()
-				},
-				err=>{
-					alert("❌ logging in failed\n"+err)
 				}
-			)
+			}
 		}
 		$logOut.onclick = function(e) {
 			Req.log_out()
@@ -202,11 +200,11 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 				return
 			}
 			delete data.error
-			Req.set_sensitive(data).then((resp)=>{
+			/*Req.set_sensitive(data).then((resp)=>{
 				registerError("Updated", undefined)
 			}, ()=>{
 				registerError(resp, "Failed:") //todo: this doesn't work?
-			})
+			})*/
 		}
 		let d = Draw.settings(Settings)
 		$localSettings.append(d.elem)

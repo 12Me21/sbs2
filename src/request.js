@@ -34,7 +34,7 @@ InvalidRequestError.prototype.name = "InvalidRequestError"
 
 // this class seemed clever at the time (and IS) but idk it's kinda gross...
 class ApiRequest extends XMLHttpRequest {
-	constructor(url, method, body, proc, ok=console.info, fail) {
+	constructor(url, method, body, proc) {
 		super()
 		super.onreadystatechange = this.onreadystatechange
 		
@@ -44,15 +44,15 @@ class ApiRequest extends XMLHttpRequest {
 		
 		this.proc = proc
 		
-		this.ok = ok
-		this.onerror = fail
+		this.do = console.info
 		
 		this.go()
 	}
 	fail(...e) {
-		console.error("request error:", ...e)
-		if (this.onerror)
-			this.onerror(...e)
+		console.error("request error:", ...e, this)
+		let err = new InvalidRequestError(this)
+		this.do(SELF_DESTRUCT(err), err)
+		throw err
 	}
 	go() {
 		this.open(this.method, `https://${Req.server}/${this.url}`)
@@ -93,10 +93,10 @@ class ApiRequest extends XMLHttpRequest {
 			case 200:
 				if (this.proc)
 					resp = this.proc(resp)
-				return this.ok(resp)
+				return this.do(resp)
 			// === Invalid request ===
 			case 400: case 415: case 404: case 500:
-				return this.fail(new InvalidRequestError(this))
+				return this.fail()
 			// === Network Conditions ===
 			case 0:
 				print("Request failed!")
@@ -111,21 +111,21 @@ class ApiRequest extends XMLHttpRequest {
 				return this.retry((after+0.5)*1000, `rate limited ${after}sec`)
 			// === Permissions ===
 			case 403:
-				return this.fail('permission', resp) // todo: can these be InvalidRequestError as well?
+				return this.fail('permission')
 			case 418:
-				return this.fail('ban', resp)
+				return this.fail('ban')
 			case 401:
 				alert(`AUTHENTICATION ERROR!?
 if this is real, you must log out!
 ${resp}`)
 				// todo: let the user log in with the sidebar, without calling log_out, so the page only reloads once instead of twice
 				// this.log_out()
-				return this.fail('auth', resp)
+				return this.fail('auth')
 			// === ??? some other error ===
 			default:
 				alert(`Request failed! ${this.status} ${this.url}`)
 				console.log("REQUEST FAILED", this)
-				return this.fail('error', resp, this.status)
+				return this.fail('error')
 			}
 		}
 	}
@@ -160,15 +160,15 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 			if (data != null)
 				data = JSON.to_blob(data)
 		}
-		return ApiRequest.bind(null, url, method, data, proc)
+		return new ApiRequest(url, method, data, proc)
 	},
 	
 	// idea: function.valueOf calls the function and returns um ..   something.. .chaining .. mmmm
 	
 	chain(data) {
-		return ApiRequest.bind(
-			null, 'request', 'POST',
-			JSON.to_blob(data), resp=>Entity.do_listmap(resp.objects))
+		return new ApiRequest(
+			'request', 'POST', JSON.to_blob(data),
+			resp=>Entity.do_listmap(resp.objects))
 	},
 	
 	/////////////////////////
@@ -248,7 +248,11 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 				set(name, value)
 			}
 		}
-		return ApiRequest.bind(null, 'File', 'POST', form, x=>TYPES.content(x))
+		return new ApiRequest('File', 'POST', form, x=>TYPES.content(x))
+	},
+	write(obj) {
+		let type = obj.Type
+		return new ApiRequest('Write/'+type, 'POST', obj.Blob(), TYPES[type])
 	},
 }
 Object.seal(Req)

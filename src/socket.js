@@ -1,11 +1,10 @@
 // todo: if we're disconnected for a long time, we might lose sync
 // so, at that point there's really no way to recover (also we need to re-request our user object in case it updated)
 
-// only call this through SELFDESTRUCT
 class SocketRequestError extends TypeError {
 	constructor(resp, extra) {
 		super()
-		this.trim_stack(2)
+		this.trim_stack(1)
 		this.resp = resp
 		this.message = "\n"+resp.error
 	}
@@ -182,10 +181,11 @@ let Lp = function() {"use strict"; return singleton({
 				console.warn("got response without handler:", response)
 		}
 		if (response.error) {
-			let x = SELF_DESTRUCT(SocketRequestError, response)
+			let err = new SocketRequestError(response)
+			let x = SELF_DESTRUCT(err)
 			if (handler && handler.request.type == response.type)
-				handler.callback(x)
-			x.throw
+				handler.callback(x, err)
+			throw err
 			return
 		}
 		let data = response.data

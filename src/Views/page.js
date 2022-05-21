@@ -131,33 +131,29 @@ View.add_view('page', {
 			if (data.text) { // input not blank
 				last_edit.text = data.text
 				last_edit.values = data.values //mmn
-				new (Req.send_message(last_edit))(resp=>{
-					//
-				},err=>{
-					alert("Editing comment failed")
-				})
+				Req.send_message(last_edit).do = (resp, err)=>{
+					if (err)
+						alert("Editing comment failed")
+				}
 			} else { // input is blank
 				let resp = confirm("Are you sure you want to delete this message?\n"+last_edit.text)
 				if (!resp) return
-				new (Req.delete_message(last_edit.id))(resp=>{
-					//
-				},err=>{
-					alert("Deleting comment failed")
-				})
+				Req.delete_message(last_edit.id).do = (resp, err)=>{
+					if (err)
+						alert("Deleting comment failed")
+				}
 			}
 		} else { // posting new comment
 			if (data.text) { // input is not blank
 				let old = data
-				new (Req.send_message({
-					contentId:room.id,
-					text:data.text,
-					values:data.values
-				}))(resp=>{
-					// 
-				}, err=>{
-					//error sending message
-					this.write_input(old)
-				})
+				Req.send_message({
+					contentId: room.id,
+					text: data.text,
+					values: data.values
+				}).do = (resp, err)=>{
+					if (err) //error sending message
+						this.write_input(old)
+				}
 				$chatTextarea.value = ""
 				this.textarea_resize()
 			}
