@@ -182,9 +182,8 @@ let Lp = function() {"use strict"; return singleton({
 		}
 		if (response.error) {
 			let err = new SocketRequestError(response)
-			let x = SELF_DESTRUCT(err)
 			if (handler && handler.request.type == response.type)
-				handler.callback(x, err)
+				handler.callback(SELF_DESTRUCT(err), err)
 			throw err
 			return
 		}

@@ -44,14 +44,20 @@ class ApiRequest extends XMLHttpRequest {
 		
 		this.proc = proc
 		
-		this.do = console.info
+		this.ok = console.info
 		
 		this.go()
+	}
+	set do(fn) {
+		this.ok = fn
+		/*Object.defineProperty(fn, 'err', {set: (fn)=>{
+			this.onerror = fn
+		}})*/ // then we can call request.do = resp=>{}.err = err=>{} hm?
 	}
 	fail(...e) {
 		console.error("request error:", ...e, this)
 		let err = new InvalidRequestError(this)
-		this.do(SELF_DESTRUCT(err), err)
+		this.ok(SELF_DESTRUCT(err), err)
 		throw err
 	}
 	go() {
@@ -93,7 +99,7 @@ class ApiRequest extends XMLHttpRequest {
 			case 200:
 				if (this.proc)
 					resp = this.proc(resp)
-				return this.do(resp)
+				return this.ok(resp)
 			// === Invalid request ===
 			case 400: case 415: case 404: case 500:
 				return this.fail()
