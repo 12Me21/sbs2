@@ -26,6 +26,8 @@ function immediate() {
 	
 	Settings.early()
 	
+	Lp.init()
+	
 	// get own user
 	Lp.chain({
 		values: {uid:Req.uid},

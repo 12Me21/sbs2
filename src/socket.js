@@ -277,8 +277,6 @@ let Lp = function() {"use strict"; return singleton({
 	},
 })}()
 
-Lp.init()
-
 /*
 idea: when socket dies, if page isn't visible, we do nothing
 (otherwise, try restarting right away)

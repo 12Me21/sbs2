@@ -11,7 +11,7 @@ class InvalidRequestError extends TypeError {
 		this.url = apir.url
 		this.code = apir.status
 		
-		this.name = `${this.code} ➡️ api╱${this.url}`
+		this.name = `http ${this.code} ➡️ api╱${this.url}`
 		//this.body = apir.body
 	}
 	get message() {
