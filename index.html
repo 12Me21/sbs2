@@ -19,23 +19,29 @@
 <link rel=preconnect href=https://qcs.shsbs.xyz crossorigin>-->
 
 <script>
-	let x = []
 	if (window.location.search=="?logout") {
 		window.localStorage.removeItem("token-qcs.shsbs.xyz/api")
 		window.location.search = ""
 	}
 	window.print = window.alert
-	/* note: when running the page locally (with a file:// url),
-		syntax errors will be "muted" and won't contain any info
-		in firefox, you can disable "security.fileuri.strict_origin_policy"
-		(be VERY careful about viewing local pages with this setting off)
-	 */
+	
+	var markup_warned
+	function check_markup() {
+		return "yeah"===window.getComputedStyle(document.documentElement).getPropertyValue('--Markup-loaded')
+	}
+	
 	window.onerror = function(message, source, line, col, error) {
-		window.setTimeout(function() {
-			if (confirm("ERROR DURING PAGE LOAD!\n"+message+"\nin "+source+"\nat "+line+":"+col+"\n[Cancel] = reload page, [Ok] = continue"))
-				return window.onerror = null
-			RELOAD()
-		}, 0)
+		if (!markup_warned && !check_markup()) {
+			markup_warned = true
+			alert("❓MISSING SUBMODULE DETECTED!\n🩸Check: "+new URL('markup2/',window.location).href+"\n🩸If the ‘markup2’ folder is empty:\n🩸\n🩸Run: git submodule update --init\n🩸or download the files manually at:\n🩸https://github.com/12Me21/markup2")
+		}
+		
+		(window.queueMicrotask || window.setTimeout)(function() {
+			if (confirm("🎆 ERROR DURING PAGE LOAD!\n"+line+":"+col+" in "+source+"\n\n"+message+"\n\n[Cancel] = reload page, [Ok] = continue"))
+				window.onerror = null
+			else
+				RELOAD()
+		})
 	}
 	function RELOAD() {
 		var l=window.location.href
@@ -46,11 +52,11 @@
 
 <!--START-->
 <!-- this part will be replaced by the build script -->
-<link rel=stylesheet href=src/theme.css>
 <link rel=stylesheet href=resource/fonts.css>
 <link rel=stylesheet href=src/layout.css>
 <link rel=stylesheet href=src/style.css>
 <link rel=stylesheet href=markup2/markup.css>
+<link rel=stylesheet href=src/theme.css>
 <link rel=stylesheet href=src/code.css>
 
 <script src=markup2/langs.js></script>
