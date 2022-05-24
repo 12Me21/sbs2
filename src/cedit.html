@@ -8,6 +8,8 @@
 		height: 100px;
 		display: block;
 		position: relative;
+		overflow-y: scroll;
+		border: 3px solid black;
 	}
 	textarea-container > * {
 		white-space: pre-wrap;
@@ -19,17 +21,17 @@
 		height: 100%;
 		margin: 0;
 		padding: 0;
-		border: 3px solid black;
+		border: none;
 		font: 1em monospace;
 		font-kerning: none;
 		font-variant-ligatures: none;
 		font-variant-alternates: annotation(1);
-		overflow-y: scroll;
+		height: 1000px;
 	}
 	textarea-container > textarea {
-		color: transparent;
+		color: white;
 		caret-color: black;
-		text-shadow: 1px 1px #0008;
+		text-shadow: 0 0 1px black;
 	}
 	textarea-overlay {
 		pointer-events: none;
@@ -54,11 +56,12 @@
 
 <script>
 	$i.addEventListener('input', e=>{
-		$o.innerHTML = $i.value.replace(/&/g, "&AMP").replace(/</g, "&LT").replace(/\D+/g, "<span data-text='$&'>$&</span>")
-		$o.scrollTop = $i.scrollTop
+		//$o.innerHTML = $i.value.replace(/&/g, "&AMP").replace(/</g, "&LT").replace(/[^]/g, m=>"<z- style='color:#"+(m.charCodeAt(0)*100000).toString(16).padStart(6,'0')+";'>"+m+"</z->")
+		$o.innerHTML = $i.value.replace(/&/g, "&AMP").replace(/</g, "&LT").replace(/#?\w+/g, m=>"<z- style='color:"+m+";'>"+m+"</z->")
+		//$o.scrollTop = $i.scrollTop
 	}, {passive: true})
-	$i.addEventListener('scroll', e=>{
+/*	$i.addEventListener('scroll', e=>{
 		$o.scrollTop = $i.scrollTop
 		console.log($o.scrollTop)
-	}, {passive: true})
+	}, {passive: true})*/
 </script>
