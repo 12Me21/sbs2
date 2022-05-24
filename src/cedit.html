@@ -19,12 +19,14 @@
 	body {
 		display: flex;
 	}
-	body > div {
-		width: 50%;
+	body > * {
+		flex-grow: 1;
+		flex-basis: 0;
 	}
-</style>
+	/*girl touhou green hair red vest hugging sleeping near girl dark black hair black dress red blue tendrils*/
 
-<div contenteditable id=$hell></div>
+</style>
+<div contenteditable id=$hell><div>a</div><div><br></div><div>b<br></div></div>
 <div id=$out></div>
 <script>
 	$hell.oninput = ()=>{
@@ -40,5 +42,7 @@
 		// \n$
 		console.log(x.replace(/\n/g, "@"))
 		$out.textContent = x.replace(/^/mg, "🟧")+"🔸"
+		$out.textContent += "\n"+$hell.innerHTML
 	}
+	$hell.oninput()
 </script>
