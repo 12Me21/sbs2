@@ -1,5 +1,6 @@
 <!doctype html>
 <meta charset=utf-8>
+<meta name=viewport content="width=device-width, initial-scale=1, height=device-height">
 
 <style>
 	html {
@@ -11,10 +12,13 @@
 	#\$hell {
 		border: 10px solid black;
 	}
-	#\$hell > div {
+	#\$hell br {
+	}
+	#\$hell div {
 		border: none;
-		border-left: 4px solid red;
 		outline: red solid 3px;
+		display: inline-block;
+		width: 100%;
 	}
 	body {
 		display: flex;
@@ -26,7 +30,7 @@
 	/*girl touhou green hair red vest hugging sleeping near girl dark black hair black dress red blue tendrils*/
 
 </style>
-<div contenteditable id=$hell><div>a</div><div><br></div><div>b<br></div></div>
+<div contenteditable id=$hell><div><br></div><br></div>
 <div id=$out></div>
 <script>
 	$hell.oninput = ()=>{
@@ -38,11 +42,38 @@
 		let x = $hell.innerText
 		x = x.replace(/\n$/, "")
 		x = x.replace(/\n\n/gm, "\n")
+		let h = $hell.innerHTML.replace(/<div>/g, "\n")
+		h = h.replace(/<\/div>/g, "")
+		h = h.replace(/<br>/g, "\n")
 		// \n\n -> \n
 		// \n$
 		console.log(x.replace(/\n/g, "@"))
 		$out.textContent = x.replace(/^/mg, "🟧")+"🔸"
 		$out.textContent += "\n"+$hell.innerHTML
+		$out.textContent += "\n\n"+$hell.innerText.replace(/\n/g, "@")
+		$out.textContent += "\n\n"+h.replace(/\n/g, "$")
+		
+		let last = 'text'
+		let content = ""
+		document.createNodeIterator(
+			$hell, NodeFilter.SHOW_ALL,
+			{acceptNode(node) {
+				if (node instanceof Text) {
+					if (last=='block')
+						content += "\n"
+					last = 'text'
+					content += node.data
+				} else if (node instanceof HTMLBRElement) {
+					content += "\n"
+					last = 'newline'
+				} else if (node instanceof HTMLDivElement) {
+					if (last=='text')
+						content += "\n"
+					
+				}
+			}},
+		).nextNode()
+
 	}
 	$hell.oninput()
 </script>
