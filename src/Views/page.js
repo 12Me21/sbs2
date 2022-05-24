@@ -95,6 +95,7 @@ View.add_view('page', {
 		}
 		
 		$chatCancelEdit.onclick = ()=>{
+			console.log('cancel')
 			this.cancel_edit()
 		}
 		// todo: global escape handler?
@@ -151,10 +152,12 @@ View.add_view('page', {
 					text: data.text,
 					values: data.values
 				}).do = (resp, err)=>{
-					if (err) //error sending message
-						this.write_input(old)
+					//if (err) //error sending message
+						//this.write_input(old)
 				}
-				$chatTextarea.value = ""
+				$chatTextarea.select()
+				document.execCommand('delete')
+				//$chatTextarea.value = ""
 				this.textarea_resize()
 			}
 		}
@@ -183,9 +186,14 @@ View.add_view('page', {
 	},
 	
 	write_input(data) {
-		$chatTextarea.value = data.text || ""
-		$chatMarkupSelect.checked = data.values.m == Settings.values.chat_markup
+		$chatTextarea.select()
+		if (data.text)
+			document.execCommand('insertText', false, data.text)
+		else
+			document.execCommand('delete')
 		this.textarea_resize()
+		//$chatTextarea.value = 
+		$chatMarkupSelect.checked = data.values.m == Settings.values.chat_markup
 	},
 
 	pre_edit: null,
