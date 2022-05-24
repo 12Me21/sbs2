@@ -28,16 +28,16 @@
 <div id=$out></div>
 <script>
 	$hell.oninput = ()=>{
-		let x = $hell.innerText
 		// 1->1
 		// 2->1
 		// 3->2
 		// 4->2
 		// 5->3
+		let x = $hell.innerText
 		x = x.replace(/\n$/, "")
-		x = x.replace(/\n+/g, (m)=>{
-			return "\n".repeat(Math.ceil(m.length/2))
-		})
+		x = x.replace(/\n\n/gm, "\n")
+		// \n\n -> \n
+		// \n$
 		console.log(x.replace(/\n/g, "@"))
 		$out.textContent = x.replace(/^/mg, "🟧")+"🔸"
 	}
