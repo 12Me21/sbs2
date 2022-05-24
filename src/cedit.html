@@ -3,77 +3,62 @@
 <meta name=viewport content="width=device-width, initial-scale=1, height=device-height">
 
 <style>
-	html {
+	textarea-container {
+		width: 300px;
+		height: 100px;
+		display: block;
+		position: relative;
+	}
+	textarea-container > * {
 		white-space: pre-wrap;
-	}
-	#\$out {
-		border: 3px solid red;
-	}
-	#\$hell {
-		border: 10px solid black;
-	}
-	#\$hell br {
-	}
-	#\$hell div {
-		border: none;
-		outline: red solid 3px;
-		display: inline-block;
+		word-break: break-word;
+		position: absolute;
+		display: block;
+		resize: none;
 		width: 100%;
+		height: 100%;
+		margin: 0;
+		padding: 0;
+		border: 3px solid black;
+		font: 1em monospace;
+		font-kerning: none;
+		font-variant-ligatures: none;
+		font-variant-alternates: annotation(1);
+		overflow-y: scroll;
 	}
-	body {
-		display: flex;
+	textarea-container > textarea {
+		color: transparent;
+		caret-color: black;
+		text-shadow: 1px 1px #0008;
 	}
-	body > * {
-		flex-grow: 1;
-		flex-basis: 0;
+	textarea-overlay {
+		pointer-events: none;
+		color: red;
 	}
-	/*girl touhou green hair red vest hugging sleeping near girl dark black hair black dress red blue tendrils*/
-
+	textarea-overlay span {
+		position: relative;
+		color: blue;
+	}
+/*	textarea-overlay span::after {
+		position: absolute;
+		font-weight: bold;
+		left: 0;
+		top: 0;
+		color: blue;
+		display: inline;
+		content: attr(data-text);
+		font-style: italic;
+	}*/
 </style>
-<div contenteditable id=$hell><div><br></div><br></div>
-<div id=$out></div>
-<script>
-	$hell.oninput = ()=>{
-		// 1->1
-		// 2->1
-		// 3->2
-		// 4->2
-		// 5->3
-		let x = $hell.innerText
-		x = x.replace(/\n$/, "")
-		x = x.replace(/\n\n/gm, "\n")
-		let h = $hell.innerHTML.replace(/<div>/g, "\n")
-		h = h.replace(/<\/div>/g, "")
-		h = h.replace(/<br>/g, "\n")
-		// \n\n -> \n
-		// \n$
-		console.log(x.replace(/\n/g, "@"))
-		$out.textContent = x.replace(/^/mg, "🟧")+"🔸"
-		$out.textContent += "\n"+$hell.innerHTML
-		$out.textContent += "\n\n"+$hell.innerText.replace(/\n/g, "@")
-		$out.textContent += "\n\n"+h.replace(/\n/g, "$")
-		
-		let last = 'text'
-		let content = ""
-		document.createNodeIterator(
-			$hell, NodeFilter.SHOW_ALL,
-			{acceptNode(node) {
-				if (node instanceof Text) {
-					if (last=='block')
-						content += "\n"
-					last = 'text'
-					content += node.data
-				} else if (node instanceof HTMLBRElement) {
-					content += "\n"
-					last = 'newline'
-				} else if (node instanceof HTMLDivElement) {
-					if (last=='text')
-						content += "\n"
-					
-				}
-			}},
-		).nextNode()
+<textarea-container><textarea id=$i></textarea><textarea-overlay id=$o></textarea-overlay></textarea-container>
 
-	}
-	$hell.oninput()
+<script>
+	$i.addEventListener('input', e=>{
+		$o.innerHTML = $i.value.replace(/&/g, "&AMP").replace(/</g, "&LT").replace(/\D+/g, "<span data-text='$&'>$&</span>")
+		$o.scrollTop = $i.scrollTop
+	}, {passive: true})
+	$i.addEventListener('scroll', e=>{
+		$o.scrollTop = $i.scrollTop
+		console.log($o.scrollTop)
+	}, {passive: true})
 </script>
