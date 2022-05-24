@@ -1,0 +1,44 @@
+<!doctype html>
+<meta charset=utf-8>
+
+<style>
+	html {
+		white-space: pre-wrap;
+	}
+	#\$out {
+		border: 3px solid red;
+	}
+	#\$hell {
+		border: 10px solid black;
+	}
+	#\$hell > div {
+		border: none;
+		border-left: 4px solid red;
+		outline: red solid 3px;
+	}
+	body {
+		display: flex;
+	}
+	body > div {
+		width: 50%;
+	}
+</style>
+
+<div contenteditable id=$hell></div>
+<div id=$out></div>
+<script>
+	$hell.oninput = ()=>{
+		let x = $hell.innerText
+		// 1->1
+		// 2->1
+		// 3->2
+		// 4->2
+		// 5->3
+		x = x.replace(/\n$/, "")
+		x = x.replace(/\n+/g, (m)=>{
+			return "\n".repeat(Math.ceil(m.length/2))
+		})
+		console.log(x.replace(/\n/g, "@"))
+		$out.textContent = x.replace(/^/mg, "🟧")+"🔸"
+	}
+</script>
