@@ -29,13 +29,13 @@
 		height: 1000px;
 	}
 	textarea-container > textarea {
-		color: white;
+		color: transparent;
 		caret-color: black;
-		text-shadow: 0 0 1px black;
+/*		text-shadow: 0 0 1px black;*/
 	}
 	textarea-overlay {
 		pointer-events: none;
-		color: red;
+		color: black;
 	}
 	textarea-overlay span {
 		position: relative;
@@ -51,13 +51,37 @@
 		content: attr(data-text);
 		font-style: italic;
 	}*/
+	.red {
+		color: red;
+	}
 </style>
 <textarea-container><textarea id=$i></textarea><textarea-overlay id=$o></textarea-overlay></textarea-container>
 
 <script>
+	let pattern = /#\w+/g
+	
+	function update(input) {
+		let q = []
+		let last = pattern.lastIndex = 0
+		for (let m; m = pattern.exec(input); last = pattern.lastIndex) {
+			q.push(input.substring(last, m.index))
+			let x = document.createElement('span')
+			x.textContent = m[0]
+			x.className = 'red'
+			q.push(x)
+		}
+		q.push(input.substring(last))
+		$o.replaceChildren(...q)
+	}
+		
 	$i.addEventListener('input', e=>{
 		//$o.innerHTML = $i.value.replace(/&/g, "&AMP").replace(/</g, "&LT").replace(/[^]/g, m=>"<z- style='color:#"+(m.charCodeAt(0)*100000).toString(16).padStart(6,'0')+";'>"+m+"</z->")
-		$o.innerHTML = $i.value.replace(/&/g, "&AMP").replace(/</g, "&LT").replace(/#?\w+/g, m=>"<z- style='color:"+m+";'>"+m+"</z->")
+		// hack example:
+		update($i.value)
+/*		$o.innerHTML = $i.value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/#?\w+/g, m=>{
+			if (m=='lt' || m=='amp') return m
+			return "<z- style='color:"+m+";'>"+m+"</z->"
+		})*/
 		//$o.scrollTop = $i.scrollTop
 	}, {passive: true})
 /*	$i.addEventListener('scroll', e=>{

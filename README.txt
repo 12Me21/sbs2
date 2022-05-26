@@ -1,3 +1,8 @@
+🔸🔶🟧 DOWNLOADING 🟧🔶🔸
+
+If you just want the files: https://github.com/12Me21/sbs2/archive/.zip
+
+
 🔸🔶🟧 INSTRUCTIONS 🟧🔶🔸
 
 • Make sure ❲markup2/❳ isn't empty:
