@@ -192,7 +192,7 @@ button[aria-selected="true"] {
 	color: var(--databartxtcolor);
 	/*box-shadow: var(--normal-shadow);
 	z-index: 10;*/
-	padding: 1px;
+	/*padding: 1px;*/
 	/*transition: background-color 0.1s ease;*/
 }
 
@@ -854,16 +854,16 @@ html[data-socket-state="opening"] #\$openSidebar {
 	--button-bg: linear-gradient(#6fb7c0, #6fb7c0, blue);
 }
 
+/*html[data-socket-state="open"] #\$openSidebar {
+	--button-bg: linear-gradient(#3f9f5f, #3f9f5f, green);
+}*/
+
+html[data-socket-pending] #\$openSidebar {
+	--button-bg: linear-gradient(#e0c87f, #e0c87f, yellow);
+}
+
 html[data-socket-state="dead"] #\$openSidebar {
 	--button-bg: linear-gradient(#f86060, #f86060, red);
-}
-
-html[data-socket-state="open"] #\$openSidebar {
-	--button-bg: linear-gradient(#3f9f5f, #3f9f5f, green);
-}
-
-html[data-socket-state="ping"] #\$openSidebar {
-	--button-bg: linear-gradient(#e0c87f, #e0c87f, yellow);
 }
 
 /* ios safari */

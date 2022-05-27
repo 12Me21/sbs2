@@ -197,12 +197,6 @@ Object.map = (obj, callback)=>{
 	return ret
 }
 
-// do we use this,, ehh
-Object.first_key = function(obj) {
-	for (let key in obj)
-		return key
-}
-
 // this is just exec but safer i guess...
 RegExp.prototype.rmatch = function(str) {
 	if (typeof str != 'string')
@@ -238,5 +232,7 @@ let run_on_load = []
 let do_when_ready = func => run_on_load.push(func)
 do_when_ready.then = do_when_ready
 //console.log("deferring render", go)
+// idea: do_when_ready takes a 2nd argument, which creates a "pool" of events,
+// and only the most recently added one is run
 
 //talking excitedly about javasscript getters and setters for an hour and then crying

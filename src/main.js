@@ -122,6 +122,7 @@ function dom_ready() {
 	do_when_ready.then = null
 	run_on_load.forEach(x=>x())
 	run_on_load = null
+	//Object.defineProperty(ready, 'do', {set: fn=>fn()})
 	
 	//danger: View.onload() can potentially run after view.start() (but before view.render())  TODO
 }

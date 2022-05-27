@@ -12,7 +12,7 @@ class SocketRequestError extends TypeError {
 SocketRequestError.prototype.name = "SocketRequestError"
 
 let Lp = function() {"use strict"; return singleton({
-	handlers: {},
+	handlers: new Map(),
 	handler_id: 1,
 	ready: false,
 	last_id: "",
@@ -21,8 +21,6 @@ let Lp = function() {"use strict"; return singleton({
 	websocket: null,
 	got_error: false,
 	state_change(state, ping) {
-		if (ping && document.documentElement.dataset.socketState!='ping')
-			return
 		// TODO: also use yellow state for when a request has been sent but not recieved yet.
 		// (maybe use a less annoying color)
 		// and maybe combine this all with the header color instead of the button. (also, display in mobile sidebar somehow?)
@@ -33,6 +31,16 @@ let Lp = function() {"use strict"; return singleton({
 	set_status(id, s) {
 		this.statuses[id] = s
 		this.status_queue[id] = s
+	},
+	handler_count() {
+		// todo: only count 'important' handlers
+		// not, ex: user status
+		let num = this.handlers.size
+		if (num)
+			document.documentElement.dataset.socketPending = num
+		else
+			delete document.documentElement.dataset.socketPending
+		//do_when_ready(x=>$socketPending.textContent = [...this.handlers.keys()].join(" "), 'socket-pending')
 	},
 	flush_statuses(callback) {
 		this.request({type:'setuserstatus', data:this.status_queue}, ({x})=>{
@@ -54,8 +62,8 @@ let Lp = function() {"use strict"; return singleton({
 	on_ready() {
 		Object.assign(this.status_queue, this.statuses)
 		this.flush_statuses(()=>{})
-		for (let i in this.handlers)
-			this.send(this.handlers[i].request)
+		for (let {request} of this.handlers.values())
+			this.send(request)
 		this.ready = true
 	},
 	kill_websocket() {
@@ -140,10 +148,11 @@ let Lp = function() {"use strict"; return singleton({
 	 ***************************/
 	request(request, callback=console.info) {
 		request.id = this.next_id()
-		this.handlers[request.id] = {request, callback}
+		this.handlers.set(request.id, {request, callback})
+		this.handler_count()
 		if (this.ready)
 			this.send(request)
-		return {id:request.id}
+		return {id: request.id}
 	},
 	chain(data, callback) {
 		return this.request({type:'request', data}, callback)
@@ -162,9 +171,11 @@ let Lp = function() {"use strict"; return singleton({
 	 ** Response Handling **
 	 ***********************/
 	pop_handler(id) {
-		let handler = this.handlers[id]
-		delete this.handlers[id]
-		return handler
+		let handler = this.handlers.get(id)
+		if (this.handlers.delete(id)) {
+			this.handler_count()
+			return handler
+		}
 	},
 	handle_response(response) {
 		if (response.type=='unexpected' && /ExpiredCheckpoint/.test(response.error)) {
@@ -261,10 +272,7 @@ let Lp = function() {"use strict"; return singleton({
 		document.addEventListener('visibilitychange', e=>{
 			if ('visible'==document.visibilityState) {
 				if (this.is_alive()) {
-					this.state_change('ping')
-					this.ping(()=>{
-						this.state_change('open', true)
-					})
+					this.ping(()=>{})
 				} else
 					this.start_websocket()
 			}
