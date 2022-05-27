@@ -48,7 +48,7 @@ for this to work,, we need:
 		theme: {
 			name: "Theme",
 			type: 'select',
-			options: ['auto','light','dark'],
+			options: ['auto', 'light', 'dark'],
 			// change event can run any time (even before DOM ready)
 			update(value) {
 				if (value != 'auto')
@@ -64,7 +64,7 @@ for this to work,, we need:
 		chat_markup: {
 			name: "Chat Markup Language",
 			type: 'select',
-			options: ['12y','12y2','plaintext'],
+			options: ['12y', '12y2', 'plaintext'],
 		},
 		scroller_anim_type: {
 			name: "scroll animation method",
@@ -87,7 +87,7 @@ for this to work,, we need:
 					if (!window.intersection_observer)
 						window.intersection_observer = new IntersectionObserver((data)=>{
 							// todo: load top to bottom on pages
-							data = data.filter(x=>x.isIntersecting).sort((a,b)=>b.boundingClientRect.bottom-a.boundingClientRect.bottom)
+							data = data.filter(x=>x.isIntersecting).sort((a, b)=>b.boundingClientRect.bottom-a.boundingClientRect.bottom)
 							for (let {target} of data) {
 								if (!target.src) {
 									//console.log('load', target.dataset.src)
@@ -161,7 +161,7 @@ for this to work,, we need:
 		values[name] = value
 		Store.set("setting-"+name, JSON.stringify(value))
 		field.update && field.update(value)
-	}
+	},
 	
 })<!-- PRIVATE })	
 

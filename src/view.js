@@ -54,21 +54,20 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 					try {
 						let res = eval(c)
 						$testOut.textContent="Finished:\n"+res
-					} catch(e) {
+					} catch (e) {
 						$testOut.textContent="Error:\n"+e
 					}
 				}
+				let fields = ['shiftKey', 'ctrlKey', 'altKey', 'metaKey', 'location', 'isComposing', 'repeat', 'code', 'key', 'charCode', 'char', 'keyCode', 'which']
 				$testInput.onkeypress = e=>{
 					$testOut2.textContent="onkeypress\n"
-					;['shiftKey','ctrlKey','altKey','metaKey','location','isComposing','repeat','code','key','charCode','char','keyCode','which'].forEach(x=>{
+					for (let x of fields)
 						$testOut2.textContent += x+": "+e[x]+"\n"
-					})
 				}
 				$testInput.onkeydown = e=>{
 					let p = ""
-					;['shiftKey','ctrlKey','altKey','metaKey','location','isComposing','repeat','code','key','charCode','char','keyCode','which'].forEach(x=>{
+					for (let x of fields)
 						p += x+": "+e[x]+"\n"
-					})
 					$testOut3.textContent="onkeydown\n"+p
 					if (e.keyCode == 13)
 						$testOut4.textContent = "last enter press\n"+p
@@ -84,7 +83,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 			},
 		},
 		pages: {
-			redirect: (id, query) => ['page', id, query]
+			redirect: (id, query) => ['page', id, query],
 		},
 	},
 	// fake-ish
@@ -92,18 +91,18 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 		name: 'error',
 		cleanup() {
 			$errorMessage.textContent = ""
-		}
+		},
 	},
 	
 	// handle redirects
 	get_view(location) {
 		let view = views[location.type]
 		let got = false
-		while (view && view.redirect) {//danger!
+		while (view && view.redirect) { //danger!
 			let ret = view.redirect(location.id, location.query)
 			if (!ret) // oops no redirect
 				break
-			;[location.type, location.id, location.query] = ret
+			;[location.type, location.id, location.query] = ret // somehow this line triggers a bug in eslint
 			view = views[location.type]
 			got = true
 		}
@@ -135,7 +134,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 		if (current_view && current_view.cleanup)
 			try {
 				current_view.cleanup(new_location)
-			} catch(e) {
+			} catch (e) {
 				// we ignore this error, because it's probably not important
 				// and also cleanup gets called during error handling so we don't want to get into a loop of errors
 				console.error(e, "error in cleanup function")
@@ -159,7 +158,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 	},
 	
 	// technically STEP could be a global etc. but hhhh ....
-	*handle_view2(location) {
+	* handle_view2(location) {
 		let STEP=yield
 		let phase = "..."
 		let view
@@ -207,7 +206,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 				view.quick(data.ext, location)
 			else
 				view.render(resp, data.ext, location)
-		} catch(e) {
+		} catch (e) {
 			yield do_when_ready(STEP)
 			
 			cleanup(location)

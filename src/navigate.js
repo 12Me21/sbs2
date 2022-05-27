@@ -4,7 +4,7 @@ Markup.renderer.url_scheme['sbs:'] = function(url) {
 	return "#"+url.pathname+url.search+url.hash
 }
 
-const Nav = function(){"use strict"; return singleton({
+const Nav = function() { "use strict"; return singleton({
 	entity_link(entity) {
 		let type = {
 			user: 'user',
@@ -73,7 +73,7 @@ const Nav = function(){"use strict"; return singleton({
 		
 		Nav.update_from_location()
 	},
-})}()
+}) }()
 
 // notes:
 /*

@@ -23,17 +23,18 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		e.lastChild.textContent = content.name
 		
 		return e
-	}.bind([𐀶`
+	}.bind([
+		𐀶`
 <span class="item icon iconBg" role="img" alt=""></span>
 <span class="textItem entity-title" 🪧>...</span>
 `,
-𐀶`
+		𐀶`
 <a class='bar rem1-5 linkBar'>
 <span class="item icon iconBg" role="img" alt=""></span>
 <span class="textItem entity-title" 🪧>...</span>
 </a>
-`
-]),
+`,
+	]),
 	
 	//📥 user‹User›
 	//📥 params‹String›
@@ -247,7 +248,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		// older: "December 25, 2021, 4:09 PM"
 		let options
 		if (Date.now()-date.getTime() > 1000*60*60*12)
-			options = {year:'numeric',month:'long',day:'numeric',hour:'numeric', minute:'2-digit'}
+			options = {year:'numeric', month:'long', day:'numeric', hour:'numeric', minute:'2-digit'}
 		else
 			options = {hour:'numeric', minute:'2-digit'}
 		return date.toLocaleString([], options)
@@ -345,11 +346,13 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			return elem
 		elem.append(
 			page_edited_time("Author:", page.createDate2), " ",
-			entity_title_link(page.createUser, true))
+			entity_title_link(page.createUser, true)
+		)
 		if (page.editUserId != page.createUserId) {
 			elem.append(
 				" ", page_edited_time("Edited by:", page.lastRevisionDate),
-				" ", entity_title_link(page.editUser, true))
+				" ", entity_title_link(page.editUser, true)
+			)
 		} else if (page.createDate != page.lastRevisionDate) { //edited by same user
 			elem.append(" ", page_edited_time("Edited", page.lastRevisionDate))
 		}
@@ -432,7 +435,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		name.className += " bar rem1-5"
 		row.child('th').append(name)
 		// checkboxes
-		for (let p of ['r','c','u','d']) {
+		for (let p of ['r', 'c', 'u', 'd']) {
 			let inp = row.child('td').child('input')
 			inp.type = 'checkbox'
 			inp.checked = perms.indexOf(p)>=0
@@ -552,7 +555,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 				Object.for(get, (func, key)=>{
 					update(key)
 				})
-			}
+			},
 		}
 		Object.for(settings.fields, (data, name)=>{
 			let type = data.type

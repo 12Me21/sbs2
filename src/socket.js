@@ -11,7 +11,7 @@ class SocketRequestError extends TypeError {
 }
 SocketRequestError.prototype.name = "SocketRequestError"
 
-let Lp = function() {"use strict"; return singleton({
+let Lp = function() { "use strict"; return singleton({
 	handlers: new Map(),
 	handler_id: 1,
 	ready: false,
@@ -226,7 +226,7 @@ let Lp = function() {"use strict"; return singleton({
 			ChatRoom.update_userlists(data.statuses, data.objects)
 		} break;case 'badtoken': {
 			//
-		}}
+		} }
 		
 	},
 	process_live(events, entitys) {
@@ -257,7 +257,7 @@ let Lp = function() {"use strict"; return singleton({
 					if (refId==Req.uid)
 						View.update_my_user(user)
 				}
-			}}
+			} }
 		}
 		if (comments.length) {
 			Sidebar.display_messages(comments)
@@ -283,7 +283,7 @@ let Lp = function() {"use strict"; return singleton({
 			this.start_websocket(true)
 		})
 	},
-})}()
+}) }()
 
 /*
 idea: when socket dies, if page isn't visible, we do nothing

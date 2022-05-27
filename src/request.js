@@ -23,7 +23,7 @@ class InvalidRequestError extends TypeError {
 		if (this.resp.title)
 			lines.push(this.resp.title)
 		if (this.resp.errors)
-			Object.for(this.resp.errors, (msg,key)=>{
+			Object.for(this.resp.errors, (msg, key)=>{
 				lines.push(`❌${key}:`)
 				lines.push(...msg.map(x=>` 🔸${x}`))
 			})
@@ -85,13 +85,13 @@ class ApiRequest extends XMLHttpRequest {
 		if (this.aborted) return
 		
 		switch (this.readyState) {
-		case XMLHttpRequest.HEADERS_RECEIVED:
+		case XMLHttpRequest.HEADERS_RECEIVED: {
 			let type = this.getResponseHeader('Content-Type')
 			if (/[/+]json(;| |$)/i.test(type))
 				this.responseType = 'json'
 			return
-			
-		case XMLHttpRequest.DONE:
+		}
+		case XMLHttpRequest.DONE: {
 			let resp = this.response // json or text
 			
 			switch (this.status) {
@@ -112,9 +112,10 @@ class ApiRequest extends XMLHttpRequest {
 				return this.retry(5000, 'bad gateway')
 			case 408: case 204: case 524:
 				return this.retry(0, 'timeout')
-			case 429:
+			case 429: {
 				let after = +(this.getResponseHeader('Retry-After') || 1)
 				return this.retry((after+0.5)*1000, `rate limited ${after}sec`)
+			}
 			// === Permissions ===
 			case 403:
 				return this.fail('permission')
@@ -133,13 +134,13 @@ ${resp}`)
 				console.log("REQUEST FAILED", this)
 				return this.fail('error')
 			}
-		}
+		} }
 	}
 }
 
 const Req = { // this stuff can all be static methods on ApiRequest maybe?
 	server: "qcs.shsbs.xyz/api",
-//	server: "oboy.smilebasicsource.com/api",
+	//	server: "oboy.smilebasicsource.com/api",
 	get storage_key() {
 		return `token-${this.server}`
 	},
@@ -174,7 +175,8 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 	chain(data) {
 		return new ApiRequest(
 			'request', 'POST', JSON.to_blob(data),
-			resp=>Entity.do_listmap(resp.objects))
+			resp=>Entity.do_listmap(resp.objects)
+		)
 	},
 	
 	/////////////////////////
@@ -211,7 +213,7 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 			//let expire = data.exp
 			//if (expire && Date.now()/1000>=expire) ;
 			return true
-		} catch(e) {
+		} catch (e) {
 			this.auth = this.uid = null
 			return false
 		}

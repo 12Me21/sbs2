@@ -23,7 +23,7 @@ function METHOD(type, name, tc) {
 	})
 }
 function SELF_DESTRUCT(err) {
-	let x = ()=>{throw err}
+	let x = ()=>{ throw err }
 	return new Proxy({}, {get:x, set:x, has:x})
 }
 
@@ -49,13 +49,13 @@ class FieldError extends Error {
 	}
 }
 function Unhandled_Callback(err, ...x) {
-	console.error("Unhandled Callback\n", err, ...x);
+	console.error("Unhandled Callback\n", err, ...x)
 }
 
 // ⚡ Missing argument detector
 // use like: function heck(name=E.name) { ... } -- now `name` is required
 let E = new Proxy({}, {
-	get(t, name) { throw new ParamError(name) }
+	get(t, name) { throw new ParamError(name) },
 })
 
 // ⚡ STRICT prototype - throws when accessing nonexistant fields
@@ -69,12 +69,14 @@ let STRICT = new Proxy(Object.create(null), {
 	get(t, name, obj) {
 		name = field_name(name)
 		throw new FieldError(
-			`🚮 invalid field read: ${name}`, obj, `⛔${name}`)
+			`🚮 invalid field read: ${name}`, obj, `⛔${name}`
+		)
 	},
 	set(t, name, value, obj) {
 		name = field_name(name)
 		throw new FieldError(
-			`🚮 invalid field write: ${name}`, obj, `⛔${name} =`, value)
+			`🚮 invalid field write: ${name}`, obj, `⛔${name} =`, value
+		)
 	},
 })
 // idea: class extends STRICT, have some method for defining properties easily (instead of this.x = ...)
@@ -91,12 +93,12 @@ METHOD(Object, Symbol.toStringTag, "Object")
 METHOD(Error, Symbol.toPrimitive, Error.prototype.toString)
 
 // ⚡ async/await/Promise replacement using function*/yield
-window.GeneratorFunction = function*(){}.constructor
+window.GeneratorFunction = function* () {}.constructor
 window.Generator = GeneratorFunction.prototype
 
-METHOD(Generator, 'run', function(ok=console.info, err=e=>{throw e}) {
+METHOD(Generator, 'run', function(ok=console.info, err=e=>{ throw e }) {
 	let step, main = data=>{
-		step = defer=>{data = defer; step = main}
+		step = defer=>{ data = defer; step = main }
 		try {
 			let r = this.next(data)
 			if (r.done) { data = r.value; step = ok }
@@ -124,14 +126,14 @@ if (!Array.prototype.findLast)
 	}
 // polyfill: document.timeline.currentTime
 if (!document.timeline)
-	document.timeline = {get currentTime(){ return performance.now() }}
+	document.timeline = {get currentTime() { return performance.now() }}
 
 // similar to replaceChildren, except:
 //  - only 0 or 1 args
 //  - can pass null/undefined to empty the node
 //  - accepts an array of items to insert
 //  - doesn't allow strings
-Node.prototype.fill = function (x) {
+Node.prototype.fill = function(x) {
 	this.textContent = ""
 	if (Array.isArray(x))
 		this.append(...x)
@@ -163,7 +165,7 @@ Node.prototype.child = function(type, classes) {
 JSON.safe_parse = function(json) { // should be function() not => yeah?
 	try {
 		return JSON.parse(json)
-	} catch(e) {
+	} catch (e) {
 		return undefined
 	}
 }
@@ -206,7 +208,7 @@ RegExp.prototype.rmatch = function(str) {
 
 
 
-let 𖹭 = Object.create.bind(Object,null,{𖹭:{set(f){Object.seal(Object.assign(this,f))}}}) // not used anymore :(
+//let 𖹭 = Object.create.bind(Object,null,{𖹭:{set(f){Object.seal(Object.assign(this,f))}}}) // not used anymore :(
 
 const singleton = (obj) => Object.seal(obj)
 

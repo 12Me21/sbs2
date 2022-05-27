@@ -17,7 +17,7 @@ class MessageList {
 			requests: [
 				{type:'message', fields:'*', query, order, limit:amount},
 				{type:'user', fields:'*', query:"id in @message.createUserId"},
-			]
+			],
 		}, callback)
 	}
 	// todo
@@ -147,7 +147,7 @@ class MessageList {
 		this.controls_message = null
 		this.controls = Draw.message_controls(()=>{
 			alert(JSON.stringify(this.controls_message.x_data, null, 1)) // <small heart>
-		},()=>{
+		}, ()=>{
 			if (this.controls_message)
 				window.editComment(this.controls_message.x_data)
 		}).elem
@@ -243,9 +243,9 @@ class ChatRoom {
 		}
 		
 		if (page.values.pinned) { //todo: check if actually we have any real pinned messages
-			let pinnedSeparator = document.createElement('div')
-			pinnedSeparator.className = "messageGap"
-			this.extra.prepend(pinnedSeparator)
+			let pinned_separator = document.createElement('div')
+			pinned_separator.className = "messageGap"
+			this.extra.prepend(pinned_separator)
 			
 			this.pinnedList = document.createElement('div')
 			this.extra.prepend(this.pinnedList)
@@ -422,7 +422,7 @@ ChatRoom.HTML = {
 		</scroll-inner>
 	</scroll-outer>
 </chat-pane>
-`
+`,
 }
 Object.seal(ChatRoom)
 

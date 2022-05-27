@@ -8,7 +8,7 @@ class ResizeTracker {
 				for (let event of events) {
 					this.check_element(
 						this.tracking.get(event.target),
-						event.contentRect,
+						event.contentRect
 					)
 				}
 			})
@@ -18,7 +18,7 @@ class ResizeTracker {
 				for (let item of this.tracking) {
 					this.check_element(
 						item,
-						item.element.getBoundingClientRect(),
+						item.element.getBoundingClientRect()
 					)
 				}
 			}, 200)

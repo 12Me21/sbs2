@@ -5,7 +5,6 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	selected_file: null,
 	scroller: null,
 	sidebar_tabs: null,
-	select_tab: null,
 	my_avatar: null,
 	file_upload_form: null,
 	
@@ -27,9 +26,9 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 				['hash', 'text', {label: "Hash"}],
 				['bucket', 'text', {label: "Bucket"}],
 				['quantize', 'select', {label: "Quantize", default: ""}, {
-					options: [["","no"], ["2","2"], ["4","4"], ["8","8"], ["16","16"], ["32","32"], ["64","64"], ["256","256"]]
-				}],// todo: maybe store js values in the dropdown, rather than strings?
-			]
+					options: [["", "no"], ["2", "2"], ["4", "4"], ["8", "8"], ["16", "16"], ["32", "32"], ["64", "64"], ["256", "256"]],
+				}], // todo: maybe store js values in the dropdown, rather than strings?
+			],
 		})
 		$file_upload_form.replaceWith(file_upload_form.elem) // todo: maybe preserve the id on the new element here incase init ... ehhh nah
 		file_cancel()
@@ -100,7 +99,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		$file_url.onfocus = function() {
 			window.setTimeout(()=>{
 				$file_url.select()
-			},0)
+			})
 		}
 		scroller = new Scroller($sidebarScroller.parentNode, $sidebarScroller)
 		// todo: maybe a global ESC handler?
@@ -156,7 +155,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 			Lp.chain({
 				values: {
 					search: `%${$searchInput.value}%`,
-					pagetype: [1,4],
+					pagetype: [1, 4],
 				},
 				requests: [
 					{type:'content', fields:'name,id,contentType,permissions,createUserId,lastCommentId', query:"contentType in @pagetype AND name LIKE @search", limit:50, order:'lastCommentId_desc'},
@@ -191,21 +190,6 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		$logOut.onclick = function(e) {
 			Req.log_out()
 		}
-		$changeForm.onsubmit = function(e) {
-			e.preventDefault()
-			registerError("Updating data...", undefined)
-			let data = readChangeFields()
-			if (data.error) {
-				registerError(data.error)
-				return
-			}
-			delete data.error
-			/*Req.set_sensitive(data).then((resp)=>{
-				registerError("Updated", undefined)
-			}, ()=>{
-				registerError(resp, "Failed:") //todo: this doesn't work?
-			})*/
-		}
 		let d = Draw.settings(Settings)
 		$localSettings.append(d.elem)
 		$localSettingsSave.onclick = ()=>{
@@ -237,7 +221,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 					alert("recursive print detected!")
 					return
 				}
-				printing = true;
+				printing = true
 				scroller.print(()=>{
 					for (let arg of args) {
 						$sidebarScroller.append(Draw.sidebar_debug(arg))
@@ -248,7 +232,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 			} catch (e) {
 				console.error("print error", e, "\n", args)
 			}
-			printing = false;
+			printing = false
 		})
 	},
 	
@@ -343,62 +327,9 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 			n.remove()
 			message_count--
 		}
-	}
+	},
 	
 })<!-- PRIVATE })
-
-//todo: clean this up
-function registerError(message, title) {
-	let text = ""
-	if (message == undefined)
-		text = ""
-	else if (message instanceof Array)
-		text = message.join("\n")
-	else if (typeof message == 'string') {
-		text = message
-	} else {
-		//todo: this tells us which fields are invalid
-		// so we can use this to highlight them in red or whatever
-		for (let key in message)
-			text += key+": "+message[key]+"\n"
-	}
-	if (title)
-		text = title+"\n"+text
-	$userSettingsError.textContent = text
-}
-// this all needs to be replaced with the new input system but I don't trust it enough yet.
-function readChangeFields() {
-	let form = $changeForm
-	let data = {
-		oldPassword: form.oldPassword.value,
-		username: form.username.value,
-		password: form.password.value,
-		email: form.email.value
-	}
-	data.error = {}
-	
-	if (!data.oldPassword)
-		data.error.oldPassword = "Old password is required"
-	
-	if (!data.username)
-		delete data.username
-	
-	if (data.password) {
-		if (data.password != form.password2.value)
-			data.error.password2 = "Passwords don't match"
-	} else
-		delete data.password
-	
-	if (data.email) {
-		if (data.email != form.email2.value)
-			data.error.email2 = "Emails don't match"
-	} else
-		delete data.email
-	
-	if (!Object.keys(data.error).length)
-		data.error = null
-	return data
-}
 
 0<!-- Sidebar ({
 })(window)

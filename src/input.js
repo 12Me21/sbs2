@@ -64,7 +64,7 @@ class Form {
 			// wait how do we change a select's values afterwards then?
 			let [name, type, opt, inp={}] = field
 			
-			let input = new (INPUTS[type])(inp)
+			let input = new INPUTS[type](inp)
 			this.inputs[name] = input
 			input.value = opt.default
 			
@@ -150,7 +150,7 @@ const INPUTS = (()=>{
 	}
 	
 	class GenericInput {
-		constructor () {
+		constructor() {
 			this.html_id = unique_id()
 		}
 		toString() {
@@ -521,10 +521,10 @@ const INPUTS = (()=>{
 			write() {
 				let v = this.value
 				let date="", time=""
+				function str(x, len=2) {
+					return String(x).padStart(len, "0")
+				}
 				if (v) {
-					function str(x, len=2) {
-						return String(x).padStart(len, "0")
-					}
 					date =
 						str(v.getFullYear(), 4)+"-"+
 						str(v.getMonth()+1)+"-"+

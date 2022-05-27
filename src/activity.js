@@ -71,7 +71,7 @@ ActivityItem.HTML = 𐀶`
 // render new page block only when page added to list
 // handle updating existing page blocks (updating users list, time, etc.)
 // use this for activity and watchlist
-Act = function(){"use strict"; return singleton({
+Act = function() { "use strict"; return singleton({
 	// this is a list of activity items
 	// i.e. pages with recent activity, displayed in the sidebar
 	items: {},
@@ -91,13 +91,13 @@ Act = function(){"use strict"; return singleton({
 				{type:'content', fields:'name, id, permissions, contentType, lastRevisionId', query:"id IN @message_aggregate.contentId OR id IN @message.contentId"},
 				{type:'user', fields:'*', query:"id IN @message_aggregate.createUserId OR id IN @message.createUserId"},
 				// todo: activity_aggregate
-			]
+			],
 		}, (objects)=>{
 			console.log('🌄 got initial activity')
 			Entity.ascending(objects.message, 'id')
 			Sidebar.display_messages(objects.message, true) // TODO: ensure that these are displayed BEFORE any websocket new messages
 			
-			objects.message_aggregate.sort((a,b)=>a.maxId-b.maxId)
+			objects.message_aggregate.sort((a, b)=>a.maxId-b.maxId)
 			for (let x of objects.message_aggregate)
 				this.message_aggregate(x, objects)
 		})
@@ -135,6 +135,6 @@ Act = function(){"use strict"; return singleton({
 		ActivityItem.handle(this.items, pid, content, uid, user, date)
 	},
 	
-})}()
+}) }()
 
 Act.init()
