@@ -1,15 +1,14 @@
 delete window.sidebar // obsolete firefox global variable
 
-let Sidebar = Object.create(null)
-with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
-	selected_file: null,
+let Sidebar = Object.seal({
+	file: null,
 	scroller: null,
 	sidebar_tabs: null,
 	my_avatar: null,
 	file_upload_form: null,
 	
 	select_tab(name) {
-		for (let tab of sidebar_tabs) {
+		for (let tab of this.sidebar_tabs) {
 			let select = name==tab.name
 			tab.btn.setAttribute('aria-selected', select)
 			tab.elem.classList.toggle('shown', select)
@@ -19,7 +18,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	},
 	
 	onload() {
-		file_upload_form = new Form({
+		this.file_upload_form = new Form({
 			fields: [
 				['size', 'output', {output: true, label: "Size"}], //todo: separate set of output fields?
 				['name', 'text', {label: "File Name"}],
@@ -30,78 +29,88 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 				}], // todo: maybe store js values in the dropdown, rather than strings?
 			],
 		})
-		$file_upload_form.replaceWith(file_upload_form.elem) // todo: maybe preserve the id on the new element here incase init ... ehhh nah
-		file_cancel()
+		$file_upload_form.replaceWith(this.file_upload_form.elem)
+		this.file_cancel()
 		
-		$openSidebar.onclick = $closeSidebar.onclick = toggle
+		$openSidebar.onclick = $closeSidebar.onclick = e=>{
+			this.toggle()
+		}
 		View.attach_resize($sidebar, $horizontalResize, true, -1, "sidebarWidth")
 		View.attach_resize($sidebarTop, $sidebarResize, false, 1, "sidebarPinnedHeight")
 		View.flag('sidebar', true)
 		
-		attach_paste(got_file)
+		document.addEventListener('paste', e=>{
+			let data = e.clipboardData
+			if (data && data.files) {
+				let file = data.files[0]
+				if (file && (/^image\//).test(file.type))
+					this.got_file(file)
+			}
+		})
 		
-		$file_browse.onchange = function(e) { // must not be arrow func
-			let file = this.files[0]
+		$file_browse.onchange = e=>{
+			let file = $file_browse.files[0]
 			try {
-				file && got_file(file)
+				file && this.got_file(file)
 			} finally {
-				this.value = ""
+				$file_browse.value = ""
 			}
 		}
-		$file_cancel.onclick = $file_done.onclick = file_cancel
-		$file_upload.onclick = function() {
-			if (selected_file) {
-				$file_upload.disabled = true
+		$file_cancel.onclick = $file_done.onclick = e=>{
+			this.file_cancel()
+		}
+		$file_upload.onclick = e=>{
+			if (!this.file) return
+			$file_upload.disabled = true
+			
+			this.file_upload_form.read()
+			let data = this.file_upload_form.get()
+			
+			let params = {
+				tryresize: true,
+				name: data.name || "",
+				values: {},
+			}
+			let priv = false
+			if (data.bucket!=null) {
+				params.values.bucket = data.bucket || ""
+				priv = true
+			}
+			if (data.quantize)
+				params.quantize = +data.quantize
+			if (data.hash)
+				params.hash = data.hash
+			if (priv)
+				params.globalPerms = ""
+			print(`uploading ${priv?"private":"public"} file...`)
+			
+			Req.upload_file(this.file, params).do = (file, err)=>{
+				$file_upload.disabled = false
+				if (err) return
 				
-				file_upload_form.read()
-				let data = file_upload_form.get()
+				if (priv && file.permissions[0])
+					alert("file permissions not set correctly!\nid:"+file.id)
 				
-				let params = {
-					tryresize: true,
-					name: data.name || "",
-					values: {},
-				}
-				let priv = false
-				if (data.bucket!=null) {
-					params.values.bucket = data.bucket || ""
-					priv = true
-				}
-				if (data.quantize)
-					params.quantize = +data.quantize
-				if (data.hash)
-					params.hash = data.hash
-				if (priv)
-					params.globalPerms = ""
-				print(`uploading ${priv?"private":"public"} file...`)
+				this.file = null
 				
-				Req.upload_file(selected_file, params).do = (file, err)=>{
-					$file_upload.disabled = false
-					if (err) return
-					
-					if (priv && file.permissions[0])
-						alert("file permissions not set correctly!\nid:"+file.id)
-					
-					selected_file = null
-					
-					$file_url.hidden = false
-					$file_done.hidden = false
-					file_upload_form.elem.hidden = true
-					$file_browse.hidden = true
-					$file_cancel.hidden = true
-					$file_upload.hidden = true
-					
-					$file_url.value = Req.file_url(file.hash)
-					$file_image.src = ""
-					$file_image.src = Req.file_url(file.hash)
-				}
+				$file_url.hidden = false
+				$file_done.hidden = false
+				this.file_upload_form.elem.hidden = true
+				$file_browse.hidden = true
+				$file_cancel.hidden = true
+				$file_upload.hidden = true
+				
+				$file_url.value = Req.file_url(file.hash)
+				$file_image.src = ""
+				$file_image.src = Req.file_url(file.hash)
 			}
 		}
-		$file_url.onfocus = function() {
+		$file_url.onfocus = e=>{
 			window.setTimeout(()=>{
 				$file_url.select()
 			})
 		}
-		scroller = new Scroller($sidebarScroller.parentNode, $sidebarScroller)
+		this.scroller = new Scroller($sidebarScroller.parentNode, $sidebarScroller)
 		// todo: maybe a global ESC handler?
 		/*document.addEventListener('keydown', function(e) {
 		  
@@ -109,11 +118,11 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		let user_label
 		if (Req.auth) {
 			user_label = document.createElement('span')
-			my_avatar = user_label
+			this.my_avatar = user_label
 		} else
 			user_label = "log in"
 		
-		sidebar_tabs = [
+		this.sidebar_tabs = [
 			{name: 'activity', label: "✨", elem: $sidebarActivityPanel, accesskey: 'a'},
 			//{label: "W", elem: $sidebarWatchPanel},
 			
@@ -127,7 +136,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		
 		let button_template = 𐀶`<button role=tab aria-selected=false>`
 		
-		for (let tab of sidebar_tabs) {
+		for (let tab of this.sidebar_tabs) {
 			tab.elem.setAttribute('role', "tabpanel")
 			tab.elem.setAttribute('aria-labelledby', `sidebar-tab-${tab.name}`)
 			// todo: tabs need like, label? title name thing 
@@ -135,8 +144,8 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 			tab.btn.id = "sidebar-tab-"+tab.name
 			tab.btn.setAttribute('aria-controls', tab.elem.id)
 			tab.btn.dataset.name = tab.name
-			tab.btn.onclick = function(e) {
-				select_tab(this.dataset.name)
+			tab.btn.onclick = e=>{
+				this.select_tab(e.target.dataset.name)
 			}
 			tab.btn.append(tab.label)
 			if (tab.accesskey)
@@ -145,11 +154,11 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		}
 		
 		if (Req.auth)
-			select_tab('activity')
+			this.select_tab('activity')
 		else
-			select_tab('user')
+			this.select_tab('user')
 		
-		$searchButton.onclick = ()=>{
+		$searchButton.onclick = e=>{
 			$searchButton.disabled = true
 			
 			Lp.chain({
@@ -175,7 +184,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		}
 		View.bind_enter($searchInput, $searchButton.onclick)
 		
-		$loginForm.onsubmit = function(e) {
+		$loginForm.onsubmit = e=>{
 			e.preventDefault()
 			Req.get_auth($loginForm.username.value, $loginForm.password.value).do = (resp, err)=>{
 				if (err) {
@@ -187,7 +196,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 				}
 			}
 		}
-		$logOut.onclick = function(e) {
+		$logOut.onclick = e=>{
 			Req.log_out()
 		}
 		let d = Draw.settings(Settings)
@@ -197,83 +206,64 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 		}
 	},
 	
-	attach_paste(callback) {
-		document.addEventListener('paste', (event)=>{
-			let data = event.clipboardData
-			if (data && data.files) {
-				let file = data.files[0]
-				if (file && (/^image\//).test(file.type))
-					callback(file)
-			}
-		})
-	},
-	
-	redraw_category_tree(cats) {
-		$sidebarCategories.fill(Draw.nav_category(cats[0]))
-	},
-	
 	printing: false,
 	// messy messy messy...
 	print(...args) {
 		do_when_ready(()=>{
 			try {
-				if (printing) {
+				if (this.printing) {
 					alert("recursive print detected!")
 					return
 				}
-				printing = true
-				scroller.print(()=>{
+				this.printing = true
+				this.scroller.print(()=>{
 					for (let arg of args) {
 						$sidebarScroller.append(Draw.sidebar_debug(arg))
-						message_count++
+						this.message_count++
 					}
 				}, true)
-				limit_messages()
+				this.limit_messages()
 			} catch (e) {
 				console.error("print error", e, "\n", args)
 			}
-			printing = false
+			this.printing = false
 		})
 	},
 	
 	file_cancel() {
-		selected_file = null
+		this.file = null
 		$file_browse.hidden = false
 		$file_cancel.hidden = true
 		$file_url.hidden = true
 		$file_done.hidden = true
 		$file_upload.hidden = true
-		file_upload_form.elem.hidden = true
-		cleanup()
-	},
-	
-	cleanup() {
-		selected_file = null
+		this.file_upload_form.elem.hidden = true
+		this.file = null
 		$file_image.src = ""
 	},
 	
 	got_file(file) {
 		$file_cancel.hidden = false
 		$file_upload.hidden = false
-		file_upload_form.elem.hidden = false
+		this.file_upload_form.elem.hidden = false
 		$file_browse.hidden = true
 		$file_url.hidden = true
 		$file_done.hidden = true
 		
 		$file_image.src = ""
 		$file_image.src = URL.createObjectURL(file)
-		file_upload_form.set_some({
+		this.file_upload_form.set_some({
 			size: (file.size/1000)+" kB",
 			name: file.name,
 			hash: null,
 		})
-		file_upload_form.write()
-		selected_file = file
-		select_tab('file')
+		this.file_upload_form.write()
+		this.file = file
+		this.select_tab('file')
 	},
 	
 	toggle() {
-		let fullscreen = is_fullscreen()
+		let fullscreen = this.is_fullscreen()
 		if (fullscreen) {
 			View.flag('mobileSidebar', !View.flags.mobileSidebar)
 		} else {
@@ -283,7 +273,7 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	},
 	
 	is_fullscreen() {
-		return !window.matchMedia || window.matchMedia("(max-width: 700px)").matches
+		return window.matchMedia("(max-width: 700px)").matches
 	},
 	
 	message_count: 0,
@@ -292,47 +282,43 @@ with(Sidebar)((window)=>{"use strict";Object.assign(Sidebar,{
 	
 	display_messages(comments, initial) {
 		// todo: show page titles?
-		scroller.print(()=>{
+		this.scroller.print(()=>{ //todo: pass inner as arg here
 			for (let c of comments) {
-				let old = displayed_ids[c.id]
+				let old = this.displayed_ids[c.id]
 				if (c.deleted) {
 					if (old) {
 						old.remove()
-						delete displayed_ids[c.id]
-						message_count--
+						delete this.displayed_ids[c.id]
+						this.message_count--
 					}
 				} else {
 					let nw = Draw.sidebar_comment(c)
 					if (old) {
 						old.replaceWith(nw)
 					} else {
-						scroller.inner.append(nw)
-						message_count++
+						this.scroller.inner.append(nw)
+						this.message_count++
 					}
-					displayed_ids[c.id] = nw
-					limit_messages()
+					this.displayed_ids[c.id] = nw
+					this.limit_messages()
 				}
 			}
 		}, !initial)
 		if (initial)
-			scroller.scroll_instant()
+			this.scroller.scroll_instant()
 	},
 	
 	limit_messages() {
-		while (message_count > 500) {
-			let n = scroller.inner.firstChild
+		while (this.message_count > 500) {
+			let n = this.scroller.inner.firstChild
 			let id = n.dataset.id
 			if (id)
-				delete displayed_ids[+id]
+				delete this.displayed_ids[+id]
 			n.remove()
-			message_count--
+			this.message_count--
 		}
 	},
 	
-})<!-- PRIVATE })
+})
 
-0<!-- Sidebar ({
-})(window)
-Object.seal(Sidebar)
-
-window.print = Sidebar.print
+window.print = Sidebar.print.bind(Sidebar)
