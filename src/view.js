@@ -77,7 +77,7 @@ const View = ((u=Object.seal({
 				return {quick: true}
 			},
 			quick() {
-				set_title("Testing")
+				u.set_title("Testing")
 			},
 		},
 		pages: {
@@ -209,7 +209,7 @@ const View = ((u=Object.seal({
 			u.cleanup(location)
 			u.current_view = view = u.errorView
 			console.error("error during view handling", e)
-			set_title("error during "+phase)
+			u.set_title("error during: "+phase)
 			$errorMessage.textContent = e ? e+"\n"+e.stack : ""
 		}
 		u.load_end()
