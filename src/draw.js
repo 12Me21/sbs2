@@ -86,6 +86,7 @@ const Draw = Object.seal({
 				}
 				s.textContent = out
 				e.append(s)
+				thing = thing.toString()
 			}
 			text = String(thing)
 		} catch (error) {

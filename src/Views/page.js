@@ -73,7 +73,7 @@ View.add_view('page', {
 	},
 	cleanup(type) {
 		this.room && this.room.hide() //so it's fucking possible for cleanup to get called TWICE if there's an error, sometimes.
-		room = null
+		this.room = null
 		View.flag('canEdit', false)
 	},
 	init() {

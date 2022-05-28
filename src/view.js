@@ -136,6 +136,7 @@ const View = ((u=Object.seal({
 				// we ignore this error, because it's probably not important
 				// and also cleanup gets called during error handling so we don't want to get into a loop of errors
 				console.error(e, "error in cleanup function")
+				print(e)
 			}
 		u.current_view = null
 	},
