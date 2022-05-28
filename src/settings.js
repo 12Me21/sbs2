@@ -1,5 +1,4 @@
-let Settings = Object.create(null)
-with(Settings)((window)=>{"use strict"; Object.assign(Settings,{
+let Settings = Object.seal({
 	values: {},
 	
 	/*fields: [
@@ -136,7 +135,7 @@ for this to work,, we need:
 	},
 	
 	early() {
-		Object.for(fields, (field, name)=>{
+		Object.for(this.fields, (field, name)=>{
 			let value = Store.get("setting-"+name)
 			if (value != null)
 				value = JSON.safe_parse(value)
@@ -148,7 +147,7 @@ for this to work,, we need:
 				else
 					value = ""
 			}
-			values[name] = value
+			this.values[name] = value
 			if (field.update)
 				field.update(value)
 		})
@@ -156,16 +155,10 @@ for this to work,, we need:
 	
 	// change a setting after load
 	change(name, value) {
-		let field = fields[name]
+		let field = this.fields[name]
 		if (!field) return
-		values[name] = value
+		this.values[name] = value
 		Store.set("setting-"+name, JSON.stringify(value))
 		field.update && field.update(value)
 	},
-	
-})<!-- PRIVATE })	
-
-
-0<!-- Settings ({
-})(window)
-Object.seal(Settings)
+})
