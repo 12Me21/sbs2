@@ -1,3 +1,4 @@
+'use strict'
 // this file runs first (probably lol)
 // ⚠ DANGER! ⚠ //
 

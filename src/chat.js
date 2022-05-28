@@ -1,3 +1,4 @@
+'use strict'
 //todo: read my old notes (in chat) about how to handle edited messages
 // ex: when a message is moved between rooms,
 
@@ -144,7 +145,6 @@ class MessageList {
 		this.controls_message = elem
 	}
 	static onload() {
-		this.controls_message = null
 		this.controls = Draw.message_controls(()=>{
 			alert(JSON.stringify(this.controls_message.x_data, null, 1)) // <small heart>
 		}, ()=>{
@@ -183,6 +183,8 @@ class MessageList {
 		})
 	}
 }
+MessageList.controls = null
+MessageList.controls_message = null
 MessageList.prototype.max_parts = 500
 
 class ChatRoom {
@@ -425,6 +427,7 @@ ChatRoom.HTML = {
 `,
 }
 Object.seal(ChatRoom)
+Object.seal(MessageList)
 
 // todo: when starting to render any page
 //- run generatestatus and generatelisteners

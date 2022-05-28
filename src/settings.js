@@ -1,3 +1,4 @@
+'use strict'
 let Settings = Object.seal({
 	values: {},
 	

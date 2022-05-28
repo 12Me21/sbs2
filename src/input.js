@@ -1,3 +1,4 @@
+'use strict'
 // I really hate this file.
 
 // TODO:

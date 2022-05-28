@@ -1,3 +1,4 @@
+'use strict'
 class ResizeTracker {
 	constructor(measure) {
 		this.measure = measure

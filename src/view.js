@@ -1,3 +1,4 @@
+'use strict'
 // so really what we need is like, 
 // for Content, a few different views
 

@@ -1,3 +1,4 @@
+'use strict'
 // todo: should have some indicator whether the input fields reflect the current search results or have been edited
 
 View.add_view('comments', {
@@ -17,7 +18,7 @@ View.add_view('comments', {
 				['limit', 'number', {label: "Per Page (200)", param: 'limit'}],
 				['page', 'number', {label: "Page (1)", param: 'p'}],
 				['reverse', 'checkbox', {label: "Newest First", param: 'r'}],
-			]
+			],
 		})
 	},
 	
@@ -178,8 +179,8 @@ View.add_view('comments', {
 				requests: [
 					{type:'message', fields:'*', query:query.join(" AND "), order, limit, skip},
 					{type:'content', fields:'name,id,createUserId', query:"id IN @message.contentId"},
-					{type:'user', fields:'*', query:"id IN @message.createUserId OR id IN @content.createUserId"}
-				]
+					{type:'user', fields:'*', query:"id IN @message.createUserId OR id IN @content.createUserId"},
+				],
 			},
 			merge,
 		]

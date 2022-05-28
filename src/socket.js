@@ -1,3 +1,4 @@
+'use strict'
 // todo: if we're disconnected for a long time, we might lose sync
 // so, at that point there's really no way to recover (also we need to re-request our user object in case it updated)
 
@@ -11,7 +12,7 @@ class SocketRequestError extends TypeError {
 }
 SocketRequestError.prototype.name = "SocketRequestError"
 
-let Lp = function() { "use strict"; return singleton({
+let Lp = singleton({
 	handlers: new Map(),
 	handler_id: 1,
 	ready: false,
@@ -283,7 +284,7 @@ let Lp = function() { "use strict"; return singleton({
 			this.start_websocket(true)
 		})
 	},
-}) }()
+})
 
 /*
 idea: when socket dies, if page isn't visible, we do nothing

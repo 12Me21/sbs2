@@ -1,3 +1,5 @@
+'use strict'
+
 View.add_view('user', {
 	start({id, query}) {
 		let user_query

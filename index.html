@@ -18,7 +18,7 @@
 <!--<link rel=dns-prefetch href=https://qcs.shsbs.xyz>
 <link rel=preconnect href=https://qcs.shsbs.xyz crossorigin>-->
 
-<script>
+<script>'use strict'
 	if (window.location.search=="?logout") {
 		window.localStorage.removeItem("token-qcs.shsbs.xyz/api")
 		window.location.search = ""
@@ -240,7 +240,7 @@
 </horizontal-split>
 
 </body>
-<script hidden>
+<script hidden>'use strict'
 	document.currentScript.remove() // 💭
 	// whitespace between nodes in html (due to line breaks, indentation, etc.) creates text nodes which need to be stripped:
 	document.createNodeIterator(

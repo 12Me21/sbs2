@@ -1,3 +1,4 @@
+'use strict'
 immediate()
 
 /*if (document.readyState == 'loading')

@@ -1,3 +1,5 @@
+'use strict'
+
 function register_activity(e) {
 	// 1: if currently inactive, switch to active
 	// 2: record time
@@ -150,7 +152,7 @@ View.add_view('page', {
 				Req.send_message({
 					contentId: room.id,
 					text: data.text,
-					values: data.values
+					values: data.values,
 				}).do = (resp, err)=>{
 					//if (err) //error sending message
 						//this.write_input(old)
@@ -212,7 +214,7 @@ View.add_view('page', {
 		window.setTimeout(x=>{
 			$chatTextarea.setSelectionRange(99999, 99999) // move cursor to end
 			$chatTextarea.focus()
-		},0)
+		}, 0)
 	},
 	
 	cancel_edit() {

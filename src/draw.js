@@ -1,3 +1,4 @@
+'use strict'
 // HTML RENDERING
 const Draw = Object.seal({
 	//📥 content‹Content›

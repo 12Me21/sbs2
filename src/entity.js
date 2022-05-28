@@ -1,3 +1,4 @@
+'use strict'
 const TYPES = {}
 
 // permissions class? idk
@@ -106,7 +107,7 @@ function map_date(obj, prop) {
 
 // functions for processing recieved entities/
 // DATA PROCESSOR
-Entity = (()=>{ "use strict"; return singleton({
+Entity = singleton({
 	
 	// official page types
 	CONTENT_TYPES: [
@@ -188,4 +189,4 @@ Entity = (()=>{ "use strict"; return singleton({
 		if (list.length>1 && list[0][field] > list[1][field])
 			list.reverse()
 	},
-}) })()
+})

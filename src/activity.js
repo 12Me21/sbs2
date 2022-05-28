@@ -1,3 +1,4 @@
+'use strict'
 let Act
 
 class ActivityItem {
@@ -71,7 +72,7 @@ ActivityItem.HTML = 𐀶`
 // render new page block only when page added to list
 // handle updating existing page blocks (updating users list, time, etc.)
 // use this for activity and watchlist
-Act = function() { "use strict"; return singleton({
+Act = singleton({
 	// this is a list of activity items
 	// i.e. pages with recent activity, displayed in the sidebar
 	items: {},
@@ -135,6 +136,6 @@ Act = function() { "use strict"; return singleton({
 		ActivityItem.handle(this.items, pid, content, uid, user, date)
 	},
 	
-}) }()
+})
 
 Act.init()
