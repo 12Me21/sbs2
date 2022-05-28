@@ -21,9 +21,10 @@ class Author {
 		this.username = user.username
 		let nick = null
 		// message from discord bridge
-		let bridge = 'string'==typeof message.values.b
-		if (bridge)
-			nick = message.values.b
+		//let bridge = 'string'==typeof message.values.b
+		//if (bridge)
+		//	nick = message.values.b
+		let bridge = user.id == 5410
 		// regular nickname
 		if ('string'==typeof message.values.n)
 			nick = message.values.n

@@ -89,7 +89,7 @@ function NO_CONVERT(type) {
 	throw new FieldError("🚮 invalid type conversion", this, "⛔ to "+type)
 }
 METHOD(Object, Symbol.toPrimitive, NO_CONVERT)
-METHOD(Object, Symbol.toStringTag, "Object")
+//METHOD(Object, Symbol.toStringTag, undefined)
 METHOD(Error, Symbol.toPrimitive, Error.prototype.toString)
 
 // ⚡ async/await/Promise replacement using function*/yield
