@@ -25,24 +25,33 @@
 	}
 	window.print = window.alert
 	
+	// todo: get rid of global vars here
 	var markup_warned
 	function check_markup() {
 		return "yeah"===window.getComputedStyle(document.documentElement).getPropertyValue('--Markup-loaded')
 	}
 	
-	window.onerror = function(message, source, line, col, error) {
+	let BASE_URL = new URL("./", window.location).href
+	
+	function alert_error(msg, message, source, line, col) {
+		source = source.replace(BASE_URL, "📁 ")
+		col = String(col).replace(/\d/g, c=>"₀₁₂₃₄₅₆₇₈₉"[c])
+		if (confirm(msg+"\n"+line+"."+col+" in "+source+"\n\n"+message+"\n\n[Cancel] = reload page, [Ok] = continue"))
+			window.onerror = null
+		else
+			RELOAD()
+	}
+	
+	window.onerror = (message, source, line, col, error)=>{
 		if (!markup_warned && !check_markup()) {
 			markup_warned = true
-			alert("❓MISSING SUBMODULE DETECTED!\n🩸Check: "+new URL('markup2/',window.location).href+"\n🩸If the ‘markup2’ folder is empty:\n🩸\n🩸Run: git submodule update --init\n🩸or download the files manually at:\n🩸https://github.com/12Me21/markup2")
+			alert("❓MISSING SUBMODULE DETECTED!\n🩸Check: "+new URL('markup2/', window.location).href+"\n🩸If the ‘markup2’ folder is empty:\n🩸\n🩸Run: git submodule update --init\n🩸or download the files manually at:\n🩸https://github.com/12Me21/markup2")
 		}
-		
-		(window.queueMicrotask || window.setTimeout)(function() {
-			if (confirm("🎆 ERROR DURING PAGE LOAD!\n"+line+":"+col+" in "+source+"\n\n"+message+"\n\n[Cancel] = reload page, [Ok] = continue"))
-				window.onerror = null
-			else
-				RELOAD()
+		(window.queueMicrotask || window.setTimeout)(()=>{
+			alert_error("🎆 ERROR DURING PAGE LOAD!", message, source, line, col)
 		})
 	}
+	
 	function RELOAD() {
 		var l=window.location.href
 		window.history.replaceState(null, "", "?⌛")

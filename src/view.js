@@ -30,10 +30,7 @@
 // if it does a request, we need to wait for lastId before doing the requst (on SOME page types)
 // then we wait for onload, before displaying
 
-let View = Object.create(null)
-with(View)((window)=>{"use strict"; Object.assign(View, {
-	
-	cancel_request: null,
+const View = ((u=Object.seal({
 	// this will always be the currently rendered view
 	// (set before `render` is called, and unset before `cleanup` is called)
 	// current_view.cleanup should always be correct!
@@ -96,29 +93,29 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 	
 	// handle redirects
 	get_view(location) {
-		let view = views[location.type]
+		let view = u.views[location.type]
 		let got = false
 		while (view && view.redirect) { //danger!
 			let ret = view.redirect(location.id, location.query)
 			if (!ret) // oops no redirect
 				break
 			;[location.type, location.id, location.query] = ret // somehow this line triggers a bug in eslint
-			view = views[location.type]
+			view = u.views[location.type]
 			got = true
 		}
 		return got
 	},
 	
 	load_start() {
-		flag('loading', true)
+		u.flag('loading', true)
 	},
 	load_end() {
-		flag('loading', false)
+		u.flag('loading', false)
 	},
 	
 	flags: {},
 	flag(flag, state) {
-		flags[flag] = state
+		u.flags[flag] = state
 		document.documentElement.classList.toggle("f-"+flag, state)
 	},
 	
@@ -131,30 +128,30 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 	},
 	
 	cleanup(new_location) {
-		if (current_view && current_view.cleanup)
+		if (u.current_view && u.current_view.cleanup)
 			try {
-				current_view.cleanup(new_location)
+				u.current_view.cleanup(new_location)
 			} catch (e) {
 				// we ignore this error, because it's probably not important
 				// and also cleanup gets called during error handling so we don't want to get into a loop of errors
 				console.error(e, "error in cleanup function")
 			}
-		current_view = null
+		u.current_view = null
 	},
 	
 	cancel() {
-		if (loading_view) {
-			loading_view.return()
-			loading_view = null
-			load_end()
+		if (u.loading_view) {
+			u.loading_view.return()
+			u.loading_view = null
+			u.load_end()
 		}
 	},
 	
 	loading_view: null,
 	
 	handle_view(location, callback, onerror) {
-		cancel()
-		loading_view = handle_view2(location).run(callback, onerror)
+		u.cancel()
+		u.loading_view = u.handle_view2(location).run(callback, onerror)
 	},
 	
 	// technically STEP could be a global etc. but hhhh ....
@@ -164,11 +161,10 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 		let view
 		
 		try {
-			
-			load_start()
+			u.load_start()
 			phase = "getting view"
-			let got_redirect = get_view(location)
-			view = views[location.type]
+			let got_redirect = u.get_view(location)
+			view = u.views[location.type]
 			if (got_redirect)
 				Nav.replace_url(location)
 			if (!view)
@@ -192,16 +188,16 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 			}
 			yield do_when_ready(STEP)
 			
-			if (first)
+			if (u.first)
 				console.log("🌄 Rendering first page")
 			if (view.init) {
 				phase = "view.init"
 				view.init()
 				view.init = null
 			}
-			cleanup(location)
+			u.cleanup(location)
 			phase = "render"
-			current_view = view
+			u.current_view = view
 			if (data.quick)
 				view.quick(data.ext, location)
 			else
@@ -209,29 +205,29 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 		} catch (e) {
 			yield do_when_ready(STEP)
 			
-			cleanup(location)
-			current_view = view = errorView
+			u.cleanup(location)
+			u.current_view = view = u.errorView
 			console.error("error during view handling", e)
 			set_title("error during "+phase)
 			$errorMessage.textContent = e ? e+"\n"+e.stack : ""
 		}
-		load_end()
+		u.load_end()
 		//throw "heck darn"
 		for (let elem of $main_slides.children)
-			elem.classList.toggle('shown', elem.dataset.slide == current_view.className)
+			elem.classList.toggle('shown', elem.dataset.slide == u.current_view.className)
 		for (let elem of $titlePane.children) {
 			let list = elem.dataset.view
 			if (list)
-				elem.classList.toggle('shown', list.split(",").includes(current_view.className))
+				elem.classList.toggle('shown', list.split(",").includes(u.current_view.className))
 		}
-		View.flag('viewReady', true)
-		View.flag('mobileSidebar', false) //bad (should be function on Sidebar)
+		u.flag('viewReady', true)
+		u.flag('mobileSidebar', false) //bad (should be function on Sidebar)
 		
 		Lp.flush_statuses(()=>{})
 		
-		if (first) {
+		if (u.first) {
 			console.log("☀️ First page rendered!")
-			first = false
+			u.first = false
 		}
 	},
 	
@@ -239,7 +235,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 		data.name = name
 		if (!data.className)
 			data.className = name
-		views[name] = data
+		u.views[name] = data
 		data.did_init = false
 		Object.seal(data)
 	},
@@ -307,30 +303,30 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 		if (!Req.me)
 			return
 		if (text == false) {
-			document.title = real_title
-			change_favicon(null)
+			document.title = u.real_title
+			u.change_favicon(null)
 		} else {
 			document.title = text
-			change_favicon(icon || null)
+			u.change_favicon(icon || null)
 		}
 	},
 	
 	change_favicon(src) {
-		if (!favicon_element) {
+		if (!u.favicon_element) {
 			if (src == null)
 				return
 			// remove the normal favicons
 			for (let e of document.head.querySelectorAll('link[rel~="icon"]'))
 				e.remove()
 			// add our new one
-			favicon_element = document.createElement('link')
-			favicon_element.rel = "icon"
-			favicon_element.href = src
-			document.head.prepend(favicon_element)
-		} else if (favicon_element.href != src) {
+			u.favicon_element = document.createElement('link')
+			u.favicon_element.rel = "icon"
+			u.favicon_element.href = src
+			document.head.prepend(u.favicon_element)
+		} else if (u.favicon_element.href != src) {
 			if (src == null)
 				src = "resource/icon16.png"
-			favicon_element.href = src
+			u.favicon_element.href = src
 		}
 	},
 	
@@ -349,14 +345,14 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 	set_entity_title(entity) {
 		$pageTitle.fill(Draw.content_label(entity))
 		document.title = entity.name
-		real_title = entity.name
-		change_favicon(null)
+		u.real_title = entity.name
+		u.change_favicon(null)
 	},
 	set_title(text) {
 		$pageTitle.textContent = text
 		document.title = text
-		real_title = text
-		change_favicon(null)
+		u.real_title = text
+		u.change_favicon(null)
 	},
 	
 	// set path (in header)
@@ -381,11 +377,7 @@ with(View)((window)=>{"use strict"; Object.assign(View, {
 		set_path(path)
 	},*/
 	
-})<!-- PRIVATE })
-
-0<!-- View ({
-})(window)
-Object.seal(View)
+}))=>u)()
 
 // todo: id can be a string now,
 // so, we need to test if it is valid + in range (positive) in many places

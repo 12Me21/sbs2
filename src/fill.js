@@ -22,6 +22,7 @@ function METHOD(type, name, tc) {
 		value: tc, configurable: true,
 	})
 }
+
 function SELF_DESTRUCT(err) {
 	let x = ()=>{ throw err }
 	return new Proxy({}, {get:x, set:x, has:x})
@@ -90,7 +91,9 @@ function NO_CONVERT(type) {
 }
 METHOD(Object, Symbol.toPrimitive, NO_CONVERT)
 //METHOD(Object, Symbol.toStringTag, undefined)
-METHOD(Error, Symbol.toPrimitive, Error.prototype.toString)
+METHOD(Error, Symbol.toPrimitive, function() {
+	return this.toString()+"\n"+this.stack
+})
 
 // ⚡ async/await/Promise replacement using function*/yield
 window.GeneratorFunction = function* () {}.constructor

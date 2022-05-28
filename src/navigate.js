@@ -40,7 +40,7 @@ const Nav = function() { "use strict"; return singleton({
 		View.handle_view(location, ()=>{
 			//
 		}, (e)=>{
-			alert("unhandled error while loading page!\n"+e)
+			alert("unhandled error while handling view!\n"+e)
 			console.error(e)
 		})
 	},

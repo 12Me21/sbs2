@@ -145,7 +145,7 @@ let Sidebar = Object.seal({
 			tab.btn.setAttribute('aria-controls', tab.elem.id)
 			tab.btn.dataset.name = tab.name
 			tab.btn.onclick = e=>{
-				this.select_tab(e.target.dataset.name)
+				this.select_tab(e.currentTarget.dataset.name)
 			}
 			tab.btn.append(tab.label)
 			if (tab.accesskey)

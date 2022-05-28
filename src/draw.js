@@ -1,9 +1,5 @@
-let base_url = new URL("./", window.location.href).href
-
 // HTML RENDERING
-let Draw = Object.create(null)
-with(Draw)((window)=>{"use strict";Object.assign(Draw,{
-	
+const Draw = Object.seal({
 	//📥 content‹Content›
 	//📤 ‹ParentNode›
 	content_label: function(content, block) {
@@ -67,7 +63,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 					if (line=="") continue
 					let at = line.split("@")
 					if (at.length == 2) {
-						let file = at[1].replace(base_url, "")
+						let file = at[1].replace(BASE_URL, "")
 						let star = at[0].split("*")
 						if (star.length==2) {
 							at[0] = star[1]
@@ -111,7 +107,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		let a = this()
 		a.href = Nav.entity_link(user)
 		a.title = user.username
-		a.append(avatar(user))
+		a.append(Draw.avatar(user))
 		return a
 	}.bind(𐀶`<a>`),
 	
@@ -119,7 +115,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	//📤 ‹ParentNode›
 	avatar: function(user) {
 		let e = this()
-		e.src = avatar_url(user, "size=100&crop=true")
+		e.src = Draw.avatar_url(user, "size=100&crop=true")
 		return e
 	}.bind(𐀶`<img class='item avatar' width=100 height=100 alt="">`),
 	
@@ -141,12 +137,12 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	//📥 path‹???›
 	//📤 ‹ParentNode›
 	title_path(path) {
-		let element = F()
+		let element = document.createDocumentFragment()
 		if (!path)
 			return element
 		path.forEach((item, i, path)=>{
 			if (item) { //todo: use entities here instead
-				let link = E`a`
+				let link = document.createElement('a')
 				link.href = item[0]
 				link.textContent = item[1]
 				link.className += ' textItem entity-title'
@@ -206,7 +202,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		
 		let time = e.querySelector('time')
 		time.dateTime = comment.createDate
-		time.textContent = time_string(comment.createDate2)
+		time.textContent = Draw.time_string(comment.createDate2)
 		
 		return [e, e.lastChild]
 	}.bind({
@@ -263,7 +259,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	search_comment: function(comment, parent) {
 		let outer = this()
 		
-		let pg = content_label(parent, !false)
+		let pg = Draw.content_label(parent, !false)
 		outer.prepend(pg)
 		
 		let inner = outer.lastChild
@@ -271,7 +267,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		let list = new MessageList(inner, comment.contentId)
 		list.single_message(comment)
 		
-		let ne = button2("Load Newer", function() {
+		let ne = Draw.button2("Load Newer", function() {
 			// todo: make these buttons part of the message-list class
 			list.draw_messages_near(true, 10, (ok)=>{
 				if (!ok)
@@ -279,7 +275,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			})
 		})
 		
-		inner.before(button2("Load Older", function() {
+		inner.before(Draw.button2("Load Older", function() {
 			list.draw_messages_near(false, 10, (ok)=>{
 				if (!ok)
 					this.disabled = true
@@ -313,48 +309,33 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	// </div>
 	page_info(page) {
 		let e = EC('div', 'pageInfoPane rem2-3 bar')
-		//e.append(author_box(page), vote_box(page))
+		//e.append(Draw.author_box(page), vote_box(page))
 		return e
 	},
 	
 	update_activity_page: function(item) {
 		item.elem.href = Nav.entity_link(item.content)
-		item.page_elem.fill(content_label(item.content))
-		
-		/*let userlist = e.lastChild.lastChild
-		
-		let users = Object.values(item.users)
-		users.sort((a, b)=> -(a.date - b.date))
-		for (let u of users) {
-			if (u.user) {
-				let x = link_avatar(u.user)
-				x.title += "\n"+time_ago_string(u.date)
-				userlist.append(x)
-			}
-		}
-		
-		let time = e.lastChild.firstChild
-		//let time = time_ago(item.date)*/
+		item.page_elem.fill(Draw.content_label(item.content))
 	},
 	
 	// [page_edited_time] [entity_title_link]
 	// ? [page_edited_time] [entity_title_link]
 	// ? [page_edited_time]
 	author_box(page) {
-		let elem = F()
+		let elem = document.createDocumentFragment()
 		if (!page)
 			return elem
 		elem.append(
-			page_edited_time("Author:", page.createDate2), " ",
+			Draw.page_edited_time("Author:", page.createDate2), " ",
 			entity_title_link(page.createUser, true)
 		)
 		if (page.editUserId != page.createUserId) {
 			elem.append(
-				" ", page_edited_time("Edited by:", page.lastRevisionDate),
+				" ", Draw.page_edited_time("Edited by:", page.lastRevisionDate),
 				" ", entity_title_link(page.editUser, true)
 			)
 		} else if (page.createDate != page.lastRevisionDate) { //edited by same user
-			elem.append(" ", page_edited_time("Edited", page.lastRevisionDate))
+			elem.append(" ", Draw.page_edited_time("Edited", page.lastRevisionDate))
 		}
 		return elem
 	},
@@ -369,7 +350,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		let a = b.child('div', 'half half-label')
 		a.textContent = label
 		
-		a = time_ago(time)
+		a = Draw.time_ago(time)
 		b.append(a)
 		a.className += " half"
 		return b
@@ -378,7 +359,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	time_ago: function(time) {
 		let e = this()
 		e.setAttribute('datetime', time.toISOString())
-		e.textContent = time_ago_string(time)
+		e.textContent = Draw.time_ago_string(time)
 		e.title = time.toString()
 		return e
 	}.bind(𐀶`<time class='time-ago'>`),
@@ -416,11 +397,11 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	// </tr>
 	permission_row(user, perms) {
 		let id = user.id
-		let row = E`tr`
+		let row = document.createElement('tr')
 		row.dataset.id = id
 		// remove button
 		if (id) {
-			let b = button()
+			let b = Draw.button()
 			b[1].textContent = "remove"
 			b[1].onclick = ()=>{ row.remove() }
 			row.child('td').append(b[0])
@@ -429,7 +410,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		// name label
 		let name
 		if (!id)
-			name = text_item("Default")
+			name = Draw.text_item("Default")
 		else
 			name = entity_title_link(user, true)
 		name.className += " bar rem1-5"
@@ -451,12 +432,12 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 		let input = elem.child('input', 'item')
 		input.placeholder = "Search Username"
 		let dropdown = elem.child('select', 'item')
-		let placeholder = E`option`
+		let placeholder = document.createElement('option')
 		placeholder.textContent = "select user..."
 		placeholder.disabled = true
 		placeholder.hidden = true
 		
-		let placeholder2 = E`option`
+		let placeholder2 = document.createElement('option')
 		placeholder2.textContent = "loading..."
 		placeholder2.disabled = true
 		placeholder2.hidden = true
@@ -550,7 +531,7 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			settings.change(name, value)
 		}
 		let x = {
-			elem: F(),
+			elem: document.createDocumentFragment(),
 			update_all() {
 				Object.for(get, (func, key)=>{
 					update(key)
@@ -563,16 +544,16 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 			label.textContent = data.name+": "
 			let elem
 			if (type=='select') {
-				elem = E`select`
+				elem = document.createElement('select')
 				for (let option of data.options) {
 					let opt = elem.child('option')
 					opt.value = option
 					opt.textContent = option
 				}
 			} else if (type=='textarea') {
-				elem = E`textarea`
+				elem = document.createElement('textarea')
 			} else if (type=='text') {
-				elem = E`input`
+				elem = document.createElement('input')
 			}
 			
 			get[name] = ()=>{
@@ -624,23 +605,13 @@ with(Draw)((window)=>{"use strict";Object.assign(Draw,{
 	// update the timestamps in the sidebar activity list
 	// (todo: should we update them everywhere else on the site too?)
 	update_timestamps(element) {
-		for (let e of element.querySelectorAll("time.time-ago")) {
-			e.textContent = time_ago_string(new Date(e.dateTime))
-		}
+		for (let e of element.querySelectorAll("time.time-ago"))
+			e.textContent = Draw.time_ago_string(new Date(e.dateTime))
 	},
-	
-})<!-- PRIVATE })
-Object.seal(Draw)
+})
 
-let F = document.createDocumentFragment.bind(document)
-function E(name) {
-	return document.createElement(name[0])
-}
 function EC(name, classes) {
 	let elem = document.createElement(name)
 	elem.className = classes
 	return elem
 }
-
-0<!-- Draw ({
-})(window)
