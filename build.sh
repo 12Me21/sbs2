@@ -15,11 +15,13 @@ merge_files () {
 	echo "-------------------" >&2
 	printf %s\\n $files >&2
 	echo "===================" >&2
-	cat $files >"$1"
+	printf %s "$3" >"$1"
+	cat $files >>"$1"
 }
 
 merge_files resource/_build.css '<link .*\brel=stylesheet href=\K[\w/.-]+(?=>)'
-merge_files resource/_build.js '<script .*\bsrc=\K[\w/.-]+(?=>)'
+merge_files resource/_build.js '<script .*\bsrc=\K[\w/.-]+(?=>)' '"use strict";
+'
 
 echo 'Creating _build.html' >&2
 # nocache filename -> filename?1234567 (uses date modified)

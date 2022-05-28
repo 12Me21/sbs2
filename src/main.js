@@ -10,6 +10,12 @@ function immediate() {
 	console.log("🌅 STARTING INIT")
 	Sidebar.print("hi!\ncommit: "+window.COMMIT)
 	
+	try {
+		undefined = 2
+		console.warn("'use strict' not enabled!") // todo: warn/error printing ? higher priority? (pin to bottom?)
+		do_when_ready(x=>print("⚠️ 'use strict' not enabled!"))
+	} catch(e) {}
+	
 	// (we can access <html> even if DOMContentLoaded hasn't occurred yet)
 	// dark theme
 	let dark = window.matchMedia("(prefers-color-scheme: dark)")
@@ -123,6 +129,7 @@ function dom_ready() {
 	do_when_ready.then = null
 	run_on_load.forEach(x=>x())
 	run_on_load = null
+	DEFER = x=>void x()
 	//Object.defineProperty(ready, 'do', {set: fn=>fn()})
 	
 	//danger: View.onload() can potentially run after view.start() (but before view.render())  TODO

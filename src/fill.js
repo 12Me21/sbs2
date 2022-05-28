@@ -237,6 +237,7 @@ function 𐀶([html]) {
 let run_on_load = []
 let do_when_ready = func => run_on_load.push(func)
 do_when_ready.then = do_when_ready
+let DEFER = func => run_on_load.push(func)
 //console.log("deferring render", go)
 // idea: do_when_ready takes a 2nd argument, which creates a "pool" of events,
 // and only the most recently added one is run
