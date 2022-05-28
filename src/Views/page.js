@@ -81,28 +81,30 @@ View.add_view('page', {
 		window.editComment = this.edit_comment.bind(this) // HACK
 		
 		// up arrow = edit last comment
-		$chatTextarea.onkeydown = (e)=>{
+		$chatTextarea.onkeydown = e=>{
 			if (e.isComposing)
 				return
-			if (e.keyCode==38 && $chatTextarea.value=="") { // up arrow
-				let room = ChatRoom.currentRoom
-				let msg = room && room.my_last_message()
-				if (msg && msg.x_data)
-					this.edit_comment(msg.x_data)
-			}
-			if (!e.shiftKey && e.keyCode == 13) { // enter
+			if (!e.shiftKey && e.keyCode==13) { // enter
 				e.preventDefault()
 				this.send_message()
 			}
+			if (e.keyCode==38 && $chatTextarea.value=="") { // up arrow
+				let room = ChatRoom.currentRoom
+				let msg = room && room.my_last_message()
+				if (msg && msg.x_data) {
+					e.preventDefault()
+					this.edit_comment(msg.x_data)
+				}
+			}
 		}
 		
-		$chatCancelEdit.onclick = ()=>{
+		$chatCancelEdit.onclick = e=>{
 			console.log('cancel')
 			this.cancel_edit()
 		}
-		// todo: global escape handler?
-		document.addEventListener('keydown', (e)=>{
-			if (e.keyCode == 27)
+		// TODO: global escape handler?
+		document.addEventListener('keydown', e=>{
+			if (e.keyCode==27)
 				this.cancel_edit()
 		})
 		
@@ -110,7 +112,7 @@ View.add_view('page', {
 		let r = this.textarea_resize.bind(this)
 		$chatTextarea.addEventListener('input', r, {passive: true})
 		this.track_resize_2.add($chatTextarea, ()=>{
-			window.setTimeout(r, 0)
+			window.setTimeout(r)
 		})
 	},
 	
