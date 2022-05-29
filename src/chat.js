@@ -170,17 +170,17 @@ class MessageList {
 		})*/
 		
 		// todo: check out relatedTarget?
-		listen('mouseover', e=>{
+		/*listen('mouseover', e=>{
 			let elem = e.target.closest("message-part, message-controls, .message-list")
 			if (!elem || elem.classList.contains('message-list'))
 				this.show_controls(null)
 			else if (elem.tagName=='MESSAGE-PART')
 				this.show_controls(elem)
 			// otherwise, the element is <message-controls> so we do nothing
-		})
-		listen('mouseleave', e=>{
+		})*/
+/*		listen('mouseleave', e=>{
 			this.show_controls(null)
-		})
+		})*/
 	}
 }
 MessageList.controls = null
