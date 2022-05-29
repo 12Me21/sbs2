@@ -239,12 +239,13 @@ class ChatRoom {
 		this.message_parts = {}
 		this.total_messages = 0
 		
-		this.load_more_button.onclick = (e)=>{
-			if (e.currentTarget.disabled) return
-			e.currentTarget.disabled = true
+		this.load_more_button.onclick = e=>{
+			let btn = e.currentTarget
+			if (btn.disabled) return
+			btn.disabled = true
 			// todo: preserve scroll position
 			this.list.draw_messages_near(false, 50, ()=>{
-				e.currentTarget.disabled = false
+				btn.disabled = false
 			})
 		}
 		

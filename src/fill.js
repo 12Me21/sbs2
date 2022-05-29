@@ -192,7 +192,7 @@ Object.for = (obj, callback)=>{
 		callback(value, key, obj)
 }
 let FOR = Symbol('for')
-Object.prototype[FOR] = (callback)=>{
+Object.prototype[FOR] = function(callback) {
 	for (let [key, value] of Object.entries(this))
 		callback(value, key, this)
 }
@@ -217,6 +217,7 @@ RegExp.prototype.rmatch = function(str) {
 //let 𖹭 = Object.create.bind(Object,null,{𖹭:{set(f){Object.seal(Object.assign(this,f))}}}) // not used anymore :(
 
 const singleton = (obj) => Object.seal(obj)
+const NAMESPACE = Object.seal
 
 // activating strict mode:
 // x = function(){"use strict"; ... }()

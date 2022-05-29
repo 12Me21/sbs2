@@ -31,7 +31,11 @@
 // if it does a request, we need to wait for lastId before doing the requst (on SOME page types)
 // then we wait for onload, before displaying
 
-const View = ((u=Object.seal({
+// hmm idk about using `u` instead of `this` here
+// it's nice that we don't rely on `this` binding
+// but also means we can't add new methods at runtime
+// maybe best to just write View.prop ...
+const View = ((u=NAMESPACE({
 	// this will always be the currently rendered view
 	// (set before `render` is called, and unset before `cleanup` is called)
 	// current_view.cleanup should always be correct!
