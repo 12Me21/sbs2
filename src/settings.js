@@ -74,6 +74,11 @@ for this to work,, we need:
 				Scroller.anim_type = +value
 			},
 		},
+		chat_enter: {
+			name: "chat enter key",
+			type: 'select',
+			options: ['submit', 'newline'],
+		},
 		lazy_loading: {
 			name: "lazy image loading",
 			type: 'select',

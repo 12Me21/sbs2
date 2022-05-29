@@ -84,7 +84,7 @@ View.add_view('page', {
 		$chatTextarea.onkeydown = e=>{
 			if (e.isComposing)
 				return
-			if (!e.shiftKey && e.keyCode==13) { // enter
+			if (Settings.values.chat_enter!='newline' && e.keyCode==13 && !e.shiftKey) { // enter
 				e.preventDefault()
 				this.send_message()
 			}
@@ -96,6 +96,10 @@ View.add_view('page', {
 					this.edit_comment(msg.x_data)
 				}
 			}
+		}
+		
+		$chatSendButton.onclick = e=>{
+			this.send_message()
 		}
 		
 		$chatCancelEdit.onclick = e=>{
