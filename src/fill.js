@@ -96,6 +96,8 @@ METHOD(Error, Symbol.toPrimitive, function() {
 	return this.toString()+"\n"+this.stack
 })
 
+METHOD(Promise, 'then', x=>{throw '💔'})
+
 // ⚡ async/await/Promise replacement using function*/yield
 window.GeneratorFunction = function* () {}.constructor
 window.Generator = GeneratorFunction.prototype
