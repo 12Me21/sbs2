@@ -170,8 +170,12 @@ class MessageList {
 		})*/
 		
 		// todo: check out relatedTarget?
+		// TODO: this causes problems on mobile when clicking images/links etc.
+		// probably need to like
+		// replace this handler's event with one that doesn't capture touches
+		// and then add a separate touchstart etc. handler which doesnt accept click and etc. maybe we need to cancel click (or check if it's been handled?) somewhere somehow beforehand
 		listen('mouseover', e=>{
-			let elem = e.target//.closest("message-part, message-controls, .message-list")
+			let elem = e.target.closest("message-part, message-controls, .message-list")
 			if (!elem || elem.classList.contains('message-list'))
 				this.show_controls(null)
 			else if (elem.tagName=='MESSAGE-PART')
