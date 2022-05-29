@@ -93,7 +93,7 @@ View.add_view('comments', {
 		} else {
 			$commentSearchStatus.textContent = "results: "+comments.length
 			if (merge) {
-				x = document.createElement('message-list')
+				let x = document.createElement('message-list')
 				$commentSearchResults.append(x)
 				let list = new MessageList(x, comments[0].contentId) // mmndnhhhgghdhfhdh i sure hope it does (contentId)
 				for (let comment of comments)
