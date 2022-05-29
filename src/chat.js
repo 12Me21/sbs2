@@ -156,7 +156,7 @@ class MessageList {
 			document.body.addEventListener(ev, fn, {passive: true})
 		}
 		
-		listen('focusin', e=>{
+		/*listen('focusin', e=>{
 			let elem = e.target.closest("message-part, .message-list")
 			if (!elem)
 				this.show_controls(null)
@@ -167,7 +167,7 @@ class MessageList {
 			//if (e.target.closest(".message-list"))
 			// TODO: fix flickering when button is clicked
 			this.show_controls(null)
-		})
+		})*/
 		
 		// todo: check out relatedTarget?
 		listen('mouseover', e=>{
