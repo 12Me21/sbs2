@@ -1,138 +1,144 @@
 /* main stuff */
+/*
+    (modify-syntax-entry ?\; ". 1c" st)
+    (modify-syntax-entry ?\n "> c" st)
+    ;; Strings.
+    (modify-syntax-entry ?\" "\" 2c" st)
+*/
 
 html {
-	background: #FEE; /* for debug */
-	color: var(--T-col);
-	font: var(--T-font);
-	line-height: normal;
-	/* disable ligatures like fi ffi etc. */
-	/* (doesn't affect real languages or emoji)*/
-	font-variant-ligatures: none;
-	/* alternate glyphs for K and k (whatever) */
-	font-feature-settings: "ss04" on;
+	;background: #FEE ;" (for debug)
+	;color: var(--T-col)
+	;font: var(--T-font)
+	;line-height: normal
+	;" disable ligatures like fi ffi etc.
+	;" (doesn't affect real languages or emoji)
+	;font-variant-ligatures: none
+	;" alternate glyphs for K and k (whatever)
+	;font-feature-settings: "ss04" on
 }
 
 body {
-	background: var(--T-bg);
+	;background: var(--T-bg)
 }
 
 /***********
  ** Links **
  ***********/
 a[href] {
-	text-decoration: none;
+	;text-decoration: none
 }
 a[href], a[href]:visited {
-	color: var(--linkcolor);
+	;color: var(--linkcolor)
 }
 a[href]:hover {
-	color: var(--link-hover-color);
-	/*text-decoration: underline;*/
+	;color: var(--link-hover-color)
+	;"text-decoration: underline
 }
-a[href]:hover .entity-title,
-a[href].entity-title:hover,
+a[href]:hover .entity-title ,
+a[href].entity-title:hover ,
 a[href][data-static-path]:hover {
-	text-decoration: underline;
+	;text-decoration: underline
 }
 /* todo: make a special link bar class for links that contain other elements and a class for which of those should be underlined */
 /* and make sure normal links are styled correctly too */
-a[href][data-static-path],
+a[href][data-static-path] ,
 .entity-title {
-	font-weight: 500;
+	;font-weight: 500
 }
 
 /* todo: make class for dark bg elements */
 .titlePane a[href] {
-	color: var(--link-invert-color);
-	font-weight: normal;
+	;color: var(--link-invert-color)
+	;font-weight: normal
 }
 .titlePane a[href]:hover {
-	color: var(--link-invert-hover-color);
+	;color: var(--link-invert-hover-color)
 }
 
 h1 {
-	font-size: 1.6em;
+	;font-size: 1.6em
 }
 
 /**********/
 
 textarea {
-	max-width: 100%;
-	border: 2px solid #00C8B4;
-	border-radius: 2px;
-	box-shadow: 0.1rem 0.2rem 0.3rem -0.2rem rgba(13,13,13,0.5);
-	font: var(--T-font);
-	font-size: 0.8em;
-	color: var(--T-col);
-	background: var(--T-bg);
-	white-space: break-spaces; /* optional */
+	;max-width: 100%
+	;border: 2px solid #00C8B4
+	;border-radius: 2px
+	;box-shadow: 0.1rem 0.2rem 0.3rem -0.2rem rgba(13,13,13,0.5)
+	;font: var(--T-font)
+	;font-size: 0.8em
+	;color: var(--T-col)
+	;background: var(--T-bg)
+	;white-space: break-spaces; /* optional */
 }
 
 sup {vertical-align: super;}
 sub {vertical-align: sub;}
 
 .avatar {
-	/*height: 1rem;*/ /*default*/
-	/*border: 1px solid var(--image-border-color);*/
-	border-radius: 3px;
-	background: var(--avatar-bg);
+	;"height: 1rem /*default*/
+	;"border: 1px solid var(--image-border-color)
+	;border-radius: 3px
+	;background: var(--avatar-bg)
 }
 
 time {
-	font-size: 0.9em;
-	color: var(--time-color);
-	vertical-align: baseline;
+	;font-size: 0.9em
+	;color: var(--time-color)
+	;vertical-align: baseline
 }
 
 #\$categoryDescription.Markup { /* make sure this is before most things */
-	padding: .75rem 1rem;
+	;padding: .75rem 1rem
 }
 
 .username {
-	font-weight: bold;
-	line-height: 1.2;
+	;font-weight: bold
+	;line-height: 1.2
 }
 message-username { /* khhhh */
-	line-height: 1.2;
+	;line-height: 1.2
 }
 
 /**********************
  ** Button **
  **********************/
 button {
-	cursor: pointer;
-	font: var(--T-font);
-	font-size: 0.8em;
-	line-height: normal !important;
+	;cursor: pointer
+	;font: var(--T-font)
+	;font-size: 0.8em
+	;line-height: normal !important
 	
-	border: 1px solid black;
-	border-radius: 0px;
-	padding: 0 0.5rem;
+	;border: 1px solid black
+	;border-radius: 0px
+	;padding: 0 0.5rem
 	
-	background: var(--button-bg);
-	/*margin: 1px;*/
+	;background: var(--button-bg)
+	;"margin: 1px
 }
 button:hover {
-	border-color: var(--button-hover-color);
+	;border-color: var(--button-hover-color)
 }
 button[aria-selected="true"] {
-	backguijkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkiiiinround: var(--button-selected-bg);
-	background: var(--button-selected-bg);
+	;backguijkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkiiiinround: var(--button-selected-bg)
+	;background: var(--button-selected-bg)
 }
 button:active {
-	border-style: inset;
-	background: var(--button-active-bg);
+	;border-style: inset
+	;background: var(--button-active-bg)
 }
 button:disabled {
-	color: var(--chat-dim-color);
-	background: var(--bar-bg);
+	;color: var(--chat-dim-color)
+	;background: var(--bar-bg)
 }
 
 /**********/
 
 html:not(.f-loggedIn) .loggedIn,
 html.f-loggedIn .loggedOut {
-	display: none;
+	;display: none
 }
 
 /*************
@@ -140,46 +146,46 @@ html.f-loggedIn .loggedOut {
  *************/
 
 html.f-error .loadBG {
-	background: var(--error-invert-bg);
+	;background: var(--error-invert-bg)
 }
 
 .pathSeparator {
-	padding-left: 0.2rem;
-	padding-right: 0.2rem;
+	;padding-left: 0.2rem
+	;padding-right: 0.2rem
 }
 
 .bottomBorder {
-	border-bottom: 1px solid var(--T-border-col);
+	;border-bottom: 1px solid var(--T-border-col)
 }
 
 .border-list > *:not(:last-child),
 .border-list-2 > * {
-	border-bottom: 1px solid var(--T-border-col);
+	;border-bottom: 1px solid var(--T-border-col)
 }
 
 /**********
  ** Tabs **
  **********/
 tab-list {
-	display: flex;
-	flex-direction: row;
-	width: 100%;
+	;display: flex
+	;flex-direction: row
+	;width: 100%
 }
 tab-list > button {
-	flex-grow: 1;
-	flex-basis: 0;
-	height: 2rem;
-	padding: 0;
-	font-size: 1em;
+	;flex-grow: 1
+	;flex-basis: 0
+	;height: 2rem
+	;padding: 0
+	;font-size: 1em
 }
 
 tab-list > button img.avatar {
-	width: auto;
-	height: 100%;
+	;width: auto
+	;height: 100%
 }
 
 button[aria-selected="true"] {
-	background-color: gray;
+	;background-color: gray
 }
 
 /**********/
@@ -188,269 +194,265 @@ button[aria-selected="true"] {
  ** Title Pane **
  ****************/
 .titlePane {
-	background: var(--databarbgcolor);
-	color: var(--databartxtcolor);
-	/*box-shadow: var(--normal-shadow);
-	z-index: 10;*/
-	/*padding: 1px;*/
-	/*transition: background-color 0.1s ease;*/
+	;background: var(--databarbgcolor)
+	;color: var(--databartxtcolor)
 }
 
 .titlePane .entity-title {
-	font-weight: normal;
-	color: var(--link-invert-color);
+	;font-weight: normal
+	;color: var(--link-invert-color)
 }
 
 .status-idle > .avatar {
-	filter: grayscale(1);
+	;filter: grayscale(1)
 }
 
 html.f-loading {
-	/*--databarbgcolor: var(--loading-invert-bg);*/
+	;"--databarbgcolor: var(--loading-invert-bg)
 }
 html.f-loading .loadBG {
-	background: var(--loading-invert-bg);
+	;background: var(--loading-invert-bg)
 }
 html {
-	/*transition: --databarbgcolor 0.1s ease; I wish*/
+	;"transition: --databarbgcolor 0.1s ease ;" I wish
 }
 .loadBG/*, resize-handle*/ {
-	transition: background 0.1s ease;
+	;transition: background 0.1s ease
 }
 
 .titlePane .iconBg {
-	width: 2rem;
+	;width: 2rem
 }
 
 .pageTitle {
-	font-weight: normal;
+	;font-weight: normal
 }
 
 .titlePane .pageTitle .entity-title {
-	color: var(--databartxtcolor);
-	padding-right: 0.5rem;
+	;color: var(--databartxtcolor)
+	;padding-right: 0.5rem
 }
 
 html:not(.f-canEdit) .canEdit {
-	display: none;
+	;display: none
 }
 
 /* broken? */
 .errorMode .titlePane {
-	color: var(--error-invert-bg);
-	font: var(--T-monospace-font);
+	;color: var(--error-invert-bg)
+	;font: var(--T-monospace-font)
 }
 
 .titlePane > :first-child {
-	display: inline-block;
-	min-width: 0.3rem;
+	;display: inline-block
+	;min-width: 0.3rem
 }
 
 /*******************************
  ** content+sidebar container **
  *******************************/
 .errorPage {
-	padding: 0.2rem;
-	font: var(--T-monospace-font);
+	;padding: 0.2rem
+	;font: var(--T-monospace-font)
 }
 
 sidebar-container {
-	background: var(--T-bg);
-	width: 30vw; /* just a default */
-	min-width: 10vw;
-	z-index: 20;
+	;background: var(--T-bg)
+	;width: 30vw ;" just a default
+	;min-width: 10vw
+	;z-index: 20
 }
 
 .closeSidebar {
-	height: 2.3rem;
+	;height: 2.3rem
 }
 
 #\$sidebarResize {
-	box-shadow: var(--normal-shadow);
-	z-index: 30;
+	;box-shadow: var(--normal-shadow)
+	;z-index: 30
 }
 #\$sidebar_tabs {
-	box-shadow: var(--normal-shadow);
-	z-index: 30;
+	;box-shadow: var(--normal-shadow)
+	;z-index: 30
 }
 
 #\$sidebarActivity {
-	padding-top: 0.2rem;
+	;padding-top: 0.2rem
 }
 
 /*******************
  ** Category Pane **
  *******************/
 .linkBar {
-	display: block;
-	background: var(--T-bg);
+	;display: block
+	;background: var(--T-bg)
 	
-	padding: 0.2rem;
-	padding-top: 0.15rem;
+	;padding: 0.2rem
+	;padding-top: 0.15rem
 	
-	border-bottom: 1px solid var(--T-border-col);
-	border-top: 1px solid white;
+	;border-bottom: 1px solid var(--T-border-col)
+	;border-top: 1px solid white
 }
 .linkBar:focus {
-	background: var(--bar-bg);
+	;background: var(--bar-bg)
 }
 
 /*********
  ** Nav **
  *********/
 .nav {
-	background: var(--light-invert-bg);
-	color: var(--databartxtcolor);
+	;background: var(--light-invert-bg)
+	;color: var(--databartxtcolor)
 }
 .nav > span {
-	color: var(--databartxtcolor);
+	;color: var(--databartxtcolor)
 }
 
 /**************
  ** Userlist **
  **************/
 chat-pane .userlist {
-	box-shadow: var(--normal-shadow);
-	z-index: 4;
-	border-bottom: 1px solid var(--T-border-col);
+	;box-shadow: var(--normal-shadow)
+	;z-index: 4
+	;border-bottom: 1px solid var(--T-border-col)
 }
 .userlist {
-	background: var(--bar-bg);
+	;background: var(--bar-bg)
 }
 
 /*******************
  ** Chat Messages **
  *******************/
 message-block {
-	display: block;
-	position: relative;
-	box-sizing: content-box;
-	--chat-gutter: 4rem;
-	--chat-avatar-size: calc(var(--chat-gutter) - 0.5rem);
-	--chat-message-gap: 0.6rem;
-	padding: 0 0.5rem;
-	padding-top: var(--chat-message-gap);
-	min-height: var(--chat-avatar-size);
-	/*border-left: 0.5em solid rgb(255,153,153);; */
-	font-size: 1em; /* ? */
+	;display: block
+	;position: relative
+	;box-sizing: content-box
+	;--chat-gutter: 4rem
+	;--chat-avatar-size: calc(var(--chat-gutter) - 0.5rem)
+	;--chat-message-gap: 0.6rem
+	;padding: 0 0.5rem
+	;padding-top: var(--chat-message-gap)
+	;min-height: var(--chat-avatar-size)
+	;"border-left: 0.5em solid rgb(255,153,153)
+	;font-size: 1em /* ? */
 }
 message-block > img.avatar {
-	display: inline-block;
-	position: absolute;
-	width: var(--chat-avatar-size);
-	height: var(--chat-avatar-size);
-	border: none;/*1px solid #777;*/
-	margin-right: calc(var(--chat-gutter) - var(--chat-avatar-size));
-	/*background-color: transparent;*/
-	/*background-color: #AAB;*/
+	;display: inline-block
+	;position: absolute
+	;width: var(--chat-avatar-size)
+	;height: var(--chat-avatar-size)
+	;border: none ;" 1px solid #777
+	;margin-right: calc(var(--chat-gutter) - var(--chat-avatar-size))
+	;"background-color: transparent
+	;"background-color: #AAB
 }
 message-block > .bigAvatar {
-	position: absolute;
-	width: calc(var(--chat-gutter) + 0.5rem);
-	height: 100%;
-	left: 0;
-	top: 0;
-	background-size: cover;
-	background-position-x: center;
-	background-position-y: top;
-	background-repeat: no-repeat;
+	;position: absolute
+	;width: calc(var(--chat-gutter) + 0.5rem)
+	;height: 100%
+	;left: 0
+	;top: 0
+	;background-size: cover
+	;background-position-x: center
+	;background-position-y: top
+	;background-repeat: no-repeat
 }
 
 message-block > message-header {
-	display: flex;
-	flex-wrap: wrap-reverse;
-	margin-left: var(--chat-gutter);
-	/* make the timestamp go into margins if there's not enough space */
-	min-height: calc(var(--chat-message-gap) + 1.1875rem); /* 1.1875 = text line height */
-	margin-top: calc(0rem - var(--chat-message-gap)); /* the units on 0rem are required? */
-	align-items: flex-start;
+	;display: flex
+	;flex-wrap: wrap-reverse
+	;margin-left: var(--chat-gutter)
+	;" make the timestamp go into margins if there's not enough space
+	;min-height: calc(var(--chat-message-gap) + 1.1875rem) ;" 1.1875 = text line height
+	;margin-top: calc(0rem - var(--chat-message-gap)) ;" the units on 0rem are required?
+	;align-items: flex-start
 }
 message-block > message-header > time {
-	flex-grow: 1;
-	text-align: right;
-	font-weight: normal;
-	color: var(--chat-dim-color);
-	/*line-height: 1;  this looks better when the time wraps, since it takes up less space, but otherwise, means the time is aligned too low*/
+	;flex-grow: 1
+	;text-align: right
+	;font-weight: normal
+	;color: var(--chat-dim-color)
+	;"line-height: 1 ;" this looks better when the time wraps, since it takes up less space, but otherwise, means the time is aligned too low
 }
 
 message-contents {
-	display: block;
-	min-height: 1.5rem; /* this is so the message controls always have somewhere to be shown */
-	margin-block: 0.1rem;
-	/* do we need all these */
-	overflow-y: hidden;
-	background: var(--T-bg);
+	;display: block
+	;min-height: 1.5rem ;" this is so the message controls always have somewhere to be shown
+	;margin-block: 0.1rem
+	;" do we need all these
+	;overflow-y: hidden
+	;background: var(--T-bg)
 	
-	contain: none; /* because of overlapping with avatar */
+	;contain: none ;" because of overlapping with avatar
 }
 message-contents img {
-	max-width: 100%;
-	max-height: 10vh;
-	border: 1px solid var(--image-border-color);
+	;max-width: 100%
+	;max-height: 10vh
+	;border: 1px solid var(--image-border-color)
 }
 
 message-block > img.avatar,
 message-block > .bigAvatar {
-	/*z-index: 2;*/
-	/*pointer-events: none;*/
+	;"z-index: 2
+	;"pointer-events: none
 }
 message-part {
-	overflow: visible;
-	display: block;
-	min-height: 1rem; /* this is so the message controls always have somewhere to be shown */
-	padding-block: 0.1rem;
-	padding-left: calc(var(--chat-gutter) + 0.2rem);
-	--T-bg: transparent;
+	;overflow: visible
+	;display: block
+	;min-height: 1rem ;" this is so the message controls always have somewhere to be shown
+	;padding-block: 0.1rem
+	;padding-left: calc(var(--chat-gutter) + 0.2rem)
+	;--T-bg: transparent
 }
 message-part.edited {
-	/* todo: fix this styling */
-	/* we may just need an extra container for message-parts... */
-	padding-left: calc(var(--chat-gutter) + 0.2rem - 2px);
-	border-left: 2px solid gray;
-	/*outline-left: 2px solid gray;*/
+	;" todo: fix this styling
+	;" we may just need an extra container for message-parts...
+	;padding-left: calc(var(--chat-gutter) + 0.2rem - 2px)
+	;border-left: 2px solid gray
+	;"outline-left: 2px solid gray
 }
 message-part:focus {
-	background: var(--message-focus-bg);
-	outline: none;
+	;background: var(--message-focus-bg)
+	;outline: none
 }
 message-part.boundary-top {
-	border-top: 2px solid red;
+	;border-top: 2px solid red
 }
 message-part.boundary-bottom {
-	border-bottom: 2px solid red;
+	;border-bottom: 2px solid red
 }
 
 .real-name-label {
-	color: gray
+	;color: gray
 }
 
 message-controls {
-	display: inline-flex;
-	position: absolute;
-	width: var(--chat-gutter);
-	height: 1.3rem;
-	z-index: 9;
-	/* don't remove these prefixes */
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	user-select: none;
+	;display: inline-flex
+	;position: absolute
+	;width: var(--chat-gutter)
+	;height: 1.3rem
+	;z-index: 9
+	;" don't remove these prefixes
+	;-webkit-user-select: none
+	;-moz-user-select: none
+	;user-select: none
 }
 message-controls > button {
-	flex-grow: 1;
-	padding: 0;
+	;flex-grow: 1
+	;padding: 0
 }
 message-controls:hover + message-part {
-	background: var(--message-hover-bg);
+	;background: var(--message-hover-bg)
 }
 
 .messageGap {
-	border: 1px dashed gray; /*♥*/
-	margin-top: 0.3rem;
-	margin-bottom: 0.3rem;
+	;border: 1px dashed gray /*♥*/
+	;margin-top: 0.3rem
+	;margin-bottom: 0.3rem
 }
 
 .chatScroller {
-	padding-bottom: 0.9rem; /* increased to 0.9rem because we moved message-block padding to top of element */
+	;padding-bottom: 0.9rem ;" increased to 0.9rem because we moved message-block padding to top of element
 }
 
 /****************
@@ -458,146 +460,146 @@ message-controls:hover + message-part {
  ****************/
 
 .inputPane {
-	align-items: stretch;
-	background: var(--bar-bg);
+	;align-items: stretch
+	;background: var(--bar-bg)
 }
 html.f-chatEditing #\$chatTextarea {
-	background: var(--edit-textarea-bg);
+	;background: var(--edit-textarea-bg)
 }
 #\$chatTextarea[disabled] {
-	background: silver;
+	;background: silver
 }
 html.f-chatEditing .hideWhenEdit,
 html:not(.f-chatEditing) .showWhenEdit {
-	display: none;
+	;display: none
 }
 
 /*****************
  ** Editor Pane **
  *****************/
 #\$editorTextarea {
-	min-height: 3rem;
-	overflow-y: scroll;
-	resize: none;
+	;min-height: 3rem
+	;overflow-y: scroll
+	;resize: none
 }
 
 /*********/
 
 /* do we even need this */
 .bottomSpacer {
-	height: 1.5rem;
+	;height: 1.5rem
 }
 
 .userPageBox {
-	height: 100%;
-	align-items: flex-start;
-	/*max-height: 40vh;*/
-	overflow: auto;
-	/* todo: make this outside of scroller and have activity list scroll separately*/ /* ??? */
+	;height: 100%
+	;align-items: flex-start
+	;"max-height: 40vh
+	;overflow: auto
+	;" todo: make this outside of scroller and have activity list scroll separately /* ??? */
 }
 
 .userPageAvatar {
-	display: inline-block;
-	width: 10rem;
-	height: 10rem;
-	flex-shrink: 1;
-	margin-bottom: 5px;
+	;display: inline-block
+	;width: 10rem
+	;height: 10rem
+	;flex-shrink: 1
+	;margin-bottom: 5px
 	
-	box-shadow: 2px 2px 5px gray;
-	position: relative;
-	z-index: 2;
+	;box-shadow: 2px 2px 5px gray
+	;position: relative
+	;z-index: 2
 }
 .userPageAvatar > img {
-	width: 100%;
-	height: 100%;
+	;width: 100%
+	;height: 100%
 }
 
 .userPageBox .pageContents {
-	flex-basis: 0;
+	;flex-basis: 0
 }
 .userPageContents {
-	flex-grow: 1;
+	;flex-grow: 1
 }
 .userPageBox .pageContents {
-	max-height: 100%;
+	;max-height: 100%
 }
 
 html:not(.f-myUserPage) .myUserPage {
-	display: none;
+	;display: none
 }
 
 @media (max-width: 700px) {
 	/* this is broken */
 	.userPageBox {
-		flex-direction: column;
-		max-height: none;
+		;flex-direction: column
+		;max-height: none
 	}
 	.userPageBox .userPageContents {
-		flex-basis: auto;
-		width: 100%;
+		;flex-basis: auto
+		;width: 100%
 	}
 }
 
 form-table > .label {
-	font-weight: bold;
-	text-align: right;
-	padding-right: 0.5rem;
+	;font-weight: bold
+	;text-align: right
+	;padding-right: 0.5rem
 }
 form-table > .field {
-	vertical-align: middle;
+	;vertical-align: middle
 }
 form-table > .wide.label {
-	text-align: left;
-	font-weight: bold;
-	font-size: 1.2em;
+	;text-align: left
+	;font-weight: bold
+	;font-size: 1.2em
 }
 
 /* what are these for? */
 /* permissions editor i guess */
 table {
-	border-collapse: collapse;
+	;border-collapse: collapse
 }
 th {
-	padding-left: 0.3rem;
-	padding-right: 0.3rem;
+	;padding-left: 0.3rem
+	;padding-right: 0.3rem
 }
 .permissionRow > th {
-	padding: 0;
-	text-align: left;
+	;padding: 0
+	;text-align: left
 }
 .permissionRow > td {
-	padding: 0;
-	text-align: center;
+	;padding: 0
+	;text-align: center
 }
 .permission-table thead th {
-	padding-left: 0.5rem;
-	padding-right: 0.5rem;
+	;padding-left: 0.5rem
+	;padding-right: 0.5rem
 }
 .permission-table td {
-	text-align: center;
+	;text-align: center
 }
 .permission-users td {
-	text-align: center;
+	;text-align: center
 }
 .permission-users th {
-	text-align: right;
+	;text-align: right
 }
 
 user-select {
-	display: block;
+	;display: block
 }
 
 /**********
  ** Page **
  **********/
 button.voteButton[data-selected][data-vote="g"] {
-	background: linear-gradient(var(--bggreen), #eee);
+	;background: linear-gradient(var(--bggreen), #eee)
 }
 button.voteButton[data-selected][data-vote="b"] {
-	background: linear-gradient(var(--bgred), #eee);
+	;background: linear-gradient(var(--bgred), #eee)
 }
 button.voteButton[data-selected][data-vote="o"] {
-	background: linear-gradient(var(--bgblue), #eee);
+	;background: linear-gradient(var(--bgblue), #eee)
 }
 
 /* TODO FIX */
@@ -605,17 +607,17 @@ button.voteButton[data-selected][data-vote="o"] {
 
 /* hecko yo */
 .pageContents {
-	max-width: 100%;
-	overflow-x: auto;
-	padding: 1.5em;
+	;max-width: 100%
+	;overflow-x: auto
+	;padding: 1.5em
 }
 
 .pageInfoPane {
-	padding-left: 0.3rem;
-	padding-right: 0.3rem;
-	border-bottom: 1px solid var(--T-border-col);
-	background: var(--bar-bg);
-	box-shadow: var(--normal-shadow);
+	;padding-left: 0.3rem
+	;padding-right: 0.3rem
+	;border-bottom: 1px solid var(--T-border-col)
+	;background: var(--bar-bg)
+	;box-shadow: var(--normal-shadow)
 }
 
 /***********
@@ -623,116 +625,116 @@ button.voteButton[data-selected][data-vote="o"] {
  ***********/
 
 .fileThumbnail {
-	display: inline-block;
-	width: 52px;
-	height: 52px;
-	cursor: pointer;
+	;display: inline-block
+	;width: 52px
+	;height: 52px
+	;cursor: pointer
 }
 .fileThumbnail > img {
-	box-sizing: content-box;
-	max-width: 50px;
-	max-height: 50px;
-	border: 1px solid black;
-	/*vertical-align: top; /* what the fuck */
+	;box-sizing: content-box
+	;max-width: 50px
+	;max-height: 50px
+	;border: 1px solid black
+	;"vertical-align: top ;" what the fuck
 }
 .fileView {
-	max-width: 100%;
-	max-height: 100%;
-	border: 1px solid black;
+	;max-width: 100%
+	;max-height: 100%
+	;border: 1px solid black
 }
 .fileViewPane {
-	overflow: auto;
+	;overflow: auto
 }
 html:not(.f-fileSelected) .fileSelected {
-	display: none;
+	;display: none
 }
 
 /***********
  ** Icons **
  ***********/
 .iconBg {
-	background-repeat: no-repeat;
-	background-size: contain;
-	background-position: center;
-	margin-left: 0.1rem;
-	margin-right: 0.1rem;
+	;background-repeat: no-repeat
+	;background-size: contain
+	;background-position: center
+	;margin-left: 0.1rem
+	;margin-right: 0.1rem
 }
 
 /*************
  ** Sidebar **
  *************/
 .closeSidebar button {
-	width: 100%;
+	;width: 100%
 }
 
 /* TODO: margin should be fullscreen mode by default, then disabled with @media (min-width) */ /* ? */
 
 input, output, select {
-	font-size: 0.9em;
-	border-width: 2px;
-	border-style: solid;
-	border-color: var(--input-border-color);
-	border-radius: 1px;
-	background-color: var(--T-bg);
+	;font-size: 0.9em
+	;border-width: 2px
+	;border-style: solid
+	;border-color: var(--input-border-color)
+	;border-radius: 1px
+	;background-color: var(--T-bg)
 }
 input, select { /* this is old & probably not needed */
-	min-width: 0;
-	max-width: 100%;
+	;min-width: 0
+	;max-width: 100%
 }
 input, select, button, input::placeholder {
-	color: var(--T-col);
+	;color: var(--T-col)
 }
 
 input::placeholder {
-	font-style: italic;
-	color: rgba(128,128,128,0.6);
-	padding-left: 0.3rem;
+	;font-style: italic
+	;color: rgba(128,128,128,0.6)
+	;padding-left: 0.3rem
 }
 input:invalid {
-	background: var(--error-bg);
+	;background: var(--error-bg)
 }
 
 .registerBox {
-	padding: 0.3rem 0.5rem;
+	;padding: 0.3rem 0.5rem
 }
 
 /* ehhh */
 .half {
-	display: block;
-	min-height: 1.15rem;
-	line-height: 1.15rem;
-	text-align: center;
+	;display: block
+	;min-height: 1.15rem
+	;line-height: 1.15rem
+	;text-align: center
 }
 .half-label {
-	font-weight: bold;
+	;font-weight: bold
 }
 
 .image-box > img {
-	border: 1px solid black;
+	;border: 1px solid black
 }
 
 textarea-container {
-	border: 2px solid #00C8B4;
-	padding: 5px;
-	background: var(--T-bg);
+	;border: 2px solid #00C8B4
+	;padding: 5px
+	;background: var(--T-bg)
 }
 textarea-container > textarea {
-	height: 2.5em;
-	min-height: 2.5em;
-	box-shadow: none;
-	border-radius: 0;
+	;height: 2.5em
+	;min-height: 2.5em
+	;box-shadow: none
+	;border-radius: 0
 }
 textarea-container > textarea:focus {
-	outline: 2px inset gray;
-	outline-offset: 3px;
+	;outline: 2px inset gray
+	;outline-offset: 3px
 }
 textarea-container, textarea-container > textarea {
-	max-height: 25vh;
+	;max-height: 25vh
 }
 
 .no-select {
-	-webkit-user-select: none;
-	user-select: none;
+	;-webkit-user-select: none
+	;user-select: none
 }
 
 /************
@@ -740,145 +742,145 @@ textarea-container, textarea-container > textarea {
 ************/
 
 .gallery-inner {
-	position: relative;
-	margin-left: auto;
-	margin-right: auto;
+	;position: relative
+	;margin-left: auto
+	;margin-right: auto
 }
 .gallery-inner canvas {
-	width: 100%;
+	;width: 100%
 }
 .gallery-inner > div {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	background: var(--bar-bg);
+	;position: absolute
+	;width: 100%
+	;height: 100%
+	;background: var(--bar-bg)
 }
 .gallery-inner > div > div {
-	width: 100%;
-	height: 100%;
+	;width: 100%
+	;height: 100%
 }
 .gallery-title {
-	margin-left: auto;
-	margin-right: auto;
-	text-align: center;
-	background: var(--bar-bg);
+	;margin-left: auto
+	;margin-right: auto
+	;text-align: center
+	;background: var(--bar-bg)
 }
 
 .debugMessage {
-	background: var(--bar-bg);
-	padding: 2px 3px;
+	;background: var(--bar-bg)
+	;padding: 2px 3px
 }
 
 .debugMessage > pre {
-	font: var(--T-monospace-font);
-	overflow-x: auto;
-	white-space: pre;
+	;font: var(--T-monospace-font)
+	;overflow-x: auto
+	;white-space: pre
 }
 
 .category-childs {
-	margin-left: 1rem;
+	;margin-left: 1rem
 }
 
 /* contain */
 #\$sidebarBottom, .sidebarComment, #\$sidebarActivity > .linkBar {
-	contain: strict;
+	;contain: strict
 }
 
 /*   idk   */
 .page-container:not(#a) {
-	min-height: 1rem;
-	height: 40vh;
+	;min-height: 1rem
+	;height: 40vh
 }
 
 #\$titlePane [data-view]:not(.shown) {
-	display: none !important;
+	;display: none !important
 }
 
 #\$editorPreviewPane {
-	height: 50%;
+	;height: 50%
 }
 
 .activity-page {
-	display: block;
-	border-bottom: 1px solid var(--T-border-col);
-	border-top: 1px solid white;
-	padding-left: 0.2rem;
-	padding-top: 1px;
-	padding-bottom: 1px;
-	background: var(--T-bg);
+	;display: block
+	;border-bottom: 1px solid var(--T-border-col)
+	;border-top: 1px solid white
+	;padding-left: 0.2rem
+	;padding-top: 1px
+	;padding-bottom: 1px
+	;background: var(--T-bg)
 }
 
 .activity-page-bottom {
-	display: flex;
-	height: 1.5rem;
+	;display: flex
+	;height: 1.5rem
 }
 
 .activity-page-bottom .avatar {
-	max-width: unset;
+	;max-width: unset
 }
 
 activity-users {
-	text-align: right;
-	white-space: pre;
-	overflow-x: visible;
-	padding-right: 0.2rem;
-	padding-left: 0.2rem;
+	;text-align: right
+	;white-space: pre
+	;overflow-x: visible
+	;padding-right: 0.2rem
+	;padding-left: 0.2rem
 }
 
 .Markup img, .Markup video {
-	/*min-height: var(--image-height);*/
-	/*height: unset !important;*/ /* ugh hack..*/
-	-webkit-transition: max-height 0.25s ease;
-	transition: max-height 0.25s ease;
+	;# min-height: var(--image-height)
+	;# height: unset !important ugh hack..
+	;-webkit-transition: max-height 0.25s ease
+	;transition: max-height 0.25s ease
 }
 
 .Markup [data-big] {
-	max-height: 75vh;
+	;max-height: 75vh
 }
 
 .Markup {
-	/*line-height: 1.2;*/
-	overflow-y: hidden;
-	overflow-x: auto;
+	;"line-height: 1.2
+	;overflow-y: hidden
+	;overflow-x: auto
 }
 
 [data-slide="comments"] {
-	overflow-y: scroll;
+	;overflow-y: scroll
 }
 
 #\$commentSearchResults > div > .linkBar {
-	background: var(--bar-bg);
+	;background: var(--bar-bg)
 }
 
 html[data-socket-state="opening"] #\$openSidebar {
-	--button-bg: linear-gradient(#6fb7c0, #6fb7c0, blue);
+	;--button-bg: linear-gradient(#6fb7c0, #6fb7c0, blue)
 }
 
 /*html[data-socket-state="open"] #\$openSidebar {
-	--button-bg: linear-gradient(#3f9f5f, #3f9f5f, green);
+	;--button-bg: linear-gradient(#3f9f5f, #3f9f5f, green)
 }*/
 
 html[data-socket-pending] #\$openSidebar {
-	--button-bg: linear-gradient(#e0c87f, #e0c87f, yellow);
+	;--button-bg: linear-gradient(#e0c87f, #e0c87f, yellow)
 }
 
 html[data-socket-state="dead"] #\$openSidebar {
-	--button-bg: linear-gradient(#f86060, #f86060, red);
+	;--button-bg: linear-gradient(#f86060, #f86060, red)
 }
 
 /* ios safari */
 @supports (-webkit-touch-callout: none) {
 	textarea, input {
-		font-size: 16px;
+		;font-size: 16px
 	}
 	/* give space to the left so the cursor can reach there */
 	textarea-container > textarea {
-		padding-left: 2px;
-		width: -webkit-fill-available; width: -moz-available; width: stretch;
+		;padding-left: 2px
+		;width: -webkit-fill-available; width: -moz-available; width: stretch
 	}
 }
 /*@media (max-width: 700px), (max-height: 500px) {
 	textarea, input {
-		font-size: 16px;
+		;font-size: 16px
 	}
 }*/
