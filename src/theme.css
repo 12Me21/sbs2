@@ -18,13 +18,9 @@ html {
 	--T-bg: white;
 	--T-box-bg: #F7F7F7;
 	--avatar-bg: white;
-	--button-hover-color: #59E;
 	--message-hover-bg: #DDD;
 	--message-focus-bg: #E5FCFF;
 	--bar-bg: #EEE;
-	--button-bg: linear-gradient(#EEE, #CCC);
-	--button-active-bg: linear-gradient(#DDD, #EEE);
-	--button-selected-bg: linear-gradient(#888, #AAA);
 	--error-bg: pink;
 	--T-red-bg: #FCC;
 	--T-orange-bg: #FEA;
@@ -45,6 +41,12 @@ html {
 	--loading-invert-bg: rgb(0,150,136); /*linear-gradient(#225450, #327070); removed because of flicker ? i think we need to animate to another gradient or? */
 	--error-invert-bg: #800;
 	--input-border-color: #BBB #DDD #DDD #BBB;
+	
+	--button-hover-color: #59E;
+	--button-bg: linear-gradient(#EEE, #CCC);
+	--button-active-bg: linear-gradient(#DDD, #EEE);
+	--button-selected-bg: linear-gradient(#888, #AAA);
+	--T-button-border-color: goldenrod;
 }
 
 html[data-theme="dark"], html.f-dark:not([data-theme]) {
@@ -61,11 +63,7 @@ html[data-theme="dark"], html.f-dark:not([data-theme]) {
 	--T-bg: #292929;
 	--T-box-bg: #444;
 	--avatar-bg: gray;
-	--button-hover-color: #59E;
 	--bar-bg: #555;
-	--button-bg: linear-gradient(#048, #035);
-	--button-active-bg: linear-gradient(#047, #047);
-	--button-selected-bg: linear-gradient(#048, #07A);
 	--error-bg: maroon;
 	--T-red-bg: #6A2C2C;
 	--T-blue-bg: #2C4A6A;
@@ -89,4 +87,10 @@ html[data-theme="dark"], html.f-dark:not([data-theme]) {
 	--message-focus-bg: #253C3F;
 	
 	--input-border-color: #444 #555 #555 #444;
+	
+	--button-hover-color: #59E;
+	--button-bg: linear-gradient(#048, #035);
+	--button-active-bg: linear-gradient(#047, #047);
+	--button-selected-bg: linear-gradient(#048, #07A);
+	--T-button-border-color: darkblue;
 }
