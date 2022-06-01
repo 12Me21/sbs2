@@ -15,7 +15,7 @@ function register_activity(e) {
 View.add_view('page', {
 	room: null, // currently displayed ChatRoom
 	track_resize_2: new ResizeTracker('width'),	
-	init() {
+	Init() {
 		// up arrow = edit last comment
 		$chatTextarea.onkeydown = e=>{
 			if (e.isComposing)
@@ -54,7 +54,7 @@ View.add_view('page', {
 		})
 	},
 	
-	start({id, query}) {
+	Start({id, query}) {
 		// todo: we should manually request the userlist.
 		// right now it generally appears automatically due to your own status
 		let room = ChatRoom.rooms[id]
@@ -81,14 +81,14 @@ View.add_view('page', {
 			},
 		}
 	},
-	quick({room, z}) {
+	Quick({room, z}) {
 		let page = room.page
 		this.room = room
 		this.room.show()
 		this.room.pinned = z
 		this.render_page(page)
 	},
-	render({message, content:[page]}, ext) {
+	Render({message, content:[page]}, ext) {
 		message.reverse()
 //		let pinned = objects.Mpinned
 		
@@ -97,7 +97,7 @@ View.add_view('page', {
 		
 		this.render_page(page)
 	},
-	cleanup(type) {
+	Cleanup(type) {
 		this.room && this.room.hide() //so it's fucking possible for cleanup to get called TWICE if there's an error, sometimes.
 		this.room = null
 		View.flag('canEdit', false)
@@ -117,7 +117,7 @@ View.add_view('page', {
 	},
 	
 	textarea_resize() {
-		$chatTextarea.style.height = ''
+		$chatTextarea.style.height = ""
 		let height = $chatTextarea.scrollHeight
 		$chatTextarea.parentNode.style.height = $chatTextarea.style.height = height+1+"px"
 	},
@@ -227,5 +227,4 @@ View.add_view('page', {
 			this.write_input(this.pre_edit)
 		}
 	},
-	
 })

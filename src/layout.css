@@ -87,7 +87,7 @@ html, body {
 
 /*********/
 /* all elements with user content, must be tied up */
-[🪧] {
+[🪧], .pre {
 	white-space: pre-wrap;
 	unicode-bidi: embed;
 }

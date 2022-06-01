@@ -4,7 +4,7 @@
 View.add_view('comments', {
 	form: null,
 	
-	early() {
+	Early() {
 		this.form = new Form({
 			fields: [
 				['search', 'text', {label: "Search", param: 's'}],
@@ -24,7 +24,7 @@ View.add_view('comments', {
 	
 	location: null,
 	
-	init() {
+	Init() {
 		$commentSearchForm.replaceWith(this.form.elem)
 		let go = (dir)=>{
 			if (!this.location) return
@@ -57,7 +57,7 @@ View.add_view('comments', {
 		$commentSearchPrev.onclick = ()=>{ go(-1) }
 		$commentSearchNext.onclick = ()=>{ go(+1) }
 	},
-	start({id, query}) {
+	Start({id, query}) {
 		this.form.from_query(query)
 		let data = this.form.get()
 		if (id)
@@ -72,7 +72,7 @@ View.add_view('comments', {
 			ext: {data, merge},
 		}
 	},
-	quick({data}, location) {
+	Quick({data}, location) {
 		this.location = location
 		View.set_title("Comments")
 		this.form.set(data)
@@ -80,7 +80,7 @@ View.add_view('comments', {
 		$commentSearchResults.fill()
 		$commentSearchStatus.textContent = "(no query)"
 	},
-	render({message:comments, content:pages}, {data, merge}, location) {
+	Render({message:comments, content:pages}, {data, merge}, location) {
 		this.location = location // todo: formal system for this (setting query string when form submit)
 		
 		View.set_title("Comments")
@@ -108,7 +108,7 @@ View.add_view('comments', {
 			}
 		}
 	},
-	cleanup() {
+	Cleanup() {
 		$commentSearchResults.fill()
 		this.location = null
 	},

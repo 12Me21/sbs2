@@ -49,7 +49,7 @@ const View = ((u=NAMESPACE({
 	// create public variables here
 	views: {
 		test: {
-			init() {
+			Init() {
 				$testButton.onclick = ()=>{
 					let c = $testTextarea.value
 					$testOut.textContent="Starting..."
@@ -75,23 +75,22 @@ const View = ((u=NAMESPACE({
 						$testOut4.textContent = "last enter press\n"+p
 				}
 			},
-			name: 'test',
-			className: 'test',
-			start() {
+			Name: 'test',
+			Start() {
 				return {quick: true}
 			},
-			quick() {
+			Quick() {
 				u.set_title("Testing")
 			},
 		},
 		pages: {
-			redirect: (id, query) => ['page', id, query],
+			Redirect: (id, query) => ['page', id, query],
 		},
 	},
 	// fake-ish
 	errorView: {
-		name: 'error',
-		cleanup() {
+		Name: 'error',
+		Cleanup() {
 			$errorMessage.textContent = ""
 		},
 	},
@@ -100,8 +99,8 @@ const View = ((u=NAMESPACE({
 	get_view(location) {
 		let view = u.views[location.type]
 		let got = false
-		while (view && view.redirect) { //danger!
-			let ret = view.redirect(location.id, location.query)
+		while (view && view.Redirect) { //danger!
+			let ret = view.Redirect(location.id, location.query)
 			if (!ret) // oops no redirect
 				break
 			;[location.type, location.id, location.query] = ret // somehow this line triggers a bug in eslint
@@ -133,9 +132,9 @@ const View = ((u=NAMESPACE({
 	},
 	
 	cleanup(new_location) {
-		if (u.current_view && u.current_view.cleanup)
+		if (u.current_view && u.current_view.Cleanup)
 			try {
-				u.current_view.cleanup(new_location)
+				u.current_view.Cleanup(new_location)
 			} catch (e) {
 				// we ignore this error, because it's probably not important
 				// and also cleanup gets called during error handling so we don't want to get into a loop of errors
@@ -176,13 +175,13 @@ const View = ((u=NAMESPACE({
 			if (!view)
 				throw "can't find page"
 			
-			if (view.early) {
-				phase = "view.early"
-				view.early()
-				view.early = null
+			if (view.Early) {
+				phase = "view.Early"
+				view.Early()
+				view.Early = null
 			}
 			phase = "view.start"
-			let data = view.start(location)
+			let data = view.Start(location)
 			let resp
 			if (!data.quick) {
 				phase = "starting request"
@@ -196,18 +195,18 @@ const View = ((u=NAMESPACE({
 			
 			if (u.first)
 				console.log("🌄 Rendering first page")
-			if (view.init) {
+			if (view.Init) {
 				phase = "view.init"
-				view.init()
-				view.init = null
+				view.Init()
+				view.Init = null
 			}
 			u.cleanup(location)
 			phase = "render"
 			u.current_view = view
 			if (data.quick)
-				view.quick(data.ext, location)
+				view.Quick(data.ext, location)
 			else
-				view.render(resp, data.ext, location)
+				view.Render(resp, data.ext, location)
 		} catch (e) {
 			yield do_when_ready(STEP)
 			
@@ -220,11 +219,11 @@ const View = ((u=NAMESPACE({
 		u.load_end()
 		//throw "heck darn"
 		for (let elem of $main_slides.children)
-			elem.classList.toggle('shown', elem.dataset.slide == u.current_view.className)
+			elem.classList.toggle('shown', elem.dataset.slide == u.current_view.Name)
 		for (let elem of $titlePane.children) {
 			let list = elem.dataset.view
 			if (list)
-				elem.classList.toggle('shown', list.split(",").includes(u.current_view.className))
+				elem.classList.toggle('shown', list.split(",").includes(u.current_view.Name))
 		}
 		u.flag('viewReady', true)
 		u.flag('mobileSidebar', false) //bad (should be function on Sidebar)
@@ -238,9 +237,7 @@ const View = ((u=NAMESPACE({
 	},
 	
 	add_view(name, data) {
-		data.name = name
-		if (!data.className)
-			data.className = name
+		data.Name = name
 		u.views[name] = data
 		data.did_init = false
 		Object.seal(data)
@@ -355,7 +352,10 @@ const View = ((u=NAMESPACE({
 		u.change_favicon(null)
 	},
 	set_title(text) {
-		$pageTitle.textContent = text
+		let x = document.createElement('span')
+		x.className = "pre" // this is silly ..
+		x.textContent = text
+		$pageTitle.fill(x)
 		document.title = text
 		u.real_title = text
 		u.change_favicon(null)

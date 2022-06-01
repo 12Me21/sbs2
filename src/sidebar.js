@@ -37,7 +37,7 @@ let Sidebar = Object.seal({
 			this.toggle()
 		}
 		View.attach_resize($sidebar, $horizontalResize, true, -1, "sidebarWidth")
-		View.attach_resize($sidebarTop, $sidebarResize, false, 1, "sidebarPinnedHeight")
+		View.attach_resize($sidebarTop, $sidebarResize, false, 1, "sidebarPinnedHeight", null, 300)
 		View.flag('sidebar', true)
 		
 		document.addEventListener('paste', e=>{

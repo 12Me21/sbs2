@@ -1,7 +1,7 @@
 'use strict'
 
 View.add_view('user', {
-	start({id, query}) {
+	Start({id, query}) {
 		let user_query
 		if (typeof id == 'number') {
 			user_query = "id = @uid"
@@ -12,7 +12,6 @@ View.add_view('user', {
 				id = id.substr(1)
 			user_query = "username = @uid"
 		}
-		console.log(id)
 		return {
 			chain: {
 				values: {
@@ -22,8 +21,7 @@ View.add_view('user', {
 				},
 				requests: [
 					{type: 'user', fields: "*", query: user_query, limit: 1},
-					// ➕ AND, or other template string stuff...
-					{name: 'Puserpage', type: 'content', fields: "*", query: "literalType = @Userpage AND createUserId in @user.id AND contentType = @Page", limit: 1},
+					{name: 'Puserpage', type: 'content', fields: "*", query: "!userpage(@user.id)"},
 					//['activity.0id$userIds', {limit: 20, reverse: true}],
 					//['commentaggregate.0id$userIds', {limit: 100, reverse: true}],
 					//['content.2contentId.3id'],
@@ -35,7 +33,7 @@ View.add_view('user', {
 			ext: {},
 		}
 	},
-	render(resp, ext) {
+	Render(resp, ext) {
 		let user = resp.user[0]
 		let userpage = resp.Puserpage[0]
 		//let activity = resp.activity
@@ -44,23 +42,19 @@ View.add_view('user', {
 		
 		if (user.id == Req.uid) {
 			View.flag('myUserPage', true)
-			/*let path
-			if (userpage)
-				path="#editpage/"+userpage.id
-			else
-				path="#editpage?type=userpage&name="+url_escape(user.name)+"'s user page"
-			$editUserPage.href = path*/
+			//path="#editpage?type=userpage&name="+url_escape(user.name)+"'s user page"
 		}
-		View.set_title(user.username)
-		/*$userPageAvatarLink.href = Draw.avatar_url(user)*/
+		View.set_title(" "+user.username+" ") // todo: this is unsafe because of text direction. get set_entity_title working again
 		$userPageAvatar.src = Draw.avatar_url(user, "size=400&crop=true")
-		//setPath([["users","Users"], [Nav.entityPath(user), user.name]])
+		$userPageLink.hidden = !userpage
+		if (userpage)
+			$userPageLink.href = "#page/"+userpage.id
 		if (userpage)
 			$userPageContents.fill(Markup.convert_lang(userpage.text, userpage.values.markupLang))
 		else
 			$userPageContents.fill()
 	},
-	cleanup() {
+	Cleanup() {
 		$userPageAvatar.src = ""
 		$userPageContents.fill()
 	},
