@@ -19,12 +19,14 @@ merge_files () {
 	
 	declare -i total=1
 	for file in ${files[@]}; do
-		printf ',{"offset": {"column":0,"line":%s},"map":{"version":3,"sourceRoot":"'"$4"'","sources":["%s"],"mappings":"AAAA' $total $file
+		printf ',{"offset": {"column":0,"line":%s},"map":{"version":3,"sourceRoot":".source","sources":["%s"],"mappings":"AAAA' $total $file
 		length=`wc -l <"$file"`
 		printf '%s\tL:%d\n' $file $length >&2
 		yes ';AACA' | head -n $length | tr -d '\n'
 		printf '"}}'
 		total+=$length
+		mkdir -p resource/_source/"$(dirname "$file")" >&2
+		cp $file resource/_source/$file >&2
 	done >>"$1".map
 	
 	printf ']}' >>"$1".map
@@ -38,8 +40,6 @@ merge_files () {
 merge_files resource/_build.js '<script .*\bsrc=\K[\w/.-]+(?=>)' '"use strict"//# sourceMappingURL=_build.js.map'
 
 merge_files resource/_build.css '<link .*\brel=stylesheet href=\K[\w/.-]+(?=>)' '/*# sourceMappingURL=_build.css.map */'
-
-cp -vur src resource/
 
 echo 'Creating _build.html' >&2
 # nocache filename -> filename?1234567 (uses date modified)
