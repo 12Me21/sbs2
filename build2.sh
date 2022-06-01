@@ -37,7 +37,7 @@ merge_files () {
 
 merge_files resource/_build.js '<script .*\bsrc=\K[\w/.-]+(?=>)' '"use strict"//# sourceMappingURL=_build.js.map'
 
-merge_files resource/_build.css '<link .*\brel=stylesheet href=\K[\w/.-]+(?=>)' '/*# sourceMappingURL=_build.css.map */' resource/src/
+merge_files resource/_build.css '<link .*\brel=stylesheet href=\K[\w/.-]+(?=>)' '/*# sourceMappingURL=_build.css.map */'
 
 cp -vur src resource/
 
