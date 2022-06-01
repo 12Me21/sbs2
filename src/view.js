@@ -167,41 +167,41 @@ const View = ((u=NAMESPACE({
 		
 		try {
 			u.load_start()
-			phase = "getting view"
+			phase = "view lookup"
 			let got_redirect = u.get_view(location)
 			view = u.views[location.type]
 			if (got_redirect)
 				Nav.replace_url(location)
 			if (!view)
-				throw "can't find page"
+				throw new Error("Unknown page type: “"+location.type+"”")
 			
 			if (view.Early) {
 				phase = "view.Early"
 				view.Early()
 				view.Early = null
 			}
-			phase = "view.start"
+			phase = "view.Start"
 			let data = view.Start(location)
 			let resp
 			if (!data.quick) {
 				phase = "starting request"
 				resp = yield Lp.chain(data.chain, STEP)
 				
-				phase = "view.check"
+				phase = "view.Check"
 				if (data.check && !data.check(resp, data.ext))
-					throw "data not found"
+					throw new Error("data not found")
 			}
 			yield do_when_ready(STEP)
 			
 			if (u.first)
 				console.log("🌄 Rendering first page")
 			if (view.Init) {
-				phase = "view.init"
+				phase = "view.Init"
 				view.Init()
 				view.Init = null
 			}
 			u.cleanup(location)
-			phase = "render"
+			phase = "rendering"
 			u.current_view = view
 			if (data.quick)
 				view.Quick(data.ext, location)
@@ -212,9 +212,10 @@ const View = ((u=NAMESPACE({
 			
 			u.cleanup(location)
 			u.current_view = view = u.errorView
-			console.error("error during view handling", e)
-			u.set_title("error during: "+phase)
-			$errorMessage.textContent = e ? e+"\n"+e.stack : ""
+			console.error("Error during view handling", e)
+			u.set_title("Error during: "+phase)
+			$errorMessage.fill(Draw.sidebar_debug(e))
+			//$errorMessage.textContent = e
 		}
 		u.load_end()
 		//throw "heck darn"

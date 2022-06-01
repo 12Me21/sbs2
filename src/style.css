@@ -254,7 +254,6 @@ html:not(.f-canEdit) .canEdit {
  *******************************/
 .errorPage {
 	;padding: 0.2rem
-	;font: var(--T-monospace-font)
 }
 
 sidebar-container {
@@ -774,8 +773,9 @@ textarea-container, textarea-container > textarea {
 
 .debugMessage > pre {
 	;font: var(--T-monospace-font)
-	;overflow-x: auto
+	;overflow-x: scroll
 	;white-space: pre
+	;boreder-bottom: 1px solid var(--T-border-col);
 }
 
 .category-childs {
