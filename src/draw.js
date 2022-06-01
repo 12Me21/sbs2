@@ -22,13 +22,13 @@ const Draw = Object.seal({
 		return e
 	}.bind([
 		𐀶`
-<span class="item icon iconBg" role="img" alt=""></span>
-<span class="textItem entity-title" 🪧>...</span>
+<span class='item icon iconBg' role=img alt=""></span>
+<span class='textItem entity-title pre'>...</span>
 `,
 		𐀶`
 <a class='bar rem1-5 linkBar'>
-<span class="item icon iconBg" role="img" alt=""></span>
-<span class="textItem entity-title" 🪧>...</span>
+<span class='item icon iconBg' role=img alt=""></span>
+<span class='textItem entity-title pre'>...</span>
 </a>
 `,
 	]),
@@ -48,7 +48,7 @@ const Draw = Object.seal({
 		let e = this()
 		e.textContent = text
 		return e
-	}.bind(𐀶`<span class='textItem' 🪧>`),
+	}.bind(𐀶`<span class='textItem pre'>`),
 	
 	//📥 thing‹???›
 	//📤 ‹ParentNode›
@@ -101,7 +101,7 @@ const Draw = Object.seal({
 			e.append(text)
 			return e
 		}
-	}.bind({message:𐀶`<div class='debugMessage' 🪧>`, stack:𐀶`<pre>`}),
+	}.bind({message:𐀶`<div class='debugMessage pre'>`, stack:𐀶`<pre>`}),
 	
 	//📥 user‹User›
 	//📤 ‹ParentNode›
@@ -147,8 +147,7 @@ const Draw = Object.seal({
 				let link = document.createElement('a')
 				link.href = item[0]
 				link.textContent = item[1]
-				link.className += ' textItem entity-title'
-				link.setAttribute('🪧', "")
+				link.className += ' textItem entity-title pre'
 				element.append(link)
 			}
 			if (i < path.length-1) {
@@ -197,7 +196,7 @@ const Draw = Object.seal({
 		} else {
 			username = author.nickname
 			let nickname = this.nickname()
-			nickname.querySelector('[🪧]').textContent = author.realname
+			nickname.querySelector('span.pre').textContent = author.realname
 			name.append(nickname)
 		}
 		name.firstChild.textContent = username
@@ -211,12 +210,12 @@ const Draw = Object.seal({
 		block: 𐀶`
 <message-block>
 	<message-header>
-		<message-username><span class='username' 🪧></span>:</message-username>
+		<message-username><span class='username pre'></span>:</message-username>
 		<time></time>
 	</message-header>
 	<message-contents></message-contents>
 </message-block>`,
-		nickname: 𐀶` <span class='real-name-label'>(<span 🪧></span>)</span>`,
+		nickname: 𐀶` <span class='real-name-label'>(<span class='pre'></span>)</span>`,
 		avatar: 𐀶`<img class='avatar' width=100 height=100 alt="">`,
 		big_avatar: 𐀶`<div class='bigAvatar'></div>`,
 	}),
@@ -597,7 +596,7 @@ const Draw = Object.seal({
 		d.append(comment.text.replace(/\n/g, "  "))
 		//entity_title_link(comment.createUser),
 		return d
-	}.bind(𐀶`<div class='bar rem1-5 sidebarComment ellipsis'><a><img class='item icon avatar' width=100 height=100><span class='textItem entity-title' 🪧></span></a>: </div>`),
+	}.bind(𐀶`<div class='bar rem1-5 sidebarComment ellipsis'><a><img class='item icon avatar' width=100 height=100><span class='textItem entity-title pre'></span></a>: </div>`),
 	
 	//todo:
 	sidebarPageLabel(content) {
