@@ -1,13 +1,15 @@
-set -e
+#!/bin/sh
+set -ue
 
-if [ "$1" ]
+if [ $# -eq 1 ]
 then
 	dest="$(readlink -f "$1")"
 	read -p "Will output files to: $dest
-(Press Enter)" >&2
+(Press Enter)" hi >&2
 fi
 
-cd "$(dirname "$0")" || exit
+cd -- "`dirname -- "${0}"`"
+cd ..
 
 merge_files () {
 	files=`grep -Po "$2" index.html`
@@ -19,7 +21,7 @@ merge_files () {
 	cat $files >>"$1"
 }
 
-merge_files resource/_build.css '<link .*\brel=stylesheet href=\K[\w/.-]+(?=>)'
+merge_files resource/_build.css '<link .*\brel=stylesheet href=\K[\w/.-]+(?=>)' ''
 merge_files resource/_build.js '<script .*\bsrc=\K[\w/.-]+(?=>)' '"use strict";
 '
 
@@ -35,11 +37,12 @@ inject="<!--**********************************************-->\\
 <script src=$(nocache resource/_build.js)></script>\\
 <!--**********************************************-->"
 sed "/<!--START-->/,/<!--END-->/c $inject" index.html > _build.html
+echo "done" >&2
 
-if [ "$1" ]
+if [ $# -eq 1 ]
 then
 	echo 'Copying files' >&2
-	mkdir -vp "$dest" || exit
+	mkdir -vp "$dest"
 	cp -v -u -r resource "$dest"/
 	cp -v -u _build.html "$dest"/index.html
 fi

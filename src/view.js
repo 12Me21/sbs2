@@ -173,7 +173,7 @@ const View = ((u=NAMESPACE({
 			if (got_redirect)
 				Nav.replace_url(location)
 			if (!view)
-				throw new Error("Unknown page type: “"+location.type+"”")
+				throw new Error("Unknown page type: “"+location.type+"”") // SoftError - don't need to print stack etc. todo
 			
 			if (view.Early) {
 				phase = "view.Early"

@@ -1,4 +1,8 @@
+#!/bin/bash
+
 set -e
+
+# WARNING! EXPERIMENTAL
 
 if [ "$1" ]
 then
@@ -7,7 +11,8 @@ then
 (Press Enter)" >&2
 fi
 
-cd "$(dirname "$0")" || exit
+cd -- "`dirname -- "${BASH_SOURCE:?}"`"
+cd ..
 
 merge_files () {
 	echo "Creating $1" >&2
@@ -57,7 +62,7 @@ sed "/<!--START-->/,/<!--END-->/c $inject" index.html > _build.html
 if [ "$1" ]
 then
 	echo 'Copying files' >&2
-	mkdir -vp "$dest" || exit
+	mkdir -vp "$dest"
 	cp -v -u -r resource "$dest"/
 	cp -v -u _build.html "$dest"/index.html
 fi
