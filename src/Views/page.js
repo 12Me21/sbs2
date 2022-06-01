@@ -13,25 +13,50 @@ function register_activity(e) {
 // then, most of the query is static and etc.
 
 View.add_view('page', {
-	room: null, // do we need this?
-	track_resize_2: new ResizeTracker('width'),
-	
-	render_page(page) {
-		View.set_entity_title(page)
-		//View.set_entity_path(page.parent)
-		View.flag('canEdit', /u/i.test(page.permissions[Req.uid]))
-		$pageCommentsLink.href = "#comments/"+page.id+"?r" // todo: location
-		if (page.createUserId==Req.uid || /c/i.test(page.permissions[Req.uid] || page.permissions[0])) {
-			$chatTextarea.disabled = false
-			$chatTextarea.focus()
-		} else
-			$chatTextarea.disabled = true
+	room: null, // currently displayed ChatRoom
+	track_resize_2: new ResizeTracker('width'),	
+	init() {
+		// up arrow = edit last comment
+		$chatTextarea.onkeydown = e=>{
+			if (e.isComposing)
+				return
+			// enter - send
+			if (Settings.values.chat_enter!='newline' && e.keyCode==13 && !e.shiftKey) {
+				e.preventDefault()
+				this.send_message()
+			}
+			// up arrow - edit previous message
+			if (e.keyCode==38 && $chatTextarea.value=="") {
+				let msg = this.room && this.room.my_last_message()
+				if (msg && msg.x_data) {
+					e.preventDefault()
+					this.edit_comment(msg.x_data)
+				}
+			}
+		}
+		$chatSendButton.onclick = e=>{
+			this.send_message()
+		}
+		$chatCancelEdit.onclick = e=>{
+			console.log('cancel')
+			this.cancel_edit()
+		}
+		// TODO: global escape handler?
+		document.addEventListener('keydown', e=>{
+			if (e.keyCode==27)
+				this.cancel_edit()
+		})
+		this.textarea_resize()
+		let r = this.textarea_resize.bind(this)
+		$chatTextarea.addEventListener('input', r, {passive: true})
+		this.track_resize_2.add($chatTextarea, ()=>{
+			window.setTimeout(r)
+		})
 	},
 	
 	start({id, query}) {
 		// todo: we should manually request the userlist.
 		// right now it generally appears automatically due to your own status
-		
 		let room = ChatRoom.rooms[id]
 		if (room) {
 			let z = room.pinned
@@ -58,8 +83,9 @@ View.add_view('page', {
 	},
 	quick({room, z}) {
 		let page = room.page
-		room.show()
-		room.pinned = z
+		this.room = room
+		this.room.show()
+		this.room.pinned = z
 		this.render_page(page)
 	},
 	render({message, content:[page]}, ext) {
@@ -76,48 +102,18 @@ View.add_view('page', {
 		this.room = null
 		View.flag('canEdit', false)
 	},
-	init() {
-		// todo: move this onto the ChatRoom object??
-		window.editComment = this.edit_comment.bind(this) // HACK
-		
-		// up arrow = edit last comment
-		$chatTextarea.onkeydown = e=>{
-			if (e.isComposing)
-				return
-			if (Settings.values.chat_enter!='newline' && e.keyCode==13 && !e.shiftKey) { // enter
-				e.preventDefault()
-				this.send_message()
-			}
-			if (e.keyCode==38 && $chatTextarea.value=="") { // up arrow
-				let room = ChatRoom.currentRoom
-				let msg = room && room.my_last_message()
-				if (msg && msg.x_data) {
-					e.preventDefault()
-					this.edit_comment(msg.x_data)
-				}
-			}
-		}
-		
-		$chatSendButton.onclick = e=>{
-			this.send_message()
-		}
-		
-		$chatCancelEdit.onclick = e=>{
-			console.log('cancel')
-			this.cancel_edit()
-		}
-		// TODO: global escape handler?
-		document.addEventListener('keydown', e=>{
-			if (e.keyCode==27)
-				this.cancel_edit()
-		})
-		
-		this.textarea_resize()
-		let r = this.textarea_resize.bind(this)
-		$chatTextarea.addEventListener('input', r, {passive: true})
-		this.track_resize_2.add($chatTextarea, ()=>{
-			window.setTimeout(r)
-		})
+	
+	render_page(page) {
+		View.set_entity_title(page)
+		//View.set_entity_path(page.parent)
+		View.flag('canEdit', /u/i.test(page.permissions[Req.uid]))
+		$pageCommentsLink.href = "#comments/"+page.id+"?r" // todo: location
+		if (page.createUserId==Req.uid || /c/i.test(page.permissions[Req.uid] || page.permissions[0])) {
+			$chatTextarea.disabled = false
+			$chatTextarea.focus()
+		} else
+			$chatTextarea.disabled = true
+		this.room.edit_callback = msg=>this.edit_comment(msg)
 	},
 	
 	textarea_resize() {
@@ -127,11 +123,11 @@ View.add_view('page', {
 	},
 	
 	send_message() {
-		let room = ChatRoom.currentRoom
-		if (!room)
+		if (!this.room)
 			return
 		
 		let data = this.read_input(this.editing_comment)
+		
 		if (this.editing_comment) { // editing comment
 			let last_edit = this.editing_comment
 			this.cancel_edit()
@@ -146,8 +142,9 @@ View.add_view('page', {
 				}
 			} else { // input is blank
 				let resp = confirm("Are you sure you want to delete this message?\n"+last_edit.text)
-				if (!resp) return
-				Req.delete_message(last_edit.id).do = (resp, err)=>{
+				if (!resp)
+					return
+				Req.delete('message', last_edit.id).do = (resp, err)=>{
 					if (err)
 						alert("Deleting comment failed")
 				}
@@ -156,7 +153,7 @@ View.add_view('page', {
 			if (data.text) { // input is not blank
 				let old = data
 				Req.send_message({
-					contentId: room.id,
+					contentId: this.room.id,
 					text: data.text,
 					values: data.values,
 				}).do = (resp, err)=>{
@@ -200,7 +197,6 @@ View.add_view('page', {
 		else
 			document.execCommand('delete')
 		this.textarea_resize()
-		//$chatTextarea.value = 
 		$chatMarkupSelect.checked = data.values.m == Settings.values.chat_markup
 	},
 
@@ -208,6 +204,7 @@ View.add_view('page', {
 	editing_comment: null,
 	
 	edit_comment(comment) {
+		console.log('edit?', comment)
 		if (this.editing_comment)
 			this.cancel_edit()
 		if (!comment)

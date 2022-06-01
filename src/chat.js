@@ -3,12 +3,13 @@
 // ex: when a message is moved between rooms,
 
 class MessageList {
-	constructor(element, pid) {
+	constructor(element, pid, edit) {
 		this.elem = element
 		this.elem.classList.add('message-list') // todo: just create a new elem <message-list> ?
 		this.pid = pid
 		this.parts = Object.create(null)
 		this.total_parts = 0
+		this.edit_callback = edit
 	}
 	get_messages_near(last, newer, amount, callback) {
 		let order = newer ? 'id' : 'id_desc'
@@ -148,8 +149,10 @@ class MessageList {
 		this.controls = Draw.message_controls(()=>{
 			alert(JSON.stringify(this.controls_message.x_data, null, 1)) // <small heart>
 		}, ()=>{
-			if (this.controls_message)
-				window.editComment(this.controls_message.x_data)
+			if (this.controls_message) {
+				let ev = new Event('edit_message', {bubbles: true, cancellable: true})
+				this.controls_message.dispatchEvent(ev)
+			}
 		}).elem
 		
 		let listen = (ev, fn)=>{
@@ -208,6 +211,8 @@ class ChatRoom {
 			return
 		}
 		
+		this.edit_callback = null
+		
 		{
 			let e = this.constructor.HTML.block()
 			this.chat_pane = e
@@ -228,6 +233,11 @@ class ChatRoom {
 			this.messages_outer = outer
 			this.scroll_inner = inner
 			this.list = new MessageList(inner.lastChild, this.id)
+			this.list.elem.addEventListener('edit_message', e=>{
+				// todo: weakmap instead of this x_data field?
+				if (this.edit_callback)
+					this.edit_callback(e.target.x_data)
+			})
 			// 
 			let extra = inner.firstChild
 			this.extra = extra

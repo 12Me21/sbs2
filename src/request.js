@@ -223,18 +223,27 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 		Store.set(this.storage_key, token)
 	},
 	
-	// messages
-	send_message(message) {
-		return this.request('Write/message', null, message)
-	},
-	delete_message(id) {
-		return this.request(`Delete/message/${id}`, null, null)
-	},
-	
 	file_url(id, query) {
 		if (query)
 			return `https://${this.server}/File/raw/${id}?${query}`
 		return `https://${this.server}/File/raw/${id}`
+	},
+	
+	delete(type, id) {
+		if (!TYPES[type])
+			throw new TypeError("Tried to delete unknown entity type: "+type)
+		return new ApiRequest(`Delete/${type}/${id}`, 'POST', null, TYPES[type])
+	},
+	write(obj) {
+		let type = obj.Type
+		if (!TYPES[type])
+			throw new TypeError("Tried to write unknown entity type: "+type)
+		return new ApiRequest(`Write/${type}`, 'POST', obj.Blob(), TYPES[type])
+	},
+	
+	// messages
+	send_message(message) {
+		return this.request('Write/message', null, message)
 	},
 	
 	upload_file(file, params) {
@@ -257,10 +266,6 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 			}
 		}
 		return new ApiRequest('File', 'POST', form, x=>TYPES.content(x))
-	},
-	write(obj) {
-		let type = obj.Type
-		return new ApiRequest('Write/'+type, 'POST', obj.Blob(), TYPES[type])
 	},
 }
 Object.seal(Req)
