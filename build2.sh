@@ -19,7 +19,7 @@ merge_files () {
 	
 	declare -i total=1
 	for file in ${files[@]}; do
-		printf ',{"offset": {"column":0,"line":%s},"map":{"version":3,"sourceRoot":".source","sources":["%s"],"mappings":"AAAA' $total $file
+		printf ',{"offset": {"column":0,"line":%s},"map":{"version":3,"sourceRoot":"_source","sources":["%s"],"mappings":"AAAA' $total $file
 		length=`wc -l <"$file"`
 		printf '%s\tL:%d\n' $file $length >&2
 		yes ';AACA' | head -n $length | tr -d '\n'
