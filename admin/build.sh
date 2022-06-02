@@ -18,7 +18,7 @@ merge_files () {
 	printf %s\\n $files >&2
 	echo "===================" >&2
 	printf %s "$3" >"$1"
-	cat $files >>"$1"
+	sed '' $files >>"$1"
 }
 
 merge_files resource/_build.css '<link .*\brel=stylesheet href=\K[\w/.-]+(?=>)' ''

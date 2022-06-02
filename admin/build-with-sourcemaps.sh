@@ -37,7 +37,7 @@ merge_files () {
 	printf ']}' >>"$1".map
 	
 	echo "$3" >"$1"
-	cat ${files[@]} >>"$1"
+	sed '' ${files[@]} >>"$1"
 	
 	echo "===================" >&2
 }
