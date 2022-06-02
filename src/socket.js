@@ -271,6 +271,7 @@ let Lp = singleton({
 		})
 		
 		document.addEventListener('visibilitychange', e=>{
+			print('visible')
 			if ('visible'==document.visibilityState) {
 				if (this.is_alive()) {
 					this.ping(()=>{})
@@ -285,6 +286,10 @@ let Lp = singleton({
 		})
 	},
 })
+
+function online_and_visible() {
+	return navigator.onLine && document.visibilityState == 'visible'
+}
 
 /*
 idea: when socket dies, if page isn't visible, we do nothing
