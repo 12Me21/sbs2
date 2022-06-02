@@ -15,7 +15,7 @@ class InvalidRequestError extends TypeError {
 		//this.body = apir.body
 	}
 	get message() {
-		if (typeof this.resp == 'string')
+		if ('string'==typeof this.resp)
 			return "\n"+this.resp
 		let lines = [""]
 		if (!this.resp)
@@ -151,10 +151,7 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 	
 	locked: false, // for testing
 	
-	//idea: keep track of whether an object was requested with fields=*, and prevent posting it otherwise
-	
 	// idk having all brackets bold + dimgray was kinda nice...
-	// i dont like how proc is required but h
 	
 	// request(url, proc) - GET
 	// request(url, proc, null) - POST
@@ -169,8 +166,6 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 		}
 		return new ApiRequest(url, method, data, proc)
 	},
-	
-	// idea: function.valueOf calls the function and returns um ..   something.. .chaining .. mmmm
 	
 	chain(data) {
 		return new ApiRequest(
@@ -254,6 +249,7 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 				console.warn(`form[‘${name}’]: empty string will be treated as null`)
 			form.set(name, value)
 		}
+		// formdata is totally fucked
 		for (let name in params) {
 			let value = params[name]
 			if (name=='values')
