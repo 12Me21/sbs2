@@ -271,12 +271,14 @@ let Lp = singleton({
 		})
 		
 		document.addEventListener('visibilitychange', e=>{
-			print('visible')
+			//print('visible')
 			if ('visible'==document.visibilityState) {
-				if (this.is_alive()) {
-					this.ping(()=>{})
-				} else
-					this.start_websocket()
+				window.setTimeout(()=>{
+					if (this.is_alive()) {
+						this.ping(()=>{})
+					} else
+						this.start_websocket()
+				}, 100)
 			}
 		})
 		
