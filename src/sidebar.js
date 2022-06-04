@@ -21,13 +21,15 @@ let Sidebar = Object.seal({
 	onload() {
 		this.file_upload_form = new Form({
 			fields: [
-				['size', 'output', {output: true, label: "Size"}], //todo: separate set of output fields?
+				['size', 'output', {label: "Size"}], //todo: separate set of output fields?
 				['name', 'text', {label: "File Name"}],
 				['hash', 'text', {label: "Hash"}],
 				['bucket', 'text', {label: "Bucket"}],
-				['quantize', 'select', {label: "Quantize", default: ""}, {
-					options: [["", "no"], ["2", "2"], ["4", "4"], ["8", "8"], ["16", "16"], ["32", "32"], ["64", "64"], ["256", "256"]],
-				}], // todo: maybe store js values in the dropdown, rather than strings?
+				['quantize', 'select', {
+					options: [null, 2, 4, 8, 16, 32, 64, 256],
+					label: "Quantize",
+					option_labels: ["no", "2", "4", "8", "16", "32", "64", "256"],
+				}],
 			],
 		})
 		$file_upload_form.replaceWith(this.file_upload_form.elem)
@@ -78,7 +80,7 @@ let Sidebar = Object.seal({
 				priv = true
 			}
 			if (data.quantize)
-				params.quantize = +data.quantize
+				params.quantize = data.quantize
 			if (data.hash)
 				params.hash = data.hash
 			if (priv)

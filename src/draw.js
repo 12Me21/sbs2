@@ -1,6 +1,8 @@
 'use strict'
 // HTML RENDERING
 const Draw = Object.seal({
+	observer: null,
+	
 	//📥 content‹Content›
 	//📤 ‹ParentNode›
 	content_label: function(content, block) {
@@ -233,7 +235,7 @@ const Draw = Object.seal({
 		
 		e.dataset.id = comment.id
 		e.dataset.time = comment.createDate2.getTime()
-		Markup.convert_lang(comment.text, comment.values.m, e, {intersection_observer})
+		Markup.convert_lang(comment.text, comment.values.m, e, {intersection_observer: Draw.observer})
 		return e
 	}.bind(𐀶`<message-part>`),
 	

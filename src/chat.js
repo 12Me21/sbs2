@@ -302,7 +302,7 @@ class ChatRoom {
 	}
 	update_page(page) {
 		this.page = page
-		Markup.convert_lang(page.text, page.values.markupLang, this.page_contents, {intersection_observer})
+		Markup.convert_lang(page.text, page.values.markupLang, this.page_contents, {intersection_observer: Draw.observer})
 	}
 	// 8:10;35
 	show() {

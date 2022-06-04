@@ -3,7 +3,6 @@
 
 <meta name=viewport content="width=device-width, initial-scale=1, height=device-height">
 
-<meta name=application-name content="sbs2">
 <link rel=icon sizes=16x16 href=resource/icon16.ico> <!-- compatibility -->
 <link rel=icon sizes=16x16 href=resource/icon16.png> <!-- firefox -->
 <link rel=icon sizes=32x32 href=resource/icon32.png> <!-- chrome -->
@@ -13,13 +12,9 @@
 <meta name=color-scheme content="light dark">
 <meta name=theme-color content="#888"> <!-- mobile -->
 
+<meta name=application-name content="sbs2">
 <link rel=author href=data:;base64;charset=utf-8,MTI=>
 <link rel=vcs-git href=https://github.com/12Me21/sbs2>
-
-<link rel=manifest href='data:application/manifest+json,{"name":"sbs2","display":"browser","background_color":"%23888"}'>
-
-<!--<link rel=dns-prefetch href=https://qcs.shsbs.xyz>
-<link rel=preconnect href=https://qcs.shsbs.xyz crossorigin>-->
 
 <script>'use strict'
 	if (window.location.search=="?logout") {
@@ -28,13 +23,19 @@
 	}
 	window.print = window.alert
 	
-	// todo: get rid of global vars here
-	var markup_warned
-	function check_markup() {
-		return "yeah"===window.getComputedStyle(document.documentElement).getPropertyValue('--Markup-loaded')
+	function RELOAD() {
+		var l=window.location.href
+		window.history.replaceState(null, "", "?⌛")
+		window.location.replace(l)
 	}
 	
 	let BASE_URL = new URL("./", window.location).href
+	
+	// todo: get rid of global vars here
+	var markup_warned = true
+	function check_markup() {
+		return "yeah"===window.getComputedStyle(document.documentElement).getPropertyValue('--Markup-loaded')
+	}
 	
 	function alert_error(msg, message, source, line, col) {
 		source = source.replace(BASE_URL, "📁 ")
@@ -55,18 +56,38 @@
 		})
 	}
 	
-	function RELOAD() {
-		var l=window.location.href
-		window.history.replaceState(null, "", "?⌛")
-		window.location.replace(l)
+	// load settings very early
+	let Settings = {
+		values: Object.create(null),
+	}
+	if (window.location.search=="?nosettings") {
+		Settings = {
+			get values() { return Object.create(null) },
+			get fields() { return Object.create(null) },
+			set fields(v) { },
+		}
+	} else {
+		for (let i=0; i<localStorage.length; i++) {
+			let key = localStorage.key(i)
+			if (key.startsWith("setting-"))
+				try {
+					let value = JSON.parse(localStorage.getItem(key))
+					Settings.values[key.substring(8)] = value
+				} catch {}
+		}
 	}
 	
 	// dark theme
 	let theme_query = window.matchMedia("(prefers-color-scheme: dark)")
 	theme_query.onchange = query=>{
-		document.documentElement.classList.toggle('theme-dark', query.matches)
+		let theme = Settings.values.theme
+		if (!theme || theme==='auto')
+			document.documentElement.dataset.theme = query.matches ? 'dark' : 'light'
 	}
 	theme_query.onchange(theme_query)
+	
+	console.log("🌅 early init done")
+	markup_warned = false
 </script>
 
 <!--START-->
@@ -113,6 +134,13 @@
 <script src=src/main.js></script>
 <!--END-->
 <style id=$customCSS></style>
+<script>
+	// load custom css
+	if ('string'==typeof Settings.values.sitecss) {
+		$customCSS.textContent = Settings.values.sitecss
+		console.log('loaded custom css')
+	}
+</script>
 
 <body 🁢>
 
@@ -254,9 +282,15 @@
 <script hidden>'use strict'
 	document.currentScript.remove() // 💭
 	// whitespace between nodes in html (due to line breaks, indentation, etc.) creates text nodes which need to be stripped:
-	document.createNodeIterator(
-		document.body, NodeFilter.SHOW_TEXT,
-		{acceptNode(node){node.data.trim()||node.remove()}},
-	).nextNode()
-	console.log("🌅 removed blank textnodes")
+	{
+		let n = 0
+		document.createNodeIterator(
+			document.body, NodeFilter.SHOW_TEXT,
+			{acceptNode(node){
+				if (!node.data.trim())
+					node.remove(), n++
+			}},
+		).nextNode()
+		console.log("🌅 removed "+n+" blank textnodes")
+	}
 </script>

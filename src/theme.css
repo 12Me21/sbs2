@@ -4,8 +4,8 @@ html {
 	--T-monospace-font: 0.8em 'cascadia code', consolas, monospace;
 }
 
-/* default theme (light) */
-html:not([data-theme]):not(.theme-dark),
+/* default theme */
+html,
 /* light theme */
 [data-theme="light"] {
 	/* text colors (black) */
@@ -43,6 +43,7 @@ html:not([data-theme]):not(.theme-dark),
 	--databarbgcolor: #222;
 	--light-invert-bg: #333;
 	--loading-invert-bg: #009688; /*linear-gradient(#225450, #327070); removed because of flicker ? i think we need to animate to another gradient or? */
+	
 	--error-invert-bg: #800;
 	
 	--input-border-color: #BBB #DDD #DDD #BBB;
@@ -54,8 +55,6 @@ html:not([data-theme]):not(.theme-dark),
 	--T-button-border-color: goldenrod;
 }
 
-/* default theme (dark) */
-html:not([data-theme]).theme-dark,
 /* dark theme */
 [data-theme="dark"] {
 	--T-color: #FFF;
@@ -82,11 +81,12 @@ html:not([data-theme]).theme-dark,
 	--edit-textarea-bg: #750;
 	--normal-shadow: 0 2px 3px #0000004D;
 	/* in dark theme, the inverted colors are just normal dark */
+	
 	--databartxtcolor: var(--T-color);
 	--link-invert-color: var(--T-link-color);
 	--link-invert-hover-color: var(--T-link-hover-color);
-	
 	--databarbgcolor: #000;
+	
 	--light-invert-bg: #111;
 	--loading-invert-bg: #327070;
 	--error-invert-bg: #800;
@@ -100,4 +100,23 @@ html:not([data-theme]).theme-dark,
 	--button-active-bg: linear-gradient(#047, #047);
 	--button-selected-bg: linear-gradient(#048, #07A);
 	--T-button-border-color: #00008B;
+}
+
+[data-theme="light"] [data-subtheme~="header-dark"] {
+	--T-color: #FFF;
+	--T-link-color: #DEF;
+	--T-link-hover-color: #EFF;
+	--T-bg: #222;
+	
+	--light-invert-bg: #333;
+	--loading-invert-bg: #009688;
+	--error-invert-bg: #800;
+}
+
+[data-theme="dark"] [data-subtheme~="header-dark"] {
+	--T-bg: #000;
+	
+	--light-invert-bg: #333;
+	--loading-invert-bg: #009688;
+	--error-invert-bg: #800;
 }
