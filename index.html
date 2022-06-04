@@ -60,6 +60,13 @@
 		window.history.replaceState(null, "", "?⌛")
 		window.location.replace(l)
 	}
+	
+	// dark theme
+	let theme_query = window.matchMedia("(prefers-color-scheme: dark)")
+	theme_query.onchange = query=>{
+		document.documentElement.classList.toggle('theme-dark', query.matches)
+	}
+	theme_query.onchange(theme_query)
 </script>
 
 <!--START-->
@@ -244,7 +251,6 @@
 	</sidebar-container>
 </horizontal-split>
 
-</body>
 <script hidden>'use strict'
 	document.currentScript.remove() // 💭
 	// whitespace between nodes in html (due to line breaks, indentation, etc.) creates text nodes which need to be stripped:
@@ -253,15 +259,4 @@
 		{acceptNode(node){node.data.trim()||node.remove()}},
 	).nextNode()
 	console.log("🌅 removed blank textnodes")
-	
-	let dcl = Math.random()<0.5
-	if (dcl)
-		document.addEventListener('DOMContentLoaded', dom_ready)
-	else
-		dom_ready()
-	window.addEventListener('load', e => {
-		let x = localStorage.getItem('LOAD_TIMING')
-		x += "\n"+(dcl?"DCL":"BS")+";"+Object.values(performance.timing.toJSON()).map(x=>x.toString(36)).join(",")
-		localStorage.setItem('LOAD_TIMING', x)
-	})
 </script>

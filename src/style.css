@@ -8,7 +8,7 @@
 
 html {
 	;background: #FEE ;" (for debug)
-	;color: var(--T-col)
+	;color: var(--T-color)
 	;font: var(--T-font)
 	;line-height: normal
 	;" disable ligatures like fi ffi etc.
@@ -29,10 +29,10 @@ a[href] {
 	;text-decoration: none
 }
 a[href], a[href]:visited {
-	;color: var(--linkcolor)
+	;color: var(--T-link-color)
 }
 a[href]:hover {
-	;color: var(--link-hover-color)
+	;color: var(--T-link-hover-color)
 	;"text-decoration: underline
 }
 a[href]:hover .entity-title ,
@@ -69,7 +69,7 @@ textarea {
 	;box-shadow: 0.1rem 0.2rem 0.3rem -0.2rem rgba(13,13,13,0.5)
 	;font: var(--T-font)
 	;font-size: 0.8em
-	;color: var(--T-col)
+	;color: var(--T-color)
 	;background: var(--T-bg)
 	;white-space: break-spaces; /* optional */
 }
@@ -78,15 +78,13 @@ sup {vertical-align: super;}
 sub {vertical-align: sub;}
 
 .avatar {
-	;"height: 1rem /*default*/
-	;"border: 1px solid var(--image-border-color)
 	;border-radius: 3px
-	;background: var(--avatar-bg)
+	;background: var(--T-avatar-bg)
 }
 
 time {
 	;font-size: 0.9em
-	;color: var(--time-color)
+	;color: var(--T-time-color)
 	;vertical-align: baseline
 }
 
@@ -131,7 +129,7 @@ button:active {
 	;background: var(--button-active-bg)
 }
 button:disabled {
-	;color: var(--chat-dim-color)
+	;color: var(--chat-dim-color) /*todo: proper color here */
 	;background: var(--bar-bg)
 }
 
@@ -156,12 +154,12 @@ html.f-error .loadBG {
 }
 
 .bottomBorder {
-	;border-bottom: 1px solid var(--T-border-col)
+	;border-bottom: 1px solid var(--T-border-color)
 }
 
 .border-list > *:not(:last-child),
 .border-list-2 > * {
-	;border-bottom: 1px solid var(--T-border-col)
+	;border-bottom: 1px solid var(--T-border-color)
 }
 
 /**********
@@ -290,7 +288,7 @@ sidebar-container {
 	;padding: 0.2rem
 	;padding-top: 0.15rem
 	
-	;border-bottom: 1px solid var(--T-border-col)
+	;border-bottom: 1px solid var(--T-border-color)
 	;border-top: 1px solid white
 }
 .linkBar:focus {
@@ -314,7 +312,7 @@ sidebar-container {
 chat-pane .userlist {
 	;box-shadow: var(--normal-shadow)
 	;z-index: 4
-	;border-bottom: 1px solid var(--T-border-col)
+	;border-bottom: 1px solid var(--T-border-color)
 }
 .userlist {
 	;background: var(--bar-bg)
@@ -384,11 +382,6 @@ message-contents {
 	;background: var(--T-bg)
 	
 	;contain: none ;" because of overlapping with avatar
-}
-message-contents img {
-	;max-width: 100%
-	;max-height: 10vh
-	;border: 1px solid var(--image-border-color)
 }
 
 message-block > img.avatar,
@@ -615,7 +608,7 @@ button.voteButton[data-selected][data-vote="o"] {
 .pageInfoPane {
 	;padding-left: 0.3rem
 	;padding-right: 0.3rem
-	;border-bottom: 1px solid var(--T-border-col)
+	;border-bottom: 1px solid var(--T-border-color)
 	;background: var(--bar-bg)
 	;box-shadow: var(--normal-shadow)
 }
@@ -682,7 +675,7 @@ input, select { /* this is old & probably not needed */
 	;max-width: 100%
 }
 input, select, button, input::placeholder {
-	;color: var(--T-col)
+	;color: var(--T-color)
 }
 
 input::placeholder {
@@ -775,7 +768,7 @@ textarea-container, textarea-container > textarea {
 	;font: var(--T-monospace-font)
 	;overflow-x: scroll
 	;white-space: pre
-	;boreder-bottom: 1px solid var(--T-border-col);
+	;border-bottom: 1px solid var(--T-border-color)
 }
 
 .category-childs {
@@ -803,7 +796,7 @@ textarea-container, textarea-container > textarea {
 
 .activity-page {
 	;display: block
-	;border-bottom: 1px solid var(--T-border-col)
+	;border-bottom: 1px solid var(--T-border-color)
 	;border-top: 1px solid white
 	;padding-left: 0.2rem
 	;padding-top: 1px

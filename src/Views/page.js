@@ -14,7 +14,7 @@ function register_activity(e) {
 
 View.add_view('page', {
 	room: null, // currently displayed ChatRoom
-	track_resize_2: new ResizeTracker('width'),	
+	track_resize_2: new ResizeTracker('width'),
 	Init() {
 		// up arrow = edit last comment
 		$chatTextarea.onkeydown = e=>{

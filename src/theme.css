@@ -1,27 +1,31 @@
-:root {
+/* shared */
+html {
 	--T-font: 1em roboto, sans-serif;
 	--T-monospace-font: 0.8em 'cascadia code', consolas, monospace;
 }
 
-html {
-	color-scheme: light;
+/* default theme (light) */
+html:not([data-theme]):not(.theme-dark),
+/* light theme */
+[data-theme="light"] {
 	/* text colors (black) */
-	--T-col: black;
-	--linkcolor: #045;
-	--link-hover-color: rgb(0,150,136);
+	--T-color: #000;
+	--T-link-color: #045;
+	--T-link-hover-color: #009688;
 	--T-link-bg: #E5E5FF;
-	--time-color: #333;
-	--T-border-col: gray;
+	--T-time-color: #333;
+	--T-border-color: #808080;
+	--T-image-border: 1px solid #C0C0C0;
+	
 	--chat-dim-color: #666;
-	--image-border-color: silver;
 	/* background colors (white) */
-	--T-bg: white;
+	--T-bg: #FFF;
 	--T-box-bg: #F7F7F7;
-	--avatar-bg: white;
+	--T-avatar-bg: #FFF;
 	--message-hover-bg: #DDD;
 	--message-focus-bg: #E5FCFF;
 	--bar-bg: #EEE;
-	--error-bg: pink;
+	--error-bg: #FFC0CB;
 	--T-red-bg: #FCC;
 	--T-orange-bg: #FEA;
 	--T-yellow-bg: #FF8;
@@ -30,7 +34,7 @@ html {
 	--T-purple-bg: #ECF;
 	--T-gray-bg: #DDD;
 	--edit-textarea-bg: #FFFF80;
-	--normal-shadow: 0 2px 3px rgba(0,0,0,0.3);
+	--normal-shadow: 0 2px 3px #0000004D;
 	/* inverted text colors (white) */
 	--databartxtcolor: white;
 	--link-invert-color: #DEF;
@@ -38,10 +42,11 @@ html {
 	/* inverted bg colors (black) */
 	--databarbgcolor: #222;
 	--light-invert-bg: #333;
-	--loading-invert-bg: rgb(0,150,136); /*linear-gradient(#225450, #327070); removed because of flicker ? i think we need to animate to another gradient or? */
+	--loading-invert-bg: #009688; /*linear-gradient(#225450, #327070); removed because of flicker ? i think we need to animate to another gradient or? */
 	--error-invert-bg: #800;
-	--input-border-color: #BBB #DDD #DDD #BBB;
 	
+	--input-border-color: #BBB #DDD #DDD #BBB;
+	/* buttons */
 	--button-hover-color: #59E;
 	--button-bg: linear-gradient(#EEE, #CCC);
 	--button-active-bg: linear-gradient(#DDD, #EEE);
@@ -49,22 +54,24 @@ html {
 	--T-button-border-color: goldenrod;
 }
 
-html[data-theme="dark"], html.f-dark:not([data-theme]) {
-	color-scheme: dark;
-	--T-col: white;
-	--linkcolor: #9CE;
-	--link-hover-color: #5CE;
+/* default theme (dark) */
+html:not([data-theme]).theme-dark,
+/* dark theme */
+[data-theme="dark"] {
+	--T-color: #FFF;
+	--T-link-color: #9CE;
+	--T-link-hover-color: #5CE;
 	--T-link-bg: #156;
-	--time-color: #EEE;
-	--T-border-col: black;
+	--T-time-color: #EEE;
+	--T-border-color: #000;
+	--T-image-border: 1px solid #808080;
 	--chat-dim-color: #666;
-	--image-border-color: gray;
-	
+	/* bg */
 	--T-bg: #292929;
 	--T-box-bg: #444;
-	--avatar-bg: gray;
+	--T-avatar-bg: #808080;
 	--bar-bg: #555;
-	--error-bg: maroon;
+	--error-bg: #800000;
 	--T-red-bg: #6A2C2C;
 	--T-blue-bg: #2C4A6A;
 	--T-green-bg: #2C6A2C;
@@ -73,11 +80,11 @@ html[data-theme="dark"], html.f-dark:not([data-theme]) {
 	--T-gray-bg: #383838;
 	--T-purple-bg: #592C6A;
 	--edit-textarea-bg: #750;
-	--normal-shadow: 0 2px 3px rgba(0,0,0,0.3);
+	--normal-shadow: 0 2px 3px #0000004D;
 	/* in dark theme, the inverted colors are just normal dark */
-	--databartxtcolor: var(--T-col);
-	--link-invert-color: var(--linkcolor);
-	--link-invert-hover-color: var(--link-hover-color);
+	--databartxtcolor: var(--T-color);
+	--link-invert-color: var(--T-link-color);
+	--link-invert-hover-color: var(--T-link-hover-color);
 	
 	--databarbgcolor: #000;
 	--light-invert-bg: #111;
@@ -92,5 +99,5 @@ html[data-theme="dark"], html.f-dark:not([data-theme]) {
 	--button-bg: linear-gradient(#048, #035);
 	--button-active-bg: linear-gradient(#047, #047);
 	--button-selected-bg: linear-gradient(#048, #07A);
-	--T-button-border-color: darkblue;
+	--T-button-border-color: #00008B;
 }

@@ -271,7 +271,7 @@ let Lp = singleton({
 		})
 		
 		document.addEventListener('visibilitychange', e=>{
-			//print('visible')
+			print('visible')
 			if ('visible'==document.visibilityState) {
 				window.setTimeout(()=>{
 					if (this.is_alive()) {

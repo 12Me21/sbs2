@@ -1,10 +1,7 @@
 'use strict'
-immediate()
 
-/*if (document.readyState == 'loading')
-	document.onreadystatechange = dom_ready
-else
-	dom_ready()*/
+document.addEventListener('DOMContentLoaded', dom_ready)
+immediate()
 
 function immediate() {
 	console.log("🌅 STARTING INIT")
@@ -14,13 +11,7 @@ function immediate() {
 		undefined = 2
 		console.warn("'use strict' not enabled!") // todo: warn/error printing ? higher priority? (pin to bottom?)
 		do_when_ready(x=>print("⚠️ 'use strict' not enabled!"))
-	} catch(e) {}
-	
-	// (we can access <html> even if DOMContentLoaded hasn't occurred yet)
-	// dark theme
-	let dark = window.matchMedia("(prefers-color-scheme: dark)")
-	dark.onchange = (query) => View.flag('dark', query.matches)
-	dark.onchange(dark)
+	} catch (e) {}
 	
 	Req.try_load_auth()
 	
@@ -58,23 +49,6 @@ function immediate() {
 	
 	Nav.init()
 	
-	window.onerror = function(message, source, line, col, error) {
-		let ok
-		try {
-			// syntax errors may be "muted" for security reasons
-			// in that case, create a fake error with the info we have
-			// (generally, that's only the filename)
-			if (!error) {
-				error = new Error(message)
-				error.stack = "@"+source+":"+line+":"+col
-			}
-			Sidebar.print(error)
-			ok = true
-		} finally {
-			if (!ok)
-				alert("error while handling error!")
-		}
-	}
 }
 
 function dom_ready() {
@@ -133,4 +107,21 @@ function dom_ready() {
 	//Object.defineProperty(ready, 'do', {set: fn=>fn()})
 	
 	//danger: View.onload() can potentially run after view.start() (but before view.render())  TODO
+	window.onerror = function(message, source, line, col, error) {
+		let ok
+		try {
+			// syntax errors may be "muted" for security reasons
+			// in that case, create a fake error with the info we have
+			// (generally, that's only the filename)
+			if (!error) {
+				error = new Error(message)
+				error.stack = "@"+source+":"+line+":"+col
+			}
+			Sidebar.print(error)
+			ok = true
+		} finally {
+			if (!ok)
+				alert("error while handling error!")
+		}
+	}
 }
