@@ -185,6 +185,11 @@ let Lp = singleton({
 			this.expected_close = true
 			return
 		}
+		if (response.type=='badtoken') {
+			this.no_restart = true
+			alert("token expired (must log in again)")
+			return
+		}
 		
 		let handler
 		if (response.id) {
@@ -271,13 +276,14 @@ let Lp = singleton({
 		})
 		
 		document.addEventListener('visibilitychange', e=>{
-			print('visible')
 			if ('visible'==document.visibilityState) {
 				window.setTimeout(()=>{
-					if (this.is_alive()) {
-						this.ping(()=>{})
-					} else
-						this.start_websocket()
+					if (navigator.onLine) {
+						if (this.is_alive()) {
+							this.ping(()=>{})
+						} else
+							this.start_websocket()
+					}
 				}, 100)
 			}
 		})
