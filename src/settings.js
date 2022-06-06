@@ -47,7 +47,7 @@ Settings.fields = {
 		name: "Theme",
 		type: 'select',
 		options: ['auto', 'light', 'dark'],
-		done_early: true,
+		/*done_early: true,*/
 		update(value) {
 			if (value == 'auto')
 				theme_query.onchange(theme_query)
