@@ -1,4 +1,4 @@
-function switch_tab(next, clicked, no_focus) {
+function switch_tab(next, no_focus) {
 	if (!next)
 		return
 	let tablist = next.parentNode
@@ -13,8 +13,6 @@ function switch_tab(next, clicked, no_focus) {
 		else
 			tab.setAttribute('tabindex', -1)
 	}
-	if (clicked)
-		next.onclick()
 	if (!no_focus)
 		next.focus()
 }
