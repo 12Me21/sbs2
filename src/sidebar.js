@@ -3,6 +3,7 @@ delete window.sidebar // obsolete firefox global variable
 
 let Sidebar = Object.seal({
 	file: null,
+	last_file: null,
 	scroller: null,
 	sidebar_tabs: null,
 	my_avatar: null,
@@ -46,7 +47,7 @@ let Sidebar = Object.seal({
 					this.got_file(file)
 			}
 		})
-		
+		//todo: write decoder for xpm :)
 		$file_browse.onchange = e=>{
 			let file = $file_browse.files[0]
 			try {
@@ -57,6 +58,22 @@ let Sidebar = Object.seal({
 		}
 		$file_cancel.onclick = $file_done.onclick = e=>{
 			this.file_cancel()
+		}
+		$file_url_insert.onclick = e=>{
+			let file = this.last_file
+			if (!file) return
+			let url = Req.file_url(file.hash)
+			let meta = JSON.parse(file.meta)
+			let size = meta.width+"x"+meta.height
+			
+			let markup = Settings.values.chat_markup
+			if (markup=='12y')
+				url = "!"+url+"#"+size
+			else if (markup=='12y2')
+				url = "!"+url+"["+size+"]"
+			
+			$chatTextarea.focus()
+			document.execCommand('insertText', false, url)
 		}
 		$file_upload.onclick = e=>{
 			if (!this.file) return
@@ -94,14 +111,17 @@ let Sidebar = Object.seal({
 				
 				$file_url.hidden = false
 				$file_done.hidden = false
+				$file_url_insert.hidden = false
 				this.file_upload_form.elem.hidden = true
 				$file_browse.hidden = true
 				$file_cancel.hidden = true
 				$file_upload.hidden = true
 				
-				$file_url.value = Req.file_url(file.hash)
-				$file_image.src = ""
-				$file_image.src = Req.file_url(file.hash)
+				let url = Req.file_url(file.hash)
+				$file_url.value = url
+				this.last_file = file
+				$file_image.src = "" // we set to "" first, so the old image isnt visible whilst the new one is loading
+				$file_image.src = url
 			}
 		}
 		$file_url.onfocus = e=>{
@@ -221,7 +241,13 @@ let Sidebar = Object.seal({
 				this.printing = true
 				this.scroller.print(()=>{
 					for (let arg of args) {
-						$sidebarScroller.append(Draw.sidebar_debug(arg))
+						try {
+							let elem = Draw.sidebar_debug(arg)
+							$sidebarScroller.append(elem)
+						} catch(e) {
+							console.error(e)
+							$sidebarScroller.append("error printing!")
+						}
 						this.message_count++
 					}
 				}, true)
@@ -239,6 +265,7 @@ let Sidebar = Object.seal({
 		$file_cancel.hidden = true
 		$file_url.hidden = true
 		$file_done.hidden = true
+		$file_url_insert.hidden = true
 		$file_upload.hidden = true
 		this.file_upload_form.elem.hidden = true
 		this.file = null
@@ -252,6 +279,7 @@ let Sidebar = Object.seal({
 		$file_browse.hidden = true
 		$file_url.hidden = true
 		$file_done.hidden = true
+		$file_url_insert.hidden = true
 		
 		$file_image.src = ""
 		$file_image.src = URL.createObjectURL(file)

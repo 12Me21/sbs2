@@ -671,6 +671,16 @@ input, select, button, input::placeholder {
 	border-color: transparent !important; /*gosh..*/
 }
 
+input[type="file"] {
+	line-height: calc(var(--bar-height) - 4px);
+}
+
+input::file-selector-button {
+	vertical-align: top;
+	height: 100%;
+	line-height: 1;
+}
+
 input::placeholder {
 	;font-style: italic
 	;color: #80808099

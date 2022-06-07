@@ -29,6 +29,8 @@
 		window.location.replace(l)
 	}
 	
+	let OPTS = new URL(window.location).searchParams
+	
 	let BASE_URL = new URL("./", window.location).href
 	
 	// todo: get rid of global vars here
@@ -55,6 +57,8 @@
 			alert_error("🎆 ERROR DURING PAGE LOAD!", message, source, line, col)
 		})
 	}
+	
+	//let store_prefix = OPTS.has('dev') ? "dev-" : ""
 	
 	// load settings very early
 	let Settings = {
@@ -242,8 +246,9 @@
 			</sidebar-panel>
 			<sidebar-panel id=$sidebarFilePanel 🁢>
 				<div class='rem1-5 justify-between' 🀰>
-					<input 𖧠 type=file accept="image/*" id=$file_browse class='item'>
+					<input 𖧠 type=file accept="image/png,image/jpeg,image/gif,image/bmp,image/tiff,.png,.jpg,.jpeg,.gif,.agif,.bmp,.tiff,.tif" id=$file_browse class='item'>
 					<button id=$file_cancel class='item'>Cancel</button>
+					<button id=$file_url_insert class='item'>Insert</button>
 					<input 𖧠 readonly id=$file_url>
 					<button id=$file_done class='item'>Done</button>
 					<button id=$file_upload class='item'>Upload Image</button>

@@ -73,6 +73,8 @@ for (let type_name in ABOUT.details.types) {
 			writable: true,
 		}
 	}
+	//if (type_name == 'file') {
+	//	proto.url = {value(query) {
 	for (let field_name in field_datas) {
 		let field_data = field_datas[field_name]
 		let field_default = field_defaults[field_name]

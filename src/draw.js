@@ -52,58 +52,76 @@ const Draw = Object.seal({
 		return e
 	}.bind(𐀶`<span class='textItem pre'>`),
 	
+	format_error: function(thing) {
+		let s = this()
+		let out = ""
+		let pf = null
+		for (let line of thing.stack.split("\n")) {
+			if (line=="") continue
+			let at = line.split("@")
+			if (at.length == 2) {
+				let file = at[1].replace(BASE_URL, "")
+				let star = at[0].split("*")
+				if (star.length==2) {
+					at[0] = star[1]
+				}
+				let func = pf
+				pf = at[0]
+				if (func!=null)
+					line = "↓"+func+"() - "+file //🙚❧🙘 //🙯⸽🙘
+				else
+					line = "💥 - "+file
+				if (star.length==2) {
+					out = ":<async "+star[0]+">\n"+out
+				}
+				out = line+"\n"+out
+			} else {
+				out = ":(\n"+thing.stack
+				break
+			}
+		}
+		s.textContent = out
+		return s
+	}.bind(𐀶`<pre>`),
+	
 	//📥 thing‹???›
 	//📤 ‹ParentNode›
 	sidebar_debug: function(thing) {
 		let e = this.message()
-		let text = "<???>"
-		try {
+		switch (thing===null ? 'null' : typeof thing) {
+		case 'boolean': case 'number': case 'bigint':
+		case 'undefined': case 'null': case 'symbol':		
+			thing = String(thing)
+			// FALLTHROUGH
+		case 'string':
+			e.append(thing)
+			break
+		case 'function':
+			let src = Function.prototype.toString.call(thing)
+			e.append(src)
+			break
+		case 'object':
 			if (thing instanceof Error) {
-				let s = this.stack()
-				let out = ""
-				let pf = null
-				for (let line of thing.stack.split("\n")) {
-					if (line=="") continue
-					let at = line.split("@")
-					if (at.length == 2) {
-						let file = at[1].replace(BASE_URL, "")
-						let star = at[0].split("*")
-						if (star.length==2) {
-							at[0] = star[1]
-						}
-						let func = pf
-						pf = at[0]
-						if (func!=null)
-							line = "↓"+func+"() - "+file //🙚❧🙘 //🙯⸽🙘
-						else
-							line = "💥 - "+file
-						if (star.length==2) {
-							out = ":<async "+star[0]+">\n"+out
-						}
-						out = line+"\n"+out
-					} else {
-						out = ":(\n"+thing.stack
-						break
-					}
-				}
-				s.textContent = out
+				let s = Draw.format_error(thing)
 				e.append(s)
-				thing = thing.toString()
+				e.append(thing.toString())
+				break
 			}
-			text = String(thing)
-		} catch (error) {
-			console.warn('error in print', error)
-			let type = Object.getPrototypeOf(thing)
-			if (type && type.constructor) {
+			let text = "{???}"
+			let pro = Object.getPrototypeOf(thing)
+			if (pro === Object.prototype) {
+				text = "{...}"
+			} else if (pro === null) {
+				text = "{null}"
+			} else if (pro && pro.constructor) {
 				let c = type.constructor
-				if (c && c.name && typeof c.name == 'string')
-					text = `<${cname}>`
+				if (c && c.name && 'string'==typeof c.name)
+					text = `{new ${cname}}`
 			}
-		} finally {
 			e.append(text)
-			return e
 		}
-	}.bind({message:𐀶`<div class='debugMessage pre'>`, stack:𐀶`<pre>`}),
+		return e
+	}.bind({message:𐀶`<div class='debugMessage pre'>`}),
 	
 	// used by activity
 	//📥 user‹User›

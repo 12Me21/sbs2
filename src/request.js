@@ -138,9 +138,12 @@ ${resp}`)
 	}
 }
 
+
+
 const Req = { // this stuff can all be static methods on ApiRequest maybe?
-	server: "qcs.shsbs.xyz/api",
-	//	server: "oboy.smilebasicsource.com/api",
+	server: OPTS.has('dev') ?
+		"oboy.smilebasicsource.com/api" : "qcs.shsbs.xyz/api",
+	
 	get storage_key() {
 		return `token-${this.server}`
 	},
