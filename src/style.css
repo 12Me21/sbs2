@@ -119,7 +119,7 @@ button {
 @media (hover: none) {
 	button:hover {
 		animation-name: fake-hover;
-		animation-duration: 0.5s;
+		animation-duration: 2s;
 	}
 	button:active {
 		animation-name: none;
