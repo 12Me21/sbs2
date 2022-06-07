@@ -11,11 +11,23 @@ class ActivityItem {
 		this.page_elem = this.elem.firstChild
 		this.time_elem = this.elem.lastChild.firstChild
 		Draw.update_activity_page(this)
-		Act.container.prepend(this.elem)
+		this.top()
 	}
 	top() {
-		if (this.elem.previousSibling)
-			Act.container.prepend(this.elem)
+		let first = Act.container.firstElementChild
+		if (first == this.elem)
+			return
+		Act.container.prepend(this.elem)
+		if (!first) {
+			this.elem.setAttribute('tabindex', 0)
+			return
+		}
+		if (document.activeElement == first)
+			return
+		if (first.getAttribute('tabindex')==0) {
+			first.setAttribute('tabindex', -1)
+			this.elem.setAttribute('tabindex', 0)
+		}
 	}
 	redraw_time() {
 		this.time_elem.textContent = Draw.time_ago_string(this.date)
@@ -61,11 +73,11 @@ ActivityItem.handle = function(map, pid, content, uid, user, date) {
 	item.update_user(uid, user[~uid], date)
 }
 ActivityItem.HTML = 𐀶`
-<a class='activity-page'>
+<a class='activity-page' role=row tabindex=-1>
 	<div class='bar rem1-5 ellipsis'></div>
 	<div class='bar rem1-5 activity-page-bottom' 🀰>
 		<time class='time-ago ellipsis'></time>
-		<activity-users 𖧠>
+		<activity-users aria-orientation=horizontal 𖧠>
 `
 
 // make a class for activity list
@@ -105,6 +117,7 @@ Act = singleton({
 	},
 	
 	init() {
+		this.container.setAttribute('role', 'treegrid')
 		do_when_ready(()=>{
 			$sidebarActivity.fill(this.container)
 			this.refresh_time_interval()

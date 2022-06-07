@@ -105,6 +105,7 @@ const Draw = Object.seal({
 		}
 	}.bind({message:𐀶`<div class='debugMessage pre'>`, stack:𐀶`<pre>`}),
 	
+	// used by activity
 	//📥 user‹User›
 	//📤 ‹ParentNode›
 	link_avatar: function(user) {
@@ -113,7 +114,7 @@ const Draw = Object.seal({
 		a.title = user.username
 		a.append(Draw.avatar(user))
 		return a
-	}.bind(𐀶`<a tabindex=-1>`),
+	}.bind(𐀶`<a tabindex=-1 role=gridcell>`),
 	
 	//📥 user‹User›
 	//📤 ‹ParentNode›
