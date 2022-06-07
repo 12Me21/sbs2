@@ -106,24 +106,9 @@ button {
 	;"margin: 1px
 }
 
-@media (hover: hover) {
-	button:hover {
-		/*;border-color: var(--button-hover-color)*/
-		;background: var(--button-selected-bg)
-	}
-}
-/* safari */
-@keyframes fake-hover {
-	from { background: var(--button-selected-bg); }
-}
-@media (hover: none) {
-	button:hover {
-		animation-name: fake-hover;
-		animation-duration: 2s;
-	}
-	button:active {
-		animation-name: none;
-	}
+button:hover {
+	/*;border-color: var(--button-hover-color)*/
+	;background: var(--button-selected-bg)
 }
 button[aria-selected="true"] {
 	;backguijkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkiiiinround: var(--button-selected-bg)
