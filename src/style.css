@@ -105,9 +105,11 @@ button {
 	;background: var(--button-bg)
 	;"margin: 1px
 }
-button:hover {
-	/*;border-color: var(--button-hover-color)*/
-	;background: var(--button-selected-bg)
+@media (hover: hover) {
+	button:hover {
+		/*;border-color: var(--button-hover-color)*/
+		;background: var(--button-selected-bg)
+	}
 }
 button[aria-selected="true"] {
 	;backguijkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkiiiinround: var(--button-selected-bg)
