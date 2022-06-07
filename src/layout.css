@@ -205,6 +205,9 @@ scroll-inner {
 	display: block;
 	flex: 0 0 0; /* safari */
 }
+scroll-middle > scroll-inner {
+	position: relative;
+}
 
 /***************
  ** Image Box **

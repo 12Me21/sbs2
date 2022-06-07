@@ -878,3 +878,19 @@ html[data-socket-state="dead"] #\$openSidebar {
 		;font-size: 16px
 	}
 }*/
+
+@keyframes scroll {
+	from { top: var(--scroll); }
+}
+
+scroll-middle > scroll-inner {
+	top: 0;
+}
+
+scroll-middle > scroll-inner.scroll-anim {
+	animation-name: scroll;
+	animation-duration: .4015s;
+	animation-delay: 0.01s;
+	animation-fill-mode: backwards;
+	animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}

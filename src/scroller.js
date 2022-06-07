@@ -67,9 +67,6 @@ class Scroller {
 		this.outer.append(this.middle)
 		
 		this.anim_type = Scroller.anim_type
-		if (this.anim_type==2) {
-			this.animation = this.new_animation()
-		}
 		this.anim_id = null
 		this.anim_pos = 0
 		
@@ -88,16 +85,6 @@ class Scroller {
 		})
 		
 		Object.seal(this)
-	}
-	new_animation() {
-		return new Animation(new KeyframeEffect(
-			this.inner,
-			[
-				{transform: "translateY(var(--scroll))"},
-				{transform: "initial"},
-			],
-			{duration:401.5, fill:'backwards', composite:'replace', easing:'cubic-bezier(0.16, 1, 0.3, 1)'/*, delay:10*/}
-		))
 	}
 	scroll_height() {
 		return this.inner.getBoundingClientRect().height
@@ -135,9 +122,11 @@ class Scroller {
 		if (Math.abs(dist) <= 1)
 			return
 		if (this.anim_type==2) {
-			this.animation.cancel()
+			//let d = parseFloat(getComputedStyle(this.inner).top)
+			this.inner.classList.remove('scroll-anim')
 			this.inner.style.setProperty('--scroll', dist+"px")
-			this.animation.play()
+			this.inner.scrollTop
+			this.inner.classList.add('scroll-anim')
 		} else if (this.anim_type==1) {
 			window.cancelAnimationFrame(this.anim_id)
 			this.anim_id = null
@@ -146,7 +135,7 @@ class Scroller {
 	}
 	cancel_animation() {
 		if (this.anim_type==2) {
-			this.animation.cancel()
+			this.inner.classList.remove('scroll-anim')
 		} else if (this.anim_type==1) {
 			if (this.anim_id != null) {
 				window.cancelAnimationFrame(this.anim_id)
@@ -205,8 +194,6 @@ class Scroller {
 }
 Scroller.track_height = new ResizeTracker('height')
 Scroller.anim_type = 2
-if ('function'==typeof Animation)
-	Scroller.anim_type = 1
 //Object.seal(Scroller)
 //Object.seal(Scroller.prototype)
 
