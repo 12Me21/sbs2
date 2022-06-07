@@ -105,10 +105,24 @@ button {
 	;background: var(--button-bg)
 	;"margin: 1px
 }
+
 @media (hover: hover) {
 	button:hover {
 		/*;border-color: var(--button-hover-color)*/
 		;background: var(--button-selected-bg)
+	}
+}
+/* safari */
+@keyframes fake-hover {
+	from { background: var(--button-selected-bg); }
+}
+@media (hover: none) {
+	button:hover {
+		animation-name: fake-hover;
+		animation-duration: 0.5s;
+	}
+	button:active {
+		animation-name: none;
 	}
 }
 button[aria-selected="true"] {
