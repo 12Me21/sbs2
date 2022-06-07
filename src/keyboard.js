@@ -13,6 +13,7 @@ function switch_tab(next, no_focus) {
 		else
 			tab.setAttribute('tabindex', -1)
 	}
+	
 	if (!no_focus)
 		next.focus()
 }
