@@ -159,7 +159,7 @@ let Sidebar = Object.seal({
 			let btn = tab.btn = button_template()
 			btn.id = "sidebar-tab-"+tab.name
 			btn.setAttribute('aria-controls', tab.elem.id)
-			btn.setAttribute('tabindex', "-1")
+			btn.tabIndex = -1
 			btn.dataset.name = tab.name
 			btn.onclick = e=>{
 				switch_tab(btn)

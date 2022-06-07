@@ -18,16 +18,12 @@ class ActivityItem {
 		if (first == this.elem)
 			return
 		Act.container.prepend(this.elem)
-		if (!first) {
-			this.elem.setAttribute('tabindex', 0)
+		if (Act.container.contains(document.activeElement))
 			return
-		}
-		if (document.activeElement == first)
-			return
-		if (first.getAttribute('tabindex')==0) {
-			first.setAttribute('tabindex', -1)
-			this.elem.setAttribute('tabindex', 0)
-		}
+		let hole = Act.container.querySelector(`[tabindex="0"]`)
+		if (hole)
+			hole.tabIndex = -1
+		this.elem.tabIndex = 0
 	}
 	redraw_time() {
 		this.time_elem.textContent = Draw.time_ago_string(this.date)
