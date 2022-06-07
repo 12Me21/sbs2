@@ -392,6 +392,7 @@ sidebar-panel {
 	background: var(--T-bg);
 }
 /* this element isn't sized based on contents */
+/* WRONG: sometimes it is, in the cross axis! */
 [𖧠] {
 	contain: strict;
 }

@@ -62,24 +62,13 @@ h1 {
 
 /**********/
 
-textarea {
-	;max-width: 100%
-	;border: 2px solid #00C8B4
-	;border-radius: 2px
-	;box-shadow: 0.1rem 0.2rem 0.3rem -0.2rem rgba(13,13,13,0.5)
-	;font: var(--T-font)
-	;font-size: 0.8em
-	;color: var(--T-color)
-	;background: var(--T-bg)
-	;white-space: break-spaces; /* optional */
-}
-
 sup {vertical-align: super;}
 sub {vertical-align: sub;}
 
 .avatar {
 	;border-radius: 3px
 	;background: var(--T-avatar-bg)
+	;contain: none /* so the :focus outline will appear, even though the <a> is small */
 }
 
 time {
@@ -109,7 +98,7 @@ button {
 	;font-size: 0.8em
 	;line-height: normal !important
 	
-	;border: 1px solid var(--T-button-border-color)
+	;border: var(--T-button-border)
 	;border-radius: 0px
 	;padding: 0 0.5rem
 	
@@ -664,11 +653,9 @@ html:not(.f-fileSelected) .fileSelected {
 
 input, output, select {
 	;font-size: 0.9em
-	;border-width: 2px
-	;border-style: solid
-	;border-color: var(--input-border-color)
-	;border-radius: 1px
 	;background-color: var(--T-bg)
+	;border: 2px solid var(--T-textarea-border-color)
+	;border-radius: 1px
 }
 input, select { /* this is old & probably not needed */
 	;min-width: 0
@@ -677,10 +664,15 @@ input, select { /* this is old & probably not needed */
 input, select, button, input::placeholder {
 	;color: var(--T-color)
 }
+:focus {
+	outline: var(--T-focus-outline);
+	outline-offset: -3px;
+	border-color: transparent !important; /*gosh..*/
+}
 
 input::placeholder {
 	;font-style: italic
-	;color: rgba(128,128,128,0.6)
+	;color: #80808099
 	;padding-left: 0.3rem
 }
 input:invalid {
@@ -706,8 +698,20 @@ input:invalid {
 	;border: 1px solid black
 }
 
+textarea {
+	;max-width: 100%
+	;border: 2px solid var(--T-textarea-border-color)
+	;border-radius: 2px
+	;box-shadow: 0.1rem 0.2rem 0.3rem -0.2rem #0D0D0D80
+	;font: var(--T-font)
+	;font-size: 0.8em
+	;color: var(--T-color)
+	;background: var(--T-bg)
+	;white-space: break-spaces; /* optional */
+}
+
 textarea-container {
-	;border: 2px solid #00C8B4
+	;border: 2px solid var(--T-textarea-border-color)
 	;padding: 5px
 	;background: var(--T-bg)
 }
@@ -893,4 +897,11 @@ scroll-middle > scroll-inner.scroll-anim {
 	animation-delay: 0.01s;
 	animation-fill-mode: backwards;
 	animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.M-spoiler-label {
+	contain: none; /* the focus outline wasnt showing */
+}
+.M-spoiler-label:focus {
+	border-color: var(--T-box-bg);
 }

@@ -171,17 +171,19 @@ View.add_view('page', {
 	read_input(old) {
 		let values = old ? old.values : {}
 		
-		if ($chatMarkupSelect.checked)
-			values.m = Settings.values.chat_markup
-		else
-			values.m = 'plaintext'
-		if (!old) {
+		if (old) {
+			if ($chatMarkupSelect.value)
+				values.m = $chatMarkupSelect.value
+			else
+				delete values.m
+		} else {
 			if (Req.me)
 				values.a = Req.me.avatar
 			if (Settings.values.nickname)
 				values.n = Entity.filter_nickname(Settings.values.nickname)
 			if (Settings.values.big_avatar=='on' && Settings.values.big_avatar_id)
 				values.big = Settings.values.big_avatar_id
+			values.m = Settings.values.chat_markup
 		}
 		
 		return {
@@ -197,7 +199,10 @@ View.add_view('page', {
 		else
 			document.execCommand('delete')
 		this.textarea_resize()
-		$chatMarkupSelect.checked = data.values.m == Settings.values.chat_markup
+		let markup = data.values.m
+		if ('string'!=typeof markup)
+			markup = ""
+		$chatMarkupSelect.value = markup
 	},
 
 	pre_edit: null,

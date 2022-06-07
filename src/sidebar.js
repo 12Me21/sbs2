@@ -9,13 +9,9 @@ let Sidebar = Object.seal({
 	file_upload_form: null,
 	
 	select_tab(name) {
-		for (let tab of this.sidebar_tabs) {
-			let select = name==tab.name
-			tab.btn.setAttribute('aria-selected', select)
-			tab.elem.classList.toggle('shown', select)
-			if (select)
-				tab.onswitch && tab.onswitch()
-		}
+		let tab = this.sidebar_tabs.find(tab=>tab.name==name)
+		if (tab)
+			switch_tab(tab.btn, true)
 	},
 	
 	onload() {
@@ -140,20 +136,24 @@ let Sidebar = Object.seal({
 		let button_template = 𐀶`<button role=tab aria-selected=false>`
 		
 		for (let tab of this.sidebar_tabs) {
-			tab.elem.setAttribute('role', "tabpanel")
-			tab.elem.setAttribute('aria-labelledby', `sidebar-tab-${tab.name}`)
-			// todo: tabs need like, label? title name thing 
-			tab.btn = button_template()
-			tab.btn.id = "sidebar-tab-"+tab.name
-			tab.btn.setAttribute('aria-controls', tab.elem.id)
-			tab.btn.dataset.name = tab.name
-			tab.btn.onclick = e=>{
-				this.select_tab(e.currentTarget.dataset.name)
+			let btn = tab.btn = button_template()
+			btn.id = "sidebar-tab-"+tab.name
+			btn.setAttribute('aria-controls', tab.elem.id)
+			btn.setAttribute('tabindex', "-1")
+			btn.dataset.name = tab.name
+			btn.onclick = e=>{
+				switch_tab(btn)
+				if (tab.onswitch)
+					tab.onswitch()
 			}
-			tab.btn.append(tab.label)
+			btn.append(tab.label)
 			if (tab.accesskey)
-				tab.btn.setAttribute('accesskey', tab.accesskey)
-			$sidebar_tabs.append(tab.btn)
+				btn.setAttribute('accesskey', tab.accesskey)
+			$sidebar_tabs.append(btn)
+			
+			tab.elem.setAttribute('role', "tabpanel")
+			//tab.elem.setAttribute('tabindex', "0")
+			tab.elem.setAttribute('aria-labelledby', btn.id)
 		}
 		
 		if (Req.auth)

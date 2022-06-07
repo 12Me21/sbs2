@@ -52,7 +52,10 @@ html,
 	--button-bg: linear-gradient(#EEE, #CCC);
 	--button-active-bg: linear-gradient(#DDD, #EEE);
 	--button-selected-bg: linear-gradient(#888, #AAA);
-	--T-button-border-color: goldenrod;
+	
+	--T-button-border: 1px solid goldenrod;
+	--T-textarea-border-color: #00C8B4;
+	--T-focus-outline: #F00 dashed 2px;
 }
 
 /* dark theme */
@@ -96,10 +99,13 @@ html,
 	--input-border-color: #444 #555 #555 #444;
 	
 	--button-hover-color: #59E;
-	--button-bg: linear-gradient(#048, #035);
+	--button-bg: linear-gradient(#048, #026);
 	--button-active-bg: linear-gradient(#047, #047);
 	--button-selected-bg: linear-gradient(#048, #07A);
-	--T-button-border-color: #00008B;
+	
+	--T-button-border: 1px solid #00325a;
+	--T-textarea-border-color: #0064B4;
+	--T-focus-outline: #D00 dashed 2px;
 }
 
 [data-theme="light"] [data-subtheme~="header-dark"] {

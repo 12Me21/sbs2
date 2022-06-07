@@ -63,7 +63,7 @@ ActivityItem.handle = function(map, pid, content, uid, user, date) {
 ActivityItem.HTML = 𐀶`
 <a class='activity-page'>
 	<div class='bar rem1-5 ellipsis'></div>
-	<div class='bar rem1-5 activity-page-bottom'>
+	<div class='bar rem1-5 activity-page-bottom' 🀰>
 		<time class='time-ago ellipsis'></time>
 		<activity-users 𖧠>
 `

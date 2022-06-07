@@ -113,7 +113,7 @@ const Draw = Object.seal({
 		a.title = user.username
 		a.append(Draw.avatar(user))
 		return a
-	}.bind(𐀶`<a>`),
+	}.bind(𐀶`<a tabindex=-1>`),
 	
 	//📥 user‹User›
 	//📤 ‹ParentNode›
@@ -169,7 +169,7 @@ const Draw = Object.seal({
 		//if (status.status == "idle")
 		//	e.classList.add('status-idle')
 		return e
-	}.bind(𐀶`<a><img class='item avatar' width=100 height=100 alt="">`),
+	}.bind(𐀶`<a tabindex=-1><img class='item avatar' width=100 height=100 alt="">`),
 	
 	//📥 comment‹Message›
 	//📤 ‹ParentNode›
@@ -598,7 +598,7 @@ const Draw = Object.seal({
 		d.append(comment.text.replace(/\n/g, "  "))
 		//entity_title_link(comment.createUser),
 		return d
-	}.bind(𐀶`<div class='bar rem1-5 sidebarComment ellipsis'><a><img class='item icon avatar' width=100 height=100><span class='textItem entity-title pre'></span></a>: </div>`),
+	}.bind(𐀶`<div class='bar rem1-5 sidebarComment ellipsis'><a tabindex=-1><img class='item icon avatar' width=100 height=100><span class='textItem entity-title pre'></span></a>: </div>`),
 	
 	//todo:
 	sidebarPageLabel(content) {

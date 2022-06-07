@@ -116,6 +116,7 @@
 <script src=src/request.js></script>
 <script src=src/socket.js></script>
 
+<script src=src/keyboard.js></script>
 <script src=src/draw.js></script>
 <script src=src/input.js></script>
 
@@ -200,13 +201,16 @@
 		<div data-slide=page id=$chatContainer 🁢>
 			<div 𖧠 id=$chatPaneBox 📺></div>
 			<div class='inputPane loggedIn' 🀰>
-				<button class='showWhenEdit' id=$chatCancelEdit>Cancel Edit</button>
+				<div class='showWhenEdit' 🁢>
+					<input id=$chatMarkupSelect placeholder="markup" style="width:50px;">
+					<button 𖧠 style="contain: paint;" id=$chatCancelEdit>Cancel Edit</button>
+				</div>
 				<textarea-container 𖧠>
 					<div id=$chatTextareaWidth></div>
 					<textarea class='chatTextarea' id=$chatTextarea accesskey="z"></textarea>
 				</textarea-container>
 				<div 🁢>
-					<span class='no-select'>Markup:<input type=checkbox checked autocomplete=off id=$chatMarkupSelect></span>
+					(temp)
 					<button 𖧠 id=$chatSendButton>Send</button>
 				</div>
 			</div>
@@ -223,7 +227,7 @@
 		<button class='closeSidebar' id=$closeSidebar>Close Sidebar</button>
 		<div class='userlist bar rem1-5' id=$sidebarUserList></div>
 		<!--<span id=$longPollStatus></span>-->
-		<tab-list id=$sidebar_tabs role="tablist" aria-label="sidebar tab"></tab-list>
+		<tab-list id=$sidebar_tabs role="tablist" aria-label="sidebar tabs"></tab-list>
 		<div id=$sidebarTop class='sized' 📺>
 			<sidebar-panel id=$sidebarActivityPanel>
 				<scroll-outer id=$sidebarActivity></scroll-outer>
