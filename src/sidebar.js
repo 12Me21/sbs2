@@ -273,6 +273,15 @@ let Sidebar = Object.seal({
 	},
 	
 	got_file(file) {
+		if (file.type=='image/webp')
+			return this.convert_image(file, 0.7, x=>{
+				if (!x) {
+					print('image conversion failed!')
+					return
+				}
+				this.got_file(x)
+			})
+		
 		$file_cancel.hidden = false
 		$file_upload.hidden = false
 		this.file_upload_form.elem.hidden = false
@@ -349,6 +358,28 @@ let Sidebar = Object.seal({
 			this.message_count--
 		}
 	},
+	
+	convert_image(file, quality, callback) {
+		let img = new Image()
+		img.onload = e=>{
+			let canvas = document.createElement('canvas')
+			canvas.width = img.width
+			canvas.height = img.height
+			let c2d = canvas.getContext('2d')
+			c2d.drawImage(img, 0, 0)
+			URL.revokeObjectURL(img.src)
+			let name = file.name
+			file = null
+			let format = quality!=null ? 'jpeg' : 'png'
+			canvas.toBlob(x=>{
+				if (x)
+					x.name = name+"."+format
+				callback(x)
+			}, "image/"+format, quality)
+		}
+		img.onerror = e=>{callback(null)}
+		img.src = URL.createObjectURL(file)
+	}
 	
 })
 
