@@ -172,7 +172,7 @@ let Sidebar = Object.seal({
 			$sidebar_tabs.append(btn)
 			
 			tab.elem.setAttribute('role', "tabpanel")
-			//tab.elem.setAttribute('tabindex', "0")
+			tab.elem.tabIndex = -1 // most of these elements scroll but dont need focus since they have other focusable items in them
 			tab.elem.setAttribute('aria-labelledby', btn.id)
 		}
 		
@@ -198,10 +198,12 @@ let Sidebar = Object.seal({
 				let first = true
 				for (let item of resp.content) {
 					let bar = Draw.content_label(item, true)
+					bar.setAttribute('role', 'listitem')
 					$searchResults.append(bar)
 					if (first)
 						bar.focus()
 					first=false
+					bar.tabIndex = first ? 0 : -1
 				}
 			})
 		}

@@ -733,8 +733,9 @@ textarea-container > textarea {
 	;border-radius: 0
 }
 textarea-container > textarea:focus {
-	;outline: 2px inset gray
-	;outline-offset: 3px
+	outline: 5px solid #878;
+	outline-offset: 3px;
+	border-radius: 3px;
 }
 textarea-container, textarea-container > textarea {
 	;max-height: 25vh

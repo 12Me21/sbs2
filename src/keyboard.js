@@ -19,7 +19,7 @@ document.addEventListener('focusout', e=>{
 	let new_focus = e.relatedTarget
 	if (!focused) return
 	let role = focused.getAttribute('role')
-	if ('tab'==role || 'row'==role || 'gridcell'==role) {
+	if ('tab'==role || 'row'==role || 'gridcell'==role || 'listitem'==role) {
 		if (new_focus && new_focus.parentNode == focused.parentNode) {
 			new_focus.tabIndex = 0
 			focused.tabIndex = -1
@@ -60,6 +60,13 @@ document.addEventListener('keydown', e=>{
 		if ('ArrowRight'==e.key) {
 			try_focus(focused.querySelector(`[role="gridcell"]`))
 		} else if ('ArrowUp'==e.key)
+			focus_prev(focused)
+		else if ('ArrowDown'==e.key)
+			focus_next(focused)
+		else
+			return
+	} else if ('listitem'==role) {
+		if ('ArrowUp'==e.key)
 			focus_prev(focused)
 		else if ('ArrowDown'==e.key)
 			focus_next(focused)
