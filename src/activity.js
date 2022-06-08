@@ -14,13 +14,13 @@ class ActivityItem {
 		this.top()
 	}
 	top() {
-		let first = Act.container.firstElementChild
+		let first = Act.anchor.nextSibling
 		if (first == this.elem)
 			return
-		Act.container.prepend(this.elem)
+		Act.anchor.after(this.elem)
 		if (Act.container.contains(document.activeElement))
 			return
-		let hole = Act.container.querySelector(`[tabindex="0"]`)
+		let hole = Act.container.querySelector(`.activity-page[tabindex="0"]`)
 		if (hole)
 			hole.tabIndex = -1
 		this.elem.tabIndex = 0
@@ -86,6 +86,7 @@ Act = singleton({
 	items: {},
 	
 	container: document.createElement('scroll-inner'),
+	anchor: document.createElement('div'),
 	
 	pull_recent() {
 		let start = new Date()
@@ -114,6 +115,11 @@ Act = singleton({
 	
 	init() {
 		this.container.setAttribute('role', 'treegrid')
+		//this.anchor.tabIndex = 0 
+		// TODO: when focus is outside the activity list, only the anchor will have tabindex=0
+		// then, when the anchor is focused, it will redirect focus to the first page, and set its own tabindex to -1
+		// when focus exits the list, the anchor's tabindex is set back to 0.
+		this.container.prepend(this.anchor)
 		do_when_ready(()=>{
 			$sidebarActivity.fill(this.container)
 			this.refresh_time_interval()

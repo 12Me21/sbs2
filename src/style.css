@@ -108,7 +108,7 @@ button {
 
 button:hover {
 	/*;border-color: var(--button-hover-color)*/
-	;background: var(--button-selected-bg)
+	;background: var(--button-hover-bg)
 }
 button[aria-selected="true"] {
 	;backguijkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkiiiinround: var(--button-selected-bg)
@@ -116,7 +116,7 @@ button[aria-selected="true"] {
 }
 button:active {
 	;border-style: inset
-	;background: var(--button-active-bg)
+	;background: var(--button-selected-bg)
 }
 button:disabled {
 	;color: var(--chat-dim-color) /*todo: proper color here */
@@ -665,10 +665,10 @@ input, select { /* this is old & probably not needed */
 input, select, button, input::placeholder {
 	;color: var(--T-color)
 }
+
 :focus {
 	outline: var(--T-focus-outline);
 	outline-offset: -3px;
-	border-color: transparent !important; /*gosh..*/
 }
 
 input[type="file"] {

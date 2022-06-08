@@ -50,7 +50,7 @@ html,
 	/* buttons */
 	--button-hover-color: #59E;
 	--button-bg: linear-gradient(#EEE, #CCC);
-	--button-active-bg: linear-gradient(#DDD, #EEE);
+	--button-hover-bg: linear-gradient(#DDD, #EEE);
 	--button-selected-bg: linear-gradient(#888, #AAA);
 	
 	--T-button-border: 1px solid goldenrod;
@@ -99,15 +99,15 @@ html,
 	--input-border-color: #444 #555 #555 #444;
 	
 	--button-hover-color: #59E;
-	--button-bg: linear-gradient(#048, #026);
-	--button-active-bg: linear-gradient(#047, #047);
-	--button-selected-bg: linear-gradient(#048, #07A);
+	--button-bg: linear-gradient(#048, #037, #037, #026);
+	--button-hover-bg: linear-gradient(#037, #037);
+	--button-selected-bg: linear-gradient(#013, #026);
 	
 	--T-button-border: 1px solid #00325a;
 	--T-textarea-border-color: #0064B4;
 	--T-focus-outline: #D00 dashed 2px;
 }
-
+/* unused */
 [data-theme="light"] [data-subtheme~="header-dark"] {
 	--T-color: #FFF;
 	--T-link-color: #DEF;

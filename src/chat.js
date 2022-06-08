@@ -428,7 +428,7 @@ ChatRoom.HTML = {
 	</scroll-outer>
 	<resize-handle></resize-handle>
 	<div class='bar rem2-3 userlist'>...</div>
-	<scroll-outer 𖧠>
+	<scroll-outer tabindex=0 𖧠>
 		<scroll-inner class='chatScroller'>
 			<div>
 				<button-container><button>load older messages</button></button-container>

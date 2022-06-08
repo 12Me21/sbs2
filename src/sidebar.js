@@ -172,7 +172,7 @@ let Sidebar = Object.seal({
 			$sidebar_tabs.append(btn)
 			
 			tab.elem.setAttribute('role', "tabpanel")
-			tab.elem.tabIndex = -1 // most of these elements scroll but dont need focus since they have other focusable items in them
+			//tab.elem.tabIndex = -1
 			tab.elem.setAttribute('aria-labelledby', btn.id)
 		}
 		

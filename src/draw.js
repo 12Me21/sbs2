@@ -256,7 +256,7 @@ const Draw = Object.seal({
 		e.dataset.time = comment.createDate2.getTime()
 		Markup.convert_lang(comment.text, comment.values.m, e, {intersection_observer: Draw.observer})
 		return e
-	}.bind(𐀶`<message-part>`),
+	}.bind(𐀶`<message-part role=listitem tabindex=-1>`),
 	
 	//📥 date‹Date›
 	//📤 ‹String›

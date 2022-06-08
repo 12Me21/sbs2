@@ -14,16 +14,20 @@ function switch_tab(next, no_focus) {
 		next.focus()
 }
 
+let current_live = null
+
 document.addEventListener('focusout', e=>{
 	let focused = e.target
 	let new_focus = e.relatedTarget
 	if (!focused) return
 	let role = focused.getAttribute('role')
 	if ('tab'==role || 'row'==role || 'gridcell'==role || 'listitem'==role) {
-		if (new_focus && new_focus.parentNode == focused.parentNode) {
+		if (new_focus && new_focus.parentNode == parent) {
 			new_focus.tabIndex = 0
 			focused.tabIndex = -1
-		} else if ('gridcell'==role)
+			return
+		}
+		if ('gridcell'==role)
 			focused.tabIndex = -1
 	}
 })
