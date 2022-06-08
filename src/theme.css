@@ -105,7 +105,7 @@ html,
 	
 	--T-button-border: 1px solid #00325a;
 	--T-textarea-border-color: #0064B4;
-	--T-focus-outline: #D00 dashed 2px;
+	--T-focus-outline: #B00 dashed 2px;
 }
 /* unused */
 [data-theme="light"] [data-subtheme~="header-dark"] {

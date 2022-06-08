@@ -665,10 +665,51 @@ input, select { /* this is old & probably not needed */
 input, select, button, input::placeholder {
 	;color: var(--T-color)
 }
+/*@keyframes focus-switch {
+	from {
+		outline-offset: -10px;
+	}
+}
 
 :focus {
 	outline: var(--T-focus-outline);
 	outline-offset: -3px;
+	animation-name: focus-switch;
+	animation-duration: 0.5s;
+	animation-timing-function: linear;
+}*/
+
+/*
+@keyframes focus-switch {
+	from {
+		outline-offset: -4px;
+outline-width: 3px;
+	}
+}
+:focus {
+	outline: var(--T-focus-outline);
+outline-width: 1px;
+	outline-offset: -1px;
+	animation-name: focus-switch;
+	animation-duration: 0.1s;
+	animation-timing-function: linear;
+outline-style: solid;
+}*/
+
+@keyframes focus-switch {
+	from {
+		outline-offset: -5px;
+		outline-width: 5px;
+	}
+}
+:focus {
+	outline: var(--T-focus-outline);
+	outline-width: 2px;
+	outline-offset: -2px;
+	animation-name: focus-switch;
+	animation-duration: 0.1s;
+	animation-timing-function: linear;
+	outline-style: solid;
 }
 
 input[type="file"] {
@@ -736,6 +777,7 @@ textarea-container > textarea:focus {
 	outline: 5px solid #878;
 	outline-offset: 3px;
 	border-radius: 3px;
+	animation-name: none;
 }
 textarea-container, textarea-container > textarea {
 	;max-height: 25vh
@@ -916,4 +958,9 @@ scroll-middle > scroll-inner.scroll-anim {
 }
 .M-spoiler-label:focus {
 	border-color: var(--T-box-bg);
+}
+.Markup img:focus {
+	outline-offset: 0;
+	outline-width: 1px;
+	outline-style: dotted;
 }
