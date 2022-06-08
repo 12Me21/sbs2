@@ -231,7 +231,7 @@ class ChatRoom {
 		let inner = outer.firstChild
 		this.messages_outer = outer
 		this.scroll_inner = inner
-		this.list = new MessageList(inner.lastChild, this.id)
+		this.list = new MessageList(inner.lastChild.previousSibling, this.id)
 		this.list.elem.addEventListener('edit_message', e=>{
 			// todo: weakmap instead of this x_data field?
 			if (this.edit_callback)
@@ -428,13 +428,14 @@ ChatRoom.HTML = {
 	</scroll-outer>
 	<resize-handle></resize-handle>
 	<div class='bar rem2-3 userlist'>...</div>
-	<scroll-outer tabindex=0 𖧠>
-		<scroll-inner class='chatScroller'>
+	<scroll-outer 𖧠>
+		<scroll-inner>
 			<div>
 				<button-container><button>load older messages</button></button-container>
 				<label><input type=checkbox>disable limit</label>
 			</div>
 			<message-list></message-list>
+			<div class='chat-bottom' tabindex=0></div>
 		</scroll-inner>
 	</scroll-outer>
 </chat-pane>

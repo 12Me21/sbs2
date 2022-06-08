@@ -434,8 +434,8 @@ message-controls:hover + message-part {
 	;margin-bottom: 0.3rem
 }
 
-.chatScroller {
-	;padding-bottom: 0.9rem ;" increased to 0.9rem because we moved message-block padding to top of element
+.chat-bottom {
+	height: 0.9rem; /* increased to 0.9rem because we moved message-block padding to top of element */
 }
 
 /****************
