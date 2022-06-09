@@ -266,7 +266,10 @@
 			</sidebar-panel>
 			
 			<sidebar-panel id=$sidebarNavPanel>
-				<div class='ROW'><input class='FILL' id=$searchInput><button id=$searchButton class='item'>Search</button></div>
+				<div class='bar rem1-5 ROW'>
+					<input class='FILL item' id=$searchInput>
+					<button id=$searchButton class='item'>Search</button>
+				</div>
 				<div id=$searchResults role='list'></div>
 				<div id=$sidebarCategories></div>
 			</sidebar-panel>
@@ -276,7 +279,7 @@
 					<input type=file accept="image/png,image/jpeg,image/gif,image/bmp,image/webp,.png,.jpg,.jpeg,.gif,.bmp" id=$file_browse class='FILL item'>
 					<button id=$file_cancel class='item'>Cancel</button>
 					<button id=$file_url_insert class='item'>Insert</button>
-					<input readonly class='FILL' id=$file_url>
+					<input readonly class='FILL item' id=$file_url>
 					<button id=$file_done class='item'>Done</button>
 					<button id=$file_upload class='item'>Upload Image</button>
 				</div>
