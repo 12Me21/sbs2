@@ -960,6 +960,7 @@ scroll-middle > scroll-inner.scroll-anim {
 
 #\$localSettings > div > textarea {
 	width: 100%;
+	height: 5.2em;
 }
 
 #\$localSettings > div > label {
