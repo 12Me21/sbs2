@@ -103,6 +103,7 @@ button:hover {
 button[aria-selected="true"] {
 	;backguijkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkiiiinround: var(--button-selected-bg)
 	;background: var(--button-selected-bg)
+	;border-style: inset;
 }
 button:active {
 	;border-style: inset
@@ -111,6 +112,7 @@ button:active {
 button:disabled {
 	;color: var(--chat-dim-color) /*todo: proper color here */
 	;background: var(--bar-bg)
+	;border-style: solid;
 }
 
 /**********/
@@ -149,6 +151,9 @@ tab-list {
 	;display: flex
 	;flex-direction: row
 	;width: 100%
+	;border-bottom: 1px solid var(--T-border-color)
+	;border-top: 1px solid var(--T-border-color)
+	;background-color: var(--bar-bg) !important;
 }
 tab-list > button {
 	;flex-grow: 1
@@ -156,6 +161,16 @@ tab-list > button {
 	;height: 2rem
 	;padding: 0
 	;font-size: 1em
+	/*;border-top-left-radius: 5px;
+	;border-top-right-radius: 5px;*/
+	/*;border-style: solid;*/
+	;border-bottom-width: 0;
+}
+tab-list > button[aria-selected="true"] {
+	/*;border-style: inset;*/
+	;border-bottom-color: var(--bar-bg);
+	/*;border-top-left-radius: 3px;
+	;border-top-right-radius: 3px;*/
 }
 
 tab-list > button img.avatar {
@@ -240,7 +255,7 @@ sidebar-container {
 	;z-index: 30
 }
 #\$sidebar_tabs {
-	;box-shadow: var(--normal-shadow)
+	/*;box-shadow: var(--normal-shadow)*/
 	;z-index: 30
 }
 
