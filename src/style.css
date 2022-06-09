@@ -33,16 +33,11 @@ a[href], a[href]:visited {
 }
 a[href]:hover {
 	;color: var(--T-link-hover-color)
-	;"text-decoration: underline
-}
-a[href]:hover .entity-title ,
-a[href].entity-title:hover ,
-a[href][data-static-path]:hover {
 	;text-decoration: underline
 }
 /* todo: make a special link bar class for links that contain other elements and a class for which of those should be underlined */
 /* and make sure normal links are styled correctly too */
-a[href][data-static-path] ,
+
 .entity-title {
 	;font-weight: 500
 }
@@ -77,10 +72,6 @@ time {
 	;vertical-align: baseline
 }
 
-#\$categoryDescription.Markup { /* make sure this is before most things */
-	;padding: .75rem 1rem
-}
-
 .username {
 	;font-weight: bold
 	;line-height: 1.2
@@ -103,7 +94,6 @@ button {
 	;padding: 0 0.5rem
 	
 	;background: var(--button-bg)
-	;"margin: 1px
 }
 
 button:hover {
@@ -173,10 +163,6 @@ tab-list > button img.avatar {
 	;height: 100%
 }
 
-button[aria-selected="true"] {
-	;background-color: gray
-}
-
 /**********/
 
 /****************
@@ -196,14 +182,8 @@ button[aria-selected="true"] {
 	;filter: grayscale(1)
 }
 
-html.f-loading {
-	;"--databarbgcolor: var(--loading-invert-bg)
-}
 html.f-loading .loadBG {
 	;background: var(--loading-invert-bg)
-}
-html {
-	;"transition: --databarbgcolor 0.1s ease ;" I wish
 }
 .loadBG/*, resize-handle*/ {
 	;transition: background 0.1s ease
@@ -374,11 +354,6 @@ message-contents {
 	;contain: none ;" because of overlapping with avatar
 }
 
-message-block > img.avatar,
-message-block > .bigAvatar {
-	;"z-index: 2
-	;"pointer-events: none
-}
 message-part {
 	;overflow: visible
 	;display: block
