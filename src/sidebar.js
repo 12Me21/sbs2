@@ -72,6 +72,7 @@ let Sidebar = Object.seal({
 			else if (markup=='12y2')
 				url = "!"+url+"["+size+"]"
 			
+			Sidebar.close_fullscreen()
 			$chatTextarea.focus()
 			document.execCommand('insertText', false, url)
 		}
@@ -317,6 +318,10 @@ let Sidebar = Object.seal({
 	is_fullscreen() {
 		return window.matchMedia("(max-width: 700px)").matches
 	},
+	
+	close_fullscreen() {
+		View.flag('mobileSidebar', false)
+	}
 	
 	message_count: 0,
 	

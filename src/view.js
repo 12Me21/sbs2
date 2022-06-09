@@ -227,7 +227,7 @@ const View = ((u=NAMESPACE({
 				elem.classList.toggle('shown', list.split(",").includes(u.current_view.Name))
 		}
 		u.flag('viewReady', true)
-		u.flag('mobileSidebar', false) //bad (should be function on Sidebar)
+		Sidebar.close_fullscreen()
 		
 		Lp.flush_statuses(()=>{})
 		
