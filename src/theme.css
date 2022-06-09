@@ -103,7 +103,7 @@ html,
 	--button-hover-bg: linear-gradient(#037, #037);
 	--button-selected-bg: linear-gradient(#013, #026);
 	
-	--T-button-border: 1px solid #00325a;
+	--T-button-border: 2px outset #0064B4;
 	--T-textarea-border-color: #0064B4;
 	--T-focus-outline: #B00 dashed 2px;
 }

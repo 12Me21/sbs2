@@ -151,7 +151,7 @@ tab-list {
 	;display: flex
 	;flex-direction: row
 	;width: 100%
-	;border-bottom: 1px solid var(--T-border-color)
+	;border-bottom: 1px solid gray;
 	;border-top: 1px solid var(--T-border-color)
 	;background-color: var(--bar-bg) !important;
 }
