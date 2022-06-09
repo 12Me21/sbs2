@@ -261,7 +261,7 @@ const View = ((u=NAMESPACE({
 		document.addEventListener('touchmove', move)
 		
 		if (save) {
-			let s = Store.get(save)
+			let s = localStorage.getItem(save)
 			if (s) {
 				update_size(+s)
 				return
@@ -294,7 +294,7 @@ const View = ((u=NAMESPACE({
 			delete tab.dataset.dragging
 			held = false
 			if (save && size != null)
-				Store.set(save, size)
+				localStorage.setItem(save, size)
 		}
 		function update_size(px) {
 			size = Math.max(px, 0)

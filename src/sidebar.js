@@ -311,7 +311,7 @@ let Sidebar = Object.seal({
 			View.flag('mobileSidebar', !View.flags.mobileSidebar)
 		} else {
 			View.flag('sidebar', !View.flags.sidebar)
-			Store.set('sbs-sidebar', !!View.flags.sidebar)
+			localStorage.setItem('sbs-sidebar', !!View.flags.sidebar)
 		}
 	},
 	

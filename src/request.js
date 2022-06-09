@@ -188,7 +188,7 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 	
 	// logs the user out and clears the cached token
 	log_out() {
-		Store.remove(this.storage_key)
+		localStorage.removeItem(this.storage_key)
 		this.auth = null
 		Lp.stop()
 		window.alert("logged out")
@@ -201,7 +201,7 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 	// return: Boolean
 	try_load_auth() {
 		try {
-			this.auth = Store.get(this.storage_key)
+			this.auth = localStorage.getItem(this.storage_key)
 			if (!this.auth)
 				throw "no auth token in localstorage"
 			let data = JSON.parse(window.atob(this.auth.split(".")[1]))//yeah
@@ -218,7 +218,7 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 	},
 	
 	save_auth(token) {
-		Store.set(this.storage_key, token)
+		localStorage.setItem(this.storage_key, token)
 	},
 	
 	file_url(id, query) {

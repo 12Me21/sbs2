@@ -198,7 +198,7 @@ const Draw = Object.seal({
 		let author = comment.Author
 		
 		e.dataset.uid = comment.createUserId
-		e.dataset.merge = Entity.comment_merge_hash(comment)
+		e.dataset.merge = MessageList.prototype.merge_hash(comment) //nnn
 		
 		let avatar
 		if (author.bigAvatar) {

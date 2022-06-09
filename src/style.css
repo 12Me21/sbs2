@@ -108,6 +108,7 @@ button[aria-selected="true"] {
 button:active {
 	;border-style: inset
 	;background: var(--button-selected-bg)
+	/*;outline-offset: -1px;*/
 }
 button:disabled {
 	;color: var(--chat-dim-color) /*todo: proper color here */

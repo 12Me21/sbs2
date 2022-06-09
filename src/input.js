@@ -49,11 +49,10 @@ class Form {
 			this.inputs[name] = input
 			input.draw()
 			
-			let lc = body.createChild('div')
-			let label = lc.createChild('label')
+			let lc = body.child('div', 'label')
+			let label = lc.child('label')
 			label.htmlFor = input.html_id
 			label.textContent = opt.label+":"
-			lc.className += ' label'
 			input.elem.className += ' field'
 			if (opt.span) {
 				lc.className += ' wide'
@@ -312,7 +311,7 @@ const INPUTS = {
 				this.value = null
 				return
 			}
-			let [match, min, max] = /^(\d*)-(\d*)$/.rmatch(x)
+			let [match, min, max] = /^(\d*)-(\d*)$/.exec(x)
 			if (match) {
 				this.value = {
 					min: min ? Number(min) : null,
@@ -461,15 +460,14 @@ const INPUTS = {
 			this.input = Draw.user_selector()
 			let table = elem('table')
 			table.className += " permission-table"
-			let header = table.createChild('thead').createChild('tr')
-			header.createChild('th')
-			header.createChild('th')
-			header.createChild('th').textContent = "View"
-			header.createChild('th').textContent = "Reply"
-			header.createChild('th').textContent = "Edit"
-			header.createChild('th').textContent = "Delete"
-			this.body = table.createChild('tbody')
-			this.body.className += " permission-users"
+			let header = table.child('thead').child('tr')
+			header.child('th')
+			header.child('th')
+			header.child('th').textContent = "View"
+			header.child('th').textContent = "Reply"
+			header.child('th').textContent = "Edit"
+			header.child('th').textContent = "Delete"
+			this.body = table.child('tbody', 'permission-users')
 			
 			this.elem.append(table)
 			this.elem.append(this.input.elem)
@@ -533,11 +531,11 @@ const INPUTS = {
 		}
 		read() {
 			// we can't use the .valueAsNumber or .valueAsDate attributes because these read the times in utc
-			let [m1, year, month, day] = /(\d+)-(\d+)-(\d+)/.rmatch(this.input1.value)
+			let [m1, year, month, day] = /(\d+)-(\d+)-(\d+)/.exec(this.input1.value)
 			if (!m1) {
 				this.value = null
 			} else {
-				let [m2, hour, minute, second] = /(\d+):(\d+)(?::([\d.]+))?/.rmatch(this.input2.value)
+				let [m2, hour, minute, second] = /(\d+):(\d+)(?::([\d.]+))?/.exec(this.input2.value)
 				if (!m2)
 					hour = minute = second = 0
 				this.value = new Date(year, month-1, day, hour, minute, Math.floor(second || 0))

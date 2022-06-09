@@ -105,8 +105,6 @@ function map_date(obj, prop) {
 		obj[prop] = new Date(obj[prop])
 }
 
-//class Emap
-
 // functions for processing recieved entities/
 // DATA PROCESSOR
 Entity = singleton({
@@ -117,11 +115,6 @@ Entity = singleton({
 	],
 	has_perm(perms, uid, perm) {
 		return perms && perms[uid] && perms[uid].includes(perm)
-	},
-	
-	comment_merge_hash(comment) {
-		let user = comment.Author
-		return `${comment.contentId},${comment.createUserId},${user.avatar},${user.bigAvatar||""},${user.username} ${user.nickname || ""}`
 	},
 	
 	filter_nickname(name) {

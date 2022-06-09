@@ -5,12 +5,12 @@
 // ⚡ Remove all properties of `Object.prototype`
 // - first, create backups of useful functions:
 // firefox devtools uses this:
-window.hasOwnProperty = {}.hasOwnProperty
+window.hasOwnProperty = Object.prototype.hasOwnProperty
 // Object.prototype.toString.call -> Object.stringify
-Object.stringify = Function.prototype.call.bind({}.toString)
+Object.stringify = Function.prototype.call.bind(Object.prototype.toString)
 // polyfill: Object.hasOwn()
 if (!Object.hasOwn)
-	Object.hasOwn = Function.prototype.call.bind({}.hasOwnProperty)
+	Object.hasOwn = Function.prototype.call.bind(Object.prototype.hasOwnProperty)
 // everything, just in case
 Object.proto = Object.getOwnPropertyDescriptors(Object.prototype)
 
@@ -53,12 +53,6 @@ class FieldError extends Error {
 function Unhandled_Callback(err, ...x) {
 	console.error("Unhandled Callback\n", err, ...x)
 }
-
-// ⚡ Missing argument detector
-// use like: function heck(name=E.name) { ... } -- now `name` is required
-let E = new Proxy({}, {
-	get(t, name) { throw new ParamError(name) },
-})
 
 // ⚡ STRICT prototype - throws when accessing nonexistant fields
 function field_name(name) {
@@ -149,12 +143,6 @@ Node.prototype.fill = function(x) {
 // do not use replaceChildren itself, because it's relatively new
 // and was implemented incorrectly on safari at some point
 
-// custom
-Node.prototype.createChild = function(type) {
-	let elem = this.ownerDocument.createElement(type)
-	this.append(elem)
-	return elem
-}
 // type - tag name of element to create
 // classes (optional) - assigned to className
 Node.prototype.child = function(type, classes) {
@@ -165,36 +153,15 @@ Node.prototype.child = function(type, classes) {
 	return elem
 }
 
-//eval("\n".repeat(419)+'a=>{return;'+' '.repeat(58)+'return}')
-// same as JSON.parse, but returns `undefined` if it fails
-// (note that JSON can't encode `undefined`)
-JSON.safe_parse = function(json) { // should be function() not => yeah?
-	try {
-		return JSON.parse(json)
-	} catch (e) {
-		return undefined
-	}
-}
 // convert obj into a json Blob for xhr
 JSON.to_blob = function(obj) {
 	return new Blob([JSON.stringify(obj)], {type: "application/json;charset=UTF-8"})
-}
-
-let Store = {
-	set: localStorage.setItem.bind(localStorage),
-	get: localStorage.getItem.bind(localStorage),
-	remove: localStorage.removeItem.bind(localStorage),
 }
 
 // these are kinda bad, both based on Array.forEach() which is [value,key] while here [key,value] would make more sense.
 Object.for = (obj, callback)=>{
 	for (let [key, value] of Object.entries(obj))
 		callback(value, key, obj)
-}
-let FOR = Symbol('for')
-Object.prototype[FOR] = function(callback) {
-	for (let [key, value] of Object.entries(this))
-		callback(value, key, this)
 }
 
 // are we using this?
@@ -203,13 +170,6 @@ Object.map = (obj, callback)=>{
 	for (let [key, value] of Object.entries(obj))
 		ret[key] = callback(value, key, obj)
 	return ret
-}
-
-// this is just exec but safer i guess...
-RegExp.prototype.rmatch = function(str) {
-	if (typeof str != 'string')
-		throw new TypeError("RegExp.rmatch() expects string")
-	return String.prototype.match.call(str, this) || []
 }
 
 
