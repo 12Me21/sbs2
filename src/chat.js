@@ -436,13 +436,13 @@ ChatRoom.statuses = {}
 ChatRoom.status_users = {}
 ChatRoom.HTML = {
 	block: 𐀶`
-<chat-pane class='resize-box' 🁢>
+<chat-pane class='resize-box COL'>
 	<scroll-outer class='sized page-container'>
 		<div class='pageContents'></div>
 	</scroll-outer>
 	<resize-handle></resize-handle>
 	<div class='bar rem2-3 userlist'>...</div>
-	<scroll-outer 𖧠>
+	<scroll-outer class='FILL'>
 		<scroll-inner>
 			<div>
 				<button-container><button>load older messages</button></button-container>

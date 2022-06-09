@@ -44,8 +44,8 @@ let Lp = singleton({
 		//do_when_ready(x=>$socketPending.textContent = [...this.handlers.keys()].join(" "), 'socket-pending')
 	},
 	flush_statuses(callback) {
-		if (Req.uid == 10)
-			return
+		//if (Req.uid == 10)
+		//	return
 		this.request({type:'setuserstatus', data:this.status_queue}, ({x})=>{
 			this.status_queue = {}
 			callback()

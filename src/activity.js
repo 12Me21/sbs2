@@ -71,9 +71,9 @@ ActivityItem.handle = function(map, pid, content, uid, user, date) {
 ActivityItem.HTML = 𐀶`
 <a class='activity-page' role=row tabindex=-1>
 	<div class='bar rem1-5 ellipsis'></div>
-	<div class='bar rem1-5 activity-page-bottom' 🀰>
+	<div class='bar rem1-5 activity-page-bottom ROW'>
 		<time class='time-ago ellipsis'></time>
-		<activity-users aria-orientation=horizontal 𖧠>
+		<activity-users aria-orientation=horizontal class='FILL'>
 `
 
 // make a class for activity list

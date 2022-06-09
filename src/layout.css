@@ -64,19 +64,19 @@ html, body {
 /**********
  ** Flex **
  **********/
-[🁢] {
+.COL {
 	display: flex;
 	flex-direction: column;
 }
-[🀰] {
+.ROW {
 	display: flex;
 }
-[🁢] > *, [🀰] > * {
+.COL > *, .ROW > * {
 	flex-shrink: 0;
 }
-[🀰] > [𖧠] { min-width: 0; }
-[🁢] > [𖧠] { min-height: 0; }
-[𖧠] {
+.ROW > .FILL { min-width: 0; }
+.COL > .FILL { min-height: 0; }
+.FILL {
 	flex-grow: 1;
 	flex-shrink: 1;
 	flex-basis: 0;
@@ -246,18 +246,18 @@ but, then we can't add a border to the image
 /****************
  ** Slides Box **
  ****************/
-[📺] { /* idk about tv... channels */
+.SLIDES { /* idk about tv... channels */
 	display: block;
 	position: relative;
 	overflow: hidden;
 }
-[📺] > * {
+.SLIDES > * {
 	position: absolute;
 	width: 100%;
 	height: 100%;
 	overflow: auto;
 }
-[📺] > :not(.shown) {
+.SLIDES > :not(.shown) {
 	visibility: hidden;
 	content-visibility: hidden; /* not widely supported yet */
 	/* we use visibility:hidden instead of display:none so the element keeps its size/layout when hidden */
@@ -269,13 +269,7 @@ but, then we can't add a border to the image
 .resize-box {
 	--handle-width: 1.2em;
 }
-/* this is messy. we should share code between resize-box and flex.
-maybe have like,
-.Col - normal flex
-.Row - flex row ⿲ ⿰ 🔛 ⟷  ⿳ ⿱ 𑩄 ▢ 𑨚 ▥ 🚦 🁢 🁣 🀰 🀱 🀹 🁫 🚥 ⛿ ⭜ ⬬ ⬭ ⬯ ⬮
-.Col.resize - vert resize  🔺⧏ ⌄⌃ 🮰
-.Row.resize - horiz resize 🚩
-*/
+
 .resize-box > .sized {
 	flex-shrink: 1; /* ? */
 }
@@ -293,19 +287,19 @@ maybe have like,
 .resize-box > resize-handle[data-dragging] {
 	cursor: grabbing;
 }
-.resize-box[🁢] > resize-handle {
+.resize-box.COL > resize-handle {
 	height: var(--handle-width);
 	line-height: var(--handle-width);
 	cursor: ns-resize;
 }
-.resize-box[🀰] > resize-handle {
+.resize-box.ROW > resize-handle {
 	width: var(--handle-width);
 	cursor: ew-resize;
 }
-.resize-box[🁢] > resize-handle::before {
+.resize-box.COL > resize-handle::before {
 	content: "↕︎";
 }
-.resize-box[🀰] > resize-handle::before {
+.resize-box.ROW > resize-handle::before {
 	display: block;
 	content: "↔︎";
 	text-align: center;
@@ -385,16 +379,11 @@ td, th {  /* border renders outside */
 
 /* sized containers */
 .resize-box,
-[📺], [📺] > *,
+.SLIDES, .SLIDES > *,
 scroll-outer,
 sidebar-panel {
 	contain: strict;
 	background: var(--T-bg);
-}
-/* this element isn't sized based on contents */
-/* WRONG: sometimes it is, in the cross axis! */
-[𖧠] {
-	contain: strict;
 }
 
 /* their scrolling contents */

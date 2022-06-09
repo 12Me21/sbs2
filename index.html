@@ -1,4 +1,4 @@
-<!doctype HTML><html lang=en-QS><meta charset=utf-8>
+<!doctype html><html lang=en-QS><meta charset=utf-8>
 <title>SmileBASIC Source 2</title>
 
 <meta name=viewport content="width=device-width, initial-scale=1, height=device-height">
@@ -9,12 +9,40 @@
 <link rel=icon sizes=192x192 href=resource/iconbig.png> <!-- large -->
 <link rel=apple-touch-icon href=resource/iconbig.png> <!-- large 2 -->
 <link rel=image_src href=resource/iconbig.png> <!-- large 3 -->
-<meta name=color-scheme content="light dark">
-<meta name=theme-color content="#888"> <!-- mobile -->
+
+<noscript>
+	<style>
+		* { word-break: break-word; }
+		.shadow {
+			box-shadow: 0 1px 3px inset gray;
+		}
+		plaintext {
+			white-space: pre-wrap;
+			-moz-tab-size:3; tab-size:3;
+			padding: 123px 10px 10px;
+			text-shadow: 1px 1px 1px darkgray;
+			/* we need the white bg so cleartype is enabled */
+			background-color: white;
+			position: relative;
+			z-index: -2;
+		}
+	</style>
+	<marquee behavior=slide scrollamount=1 height=20 direction=down>
+		This web-site requires JavaScript
+	</marquee>
+	<hr>
+	<marquee class='shadow' direction=up>
+		<plaintext><!doctype html><html lang=en-QS><meta charset=utf-8>
+<title>SmileBASIC Source 2</title>
+
+<noscript>This web-site requires JavaScript</noscript>
 
 <meta name=application-name content="sbs2">
 <link rel=author href=data:;base64,MTIM>
 <link rel=vcs-git href=https://github.com/12Me21/sbs2>
+
+<meta name=theme-color content="#888">
+<meta name=color-scheme content="light dark">
 
 <script>'use strict'
 	if (window.location.search=="?logout") {
@@ -147,7 +175,7 @@
 	}
 </script>
 
-<body 🁢>
+<body class='COL'>
 
 <!--=======\
 || HEADER ||
@@ -167,8 +195,8 @@
 	<span data-view=user><a class='textItem' id=$userPageLink>[Page]</a></span>
 </header>
 
-<horizontal-split 𖧠 class='resize-box' 🀰>
-	<main 𖧠 id=$main_slides 📺>
+<horizontal-split class='FILL resize-box ROW'>
+	<main class='FILL SLIDES' id=$main_slides>
 		<!--==============\
 		|| MAIN CONTENTS ||
 		\===========--==-->
@@ -202,20 +230,20 @@
 			<div id=$userPageContents class='pageContents Markup'></div>
 		</div>
 		
-		<div data-slide=page id=$chatContainer 🁢>
-			<div 𖧠 id=$chatPaneBox 📺></div>
-			<div class='inputPane loggedIn' 🀰>
-				<div class='showWhenEdit' 🁢>
+		<div data-slide=page id=$chatContainer class='COL'>
+			<div class='FILL SLIDES' id=$chatPaneBox></div>
+			<div class='inputPane loggedIn ROW'>
+				<div class='showWhenEdit COL'>
 					<input id=$chatMarkupSelect placeholder="markup" style="width:50px;">
-					<button 𖧠 style="contain: paint;" id=$chatCancelEdit>Cancel Edit</button>
+					<button class='FILL' id=$chatCancelEdit>Cancel Edit</button>
 				</div>
-				<textarea-container 𖧠>
+				<textarea-container class='FILL'>
 					<div id=$chatTextareaWidth></div>
 					<textarea class='chatTextarea' id=$chatTextarea accesskey="z"></textarea>
 				</textarea-container>
-				<div 🁢>
+				<div class='COL'>
 					(temp)
-					<button 𖧠 id=$chatSendButton>Send</button>
+					<button class='FILL' id=$chatSendButton>Send</button>
 				</div>
 			</div>
 		</div>
@@ -227,34 +255,42 @@
 	
 	<resize-handle id=$horizontalResize class='sidebar-element'></resize-handle>
 	
-	<sidebar-container id=$sidebar class='sized resize-box sidebar-element' 🁢>
+	<sidebar-container id=$sidebar class='sized resize-box sidebar-element COL'>
 		<button class='closeSidebar' id=$closeSidebar>Close Sidebar</button>
+		
 		<div class='userlist bar rem1-5' id=$sidebarUserList></div>
+		
 		<tab-list id=$sidebar_tabs role="tablist" aria-label="sidebar tabs"></tab-list>
-		<div id=$sidebarTop class='sized' 📺>
+		
+		<div id=$sidebarTop class='sized SLIDES'>
+			
 			<sidebar-panel id=$sidebarActivityPanel>
 				<scroll-outer id=$sidebarActivity tabindex=-1></scroll-outer>
 			</sidebar-panel>
+			
 			<sidebar-panel id=$sidebarWatchPanel>
 				<scroll-outer><scroll-inner id=$sidebarWatch class='border-list-2'></scroll-inner></scroll-outer>
 			</sidebar-panel>
+			
 			<sidebar-panel id=$sidebarNavPanel>
-				<div 🀰><input 𖧠 id=$searchInput><button id=$searchButton class='item'>Search</button></div>
+				<div class='ROW'><input class='FILL' id=$searchInput><button id=$searchButton class='item'>Search</button></div>
 				<div id=$searchResults role='list'></div>
 				<div id=$sidebarCategories></div>
 			</sidebar-panel>
-			<sidebar-panel id=$sidebarFilePanel 🁢>
-				<div class='rem1-5 justify-between' 🀰>
-					<input 𖧠 type=file accept="image/png,image/jpeg,image/gif,image/bmp,image/webp,.png,.jpg,.jpeg,.gif,.bmp" id=$file_browse class='item'>
+			
+			<sidebar-panel id=$sidebarFilePanel class='COL'>
+				<div class='rem1-5 justify-between ROW'>
+					<input type=file accept="image/png,image/jpeg,image/gif,image/bmp,image/webp,.png,.jpg,.jpeg,.gif,.bmp" id=$file_browse class='FILL item'>
 					<button id=$file_cancel class='item'>Cancel</button>
 					<button id=$file_url_insert class='item'>Insert</button>
-					<input 𖧠 readonly id=$file_url>
+					<input class='FILL' readonly id=$file_url>
 					<button id=$file_done class='item'>Done</button>
 					<button id=$file_upload class='item'>Upload Image</button>
 				</div>
 				<br id=$file_upload_form>
-				<div 𖧠 class='image-box' style="min-height: 3rem;"><img id=$file_image></div>
+				<div class='FILL image-box' style="min-height: 3rem;"><img id=$file_image></div>
 			</sidebar-panel>
+			
 			<sidebar-panel id=$sidebarUserPanel>
 				<div class='registerBox'>
 					<button onclick='RELOAD()'>Reload Page</button>
@@ -280,11 +316,16 @@
 				</div>
 			</sidebar-panel>
 		</div>
+		
 		<resize-handle id=$sidebarResize></resize-handle>
-		<div 𖧠 id=$sidebarBottom>
-			<scroll-outer><scroll-inner id=$sidebarScroller class='border-list'></scroll-inner></scroll-outer>
+		
+		<div class='FILL' id=$sidebarBottom>
+			<scroll-outer>
+				<scroll-inner id=$sidebarScroller class='border-list'></scroll-inner>
+			</scroll-outer>
 		</div>
 	</sidebar-container>
+	
 </horizontal-split>
 
 <script hidden>'use strict'
