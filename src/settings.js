@@ -138,7 +138,6 @@ Settings.fields = {
 		name: "Custom CSS",
 		type: 'textarea',
 		autosave: false,
-		done_early: true,
 		update(value) {
 			$customCSS.textContent = value
 		},

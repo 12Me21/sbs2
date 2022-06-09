@@ -55,6 +55,7 @@ commit="$( git log -1 --format='%h [%ad] %s' | sed 's@[`$\\]@\\&@g' )"
 inject="<!--**********************************************-->\\
 <script>window.COMMIT = \`$commit\`</script>\\
 <link rel=stylesheet href=$(nocache resource/_build.css)>\\
+<style id=\$customCSS></style>\\
 <script src=$(nocache resource/_build.js)></script>\\
 <!--**********************************************-->"
 sed "/<!--START-->/,/<!--END-->/c $inject" index.html > _build.html

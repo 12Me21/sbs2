@@ -42,7 +42,6 @@ View.add_view('page', {
 			this.send_message()
 		}
 		$chatCancelEdit.onclick = e=>{
-			console.log('cancel')
 			this.cancel_edit()
 		}
 		// TODO: global escape handler?
@@ -213,7 +212,6 @@ View.add_view('page', {
 	editing_comment: null,
 	
 	edit_comment(comment) {
-		console.log('edit?', comment)
 		if (this.editing_comment)
 			this.cancel_edit()
 		if (!comment)

@@ -130,6 +130,7 @@
 <link rel=stylesheet href=markup2/markup.css>
 <link rel=stylesheet href=src/theme.css>
 <link rel=stylesheet href=src/code.css>
+<style id=$customCSS></style>
 
 <script src=markup2/langs.js></script>
 <script src=markup2/parse.js></script>
@@ -166,14 +167,6 @@
 
 <script src=src/main.js></script>
 <!--END-->
-<style id=$customCSS></style>
-<script>
-	// load custom css
-	if ('string'==typeof Settings.values.sitecss) {
-		$customCSS.textContent = Settings.values.sitecss
-		console.log('loaded custom css')
-	}
-</script>
 
 <body class='COL'>
 
@@ -199,7 +192,7 @@
 	<main class='FILL SLIDES' id=$main_slides>
 		<!--==============\
 		|| MAIN CONTENTS ||
-		\===========--==-->
+		\===============-->
 		<div data-slide=error class='errorPage' id=$errorMessage></div>
 		
 		<div data-slide=comments>
@@ -283,7 +276,7 @@
 					<input type=file accept="image/png,image/jpeg,image/gif,image/bmp,image/webp,.png,.jpg,.jpeg,.gif,.bmp" id=$file_browse class='FILL item'>
 					<button id=$file_cancel class='item'>Cancel</button>
 					<button id=$file_url_insert class='item'>Insert</button>
-					<input class='FILL' readonly id=$file_url>
+					<input readonly class='FILL' id=$file_url>
 					<button id=$file_done class='item'>Done</button>
 					<button id=$file_upload class='item'>Upload Image</button>
 				</div>
