@@ -321,7 +321,7 @@ let Sidebar = Object.seal({
 	
 	close_fullscreen() {
 		View.flag('mobileSidebar', false)
-	}
+	},
 	
 	message_count: 0,
 	
