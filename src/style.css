@@ -641,6 +641,11 @@ input, select { /* this is old & probably not needed */
 input, select, button, input::placeholder {
 	;color: var(--T-color)
 }
+select {
+	border-left-width: 4px;
+	border-bottom-left-radius: 3px;
+	border-top-left-radius: 3px;
+}
 /*@keyframes focus-switch {
 	from {
 		outline-offset: -10px;

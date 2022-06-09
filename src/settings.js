@@ -62,7 +62,7 @@ Settings.fields = {
 		type: 'text',
 	},
 	chat_markup: {
-		name: "Chat Markup Language",
+		name: "Chat Markup",
 		type: 'select',
 		options: ['12y', '12y2', 'plaintext'],
 	},
