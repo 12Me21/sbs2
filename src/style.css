@@ -499,16 +499,17 @@ html:not(.f-myUserPage) .myUserPage {
 }
 
 form-table > .label {
-	;font-weight: bold
-	;text-align: right
-	;padding-right: 0.5rem
+	font-weight: 500;
+	text-align: right;
+	padding-right: 0.5rem;
+	align-self: center;
 }
 form-table > .field {
 	;vertical-align: middle
 }
 form-table > .wide.label {
 	;text-align: left
-	;font-weight: bold
+	;font-weight: 500
 	;font-size: 1.2em
 }
 
@@ -938,4 +939,23 @@ scroll-middle > scroll-inner.scroll-anim {
 	outline-offset: 0;
 	outline-width: 1px;
 	outline-style: dotted;
+}
+
+#\$localSettings > div {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+#\$localSettings > div > :last-child {
+	flex-grow: 1;
+}
+
+#\$localSettings > div > label {
+	font-weight: 500;
+	align-self: center;
+}
+
+#\$localSettings > div {
+	column-gap: 0.2rem;
+	margin-bottom: 0.3rem;
 }

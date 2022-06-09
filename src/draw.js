@@ -561,8 +561,10 @@ const Draw = Object.seal({
 			},
 		}
 		Object.for(settings.fields, (data, name)=>{
+			let row = document.createElement('div')
+			x.elem.append(row)
 			let type = data.type
-			let label = x.elem.child('label')
+			let label = row.child('label')
 			label.textContent = data.name+": "
 			let elem
 			if (type=='select') {
@@ -590,8 +592,7 @@ const Draw = Object.seal({
 					update(name)
 				}
 			
-			elem && x.elem.append(elem)
-			x.elem.child('br')
+			elem && row.append(elem)
 		})
 		return x
 	},
