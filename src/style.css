@@ -950,6 +950,10 @@ scroll-middle > scroll-inner.scroll-anim {
 	flex-grow: 1;
 }
 
+#\$localSettings > div > textarea {
+	width: 100%;
+}
+
 #\$localSettings > div > label {
 	font-weight: 500;
 	align-self: center;
