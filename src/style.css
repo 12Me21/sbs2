@@ -898,8 +898,11 @@ html[data-socket-state="dead"] #\$openSidebar {
 
 /* ios safari */
 @supports (-webkit-touch-callout: none) {
-	textarea, input {
+	textarea, input, select {
 		;font-size: 16px
+	}
+	input, select {
+		line-height: 16px;
 	}
 	/* give space to the left so the cursor can reach there */
 	textarea-container > textarea {
