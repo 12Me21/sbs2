@@ -15,9 +15,13 @@ function register_activity(e) {
 View.add_view('page', {
 	room: null, // currently displayed ChatRoom
 	track_resize_2: new ResizeTracker('width'),
+	textarea: null,
+	
 	Init() {
+		this.textarea = $chatTextarea
+		
 		// up arrow = edit last comment
-		$chatTextarea.onkeydown = e=>{
+		this.textarea.onkeydown = e=>{
 			if (e.isComposing)
 				return
 			// enter - send
@@ -26,7 +30,7 @@ View.add_view('page', {
 				this.send_message()
 			}
 			// up arrow - edit previous message
-			if (e.keyCode==38 && $chatTextarea.value=="") {
+			if (e.keyCode==38 && this.textarea.value=="") {
 				let msg = this.room && this.room.my_last_message()
 				if (msg && msg.x_data) {
 					e.preventDefault()
@@ -48,8 +52,8 @@ View.add_view('page', {
 		})
 		this.textarea_resize()
 		let r = this.textarea_resize.bind(this)
-		$chatTextarea.addEventListener('input', r, {passive: true})
-		this.track_resize_2.add($chatTextarea, ()=>{
+		this.textarea.addEventListener('input', r, {passive: true})
+		this.track_resize_2.add(this.textarea, ()=>{
 			window.setTimeout(r)
 		})
 	},
@@ -109,17 +113,17 @@ View.add_view('page', {
 		View.flag('canEdit', /u/i.test(page.permissions[Req.uid]))
 		$pageCommentsLink.href = "#comments/"+page.id+"?r" // todo: location
 		if (page.createUserId==Req.uid || /c/i.test(page.permissions[Req.uid] || page.permissions[0])) {
-			$chatTextarea.disabled = false
-			$chatTextarea.focus()
+			this.textarea.disabled = false
+			this.textarea.focus()
 		} else
-			$chatTextarea.disabled = true
+			this.textarea.disabled = true
 		this.room.edit_callback = msg=>this.edit_comment(msg)
 	},
 	
 	textarea_resize() {
-		$chatTextarea.style.height = ""
-		let height = $chatTextarea.scrollHeight
-		$chatTextarea.parentNode.style.height = $chatTextarea.style.height = height+1+"px"
+		this.textarea.style.height = ""
+		let height = this.textarea.scrollHeight
+		this.textarea.parentNode.style.height = this.textarea.style.height = height+1+"px"
 	},
 	
 	send_message() {
@@ -131,7 +135,7 @@ View.add_view('page', {
 		if (this.editing_comment) { // editing comment
 			let last_edit = this.editing_comment
 			this.cancel_edit()
-			$chatTextarea.focus()
+			this.textarea.focus()
 			
 			if (data.text) { // input not blank
 				last_edit.text = data.text
@@ -160,7 +164,7 @@ View.add_view('page', {
 					//if (err) //error sending message
 						//this.write_input(old)
 				}
-				$chatTextarea.select()
+				this.textarea.select()
 				document.execCommand('delete')
 				//$chatTextarea.value = ""
 				this.textarea_resize()
@@ -188,12 +192,12 @@ View.add_view('page', {
 		
 		return {
 			values: values,
-			text: $chatTextarea.value,
+			text: this.textarea.value,
 		}
 	},
 	
 	write_input(data) {
-		$chatTextarea.select()
+		this.textarea.select()
 		if (data.text)
 			document.execCommand('insertText', false, data.text)
 		else
@@ -220,8 +224,8 @@ View.add_view('page', {
 		this.write_input(comment) // do this after the flag, so the width is right
 		// todo: maybe also save/restore cursor etc.
 		window.setTimeout(x=>{
-			$chatTextarea.setSelectionRange(99999, 99999) // move cursor to end
-			$chatTextarea.focus()
+			this.textarea.setSelectionRange(99999, 99999) // move cursor to end
+			this.textarea.focus()
 		}, 0)
 	},
 	

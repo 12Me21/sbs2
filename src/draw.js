@@ -181,12 +181,12 @@ const Draw = Object.seal({
 	
 	//📥 user‹User›
 	//📤 ‹ParentNode›
-	userlist_avatar: function(user) {
+	userlist_avatar: function(user, status) {
 		let e = this()
 		e.href = Nav.entity_link(user)
 		e.firstChild.src = Req.file_url(user.avatar, "size=100&crop=true")
-		//if (status.status == "idle")
-		//	e.classList.add('status-idle')
+		if (status == "idle")
+			e.classList.add('status-idle')
 		return e
 	}.bind(𐀶`<a tabindex=-1><img class='item avatar' width=100 height=100 alt="">`),
 	

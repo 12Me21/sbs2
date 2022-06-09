@@ -245,10 +245,10 @@ let Sidebar = Object.seal({
 					for (let arg of args) {
 						try {
 							let elem = Draw.sidebar_debug(arg)
-							$sidebarScroller.append(elem)
+							this.scroller.inner.append(elem)
 						} catch(e) {
 							console.error(e)
-							$sidebarScroller.append("error printing!")
+							this.scroller.inner.append("error printing!")
 						}
 						this.message_count++
 					}

@@ -202,11 +202,11 @@ class ChatRoom {
 		
 		this.id = id
 		this.set_status("active")
-		this.userlist = []
 		
 		if (id == 0) {
 			do_when_ready(()=>{
 				this.userlist_elem = $sidebarUserList
+				this.update_userlist()
 			})
 			return
 		}
@@ -275,6 +275,7 @@ class ChatRoom {
 		this.scroller = new Scroller(this.messages_outer, this.scroll_inner)
 		
 		this.update_page(page)
+		this.update_userlist()
 		
 		Object.seal(this)
 	}
@@ -282,15 +283,20 @@ class ChatRoom {
 		this.status = s
 		Lp.set_status(this.id, s)
 	}
-	update_avatar(user) {
-		let item = this.userlist.find(item => item.user.id == user.id)
-		if (item) {
-			item.user = user
-			this.update_userlist(this.userlist)
-		}
+	update_avatar(id) {
+		this.update_userlist()
 	}
-	update_userlist(statusmap, users) {
-		this.userlist_elem.fill(Object.keys(statusmap).map(item => Draw.userlist_avatar(users[~item])))
+	update_userlist() {
+		let statusmap = ChatRoom.statuses[this.id] || {}
+		this.userlist_elem.fill()
+		Object.for(statusmap, (status, id)=>{
+			let user = ChatRoom.status_users[~id]
+			if (!user) {
+				print("unknown user ("+id+") in userlist")
+				return
+			}
+			this.userlist_elem.append(Draw.userlist_avatar(user, status))
+		})
 	}
 	display_initial_messages(comments, pinned) {
 		this.display_messages(comments, false)
@@ -363,7 +369,13 @@ class ChatRoom {
 		return list
 	}
 	static update_avatar(user) {
-		Object.for(this.rooms, room => room.update_avatar(user))
+		let s = this.status_users[~user.id]
+		if (!s) return
+		this.status_users[~user.id] = user
+		Object.for(this.rooms, (room,id)=>{
+			if (this.statuses[id][user.id])
+				room.update_avatar(user.id)
+		})
 	}
 	static removeRoom(room) {
 		if (this.currentRoom == room)
@@ -375,12 +387,10 @@ class ChatRoom {
 		//ChatRoom.setViewing(Object.keys(ChatRoom.rooms))
 	}
 	static update_userlists(statuses, {user}) {
-		for (let id in statuses) {
-			let room = this.rooms[id]
-			if (room) {
-				let st = statuses[id]
-				room.update_userlist(st, user)
-			}
+		Object.assign(this.statuses, statuses)
+		Object.assign(this.status_users, user)
+		for (let id in this.rooms) {
+			this.rooms[id].update_userlist()
 		}
 	}
 	// display a list of messages from multiple rooms
@@ -420,6 +430,10 @@ class ChatRoom {
 ChatRoom.rooms = {}
 ChatRoom.global = null
 ChatRoom.currentRoom = null
+// we don't store these per-room
+// since we want to track statuses for rooms that aren't loaded
+ChatRoom.statuses = {}
+ChatRoom.status_users = {}
 ChatRoom.HTML = {
 	block: 𐀶`
 <chat-pane class='resize-box' 🁢>
