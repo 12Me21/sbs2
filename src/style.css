@@ -936,18 +936,19 @@ html[data-socket-state="dead"] #\$openSidebar {
 	}
 }*/
 
-scroll-middle > scroll-inner.scroll-anim1 {
-	top: var(--scroll, 0);
+scroll-middle > scroll-inner {
+	transform: translateY(var(--scroll, 0));
 }
 @keyframes scroll {
-	from { top: var(--scroll, 0); }
+	from { transform: translateY(var(--scroll, 0)); }
 }
 scroll-middle > scroll-inner.scroll-anim2 {
+	transform: translateY(0);
 	animation: scroll .4015s cubic-bezier(0.16,1,0.3,1);
 	animation-start-delay: .01s;
 }
 scroll-middle > scroll-inner.scroll-anim3 {
-	transition: top .4015s cubic-bezier(.16,1,.3,1) .01s;
+	transition: transform .4015s cubic-bezier(.16,1,.3,1) .01s;
 }
 
 .M-spoiler-label {
