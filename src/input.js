@@ -311,7 +311,7 @@ const INPUTS = {
 				this.value = null
 				return
 			}
-			let [match, min, max] = /^(\d*)-(\d*)$/.exec(x)
+			let [match, min, max] = /^(\d*)-(\d*)$/.rmatch(x)
 			if (match) {
 				this.value = {
 					min: min ? Number(min) : null,
@@ -531,11 +531,11 @@ const INPUTS = {
 		}
 		read() {
 			// we can't use the .valueAsNumber or .valueAsDate attributes because these read the times in utc
-			let [m1, year, month, day] = /(\d+)-(\d+)-(\d+)/.exec(this.input1.value)
+			let [m1, year, month, day] = /(\d+)-(\d+)-(\d+)/.rmatch(this.input1.value)
 			if (!m1) {
 				this.value = null
 			} else {
-				let [m2, hour, minute, second] = /(\d+):(\d+)(?::([\d.]+))?/.exec(this.input2.value)
+				let [m2, hour, minute, second] = /(\d+):(\d+)(?::([\d.]+))?/.rmatch(this.input2.value)
 				if (!m2)
 					hour = minute = second = 0
 				this.value = new Date(year, month-1, day, hour, minute, Math.floor(second || 0))

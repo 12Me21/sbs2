@@ -172,6 +172,13 @@ Object.map = (obj, callback)=>{
 	return ret
 }
 
+// this is just exec but safer i guess...
+RegExp.prototype.rmatch = function(str) {
+	if (typeof str != 'string')
+		throw new TypeError("RegExp.rmatch() expects string")
+	return String.prototype.match.call(str, this) || []
+}
+
 
 
 //let 𖹭 = Object.create.bind(Object,null,{𖹭:{set(f){Object.seal(Object.assign(this,f))}}}) // not used anymore :(
