@@ -372,7 +372,7 @@ class ChatRoom {
 		let s = this.status_users[~user.id]
 		if (!s) return
 		this.status_users[~user.id] = user
-		Object.for(this.rooms, (room,id)=>{
+		Object.for(this.rooms, (room, id)=>{
 			if (this.statuses[id][user.id])
 				room.update_avatar(user.id)
 		})

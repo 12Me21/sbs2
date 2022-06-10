@@ -1,3 +1,5 @@
+'use strict'
+
 function switch_tab(next, no_focus) {
 	if (!next)
 		return

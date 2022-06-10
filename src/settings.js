@@ -82,7 +82,7 @@ Settings.fields = {
 			do_when_ready(()=>{
 				$chatTextarea.enterKeyHint = value=='newline' ? "enter" : "send"
 			})
-		}
+		},
 	},
 	lazy_loading: {
 		name: "lazy image loading",

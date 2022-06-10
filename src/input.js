@@ -221,7 +221,7 @@ const INPUTS = {
 				this.extra_value = v
 				try {
 					this.extra_option.textContent = "Unknown value: "+v
-				} catch(e) {
+				} catch (e) {
 					print("input dropdown error invalid value??", e)
 					this.extra_option.textContent = "Unknown value: ???"
 				}
@@ -527,7 +527,7 @@ const INPUTS = {
 			//this.input2.step = "1"
 			this.elem.append(this.input2)
 			
-			this.input2.onchange = this.input1.onchange = this.attach_onchange()		
+			this.input2.onchange = this.input1.onchange = this.attach_onchange()
 		}
 		read() {
 			// we can't use the .valueAsNumber or .valueAsDate attributes because these read the times in utc
@@ -581,7 +581,7 @@ const INPUTS = {
 		write() {
 			this.input.value = this.value || ""
 		}
-		read() {// useless
+		read() { // useless
 			this.value = this.input.value || null
 		}
 	},

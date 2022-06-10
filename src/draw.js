@@ -90,17 +90,15 @@ const Draw = Object.seal({
 		let e = this.message()
 		switch (thing===null ? 'null' : typeof thing) {
 		case 'boolean': case 'number': case 'bigint':
-		case 'undefined': case 'null': case 'symbol':		
+		case 'undefined': case 'null': case 'symbol':
 			thing = String(thing)
 			// FALLTHROUGH
-		case 'string':
+		case 'string': {
 			e.append(thing)
-			break
-		case 'function':
+		} break; case 'function': {
 			let src = Function.prototype.toString.call(thing)
 			e.append(src)
-			break
-		case 'object':
+		} break; case 'object': {
 			if (thing instanceof Error) {
 				let s = Draw.format_error(thing)
 				e.append(s)
@@ -119,7 +117,7 @@ const Draw = Object.seal({
 					text = `{new ${cname}}`
 			}
 			e.append(text)
-		}
+		} }
 		return e
 	}.bind({message:𐀶`<div class='debugMessage pre'>`}),
 	

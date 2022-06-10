@@ -247,7 +247,7 @@ let Sidebar = Object.seal({
 						try {
 							let elem = Draw.sidebar_debug(arg)
 							this.scroller.inner.append(elem)
-						} catch(e) {
+						} catch (e) {
 							console.error(e)
 							this.scroller.inner.append("error printing!")
 						}
@@ -384,9 +384,9 @@ let Sidebar = Object.seal({
 				callback(x)
 			}, "image/"+format, quality)
 		}
-		img.onerror = e=>{callback(null)}
+		img.onerror = e=>{ callback(null) }
 		img.src = URL.createObjectURL(file)
-	}
+	},
 	
 })
 
