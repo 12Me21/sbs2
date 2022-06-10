@@ -298,7 +298,7 @@ const View = ((u=NAMESPACE({
 		}
 		function update_size(px) {
 			size = Math.max(px, 0)
-			element.style[horiz?'width':'height'] = size+"px"
+			element.style.setProperty(horiz?'width':'height', size+"px")
 			callback && callback(size)
 		}
 	},
