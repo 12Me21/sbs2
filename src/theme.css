@@ -7,7 +7,7 @@ html {
 /* default theme */
 html,
 /* light theme */
-[data-theme="light"] {
+html[data-theme="light"] {
 	/* text colors (black) */
 	--T-color: #000;
 	--T-link-color: #045;
@@ -60,7 +60,7 @@ html,
 }
 
 /* dark theme */
-[data-theme="dark"] {
+html[data-theme="dark"] {
 	--T-color: #FFF;
 	--T-link-color: #9CE;
 	--T-link-hover-color: #5CE;
@@ -107,7 +107,7 @@ html,
 	--T-focus-outline: #B00 dashed 2px;
 }
 /* unused */
-[data-theme="light"] [data-subtheme~="header-dark"] {
+/*[data-theme="light"] [data-subtheme~="header-dark"] {
 	--T-color: #FFF;
 	--T-link-color: #DEF;
 	--T-link-hover-color: #EFF;
@@ -125,3 +125,4 @@ html,
 	--loading-invert-bg: #009688;
 	--error-invert-bg: #800;
 }
+*/

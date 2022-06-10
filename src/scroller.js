@@ -146,13 +146,13 @@ class Scroller {
 		} else if (this.anim_type==1) {
 			window.cancelAnimationFrame(this.anim_id)
 			this.anim_id = null
+			this.inner.classList.add('scroll-anim1')
 			this.animate_insertion(this.anim_pos + dist)
 		}
 	}
 	cancel_animation() {
 		if (this.anim_type==2) {
-			this.inner.style.setProperty('--scroll', "0")
-			this.inner.classList.remove('scroll-anim3')
+			this.inner.classList.remove('scroll-anim2')
 		} else if (this.anim_type==1) {
 			if (this.anim_id != null) {
 				window.cancelAnimationFrame(this.anim_id)
@@ -164,7 +164,7 @@ class Scroller {
 	end_animation() {
 		this.anim_id = null
 		this.anim_pos = 0
-		this.inner.style.setProperty('--scroll', "0")
+		this.inner.classList.remove('scroll-anim1')
 	}
 	animate_insertion(dist, prev_time = document.timeline.currentTime) {
 		// abs allows animation to play backwards (for deleting comments)
