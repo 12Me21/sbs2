@@ -44,15 +44,16 @@ merge_files () {
 	echo "===================" >&2
 }
 
-merge_files resource/_build.js '<script .*\bsrc=\K[\w/.-]+(?=>)' '"use strict"' '//# sourceMappingURL=_build.js.map'
+# nocache filename -> filename?1234567 (uses current date)
+nocache () {
+	printf "$1?" ; date +%s
+}
 
-merge_files resource/_build.css '<link .*\brel=stylesheet href=\K[\w/.-]+(?=>)' '@uwu;;' '/*# sourceMappingURL=_build.css.map */'
+merge_files resource/_build.js '<script .*\bsrc=\K[\w/.-]+(?=>)' '"use strict"' "//# sourceMappingURL=$(nocache _build.js.map)"
+
+merge_files resource/_build.css '<link .*\brel=stylesheet href=\K[\w/.-]+(?=>)' '@uwu;;' "/*# sourceMappingURL=$(nocache _build.css.map) */"
 
 echo 'Creating _build.html' >&2
-# nocache filename -> filename?1234567 (uses date modified)
-nocache () {
-	printf "$1?" ; date -r "$1" +%s
-}
 commit="$( git log -1 --format='%h [%ad] %s' | sed 's@[`$\\]@\\&@g' )"
 inject="<!--**********************************************-->\\
 <script>window.COMMIT = \`$commit\`</script>\\
