@@ -51,7 +51,7 @@ nocache () {
 
 merge_files resource/_build.js '<script .*\bsrc=\K[\w/.-]+(?=>)' '"use strict"' "//# sourceMappingURL=$(nocache _build.js.map)"
 
-merge_files resource/_build.css '<link .*\brel=stylesheet href=\K[\w/.-]+(?=>)' '@uwu;;' "/*# sourceMappingURL=$(nocache _build.css.map) */"
+merge_files resource/_build.css '<link .*\brel=stylesheet href=\K[\w/.-]+(?=>)' '@uwu;' "/*# sourceMappingURL=$(nocache _build.css.map) */"
 
 echo 'Creating _build.html' >&2
 commit="$( git log -1 --format='%h [%ad] %s' | sed 's@[`$\\]@\\&@g' )"
