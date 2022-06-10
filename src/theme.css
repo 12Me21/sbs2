@@ -48,12 +48,14 @@ html,
 	
 	--input-border-color: #BBB #DDD #DDD #BBB;
 	/* buttons */
-	--button-hover-color: #59E;
-	--button-bg: linear-gradient(#EEE, #CCC);
-	--button-hover-bg: linear-gradient(#DDD, #EEE);
-	--button-selected-bg: linear-gradient(#888, #AAA);
 	
-	--T-button-border: 2px outset #00C8B4;
+	--button-bg: linear-gradient(#EEE 4px, #DDD 4px calc(100% - 4px), #CCC calc(100% - 4px));
+	--button-hover-bg: linear-gradient(#CCC, #DDD);
+	--button-disabled-bg: #AAA;
+	--button-selected-bg: linear-gradient(#AAA, #BBB);
+	--button-shadow-color: #0008;
+	
+	--T-button-border: 2px solid #00C8B4;
 	--T-textarea-border-color: #00C8B4;
 	--T-focus-outline: #F00 dashed 2px;
 }
@@ -98,12 +100,12 @@ html,
 	
 	--input-border-color: #444 #555 #555 #444;
 	
-	--button-hover-color: #59E;
-	--button-bg: linear-gradient(#048, #037, #037, #026);
-	--button-hover-bg: linear-gradient(#037, #037);
-	--button-selected-bg: linear-gradient(#013, #026);
+	--button-bg: linear-gradient(#048 4px, #037 4px calc(100% - 4px), #026 calc(100% - 4px));
+	--button-hover-bg: linear-gradient(#026, #037);
+	--button-selected-bg: linear-gradient(#014, #026);
+	--button-shadow-color: #000;
 	
-	--T-button-border: 2px outset #0064B4;
+	--T-button-border: 2px solid #0064B4;
 	--T-textarea-border-color: #0064B4;
 	--T-focus-outline: #B00 dashed 2px;
 }

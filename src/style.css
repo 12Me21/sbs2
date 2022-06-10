@@ -84,36 +84,35 @@ message-username { /* khhhh */
  ** Button **
  **********************/
 button {
-	;cursor: pointer
-	;font: var(--T-font)
-	;font-size: 0.8em
-	;line-height: normal !important
+	cursor: pointer;
+	font: var(--T-font);
+	font-size: 0.8em;
+	line-height: normal !important;
 	
-	;border: var(--T-button-border)
-	;border-radius: 0px
-	;padding: 0 0.5rem
+	border: var(--T-button-border);
+	border-radius: 0px;
+	padding: 0 0.5rem;
 	
-	;background: var(--button-bg)
+	background: var(--button-bg);
 }
-
 button:hover {
-	/*;border-color: var(--button-hover-color)*/
-	;background: var(--button-hover-bg)
-}
-button[aria-selected="true"] {
-	;backguijkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkiiiinround: var(--button-selected-bg)
-	;background: var(--button-selected-bg)
-	;border-style: inset;
-}
-button:active {
-	;border-style: inset
-	;background: var(--button-selected-bg)
-	/*;outline-offset: -1px;*/
+	background: var(--button-hover-bg);
 }
 button:disabled {
-	;color: var(--chat-dim-color) /*todo: proper color here */
-	;background: var(--bar-bg)
-	;border-style: solid;
+	color: var(--chat-dim-color); /*todo: proper color here */
+	background: var(--button-disabled-bg);
+}
+button[aria-selected="true"] {
+	backguijkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkiiiinround: var(--button-selected-bg);
+	background: var(--button-selected-bg);
+	box-shadow: 0px 1px 3px inset var(--button-shadow-color);
+}
+button:active {
+	background: var(--button-selected-bg);
+	box-shadow: 0px 1px 3px inset var(--button-shadow-color);
+}
+button:hover {
+	box-shadow: 0px 0px 2px inset var(--button-shadow-color);
 }
 
 /**********/
