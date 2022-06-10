@@ -20,7 +20,7 @@ merge_files () {
 	
 	files=`grep -Po "$2" index.html`
 	
-	printf '{"version":3,"sections":[{"offset":{"column":0,"line":0},"map":{"version":3,"sources":["???"],"mappings":"AAAA"}}' >"$1".map
+	printf '{"version":3,"sections":[{"offset":{"column":0,"line":0},"map":{"version":3,"sources":["_build.js"],"mappings":"AAAA"}}' >"$1".map
 	
 	declare -i total=1
 	for file in ${files[@]}; do
@@ -39,12 +39,14 @@ merge_files () {
 	echo "$3" >"$1"
 	sed '' ${files[@]} >>"$1"
 	
+	echo "$4" >>"$1"
+	
 	echo "===================" >&2
 }
 
-merge_files resource/_build.js '<script .*\bsrc=\K[\w/.-]+(?=>)' '"use strict"//# sourceMappingURL=_build.js.map'
+merge_files resource/_build.js '<script .*\bsrc=\K[\w/.-]+(?=>)' '"use strict"' '//# sourceMappingURL=_build.js.map'
 
-merge_files resource/_build.css '<link .*\brel=stylesheet href=\K[\w/.-]+(?=>)' '/*# sourceMappingURL=_build.css.map */'
+merge_files resource/_build.css '<link .*\brel=stylesheet href=\K[\w/.-]+(?=>)' '@uwu;;' '/*# sourceMappingURL=_build.css.map */'
 
 echo 'Creating _build.html' >&2
 # nocache filename -> filename?1234567 (uses date modified)

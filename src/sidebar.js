@@ -384,7 +384,10 @@ let Sidebar = Object.seal({
 				callback(x)
 			}, "image/"+format, quality)
 		}
-		img.onerror = e=>{ callback(null) }
+		img.onerror = e=>{
+			URL.revokeObjectURL(img.src)
+			callback(null)
+		}
 		img.src = URL.createObjectURL(file)
 	},
 	
