@@ -15,6 +15,21 @@ let Sidebar = Object.seal({
 			switch_tab(tab.btn, true)
 	},
 	
+	show_parts(phase, url, file) {
+		$file_browse.hidden = phase!=0
+		$file_cancel.hidden = phase!=1
+		$file_upload.hidden = phase!=1
+		this.file_upload_form.elem.hidden = phase!=1
+		$file_url_insert.hidden = phase!=2
+		$file_url.hidden = phase!=2
+		$file_done.hidden = phase!=2
+		// we set to "" first, so the old image isnt visible whilst the new one is loading
+		$file_image.src = ""
+		if (url)
+			$file_image.src = url
+		this.file = file || null
+	},
+	
 	onload() {
 		this.file_upload_form = new Form({
 			fields: [
@@ -108,21 +123,10 @@ let Sidebar = Object.seal({
 				if (priv && file.permissions[0])
 					alert("file permissions not set correctly!\nid:"+file.id)
 				
-				this.file = null
-				
-				$file_url.hidden = false
-				$file_done.hidden = false
-				$file_url_insert.hidden = false
-				this.file_upload_form.elem.hidden = true
-				$file_browse.hidden = true
-				$file_cancel.hidden = true
-				$file_upload.hidden = true
-				
 				let url = Req.file_url(file.hash)
+				this.show_parts(2, url, null)
 				$file_url.value = url
 				this.last_file = file
-				$file_image.src = "" // we set to "" first, so the old image isnt visible whilst the new one is loading
-				$file_image.src = url
 			}
 		}
 		$file_url.onfocus = e=>{
@@ -264,16 +268,7 @@ let Sidebar = Object.seal({
 	},
 	
 	file_cancel() {
-		this.file = null
-		$file_browse.hidden = false
-		$file_cancel.hidden = true
-		$file_url.hidden = true
-		$file_done.hidden = true
-		$file_url_insert.hidden = true
-		$file_upload.hidden = true
-		this.file_upload_form.elem.hidden = true
-		this.file = null
-		$file_image.src = ""
+		this.show_parts(0, null, null)
 	},
 	
 	got_file(file) {
@@ -286,23 +281,15 @@ let Sidebar = Object.seal({
 				this.got_file(x)
 			})
 		
-		$file_cancel.hidden = false
-		$file_upload.hidden = false
-		this.file_upload_form.elem.hidden = false
-		$file_browse.hidden = true
-		$file_url.hidden = true
-		$file_done.hidden = true
-		$file_url_insert.hidden = true
-		
-		$file_image.src = ""
-		$file_image.src = URL.createObjectURL(file)
+		let url = URL.createObjectURL(file)
+		this.show_parts(1, url, file)
+		URL.revokeObjectURL(url)
 		this.file_upload_form.set_some({
 			size: (file.size/1000)+" kB",
 			name: file.name,
 			hash: null,
 		})
 		this.file_upload_form.write()
-		this.file = file
 		this.select_tab('file')
 	},
 	
