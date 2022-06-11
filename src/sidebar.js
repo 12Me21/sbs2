@@ -226,7 +226,7 @@ let Sidebar = Object.seal({
 		$logOut.onclick = e=>{
 			Req.log_out()
 		}
-		let d = Draw.settings(Settings)
+		let d = Settings.draw()
 		$localSettings.append(d.elem)
 		$localSettingsSave.onclick = ()=>{
 			d.update_all()
@@ -246,7 +246,7 @@ let Sidebar = Object.seal({
 				this.scroller.print(()=>{
 					for (let arg of args) {
 						try {
-							let elem = Draw.sidebar_debug(arg)
+							let elem = Debug.sidebar_debug(arg)
 							this.scroller.inner.append(elem)
 						} catch (e) {
 							console.error(e)

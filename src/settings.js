@@ -169,4 +169,57 @@ Settings.change = function(name, value) {
 	field.update && field.update(value)
 }
 
+// todo: replace this
+Settings.draw = function() {
+	let settings = Settings
+	let get = {}
+	let update = (name)=>{
+		let value = get[name]()
+		settings.change(name, value)
+	}
+	let x = {
+		elem: document.createDocumentFragment(),
+		update_all() {
+			Object.for(get, (func, key)=>{
+				update(key)
+			})
+		},
+	}
+	Object.for(settings.fields, (data, name)=>{
+		let row = document.createElement('div')
+		x.elem.append(row)
+		let type = data.type
+		let label = row.child('label')
+		label.textContent = data.name+": "
+		let elem
+		if (type=='select') {
+			elem = document.createElement('select')
+			for (let option of data.options) {
+				let opt = elem.child('option')
+				opt.value = option
+				opt.textContent = option
+			}
+		} else if (type=='textarea') {
+			elem = document.createElement('textarea')
+		} else if (type=='text') {
+			elem = document.createElement('input')
+		}
+		
+		get[name] = ()=>{
+			return elem.value
+		}
+		
+		let value = settings.values[name]
+		elem.value = value
+		
+		if (data.autosave != false)
+			elem.onchange = ()=>{
+				update(name)
+			}
+		
+		elem && row.append(elem)
+	})
+	return x
+}
+
 Object.seal(Settings)
