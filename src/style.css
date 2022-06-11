@@ -51,19 +51,252 @@ a[href]:hover {
 	;color: var(--link-invert-hover-color)
 }
 
-h1 {
-	;font-size: 1.6em
-}
-
 /**********/
 
 sup {vertical-align: super;}
 sub {vertical-align: sub;}
 
+/* logged in/out display */
+html:not(.f-loggedIn) .loggedIn,
+html.f-loggedIn .loggedOut {
+	display: none;
+}
+html:not(.f-canEdit) .canEdit {
+	display: none;
+}
+
+/* border list things */
+.bottomBorder {
+	border-bottom: 1px solid var(--T-border-color);
+}
+.border-list > *:not(:last-child),
+.border-list-2 > * {
+	border-bottom: 1px solid var(--T-border-color);
+}
+
+
+/****************
+ ** Title Pane **
+ ****************/
+
+.titlePane {
+	background: var(--databarbgcolor);
+	color: var(--databartxtcolor);
+}
+.titlePane .entity-title {
+	font-weight: normal;
+	color: var(--link-invert-color);
+}
+.titlePane .pageTitle .entity-title {
+	color: var(--databartxtcolor);
+	padding-right: 0.5rem;
+}
+.titlePane .iconBg {
+	width: 2rem;
+}
+.pageTitle {
+	font-weight: normal;
+}
+h1 {
+	font-size: 1.6em;
+}
+.titlePane > :first-child { /* sidebar button ??? */
+	display: inline-block;
+	min-width: 0.3rem;
+}
+#\$titlePane [data-view]:not(.shown) {
+	;display: none !important
+}
+/* broken? */
+.errorMode .titlePane {
+	color: var(--error-invert-bg);
+	font: var(--T-monospace-font);
+}
+
+html.f-error .loadBG {
+	background: var(--error-invert-bg);
+}
+html.f-loading .loadBG {
+	background: var(--loading-invert-bg);
+}
+.loadBG/*, resize-handle*/ {
+	transition: background 0.1s ease;
+}
+
+.pathSeparator {
+	padding-left: 0.2rem;
+	padding-right: 0.2rem;
+}
+
+
+/* tabs */
+tab-list {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	border-bottom: 1px solid gray;
+	border-top: 1px solid var(--T-border-color);
+	background-color: var(--bar-bg) !important;
+}
+tab-list > button {
+	flex-grow: 1;
+	flex-basis: 0;
+	height: 2rem;
+	padding: 0;
+	font-size: 1em;
+	/*;border-top-left-radius: 5px;
+	;border-top-right-radius: 5px;*/
+	/*;border-style: solid;*/
+	border-bottom-width: 0;
+}
+tab-list > button[aria-selected="true"] {
+	/*;border-style: inset;*/
+	border-bottom-color: var(--bar-bg);
+	/*;border-top-left-radius: 3px;
+	;border-top-right-radius: 3px;*/
+}
+tab-list > button img.avatar {
+	width: auto;
+	height: 100%;
+}
+
+/* sidebar */
+sidebar-container {
+	background: var(--T-bg);
+	width: 30vw; /* just a default */
+	min-width: 10vw;
+	z-index: 20;
+}
+.registerBox {
+	padding: 0.3rem 0.5rem;
+}
+.closeSidebar {
+	height: 2.3rem;
+}
+.closeSidebar button {
+	width: 100%;
+}
+
+#\$sidebarResize {
+	box-shadow: var(--normal-shadow);
+	z-index: 30;
+}
+#\$sidebar_tabs {
+	/*;box-shadow: var(--normal-shadow)*/
+	z-index: 30;
+}
+/* sidebar activity tab */
+#\$sidebarActivity {
+	padding-top: 0.2rem;
+}
+.activity-page {
+	;display: block
+	;border-bottom: 1px solid var(--T-border-color)
+	;border-top: 1px solid white
+	;padding-left: 0.2rem
+	;padding-top: 1px
+	;padding-bottom: 1px
+	;background: var(--T-bg)
+}
+.activity-page-bottom {
+	;display: flex
+	;height: 1.5rem
+}
+.activity-page-bottom .avatar {
+	;max-width: unset
+}
+activity-users {
+	;text-align: right
+	;white-space: pre
+	;overflow-x: visible
+	;padding-right: 0.2rem
+	;padding-left: 0.2rem
+}
+/* sidebar settings tab items */
+#\$localSettings > div {
+	display: flex;
+	flex-wrap: wrap;
+}
+#\$localSettings > div > :last-child {
+	flex-grow: 1;
+}
+#\$localSettings > div > textarea {
+	width: 100%;
+	height: 5.2em;
+}
+#\$localSettings > div > label {
+	font-weight: 500;
+	align-self: center;
+}
+#\$localSettings > div {
+	column-gap: 0.2rem;
+	margin-bottom: 0.3rem;
+}
+/* sidebar debug tab */
+#\$debugOutput {
+	overflow-y: scroll;
+}
+#\$debugInput {
+	resize: vertical;
+}
+.debugMessage {
+	;background: var(--bar-bg)
+	;padding: 2px 3px
+}
+
+.debugMessage > pre {
+	;font: var(--T-monospace-font)
+	;overflow-x: scroll
+	;white-space: pre
+	;border-bottom: 1px solid var(--T-border-color)
+}
+
+/* page link bars */
+.linkBar {
+	display: block;
+	background: var(--T-bg);
+	
+	padding: 0.2rem;
+	padding-top: 0.15rem;
+	
+	border-bottom: 1px solid var(--T-border-color);
+	border-top: 1px solid white;
+}
+.linkBar:focus {
+	background: var(--bar-bg);
+}
+
+/*********
+ ** Nav **
+ *********/
+.nav {
+	background: var(--light-invert-bg);
+	color: var(--databartxtcolor);
+}
+.nav > span {
+	color: var(--databartxtcolor);
+}
+
+/**************
+ ** Userlist **
+ **************/
+chat-pane .userlist {
+	box-shadow: var(--normal-shadow);
+	z-index: 4;
+	border-bottom: 1px solid var(--T-border-color);
+}
+.userlist {
+	background: var(--bar-bg);
+}
+
+
 .avatar {
-	;border-radius: 3px
-	;background: var(--T-avatar-bg)
-	;contain: none /* so the :focus outline will appear, even though the <a> is small */
+	border-radius: 3px;
+	background: var(--T-avatar-bg);
+	contain: none; /* so the :focus outline will appear, even though the <a> is small */
+}
+.status-idle > .avatar {
+	filter: grayscale(1);
 }
 
 time {
@@ -79,231 +312,7 @@ time {
 message-username { /* khhhh */
 	;line-height: 1.2
 }
-
-/**********************
- ** Button **
- **********************/
-button {
-	cursor: pointer;
-	font: var(--T-font);
-	font-size: 0.8em;
-	line-height: normal !important;
-	
-	border: var(--T-button-border);
-	border-radius: 0px;
-	padding: 0 0.5rem;
-	
-	background: var(--button-bg);
-}
-button:hover {
-	background: var(--button-hover-bg);
-}
-button:disabled {
-	color: var(--chat-dim-color); /*todo: proper color here */
-	background: var(--button-disabled-bg);
-}
-button[aria-selected="true"] {
-	backguijkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkiiiinround: var(--button-selected-bg);
-	background: var(--button-selected-bg);
-	box-shadow: 0px 1px 3px inset var(--button-shadow-color);
-}
-button:active {
-	background: var(--button-selected-bg);
-	box-shadow: 0px 1px 3px inset var(--button-shadow-color);
-}
-button:hover {
-	box-shadow: 0px 0px 2px inset var(--button-shadow-color);
-}
-
-/**********/
-
-html:not(.f-loggedIn) .loggedIn,
-html.f-loggedIn .loggedOut {
-	;display: none
-}
-
-/*************
- ** Top Bar **
- *************/
-
-html.f-error .loadBG {
-	;background: var(--error-invert-bg)
-}
-
-.pathSeparator {
-	;padding-left: 0.2rem
-	;padding-right: 0.2rem
-}
-
-.bottomBorder {
-	;border-bottom: 1px solid var(--T-border-color)
-}
-
-.border-list > *:not(:last-child),
-.border-list-2 > * {
-	;border-bottom: 1px solid var(--T-border-color)
-}
-
-/**********
- ** Tabs **
- **********/
-tab-list {
-	;display: flex
-	;flex-direction: row
-	;width: 100%
-	;border-bottom: 1px solid gray;
-	;border-top: 1px solid var(--T-border-color)
-	;background-color: var(--bar-bg) !important;
-}
-tab-list > button {
-	;flex-grow: 1
-	;flex-basis: 0
-	;height: 2rem
-	;padding: 0
-	;font-size: 1em
-	/*;border-top-left-radius: 5px;
-	;border-top-right-radius: 5px;*/
-	/*;border-style: solid;*/
-	;border-bottom-width: 0;
-}
-tab-list > button[aria-selected="true"] {
-	/*;border-style: inset;*/
-	;border-bottom-color: var(--bar-bg);
-	/*;border-top-left-radius: 3px;
-	;border-top-right-radius: 3px;*/
-}
-
-tab-list > button img.avatar {
-	;width: auto
-	;height: 100%
-}
-
-/**********/
-
-/****************
- ** Title Pane **
- ****************/
-.titlePane {
-	;background: var(--databarbgcolor)
-	;color: var(--databartxtcolor)
-}
-
-.titlePane .entity-title {
-	;font-weight: normal
-	;color: var(--link-invert-color)
-}
-
-.status-idle > .avatar {
-	;filter: grayscale(1)
-}
-
-html.f-loading .loadBG {
-	;background: var(--loading-invert-bg)
-}
-.loadBG/*, resize-handle*/ {
-	;transition: background 0.1s ease
-}
-
-.titlePane .iconBg {
-	;width: 2rem
-}
-
-.pageTitle {
-	;font-weight: normal
-}
-
-.titlePane .pageTitle .entity-title {
-	;color: var(--databartxtcolor)
-	;padding-right: 0.5rem
-}
-
-html:not(.f-canEdit) .canEdit {
-	;display: none
-}
-
-/* broken? */
-.errorMode .titlePane {
-	;color: var(--error-invert-bg)
-	;font: var(--T-monospace-font)
-}
-
-.titlePane > :first-child {
-	;display: inline-block
-	;min-width: 0.3rem
-}
-
-/*******************************
- ** content+sidebar container **
- *******************************/
-.errorPage {
-	;padding: 0.2rem
-}
-
-sidebar-container {
-	;background: var(--T-bg)
-	;width: 30vw ;" just a default
-	;min-width: 10vw
-	;z-index: 20
-}
-
-.closeSidebar {
-	;height: 2.3rem
-}
-
-#\$sidebarResize {
-	;box-shadow: var(--normal-shadow)
-	;z-index: 30
-}
-#\$sidebar_tabs {
-	/*;box-shadow: var(--normal-shadow)*/
-	;z-index: 30
-}
-
-#\$sidebarActivity {
-	;padding-top: 0.2rem
-}
-
-/*******************
- ** Category Pane **
- *******************/
-.linkBar {
-	;display: block
-	;background: var(--T-bg)
-	
-	;padding: 0.2rem
-	;padding-top: 0.15rem
-	
-	;border-bottom: 1px solid var(--T-border-color)
-	;border-top: 1px solid white
-}
-.linkBar:focus {
-	;background: var(--bar-bg)
-}
-
-/*********
- ** Nav **
- *********/
-.nav {
-	;background: var(--light-invert-bg)
-	;color: var(--databartxtcolor)
-}
-.nav > span {
-	;color: var(--databartxtcolor)
-}
-
-/**************
- ** Userlist **
- **************/
-chat-pane .userlist {
-	;box-shadow: var(--normal-shadow)
-	;z-index: 4
-	;border-bottom: 1px solid var(--T-border-color)
-}
-.userlist {
-	;background: var(--bar-bg)
-}
-
-/*******************
+/*******************
  ** Chat Messages **
  *******************/
 message-block {
@@ -428,32 +437,30 @@ message-controls:hover + message-part {
 	height: 0.9rem; /* increased to 0.9rem because we moved message-block padding to top of element */
 }
 
-/****************
- ** Chat Input **
- ****************/
-
+/* chat input */
 .inputPane {
-	;align-items: stretch
-	;background: var(--bar-bg)
+	align-items: stretch;
+	background: var(--bar-bg);
 }
 html.f-chatEditing #\$chatTextarea {
-	;background: var(--edit-textarea-bg)
+	background: var(--edit-textarea-bg);
 }
 #\$chatTextarea[disabled] {
-	;background: silver
+	background: silver;
 }
 html.f-chatEditing .hideWhenEdit,
 html:not(.f-chatEditing) .showWhenEdit {
-	;display: none
+	display: none;
 }
 
-/*****************
- ** Editor Pane **
- *****************/
+/* editor */
 #\$editorTextarea {
 	;min-height: 3rem
 	;overflow-y: scroll
 	;resize: none
+}
+#\$editorPreviewPane {
+	height: 50%;
 }
 
 /*********/
@@ -462,6 +469,9 @@ html:not(.f-chatEditing) .showWhenEdit {
 .bottomSpacer {
 	;height: 1.5rem
 }
+
+
+/* user page */
 
 .userPageBox {
 	;height: 100%
@@ -494,7 +504,7 @@ html:not(.f-chatEditing) .showWhenEdit {
 	;flex-grow: 1
 }
 .userPageBox .pageContents {
-	;max-height: 100%
+	max-height: 100%;
 }
 
 html:not(.f-myUserPage) .myUserPage {
@@ -513,6 +523,43 @@ html:not(.f-myUserPage) .myUserPage {
 	}
 }
 
+
+/************
+ ** Button **
+ ************/
+button {
+	cursor: pointer;
+	font: var(--T-font);
+	font-size: 0.8em;
+	line-height: normal !important;
+	
+	border: var(--T-button-border);
+	border-radius: 0px;
+	padding: 0 0.5rem;
+	
+	background: var(--button-bg);
+}
+button:hover {
+	background: var(--button-hover-bg);
+}
+button:disabled {
+	color: var(--chat-dim-color); /*todo: proper color here */
+	background: var(--button-disabled-bg);
+}
+button[aria-selected="true"] {
+	backguijkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkiiiinround: var(--button-selected-bg);
+	background: var(--button-selected-bg);
+	box-shadow: 0px 1px 3px inset var(--button-shadow-color);
+}
+button:active {
+	background: var(--button-selected-bg);
+	box-shadow: 0px 1px 3px inset var(--button-shadow-color);
+}
+button:hover {
+	box-shadow: 0px 0px 2px inset var(--button-shadow-color);
+}
+
+/* forms */
 form-table > .label {
 	font-weight: 500;
 	text-align: right;
@@ -562,87 +609,7 @@ th {
 user-select {
 	;display: block
 }
-
-/**********
- ** Page **
- **********/
-button.voteButton[data-selected][data-vote="g"] {
-	;background: linear-gradient(var(--bggreen), #eee)
-}
-button.voteButton[data-selected][data-vote="b"] {
-	;background: linear-gradient(var(--bgred), #eee)
-}
-button.voteButton[data-selected][data-vote="o"] {
-	;background: linear-gradient(var(--bgblue), #eee)
-}
-
-/* TODO FIX */
-/* todo fix more! so this is an issue because vote buttons are now messed up by the button container insertion system, and ummm... something about classes.. ugh*/
-
-/* hecko yo */
-.pageContents {
-	;max-width: 100%
-	;overflow-x: auto
-	;padding: 1.5em
-}
-
-.pageInfoPane {
-	;padding-left: 0.3rem
-	;padding-right: 0.3rem
-	;border-bottom: 1px solid var(--T-border-color)
-	;background: var(--bar-bg)
-	;box-shadow: var(--normal-shadow)
-}
-
-/***********
- ** Files **
- ***********/
-
-.fileThumbnail {
-	;display: inline-block
-	;width: 52px
-	;height: 52px
-	;cursor: pointer
-}
-.fileThumbnail > img {
-	;box-sizing: content-box
-	;max-width: 50px
-	;max-height: 50px
-	;border: 1px solid black
-	;"vertical-align: top ;" what the fuck
-}
-.fileView {
-	;max-width: 100%
-	;max-height: 100%
-	;border: 1px solid black
-}
-.fileViewPane {
-	;overflow: auto
-}
-html:not(.f-fileSelected) .fileSelected {
-	;display: none
-}
-
-/***********
- ** Icons **
- ***********/
-.iconBg {
-	;background-repeat: no-repeat
-	;background-size: contain
-	;background-position: center
-	;margin-left: 0.1rem
-	;margin-right: 0.1rem
-}
-
-/*************
- ** Sidebar **
- *************/
-.closeSidebar button {
-	;width: 100%
-}
-
-/* TODO: margin should be fullscreen mode by default, then disabled with @media (min-width) */ /* ? */
-
+/* inputs */
 input, output, select {
 	;font-size: 0.9em
 	;background-color: var(--T-bg)
@@ -661,37 +628,6 @@ select {
 	border-bottom-left-radius: 3px;
 	border-top-left-radius: 3px;
 }
-/*@keyframes focus-switch {
-	from {
-		outline-offset: -10px;
-	}
-}
-
-:focus {
-	outline: var(--T-focus-outline);
-	outline-offset: -3px;
-	animation-name: focus-switch;
-	animation-duration: 0.5s;
-	animation-timing-function: linear;
-}*/
-
-/*
-@keyframes focus-switch {
-	from {
-		outline-offset: -4px;
-outline-width: 3px;
-	}
-}
-:focus {
-	outline: var(--T-focus-outline);
-outline-width: 1px;
-	outline-offset: -1px;
-	animation-name: focus-switch;
-	animation-duration: 0.1s;
-	animation-timing-function: linear;
-outline-style: solid;
-}*/
-
 @keyframes focus-switch {
 	from {
 		outline-offset: -5px;
@@ -707,17 +643,14 @@ outline-style: solid;
 	animation-timing-function: linear;
 	outline-style: solid;
 }
-
 input[type="file"] {
 	line-height: calc(var(--bar-height) - 4px);
 }
-
 input::file-selector-button {
 	vertical-align: top;
 	height: 100%;
 	line-height: 1;
 }
-
 input::placeholder {
 	;font-style: italic
 	;color: #80808099
@@ -725,25 +658,6 @@ input::placeholder {
 }
 input:invalid {
 	;background: var(--error-bg)
-}
-
-.registerBox {
-	;padding: 0.3rem 0.5rem
-}
-
-/* ehhh */
-.half {
-	;display: block
-	;min-height: 1.15rem
-	;line-height: 1.15rem
-	;text-align: center
-}
-.half-label {
-	;font-weight: bold
-}
-
-.image-box > img {
-	;border: 1px solid black
 }
 
 textarea {
@@ -778,112 +692,125 @@ textarea-container > textarea:focus {
 textarea-container, textarea-container > textarea {
 	;max-height: 25vh
 }
-
-.no-select {
-	;-webkit-user-select: none
-	;user-select: none
+/* ios safari */
+@supports (-webkit-touch-callout: none) {
+	textarea, input, select {
+		font-size: 16px;
+	}
+	input, select {
+		line-height: 16px;
+	}
+	/* give space to the left so the cursor can reach there */
+	textarea-container > textarea {
+		padding-left: 2px;
+		width: -webkit-fill-available; width: -moz-available; width: stretch;
+	}
 }
 
-/************
-** Gallery **
-************/
+
+/**********
+ ** Page **
+ **********/
 
-.gallery-inner {
-	;position: relative
-	;margin-left: auto
-	;margin-right: auto
-}
-.gallery-inner canvas {
-	;width: 100%
-}
-.gallery-inner > div {
-	;position: absolute
-	;width: 100%
-	;height: 100%
-	;background: var(--bar-bg)
-}
-.gallery-inner > div > div {
-	;width: 100%
-	;height: 100%
-}
-.gallery-title {
-	;margin-left: auto
-	;margin-right: auto
-	;text-align: center
-	;background: var(--bar-bg)
+.errorPage {
+	padding: 0.2rem;
 }
 
-.debugMessage {
-	;background: var(--bar-bg)
-	;padding: 2px 3px
+button.voteButton[data-selected][data-vote="g"] {
+	;background: linear-gradient(var(--bggreen), #eee)
+}
+button.voteButton[data-selected][data-vote="b"] {
+	;background: linear-gradient(var(--bgred), #eee)
+}
+button.voteButton[data-selected][data-vote="o"] {
+	;background: linear-gradient(var(--bgblue), #eee)
 }
 
-.debugMessage > pre {
-	;font: var(--T-monospace-font)
-	;overflow-x: scroll
-	;white-space: pre
+/* TODO FIX */
+/* todo fix more! so this is an issue because vote buttons are now messed up by the button container insertion system, and ummm... something about classes.. ugh*/
+
+/* hecko yo */
+.pageContents {
+	;max-width: 100%
+	;overflow-x: auto
+	;padding: 1.5em
+}
+
+.pageInfoPane {
+	;padding-left: 0.3rem
+	;padding-right: 0.3rem
 	;border-bottom: 1px solid var(--T-border-color)
+	;background: var(--bar-bg)
+	;box-shadow: var(--normal-shadow)
 }
-
-.category-childs {
-	;margin-left: 1rem
-}
-
-/* contain */
-#\$sidebarBottom, .sidebarComment, #\$sidebarActivity > .linkBar {
-	;contain: strict
-}
-
 /*   idk   */
 .page-container:not(#a) {
-	;min-height: 1rem
-	;height: 40vh
+	min-height: 1rem;
+	height: 40vh;
+}
+
+/* file viewer */
+
+.fileThumbnail {
+	;display: inline-block
+	;width: 52px
+	;height: 52px
+	;cursor: pointer
+}
+.fileThumbnail > img {
+	;box-sizing: content-box
+	;max-width: 50px
+	;max-height: 50px
+	;border: 1px solid black
+}
+.fileView {
+	;max-width: 100%
+	;max-height: 100%
+	;border: 1px solid black
+}
+.fileViewPane {
+	;overflow: auto
+}
+html:not(.f-fileSelected) .fileSelected {
+	;display: none
 }
 
-#\$titlePane [data-view]:not(.shown) {
-	;display: none !important
+/***********
+ ** Icons **
+ ***********/
+.iconBg {
+	;background-repeat: no-repeat
+	;background-size: contain
+	;background-position: center
+	;margin-left: 0.1rem
+	;margin-right: 0.1rem
 }
 
-#\$editorPreviewPane {
-	;height: 50%
-}
-
-.activity-page {
+/* TODO: margin should be fullscreen mode by default, then disabled with @media (min-width) */ /* ? */
+
+/* ehhh */
+.half {
 	;display: block
-	;border-bottom: 1px solid var(--T-border-color)
-	;border-top: 1px solid white
-	;padding-left: 0.2rem
-	;padding-top: 1px
-	;padding-bottom: 1px
-	;background: var(--T-bg)
+	;min-height: 1.15rem
+	;line-height: 1.15rem
+	;text-align: center
+}
+.half-label {
+	;font-weight: bold
 }
 
-.activity-page-bottom {
-	;display: flex
-	;height: 1.5rem
+.image-box > img {
+	;border: 1px solid black
 }
 
-.activity-page-bottom .avatar {
-	;max-width: unset
+.no-select {
+	-webkit-user-select: none; user-select: none;
 }
 
-activity-users {
-	;text-align: right
-	;white-space: pre
-	;overflow-x: visible
-	;padding-right: 0.2rem
-	;padding-left: 0.2rem
-}
-
-.Markup img, .Markup video {
-	;# min-height: var(--image-height)
-	;# height: unset !important ugh hack..
-	;-webkit-transition: max-height 0.25s ease
-	;transition: max-height 0.25s ease
-}
-
-.Markup [data-big] {
-	;max-height: 75vh
+
+/* contain */
+#\$sidebarBottom, .sidebarComment, #\$sidebarActivity > .linkBar {
+	contain: strict;
 }
 
 .Markup {
@@ -891,51 +818,30 @@ activity-users {
 	;overflow-y: hidden
 	;overflow-x: auto
 }
-
+
+/* comment search results */
 [data-slide="comments"] {
 	;overflow-y: scroll
 }
-
 #\$commentSearchResults > div > .linkBar {
 	;background: var(--bar-bg)
 }
-
+
+/* websocket state indicator */
 html[data-socket-state="opening"] #\$openSidebar {
 	;--button-bg: linear-gradient(#6fb7c0, #6fb7c0, blue)
 }
-
 /*html[data-socket-state="open"] #\$openSidebar {
 	;--button-bg: linear-gradient(#3f9f5f, #3f9f5f, green)
 }*/
-
 html[data-socket-pending] #\$openSidebar {
 	;--button-bg: linear-gradient(#e0c87f, #e0c87f, yellow)
 }
-
 html[data-socket-state="dead"] #\$openSidebar {
 	;--button-bg: linear-gradient(#f86060, #f86060, red)
 }
-
-/* ios safari */
-@supports (-webkit-touch-callout: none) {
-	textarea, input, select {
-		;font-size: 16px
-	}
-	input, select {
-		line-height: 16px;
-	}
-	/* give space to the left so the cursor can reach there */
-	textarea-container > textarea {
-		;padding-left: 2px
-		;width: -webkit-fill-available; width: -moz-available; width: stretch
-	}
-}
-/*@media (max-width: 700px), (max-height: 500px) {
-	textarea, input {
-		;font-size: 16px
-	}
-}*/
-
+
+/* scroll animation */
 scroll-middle > scroll-inner {
 	will-change: transform;
 	transform: translateY(var(--scroll, 0));
@@ -951,7 +857,8 @@ scroll-middle > scroll-inner.scroll-anim2 {
 scroll-middle > scroll-inner.scroll-anim3 {
 	transition: transform .4015s cubic-bezier(.16,1,.3,1) .01s;
 }
-
+
+/* markup stuff */
 .M-spoiler-label {
 	contain: none; /* the focus outline wasnt showing */
 }
@@ -963,35 +870,11 @@ scroll-middle > scroll-inner.scroll-anim3 {
 	outline-width: 1px;
 	outline-style: dotted;
 }
-
-#\$localSettings > div {
-	display: flex;
-	flex-wrap: wrap;
+.Markup img, .Markup video {
+	-webkit-transition: max-height 0.25s ease;
+	transition: max-height 0.25s ease;
 }
-
-#\$localSettings > div > :last-child {
-	flex-grow: 1;
+.Markup [data-big] {
+	max-height: 75vh;
 }
-
-#\$localSettings > div > textarea {
-	width: 100%;
-	height: 5.2em;
-}
-
-#\$localSettings > div > label {
-	font-weight: 500;
-	align-self: center;
-}
-
-#\$localSettings > div {
-	column-gap: 0.2rem;
-	margin-bottom: 0.3rem;
-}
-
-#\$debugOutput {
-	overflow-y: scroll;
-}
-
-#\$debugInput {
-	resize: vertical;
-}
+
