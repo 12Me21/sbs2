@@ -151,6 +151,7 @@ let Sidebar = Object.seal({
 				$searchInput.focus()
 			}, accesskey: 's'},
 			{name: 'file', label: "📷", elem: $sidebarFilePanel},
+			{name: 'debug', label: "💻", elem: $sidebarDebugPanel},
 			{name: 'user', label: user_label, elem: $sidebarUserPanel},
 		]
 		
@@ -201,10 +202,10 @@ let Sidebar = Object.seal({
 					let bar = Draw.content_label(item, true)
 					bar.setAttribute('role', 'listitem')
 					$searchResults.append(bar)
+					bar.tabIndex = first ? 0 : -1
 					if (first)
 						bar.focus()
 					first=false
-					bar.tabIndex = first ? 0 : -1
 				}
 			})
 		}

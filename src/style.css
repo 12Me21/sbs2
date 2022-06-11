@@ -937,6 +937,7 @@ html[data-socket-state="dead"] #\$openSidebar {
 }*/
 
 scroll-middle > scroll-inner {
+	will-change: transform;
 	transform: translateY(var(--scroll, 0));
 }
 @keyframes scroll {
@@ -985,4 +986,12 @@ scroll-middle > scroll-inner.scroll-anim3 {
 #\$localSettings > div {
 	column-gap: 0.2rem;
 	margin-bottom: 0.3rem;
+}
+
+#\$debugOutput {
+	overflow-y: scroll;
+}
+
+#\$debugInput {
+	resize: vertical;
 }

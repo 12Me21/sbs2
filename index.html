@@ -153,6 +153,7 @@
 <script src=src/draw.js></script>
 <script src=src/input.js></script>
 
+<script src=src/debug.js></script>
 <script src=src/view.js></script>
 <script src=src/settings.js></script>
 <script src=src/scroller.js></script>
@@ -265,7 +266,7 @@
 				<scroll-outer><scroll-inner id=$sidebarWatch class='border-list-2'></scroll-inner></scroll-outer>
 			</sidebar-panel>
 			
-			<sidebar-panel id=$sidebarNavPanel>
+			<sidebar-panel id=$sidebarNavPanel tabindex=-1>
 				<div class='bar rem1-5 ROW'>
 					<input class='FILL item' id=$searchInput>
 					<button id=$searchButton class='item'>Search</button>
@@ -287,28 +288,29 @@
 				<div class='FILL image-box' style="min-height: 3rem;"><img id=$file_image></div>
 			</sidebar-panel>
 			
+			<sidebar-panel id=$sidebarDebugPanel class='COL'>
+				<textarea id=$debugInput></textarea>
+				<div class='FILL' id=$debugOutput></div>
+			</sidebar-panel>
+			
 			<sidebar-panel id=$sidebarUserPanel>
 				<div class='registerBox'>
 					<button onclick='RELOAD()'>Reload Page</button>
 					<button onclick='Lp.start_websocket(true)'>Reset Socket</button>
+				</div>
+				<div class='loggedOut registerBox'>
+					<h2>Log In</h2>
+					<form id=$loginForm method=dialog>
+						<input placeholder=Username name=username><br>
+						<input placeholder=Password name=password type=password autocomplete=current-password><br>
+						<button>Log In</button>
+					</form>
+					<div id=$loginError></div>
+				</div>
+				<div class='loggedIn registerBox'>
+					<div id=$localSettings></div>
+					<button id=$localSettingsSave>Update sitejs/sitecss</button>
 					<button class='rightAlign' id=$logOut>Log out</button>
-				</div>
-				<div class='loggedOut'>
-					<div class='registerBox'>
-						<h2>Log In</h2>
-						<form id=$loginForm method=dialog>
-							<input placeholder=Username name=username><br>
-							<input placeholder=Password name=password type=password autocomplete=current-password><br>
-							<button>Log In</button>
-						</form>
-						<div id=$loginError></div>
-					</div>
-				</div>
-				<div class='loggedIn border-list'>
-					<div class='registerBox'>
-						<div id=$localSettings></div>
-						<button id=$localSettingsSave>Update sitejs/sitecss</button>
-					</div>
 				</div>
 			</sidebar-panel>
 		</div>

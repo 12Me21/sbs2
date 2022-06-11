@@ -118,6 +118,14 @@ Settings.fields = {
 		name: "Big Avatar Id",
 		type: 'text',
 	},
+	sitecss: {
+		name: "Custom CSS",
+		type: 'textarea',
+		autosave: false,
+		update(value) {
+			$customCSS.textContent = value
+		},
+	},
 	sitejs: {
 		name: "Custom Javascript",
 		type: 'textarea',
@@ -132,14 +140,6 @@ Settings.fields = {
 				print(e)
 				print("error in sitejs ^")
 			}
-		},
-	},
-	sitecss: {
-		name: "Custom CSS",
-		type: 'textarea',
-		autosave: false,
-		update(value) {
-			$customCSS.textContent = value
 		},
 	},
 },

@@ -152,7 +152,7 @@ class Scroller {
 	cancel_animation() {
 		if (this.anim_type==2) {
 			this.inner.style.setProperty('--scroll', "0")
-			this.inner.classList.remove('scroll-anim3')
+			this.inner.classList.remove('scroll-anim2')
 		} else if (this.anim_type==1) {
 			if (this.anim_id != null) {
 				window.cancelAnimationFrame(this.anim_id)

@@ -112,9 +112,9 @@ const Draw = Object.seal({
 			} else if (pro === null) {
 				text = "{null}"
 			} else if (pro && pro.constructor) {
-				let c = type.constructor
+				let c = pro.constructor
 				if (c && c.name && 'string'==typeof c.name)
-					text = `{new ${cname}}`
+					text = `{new ${c.name}}`
 			}
 			e.append(text)
 		} }
