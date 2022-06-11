@@ -1,34 +1,10 @@
 'use strict'
 delete window.sidebar // obsolete firefox global variable
 
-let Sidebar = Object.seal({
+let FileUploader = Object.seal({
 	file: null,
 	last_file: null,
-	scroller: null,
-	sidebar_tabs: null,
-	my_avatar: null,
 	file_upload_form: null,
-	
-	select_tab(name) {
-		let tab = this.sidebar_tabs.find(tab=>tab.name==name)
-		if (tab)
-			switch_tab(tab.btn, true)
-	},
-	
-	show_parts(phase, url, file) {
-		$file_browse.hidden = phase!=0
-		$file_cancel.hidden = phase!=1
-		$file_upload.hidden = phase!=1
-		this.file_upload_form.elem.hidden = phase!=1
-		$file_url_insert.hidden = phase!=2
-		$file_url.hidden = phase!=2
-		$file_done.hidden = phase!=2
-		// we set to "" first, so the old image isnt visible whilst the new one is loading
-		$file_image.src = ""
-		if (url)
-			$file_image.src = url
-		this.file = file || null
-	},
 	
 	onload() {
 		this.file_upload_form = new Form({
@@ -46,13 +22,6 @@ let Sidebar = Object.seal({
 		})
 		$file_upload_form.replaceWith(this.file_upload_form.elem)
 		this.file_cancel()
-		
-		$openSidebar.onclick = $closeSidebar.onclick = e=>{
-			this.toggle()
-		}
-		View.attach_resize($sidebar, $horizontalResize, true, -1, "sidebarWidth")
-		View.attach_resize($sidebarTop, $sidebarResize, false, 1, "sidebarPinnedHeight", null, 300)
-		View.flag('sidebar', true)
 		
 		document.addEventListener('paste', e=>{
 			let data = e.clipboardData
@@ -134,6 +103,97 @@ let Sidebar = Object.seal({
 				$file_url.select()
 			})
 		}
+	},
+	
+	convert_image(file, quality, callback) {
+		let img = new Image()
+		img.onload = e=>{
+			let canvas = document.createElement('canvas')
+			canvas.width = img.width
+			canvas.height = img.height
+			let c2d = canvas.getContext('2d')
+			c2d.drawImage(img, 0, 0)
+			URL.revokeObjectURL(img.src)
+			let name = file.name
+			file = null
+			let format = quality!=null ? 'jpeg' : 'png'
+			canvas.toBlob(x=>{
+				if (x)
+					x.name = name+"."+format
+				callback(x)
+			}, "image/"+format, quality)
+		}
+		img.onerror = e=>{
+			URL.revokeObjectURL(img.src)
+			callback(null)
+		}
+		img.src = URL.createObjectURL(file)
+	},
+	
+	show_parts(phase, url, file) {
+		$file_browse.hidden = phase!=0
+		$file_cancel.hidden = phase!=1
+		$file_upload.hidden = phase!=1
+		this.file_upload_form.elem.hidden = phase!=1
+		$file_url_insert.hidden = phase!=2
+		$file_url.hidden = phase!=2
+		$file_done.hidden = phase!=2
+		// we set to "" first, so the old image isnt visible whilst the new one is loading
+		$file_image.src = ""
+		if (url)
+			$file_image.src = url
+		this.file = file || null
+	},
+	file_cancel() {
+		this.show_parts(0, null, null)
+	},
+	
+	got_file(file) {
+		if (file.type=='image/webp')
+			return this.convert_image(file, 0.7, x=>{
+				if (!x) {
+					print('image conversion failed!')
+					return
+				}
+				this.got_file(x)
+			})
+		
+		let url = URL.createObjectURL(file)
+		this.show_parts(1, url, file)
+		URL.revokeObjectURL(url)
+		this.file_upload_form.set_some({
+			size: (file.size/1000)+" kB",
+			name: file.name,
+			hash: null,
+		})
+		this.file_upload_form.write()
+		Sidebar.select_tab('file')
+	},
+})
+
+do_when_ready(x=>FileUploader.onload())
+
+
+
+let Sidebar = Object.seal({
+	scroller: null,
+	sidebar_tabs: null,
+	my_avatar: null,
+	
+	select_tab(name) {
+		let tab = this.sidebar_tabs.find(tab=>tab.name==name)
+		if (tab)
+			switch_tab(tab.btn, true)
+	},
+	
+	onload() {
+		$openSidebar.onclick = $closeSidebar.onclick = e=>{
+			this.toggle()
+		}
+		View.attach_resize($sidebar, $horizontalResize, true, -1, "sidebarWidth")
+		View.attach_resize($sidebarTop, $sidebarResize, false, 1, "sidebarPinnedHeight", null, 300)
+		View.flag('sidebar', true)
+		
 		this.scroller = new Scroller($sidebarScroller.parentNode, $sidebarScroller)
 		// todo: maybe a global ESC handler?
 		/*document.addEventListener('keydown', function(e) {
@@ -267,32 +327,6 @@ let Sidebar = Object.seal({
 		})
 	},
 	
-	file_cancel() {
-		this.show_parts(0, null, null)
-	},
-	
-	got_file(file) {
-		if (file.type=='image/webp')
-			return this.convert_image(file, 0.7, x=>{
-				if (!x) {
-					print('image conversion failed!')
-					return
-				}
-				this.got_file(x)
-			})
-		
-		let url = URL.createObjectURL(file)
-		this.show_parts(1, url, file)
-		URL.revokeObjectURL(url)
-		this.file_upload_form.set_some({
-			size: (file.size/1000)+" kB",
-			name: file.name,
-			hash: null,
-		})
-		this.file_upload_form.write()
-		this.select_tab('file')
-	},
-	
 	toggle() {
 		let fullscreen = this.is_fullscreen()
 		if (fullscreen) {
@@ -354,31 +388,8 @@ let Sidebar = Object.seal({
 		}
 	},
 	
-	convert_image(file, quality, callback) {
-		let img = new Image()
-		img.onload = e=>{
-			let canvas = document.createElement('canvas')
-			canvas.width = img.width
-			canvas.height = img.height
-			let c2d = canvas.getContext('2d')
-			c2d.drawImage(img, 0, 0)
-			URL.revokeObjectURL(img.src)
-			let name = file.name
-			file = null
-			let format = quality!=null ? 'jpeg' : 'png'
-			canvas.toBlob(x=>{
-				if (x)
-					x.name = name+"."+format
-				callback(x)
-			}, "image/"+format, quality)
-		}
-		img.onerror = e=>{
-			URL.revokeObjectURL(img.src)
-			callback(null)
-		}
-		img.src = URL.createObjectURL(file)
-	},
-	
 })
 
 window.print = Sidebar.print.bind(Sidebar)
+
+do_when_ready(x=>Sidebar.onload())
