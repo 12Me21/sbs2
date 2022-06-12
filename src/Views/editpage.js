@@ -4,6 +4,8 @@ View.add_view('editpage', {
 	textarea: null,
 	preview: null,
 	page: null,
+	show_preview: false,
+	live_preview: false,
 	
 	Init() {
 		this.textarea = $editorTextarea
@@ -22,6 +24,22 @@ View.add_view('editpage', {
 				else
 					alert('edit failed')
 			}
+		}
+		let batch = (cb,w=0)=>e=>w++||requestAnimationFrame(_=>cb(e,w=0))
+		$editorPreviewButton.onchange = e=>{
+			this.toggle_preview(e.target.checked)
+		}
+		$editorLiveButton.onchange = e=>{
+			this.live_preview = e.target.checked
+			if (this.live_preview)
+				this.update_preview()
+		}
+		$editorTextarea.addEventListener('input', batch(e=>{
+			if (this.show_preview && this.live_preview)
+				this.update_preview()
+		}), {passive: true})
+		$editorRenderButton.onclick = e=>{
+			this.update_preview(true)
 		}
 	},
 	
@@ -47,13 +65,31 @@ View.add_view('editpage', {
 		this.page = page
 		$editPageLink.href = "#page/"+page.id
 		this.textarea.value = page.text
+		page.text = null
 		$editorData.value = JSON.stringify(page, null, 1)
-		this.update_preview()
+		
+		$editorPreviewButton.checked = false
+		this.toggle_preview(false)
+		$editorLiveButton.checked = true
+		this.live_preview = true
+		//this.update_preview()
 	},
 	Cleanup(type) {
 		this.page = null
+		$editorPreview.fill()
 	},
-	update_preview() {
-		Markup.convert_lang(this.textarea.value, this.page.values.markupLang, this.preview)
+	toggle_preview(state) {
+		this.show_preview = state
+		$editorPreviewOuter.classList.toggle('shown', state)
+		$editorFields.classList.toggle('shown', !state)
+		$editorPreviewControls.hidden = !state
+		if (state) {
+			this.update_preview()
+		} else {
+			$editorPreview.fill()
+		}
+	},
+	update_preview(full) {
+		Markup.convert_lang(this.textarea.value, this.page.values.markupLang, this.preview, {preview: !full})
 	}
 })

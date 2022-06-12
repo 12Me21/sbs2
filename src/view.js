@@ -284,6 +284,8 @@ const View = ((u=NAMESPACE({
 				return e[horiz?'clientX':'clientY']
 		}
 		function down(e) {
+			if (e.target !== tab)
+				return
 			e.preventDefault()
 			tab.dataset.dragging = ""
 			held = true

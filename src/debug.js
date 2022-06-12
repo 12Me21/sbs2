@@ -127,3 +127,5 @@ let Debug = ((u=NAMESPACE({
 let log = Debug.log
 
 do_when_ready(Debug.onload)
+
+//console.log = log

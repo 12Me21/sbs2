@@ -43,6 +43,7 @@
 
 <meta name=theme-color content="#888">
 <meta name=color-scheme content="light dark">
+
 
 <script>'use strict'
 	if (window.location.search=="?logout") {
@@ -121,7 +122,7 @@
 	console.log("🌅 early init done")
 	markup_warned = false
 </script>
-
+
 <!--START-->
 <!-- this part will be replaced by the build script -->
 <link rel=stylesheet href=resource/fonts.css>
@@ -171,17 +172,15 @@
 <!--END-->
 
 <body class='COL'>
-
+
 <!--=======\
 || HEADER ||
 \========-->
-
 <header class='titlePane bar rem2-3 loadBG' id=$titlePane>
 	<div class='textItem rightAlign'>
 		<button id=$openSidebar class='item'>
 			<span id=$socketPending></span>
 			| | |
-			<!--<img src=resource/iconbig.png alt="SBS" width=32px height=32px>⥄-->
 		</button>
 	</div>
 	<noscript>if you're reading this, your html parser is broken, or js was disabled after the page loaded (probably by a browser extension)</noscript>
@@ -200,12 +199,14 @@
 </header>
 
 <horizontal-split class='FILL resize-box ROW'>
+
+	<!--==============\
+	|| MAIN CONTENTS ||
+	\===============-->
 	<main class='FILL SLIDES' id=$main_slides>
-		<!--==============\
-		|| MAIN CONTENTS ||
-		\===============-->
+		<!--[ View: error ]-->
 		<div data-slide=error class='errorPage' id=$errorMessage></div>
-		
+		<!--[ View: comments ]-->
 		<div data-slide=comments>
 			<div id=$commentSearch class='nav'>
 				<br id=$commentSearchForm>
@@ -216,7 +217,7 @@
 			</div>
 			<div id=$commentSearchResults></div>
 		</div>
-		
+		<!--[ View: test ]-->
 		<div data-slide=test>
 			<textarea id=$testTextarea></textarea><br>
 			<button id=$testButton>Run</button><br>
@@ -228,12 +229,12 @@
 				<div id=$testOut4 class='pre'></div>
 			</div>
 		</div>
-		
+		<!--[ View: user ]-->
 		<div data-slide=user>
 			<img id=$userPageAvatar width=400 height=400>
 			<div id=$userPageContents class='pageContents Markup'></div>
 		</div>
-		
+		<!--[ View: page ]-->
 		<div data-slide=page id=$chatContainer class='COL'>
 			<div class='FILL SLIDES' id=$chatPaneBox></div>
 			<div class='inputPane loggedIn ROW'>
@@ -251,25 +252,29 @@
 				</div>
 			</div>
 		</div>
-		
+		<!--[ View: editpage ]-->
 		<div data-slide=editpage id=$editorPane class='resize-box COL'>
-			<div id=$editorTop class='sized SLIDES'>
-				<scroll-outer data-slide=preview class='page-container' id=$editorPreview></scroll-outer>
-				<div data-slide=fields id=$editorFields class='shown'>
+			<div id=$editorTop class='sized page-container SLIDES'>
+				<scroll-outer data-slide=preview id=$editorPreviewOuter><scroll-inner id=$editorPreview class='pageContents'></scroll-inner></scroll-outer>
+				<div data-slide=fields id=$editorFields>
 					<textarea id=$editorData></textarea>
 					<button id=$editorSave>save</button>
 				</div>
 			</div>
-			<resize-handle id=$editorResize></resize-handle>
+			<resize-handle id=$editorResize>
+				preview:<input type=checkbox id=$editorPreviewButton>
+				<span id=$editorPreviewControls>
+					| live:<input type=checkbox id=$editorLiveButton>
+					<button id=$editorRenderButton>render full</button>
+				</span>
+			</resize-handle>
 			<textarea id=$editorTextarea class='FILL'></textarea>
 		</div>
-		
 	</main>
-	
+
 	<!--========\
 	|| SIDEBAR ||
 	\=========-->
-	
 	<resize-handle id=$horizontalResize class='sidebar-element'></resize-handle>
 	
 	<sidebar-container id=$sidebar class='sized resize-box sidebar-element COL'>
@@ -349,7 +354,7 @@
 	</sidebar-container>
 	
 </horizontal-split>
-
+
 <script hidden>'use strict'
 	document.currentScript.remove() // 💭
 	// whitespace between nodes in html (due to line breaks, indentation, etc.) creates text nodes which need to be stripped:
