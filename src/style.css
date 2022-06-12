@@ -853,7 +853,7 @@ html[data-socket-state="dead"] #\$openSidebar {
 
 /* scroll animation */
 scroll-middle > scroll-inner {
-	will-change: transform;
+	/*will-change: transform; dont use this, scroll-inner is too fucking tall*/
 	transform: translateY(var(--scroll, 0));
 }
 @keyframes scroll {
