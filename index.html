@@ -163,6 +163,7 @@
 <script src=src/Views/page.js></script>
 <script src=src/Views/user.js></script>
 <script src=src/Views/comments.js></script>
+<script src=src/Views/editpage.js></script>
 
 <script src=src/navigate.js></script>
 
@@ -183,10 +184,19 @@
 			<!--<img src=resource/iconbig.png alt="SBS" width=32px height=32px>⥄-->
 		</button>
 	</div>
-	<noscript>This web-site requires JavaScript</noscript>
+	<noscript>if you're reading this, your html parser is broken, or js was disabled after the page loaded (probably by a browser extension)</noscript>
+	<span data-view=editpage>Editing:</span>
 	<h1 id=$pageTitle class='textItem pageTitle'></h1>
-	<span data-view=page><a class='textItem' id=$pageCommentsLink>[Logs]</a></span>
-	<span data-view=user><a class='textItem' id=$userPageLink>[Page]</a></span>
+	<span data-view=page>
+		<a class='textItem' id=$pageCommentsLink>[Logs]</a>-
+		<a class='textItem' id=$pageEditLink>[Edit]</a>
+	</span>
+	<span data-view=editpage>
+		<a class='textItem' id=$editPageLink>[Back]</a>
+	</span>
+	<span data-view=user>
+		<a class='textItem' id=$userPageLink>[Page]</a>
+	</span>
 </header>
 
 <horizontal-split class='FILL resize-box ROW'>
@@ -241,6 +251,19 @@
 				</div>
 			</div>
 		</div>
+		
+		<div data-slide=editpage id=$editorPane class='resize-box COL'>
+			<div id=$editorTop class='sized SLIDES'>
+				<scroll-outer data-slide=preview class='page-container' id=$editorPreview></scroll-outer>
+				<div data-slide=fields id=$editorFields class='shown'>
+					<textarea id=$editorData></textarea>
+					<button id=$editorSave>save</button>
+				</div>
+			</div>
+			<resize-handle id=$editorResize></resize-handle>
+			<textarea id=$editorTextarea class='FILL'></textarea>
+		</div>
+		
 	</main>
 	
 	<!--========\

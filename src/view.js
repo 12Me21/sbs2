@@ -173,7 +173,7 @@ const View = ((u=NAMESPACE({
 			if (got_redirect)
 				Nav.replace_url(location)
 			if (!view)
-				throw new Error("Unknown page type: “"+location.type+"”") // SoftError - don't need to print stack etc. todo
+				throw 'type'
 			
 			if (view.Early) {
 				phase = "view.Early"
@@ -189,7 +189,7 @@ const View = ((u=NAMESPACE({
 				
 				phase = "view.Check"
 				if (data.check && !data.check(resp, data.ext))
-					throw new Error("data not found")
+					throw 'data'
 			}
 			yield do_when_ready(STEP)
 			
@@ -212,9 +212,15 @@ const View = ((u=NAMESPACE({
 			
 			u.cleanup(location)
 			u.current_view = view = u.errorView
-			console.error("Error during view handling", e)
-			u.set_title("Error during: "+phase)
-			$errorMessage.fill(Draw.sidebar_debug(e))
+			if (e==='type') {
+				u.set_title("Unknown page type")
+			} else if (e==='data') {
+				u.set_title("Data not found")
+			} else {
+				console.error("Error during view handling", e)
+				u.set_title("Error during: "+phase)
+				$errorMessage.fill(Debug.sidebar_debug(e))
+			}
 			//$errorMessage.textContent = e
 		}
 		u.load_end()

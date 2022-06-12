@@ -111,6 +111,7 @@ View.add_view('page', {
 		//View.set_entity_path(page.parent)
 		View.flag('canEdit', /u/i.test(page.permissions[Req.uid]))
 		$pageCommentsLink.href = "#comments/"+page.id+"?r" // todo: location
+		$pageEditLink.href = "#editpage/"+page.id
 		if (page.createUserId==Req.uid || /c/i.test(page.permissions[Req.uid] || page.permissions[0])) {
 			this.textarea.disabled = false
 			this.textarea.focus()

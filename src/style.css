@@ -610,24 +610,51 @@ user-select {
 	;display: block
 }
 /* inputs */
-input, output, select {
-	;font-size: 0.9em
-	;background-color: var(--T-bg)
-	;border: 2px solid var(--T-textarea-border-color)
-	;border-radius: 1px
+/* these elements's sizes are fucking weird and make no sense */
+/*input:not([type]) {
+	width: 12em;
 }
-input, select { /* this is old & probably not needed */
-	;min-width: 0
-	;max-width: 100%
+input[type="number"] {
+	width: 8em;
+}*/
+input[type="checkbox"] {
+	max-width: 8em;
+}
+input, output, select {
+	font-size: 0.9em;
+	background-color: var(--T-bg);
+	border: 2px solid var(--T-textarea-border-color);
+	border-radius: 1px;
+}
+input, select { /* do we need this? */
+	min-width: 0;
+	max-width: 100%;
 }
 input, select, button, input::placeholder {
-	;color: var(--T-color)
+	color: var(--T-color);
 }
 select {
 	border-left-width: 4px;
 	border-bottom-left-radius: 3px;
 	border-top-left-radius: 3px;
 }
+input[type="file"] {
+	line-height: calc(var(--bar-height) - 4px);
+}
+input::file-selector-button {
+	vertical-align: top;
+	height: 100%;
+	line-height: 1;
+}
+input::placeholder {
+	font-style: italic;
+	color: #80808099;
+	padding-left: 0.3rem;
+}
+input:invalid {
+	background: var(--error-bg);
+}
+
 @keyframes focus-switch {
 	from {
 		outline-offset: -5px;
@@ -643,22 +670,6 @@ select {
 	animation-timing-function: linear;
 	outline-style: solid;
 }
-input[type="file"] {
-	line-height: calc(var(--bar-height) - 4px);
-}
-input::file-selector-button {
-	vertical-align: top;
-	height: 100%;
-	line-height: 1;
-}
-input::placeholder {
-	;font-style: italic
-	;color: #80808099
-	;padding-left: 0.3rem
-}
-input:invalid {
-	;background: var(--error-bg)
-}
 
 textarea {
 	;max-width: 100%
@@ -671,7 +682,6 @@ textarea {
 	;background: var(--T-bg)
 	;white-space: break-spaces; /* optional */
 }
-
 textarea-container {
 	;border: 2px solid var(--T-textarea-border-color)
 	;padding: 5px

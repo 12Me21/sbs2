@@ -178,7 +178,7 @@ View.add_view('comments', {
 				values,
 				requests: [
 					{type:'message', fields:'*', query:query.join(" AND "), order, limit, skip},
-					{type:'content', fields:'name,id,createUserId', query:"id IN @message.contentId"},
+					{type:'content', fields:'name,id,createUserId,permissions', query:"id IN @message.contentId"},
 					{type:'user', fields:'*', query:"id IN @message.createUserId OR id IN @content.createUserId"},
 				],
 			},
