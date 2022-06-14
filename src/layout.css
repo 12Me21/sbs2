@@ -150,13 +150,13 @@ html, body {
 }
 
 .rem1-7 {
-	--bar-height: 1.7rem;
+	--bar-height: 1.6875rem;
 }
 .rem1-5 {
 	--bar-height: 1.5rem;
 }
 .rem2-3 {
-	--bar-height: 2.3rem;
+	--bar-height: 2.3125rem;
 }
 
 .linkBar.rem1-5 {
@@ -267,7 +267,7 @@ but, then we can't add a border to the image
  ** Resize Box **
  ****************/
 .resize-box {
-	--handle-width: 1.2em;
+	--handle-width: 1.1875em;
 }
 
 .resize-box > .sized {

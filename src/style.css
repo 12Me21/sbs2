@@ -98,11 +98,11 @@ html:not(.f-canEdit) .canEdit {
 	font-weight: normal;
 }
 h1 {
-	font-size: 1.6em;
+	font-size: 1.625em;
 }
 .titlePane > :first-child { /* sidebar button ??? */
 	display: inline-block;
-	min-width: 0.3rem;
+	min-width: 0.3125rem;
 }
 #\$titlePane [data-view]:not(.shown) {
 	;display: none !important
@@ -124,8 +124,8 @@ html.f-loading .loadBG {
 }
 
 .pathSeparator {
-	padding-left: 0.2rem;
-	padding-right: 0.2rem;
+	padding-left: 0.1875rem;
+	padding-right: 0.1875rem;
 }
 
 
@@ -168,10 +168,10 @@ sidebar-container {
 	z-index: 20;
 }
 .registerBox {
-	padding: 0.3rem 0.5rem;
+	padding: 0.3125rem 0.5rem;
 }
 .closeSidebar {
-	height: 2.3rem;
+	height: 2.3125rem;
 }
 .closeSidebar button {
 	width: 100%;
@@ -187,13 +187,13 @@ sidebar-container {
 }
 /* sidebar activity tab */
 #\$sidebarActivity {
-	padding-top: 0.2rem;
+	padding-top: 0.1875rem;
 }
 .activity-page {
 	;display: block
 	;border-bottom: 1px solid var(--T-border-color)
 	;border-top: 1px solid white
-	;padding-left: 0.2rem
+	;padding-left: 0.1875rem
 	;padding-top: 1px
 	;padding-bottom: 1px
 	;background: var(--T-bg)
@@ -209,8 +209,8 @@ activity-users {
 	;text-align: right
 	;white-space: pre
 	;overflow-x: visible
-	;padding-right: 0.2rem
-	;padding-left: 0.2rem
+	;padding-right: 0.1875rem
+	;padding-left: 0.1875rem
 }
 /* sidebar settings tab items */
 #\$localSettings > div {
@@ -222,23 +222,29 @@ activity-users {
 }
 #\$localSettings > div > textarea {
 	width: 100%;
-	height: 5.2em;
+	height: 5.1875em;
 }
 #\$localSettings > div > label {
 	font-weight: 500;
 	align-self: center;
 }
 #\$localSettings > div {
-	column-gap: 0.2rem;
-	margin-bottom: 0.3rem;
+	column-gap: 0.1875rem;
+	margin-bottom: 0.3125rem;
 }
 /* sidebar debug tab */
 #\$debugOutput {
 	overflow-y: scroll;
 }
 #\$debugInput {
+	font: var(--T-monospace-font);
 	resize: vertical;
+	overflow-y: scroll;
 }
+#\$debugOutput > .eval-code {
+	
+}
+
 .debugMessage {
 	;background: var(--bar-bg)
 	;padding: 2px 3px
@@ -256,8 +262,8 @@ activity-users {
 	display: block;
 	background: var(--T-bg);
 	
-	padding: 0.2rem;
-	padding-top: 0.15rem;
+	padding: 0.1875rem;
+	padding-top: 0.125rem;
 	
 	border-bottom: 1px solid var(--T-border-color);
 	border-top: 1px solid white;
@@ -300,7 +306,7 @@ chat-pane .userlist {
 }
 
 time {
-	;font-size: 0.9em
+	;font-size: 0.875em
 	;color: var(--T-time-color)
 	;vertical-align: baseline
 }
@@ -321,7 +327,7 @@ message-block {
 	;box-sizing: content-box
 	;--chat-gutter: 4rem
 	;--chat-avatar-size: calc(var(--chat-gutter) - 0.5rem)
-	;--chat-message-gap: 0.6rem
+	;--chat-message-gap: 0.625rem
 	;padding: 0 0.5rem
 	;padding-top: var(--chat-message-gap)
 	;min-height: var(--chat-avatar-size)
@@ -370,7 +376,7 @@ message-block > message-header > time {
 message-contents {
 	;display: block
 	;min-height: 1.5rem ;" this is so the message controls always have somewhere to be shown
-	;margin-block: 0.1rem
+	;margin-block: 0.125rem
 	;" do we need all these
 	;overflow-y: hidden
 	;background: var(--T-bg)
@@ -382,14 +388,14 @@ message-part {
 	;overflow: visible
 	;display: block
 	;min-height: 1rem ;" this is so the message controls always have somewhere to be shown
-	;padding-block: 0.1rem
-	;padding-left: calc(var(--chat-gutter) + 0.2rem)
+	;padding-block: 0.125rem
+	;padding-left: calc(var(--chat-gutter) + 0.1875rem)
 	;--T-bg: transparent
 }
 message-part.edited {
 	;" todo: fix this styling
 	;" we may just need an extra container for message-parts...
-	;padding-left: calc(var(--chat-gutter) + 0.2rem - 2px)
+	;padding-left: calc(var(--chat-gutter) + 0.1875rem - 2px)
 	;border-left: 2px solid gray
 	;"outline-left: 2px solid gray
 }
@@ -412,7 +418,7 @@ message-controls {
 	;display: inline-flex
 	;position: absolute
 	;width: var(--chat-gutter)
-	;height: 1.3rem
+	;height: 1.3125rem
 	;z-index: 9
 	;" don't remove these prefixes
 	;-webkit-user-select: none
@@ -429,12 +435,12 @@ message-controls:hover + message-part {
 
 .messageGap {
 	;border: 1px dashed gray /*♥*/
-	;margin-top: 0.3rem
-	;margin-bottom: 0.3rem
+	;margin-top: 0.3125rem
+	;margin-bottom: 0.3125rem
 }
 
 .chat-bottom {
-	height: 0.9rem; /* increased to 0.9rem because we moved message-block padding to top of element */
+	height: 0.875rem; /* increased to 0.9rem because we moved message-block padding to top of element */
 }
 
 /* chat input */
@@ -530,7 +536,7 @@ html:not(.f-myUserPage) .myUserPage {
 button {
 	cursor: pointer;
 	font: var(--T-font);
-	font-size: 0.8em;
+	font-size: 0.8125em;
 	line-height: normal !important;
 	
 	border: var(--T-button-border);
@@ -572,7 +578,7 @@ form-table > .field {
 form-table > .wide.label {
 	;text-align: left
 	;font-weight: 500
-	;font-size: 1.2em
+	;font-size: 1.1875em
 }
 
 /* what are these for? */
@@ -581,8 +587,8 @@ table {
 	;border-collapse: collapse
 }
 th {
-	;padding-left: 0.3rem
-	;padding-right: 0.3rem
+	;padding-left: 0.3125rem
+	;padding-right: 0.3125rem
 }
 .permissionRow > th {
 	;padding: 0
@@ -621,7 +627,7 @@ input[type="checkbox"] {
 	max-width: 8em;
 }
 input, output, select {
-	font-size: 0.9em;
+	font-size: 0.875em;
 	background-color: var(--T-bg);
 	border: 2px solid var(--T-textarea-border-color);
 	border-radius: 1px;
@@ -649,7 +655,7 @@ input::file-selector-button {
 input::placeholder {
 	font-style: italic;
 	color: #80808099;
-	padding-left: 0.3rem;
+	padding-left: 0.3125rem;
 }
 input:invalid {
 	background: var(--error-bg);
@@ -675,9 +681,9 @@ textarea {
 	;max-width: 100%
 	;border: 2px solid var(--T-textarea-border-color)
 	;border-radius: 2px
-	;box-shadow: 0.1rem 0.2rem 0.3rem -0.2rem #0D0D0D80
+	;box-shadow: 0.125rem 0.1875rem 0.3125rem -0.1875rem #0D0D0D80
 	;font: var(--T-font)
-	;font-size: 0.8em
+	;font-size: 0.8125em
 	;color: var(--T-color)
 	;background: var(--T-bg)
 	;white-space: break-spaces; /* optional */
@@ -723,7 +729,7 @@ textarea-container, textarea-container > textarea {
  **********/
 
 .errorPage {
-	padding: 0.2rem;
+	padding: 0.1875rem;
 }
 
 button.voteButton[data-selected][data-vote="g"] {
@@ -747,8 +753,8 @@ button.voteButton[data-selected][data-vote="o"] {
 }
 
 .pageInfoPane {
-	;padding-left: 0.3rem
-	;padding-right: 0.3rem
+	;padding-left: 0.3125rem
+	;padding-right: 0.3125rem
 	;border-bottom: 1px solid var(--T-border-color)
 	;background: var(--bar-bg)
 	;box-shadow: var(--normal-shadow)
@@ -792,8 +798,8 @@ html:not(.f-fileSelected) .fileSelected {
 	;background-repeat: no-repeat
 	;background-size: contain
 	;background-position: center
-	;margin-left: 0.1rem
-	;margin-right: 0.1rem
+	;margin-left: 0.125rem
+	;margin-right: 0.125rem
 }
 
 /* TODO: margin should be fullscreen mode by default, then disabled with @media (min-width) */ /* ? */
@@ -801,8 +807,8 @@ html:not(.f-fileSelected) .fileSelected {
 /* ehhh */
 .half {
 	;display: block
-	;min-height: 1.15rem
-	;line-height: 1.15rem
+	;min-height: 1.125rem
+	;line-height: 1.125rem
 	;text-align: center
 }
 .half-label {

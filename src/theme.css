@@ -1,7 +1,7 @@
 /* shared */
 html {
 	--T-font: 1em roboto, sans-serif;
-	--T-monospace-font: 0.8em 'cascadia code', consolas, monospace;
+	--T-monospace-font: 0.8125em 'cascadia code', consolas, monospace;
 }
 
 /* default theme */
