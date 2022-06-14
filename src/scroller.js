@@ -174,16 +174,9 @@ class Scroller {
 		//this.inner.style.transform = `translateY(0px)`
 	}
 	animate_insertion(dist, prev_time = document.timeline.currentTime) {
-		// abs allows animation to play backwards (for deleting comments)
-		if (Math.abs(dist) <= 1) {
-			this.end_animation()
-			return
-		}
 		this.set_shift(dist)
-		//this.inner.style.transform = `translateY(${dist}px)`
 		this.anim_pos = dist
-		let id = window.requestAnimationFrame((time)=>{
-			//time = document.timeline.currentTime
+		let id = this.anim_id = window.requestAnimationFrame((time)=>{
 			// if the animation was cancelled or another was started
 			if (this.anim_id != id)
 				return
@@ -191,9 +184,12 @@ class Scroller {
 			// new_dist = dist * (1-this.rate) @ 60fps
 			let dt = Math.min((time-prev_time) / (1000/60), 2)
 			let new_dist = dist * Math.pow(1-this.rate, dt)
-			this.animate_insertion(new_dist, time)
+			// abs allows animation to play backwards (for deleting)
+			if (Math.abs(new_dist) <= 1)
+				this.end_animation()
+			else
+				this.animate_insertion(new_dist, time)
 		})
-		this.anim_id = id
 	}
 	// todo: this should be used instead of print() if you're making changes
 	// to elements above the current scroll position
@@ -234,3 +230,7 @@ Scroller.anim_type = 2
 // have a list of all modified elements
 // measure their heights before/after
 // animate the height changes of those elements by setting their style.height
+
+// idea: what if we, after an element is inserted, lock the scroll-inner height to its current value
+// then, on inserting a new element, we expand the height to fit the new content
+// have to use resizeobserver to adjust.. nnn
