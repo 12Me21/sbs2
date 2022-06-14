@@ -133,10 +133,11 @@ class Scroller {
 			return
 		if (this.anim_type==2) {
 			//let d = parseFloat(getComputedStyle(this.inner).top)
-			this.inner.classList.remove('scroll-anim2')
-			this.inner.style.setProperty('--scroll', dist+"px")
-			this.inner.scrollTop
-			this.inner.classList.add('scroll-anim2')
+			this.inner.classList.remove('scroll-anim3')
+			this.inner.style.transform = `translateY(${dist}px)`
+			this.inner.scrollLeft
+			this.inner.classList.add('scroll-anim3')
+			this.inner.style.transform = `translateY(0px)`
 			/*			this.inner.classList.remove('scroll-anim3')
 			this.inner.style.setProperty('--scroll', dist+"px")
 			this.inner.scrollLeft
@@ -151,8 +152,8 @@ class Scroller {
 	}
 	cancel_animation() {
 		if (this.anim_type==2) {
-			this.inner.style.setProperty('--scroll', "0")
-			this.inner.classList.remove('scroll-anim2')
+			this.inner.classList.remove('scroll-anim3')
+			//this.inner.style.transform = `translateY(0px)`
 		} else if (this.anim_type==1) {
 			if (this.anim_id != null) {
 				window.cancelAnimationFrame(this.anim_id)
@@ -164,7 +165,7 @@ class Scroller {
 	end_animation() {
 		this.anim_id = null
 		this.anim_pos = 0
-		this.inner.style.setProperty('--scroll', "0")
+		this.inner.style.transform = `translateY(0px)`
 	}
 	animate_insertion(dist, prev_time = document.timeline.currentTime) {
 		// abs allows animation to play backwards (for deleting comments)
@@ -172,7 +173,7 @@ class Scroller {
 			this.end_animation()
 			return
 		}
-		this.inner.style.setProperty('--scroll', dist+"px")
+		this.inner.style.transform = `translateY(${dist}px)`
 		this.anim_pos = dist
 		let id = window.requestAnimationFrame((time)=>{
 			//time = document.timeline.currentTime

@@ -293,7 +293,7 @@ chat-pane .userlist {
 .avatar {
 	border-radius: 3px;
 	background: var(--T-avatar-bg);
-	contain: none; /* so the :focus outline will appear, even though the <a> is small */
+	/*contain: none; /* so the :focus outline will appear, even though the <a> is small */
 }
 .status-idle > .avatar {
 	filter: grayscale(1);
@@ -854,13 +854,12 @@ html[data-socket-state="dead"] #\$openSidebar {
 /* scroll animation */
 scroll-middle > scroll-inner {
 	/*will-change: transform; dont use this, scroll-inner is too fucking tall*/
-	transform: translateY(var(--scroll, 0));
+	/*transform: translateY(var(--scroll, 0));*/
 }
 @keyframes scroll {
 	from { transform: translateY(var(--scroll, 0)); }
 }
 scroll-middle > scroll-inner.scroll-anim2 {
-	transform: translateY(0);
 	animation: scroll .4015s cubic-bezier(0.16,1,0.3,1);
 	animation-start-delay: .01s;
 }
@@ -870,7 +869,7 @@ scroll-middle > scroll-inner.scroll-anim3 {
 
 /* markup stuff */
 .M-spoiler-label {
-	contain: none; /* the focus outline wasnt showing */
+	/*contain: none; /* the focus outline wasnt showing */
 }
 .M-spoiler-label:focus {
 	border-color: var(--T-box-bg);
