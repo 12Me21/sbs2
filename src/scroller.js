@@ -132,6 +132,9 @@ class Scroller {
 			this.after_print(height)
 		}
 	}
+	set_shift(y) {
+		this.inner.style.transform = y ? `translateY(${y}px)` : ""
+	}
 	start_animation(dist) {
 		if (Math.abs(dist) <= 1)
 			return
@@ -139,10 +142,10 @@ class Scroller {
 			this.anim_id = true
 			//let d = parseFloat(getComputedStyle(this.inner).top)
 			this.inner.style.transition = "initial"
-			this.inner.style.top = `${dist}px`
+			this.set_shift(dist)
 			void this.inner.offsetWidth
 			this.inner.style.transition = ""
-			this.inner.style.top = `0px`
+			this.set_shift(0)
 		} else if (this.anim_type==1) {
 			window.cancelAnimationFrame(this.anim_id)
 			this.anim_id = null
@@ -153,7 +156,7 @@ class Scroller {
 		if (this.anim_type==2) {
 			if (this.anim_id) {
 				this.inner.style.transition = "initial"
-				this.inner.style.top = `0px`
+				this.set_shift(0)
 				this.anim_id = null
 			}
 		} else if (this.anim_type==1) {
@@ -167,7 +170,7 @@ class Scroller {
 	end_animation() {
 		this.anim_id = null
 		this.anim_pos = 0
-		this.inner.style.top = `0px`
+		this.set_shift(0)
 		//this.inner.style.transform = `translateY(0px)`
 	}
 	animate_insertion(dist, prev_time = document.timeline.currentTime) {
@@ -176,7 +179,7 @@ class Scroller {
 			this.end_animation()
 			return
 		}
-		this.inner.style.top = `${dist}px`
+		this.set_shift(dist)
 		//this.inner.style.transform = `translateY(${dist}px)`
 		this.anim_pos = dist
 		let id = window.requestAnimationFrame((time)=>{

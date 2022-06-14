@@ -859,10 +859,10 @@ html[data-socket-state="dead"] #\$openSidebar {
 
 /* scroll animation */
 scroll-middle > scroll-inner {
-	will-change: top;
+	/*will-change: top;*/
 }
 scroll-middle > scroll-inner.scroll-anim3 {
-	transition: top .4015s cubic-bezier(.16,1,.3,1) .01s;
+	transition: transform .4015s cubic-bezier(.16,1,.3,1) .01s;
 }
 
 /* markup stuff */
