@@ -694,10 +694,10 @@ textarea-container {
 	;background: var(--T-bg)
 }
 textarea-container > textarea {
-	;height: 2.5em
-	;min-height: 2.5em
-	;box-shadow: none
-	;border-radius: 0
+	height: 2.625em; /* should be approx. line-height * 2 */
+	min-height: 2.625em;
+	box-shadow: none;
+	border-radius: 0;
 }
 textarea-container > textarea:focus {
 	outline: 5px solid #878;
