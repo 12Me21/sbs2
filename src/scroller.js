@@ -72,7 +72,6 @@ class Scroller {
 		this.outer = outer
 		this.inner = inner
 		
-		this.outer.classList.add('scroller')
 		this.middle = document.createElement('scroll-middle')
 		this.middle.append(this.inner)
 		this.outer.append(this.middle)
@@ -134,10 +133,10 @@ class Scroller {
 			return
 		if (this.anim_type==2) {
 			//let d = parseFloat(getComputedStyle(this.inner).top)
-			this.outer.classList.remove('scroll-anim2')
-			this.outer.style.setProperty('--scroll', dist+"px")
-			this.outer.scrollTop
-			this.outer.classList.add('scroll-anim2')
+			this.inner.classList.remove('scroll-anim2')
+			this.inner.style.setProperty('--scroll', dist+"px")
+			this.inner.scrollTop
+			this.inner.classList.add('scroll-anim2')
 			/*			this.inner.classList.remove('scroll-anim3')
 			this.inner.style.setProperty('--scroll', dist+"px")
 			this.inner.scrollLeft
@@ -147,14 +146,13 @@ class Scroller {
 		} else if (this.anim_type==1) {
 			window.cancelAnimationFrame(this.anim_id)
 			this.anim_id = null
-			this.outer.classList.add('scroll-anim1')
 			this.animate_insertion(this.anim_pos + dist)
 		}
 	}
 	cancel_animation() {
 		if (this.anim_type==2) {
-			this.outer.style.setProperty('--scroll', "0")
-			this.outer.classList.remove('scroll-anim2')
+			this.inner.style.setProperty('--scroll', "0")
+			this.inner.classList.remove('scroll-anim2')
 		} else if (this.anim_type==1) {
 			if (this.anim_id != null) {
 				window.cancelAnimationFrame(this.anim_id)
@@ -166,8 +164,7 @@ class Scroller {
 	end_animation() {
 		this.anim_id = null
 		this.anim_pos = 0
-		this.outer.style.marginBottom = ""
-		this.outer.classList.remove('scroll-anim1')
+		this.inner.style.setProperty('--scroll', "0")
 	}
 	animate_insertion(dist, prev_time = document.timeline.currentTime) {
 		// abs allows animation to play backwards (for deleting comments)
@@ -175,7 +172,7 @@ class Scroller {
 			this.end_animation()
 			return
 		}
-		this.outer.style.marginBottom = -dist+"px"
+		this.inner.style.setProperty('--scroll', dist+"px")
 		this.anim_pos = dist
 		let id = window.requestAnimationFrame((time)=>{
 			//time = document.timeline.currentTime

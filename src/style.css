@@ -851,51 +851,19 @@ html[data-socket-state="dead"] #\$openSidebar {
 	;--button-bg: linear-gradient(#f86060, #f86060, red)
 }
 
-chat-pane:not(#a) {
-	overflow: clip;
-	overflow: hidden;
-}
-
-scroll-outer.scroller {
-	height: unset;
-	will-change: margin-bottom, transform;
-}
-
-#\$sidebarBottom {
-	display: flex;
-}
-scroll-outer {
-	width: 100%;
-}
-scroll-outer.scroll-anim1 {
-	/*margin-bottom: calc(0px - var(--scroll));*/
-}
-@keyframes scroll2 {
-	from {
-		margin-bottom: calc(0px - var(--scroll));
-	}
-	to {
-		margin-bottom: calc(0px - var(--scroll));
-		transform: translateY(calc(0px - var(--scroll)));
-	}
-}
-scroll-outer.scroll-anim2 {
-	animation: scroll2 .4015s cubic-bezier(0.16,1,0.3,1) backwards;
-}
-
 /* scroll animation */
-/*scroll-middle > scroll-inner {
-	/*will-change: transform; dont use this, scroll-inner is too fucking tall
+scroll-middle > scroll-inner {
+	/*will-change: transform; dont use this, scroll-inner is too fucking tall*/
 	transform: translateY(var(--scroll, 0));
-}*/
+}
 @keyframes scroll {
 	from { transform: translateY(var(--scroll, 0)); }
 }
-/*scroll-middle > scroll-inner.scroll-anim2 {
+scroll-middle > scroll-inner.scroll-anim2 {
 	transform: translateY(0);
 	animation: scroll .4015s cubic-bezier(0.16,1,0.3,1);
 	animation-start-delay: .01s;
-}*/
+}
 scroll-middle > scroll-inner.scroll-anim3 {
 	transition: transform .4015s cubic-bezier(.16,1,.3,1) .01s;
 }
