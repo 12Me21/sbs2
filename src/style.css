@@ -861,7 +861,7 @@ html[data-socket-state="dead"] #\$openSidebar {
 
 /* markup stuff */
 .M-spoiler-label {
-	/*contain: none; /* the focus outline wasnt showing */
+	contain: none; /* the focus outline wasnt showing, idk why */
 }
 .M-spoiler-label:focus {
 	border-color: var(--T-box-bg);
