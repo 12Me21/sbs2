@@ -18,12 +18,7 @@ View.add_view('editpage', {
 			let data = JSON.parse($editorData.value)
 			data.text = this.textarea.value
 			Object.assign(this.page, data)
-			Req.write(this.page).do = (resp, err)=>{
-				if (!err)
-					alert('ok')
-				else
-					alert('edit failed')
-			}
+			this.save()
 		}
 		let batch = (cb,w=0)=>e=>w++||requestAnimationFrame(_=>cb(e,w=0))
 		$editorPreviewButton.onchange = e=>{
@@ -44,6 +39,9 @@ View.add_view('editpage', {
 	},
 	
 	Start({id, query}) {
+		if (id==null) {
+			return {quick: true, ext: {}}
+		}
 		return {
 			chain: {
 				values: {
@@ -60,23 +58,49 @@ View.add_view('editpage', {
 			},
 		}
 	},
+	Quick(ext, location) {
+		// hack to create new page object
+		// todo: clean up TYPES
+		let page = TYPES.content(Object.assign({}, TYPES.content.prototype))
+		page.contentType = ABOUT.details.codes.InternalContentType.page
+		page.values = {
+			markupLang: Settings.values.chat_markup,
+		}
+		page.name = "New Page"
+		page.permissions = {"0":"CR"}
+		
+		this.got_page(page, true)
+	},
 	Render({content:[page], user}, ext) {
+		this.got_page(page, false)
+	},
+	Cleanup(type) {
+		this.page = null
+		$editorPreview.fill()
+	},
+	
+	got_page(page, creating) {
 		View.set_entity_title(page)
 		this.page = page
+		$editorSave.textContent = creating ? "Create" : "Save"
 		$editPageLink.href = "#page/"+page.id
-		this.textarea.value = page.text
-		page.text = null
-		$editorData.value = JSON.stringify(page, null, 1)
+		this.textarea.value = page.text //todo: preserve undo?
+		// only show writable fields
+		let writable = {}
+		for (let [k,v] of Object.entries(page)) {
+			let info = ABOUT.details.types.content[k]
+			if (!info || info[creating?'writableOnInsert':'writableOnUpdate']) {
+				if (k!='text')
+					writable[k] = v
+			}
+		}
+		$editorData.value = JSON.stringify(writable, null, 1)
 		
 		$editorPreviewButton.checked = false
 		this.toggle_preview(false)
 		$editorLiveButton.checked = true
 		this.live_preview = true
 		//this.update_preview()
-	},
-	Cleanup(type) {
-		this.page = null
-		$editorPreview.fill()
 	},
 	toggle_preview(state) {
 		this.show_preview = state
@@ -91,5 +115,15 @@ View.add_view('editpage', {
 	},
 	update_preview(full) {
 		Markup.convert_lang(this.textarea.value, this.page.values.markupLang, this.preview, {preview: !full})
+	},
+	save() {
+		Req.write(this.page).do = (resp, err)=>{
+			if (err) {
+				alert('edit failed')
+				return
+			}
+			alert('ok')
+			this.got_page(resp, false)
+		}
 	}
 })

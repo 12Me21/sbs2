@@ -48,6 +48,22 @@ Object.assign(Author.prototype, {
 	//			content_name: "",
 })
 
+// class structure:
+
+// TYPES[thing]:
+// .init(obj) -> instance
+// .new() -> create new, with default values
+// .fields[name] -> info about field, incl default value
+// .prototype -> used for the prototype of instances
+// some way of extracting/setting all writable fields? (for the editor)
+
+// so like, you'd do, for editing:
+// - download data
+// - call TYPES[type].init(obj)
+// - get a list of writable fields and let the user edit
+// - put the new values back into the original object
+// - 
+
 for (let type_name in ABOUT.details.types) {
 	let field_datas = ABOUT.details.types[type_name]
 	let field_defaults = ABOUT.details.objects[type_name]
@@ -78,7 +94,7 @@ for (let type_name in ABOUT.details.types) {
 	for (let field_name in field_datas) {
 		let field_data = field_datas[field_name]
 		let field_default = field_defaults[field_name]
-		proto[field_name] = {value: field_default, enumerable: true, writable: true}
+		proto[field_name] = {value: Object.freeze(field_default), enumerable: true, writable: true}
 		if (field_data.type=='datetime')
 			proto[field_name+"2"] = {get() {
 				let d = this[field_name]
@@ -90,11 +106,21 @@ for (let type_name in ABOUT.details.types) {
 		Object.setPrototypeOf(o, proto)
 		return o
 	}
+	cons.prototype = proto
 	//cons.Fields = field_datas
 	TYPES[type_name] = cons
 }
+// change all the maps to be bidirectional
+// ex: {'0':'none', '1':'page', none:0, page:1}
+for (let enm in ABOUT.details.codes) {
+	let map = ABOUT.details.codes[enm]
+	for (let code in map) {
+		map[map[code]] = code
+		map.MAX = code
+	}
+}
 
-ABOUT = null
+//ABOUT = null
 
 function map_user(obj, prop, users) {
 	let user = users[obj[prop+"Id"]]

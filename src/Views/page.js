@@ -60,11 +60,13 @@ View.add_view('page', {
 	Start({id, query}) {
 		let field
 		if ('number'==typeof id) {
-			let room = ChatRoom.rooms[id]
-			if (room) {
-				let z = room.pinned
-				room.pinned = true
-				return {quick: true, ext: {room, z}}
+			if (id != 0) {
+				let room = ChatRoom.rooms[id]
+				if (room) {
+					let z = room.pinned
+					room.pinned = true
+					return {quick: true, ext: {room, z}}
+				}
 			}
 			field = 'id'
 		} else {
