@@ -278,6 +278,8 @@ activity-users {
 .nav {
 	background: var(--light-invert-bg);
 	color: var(--databartxtcolor);
+	--T-link-color: var(--link-invert-color);
+	--T-link-hover-color: var(--link-invert-hover-color);
 }
 .nav > span {
 	color: var(--databartxtcolor);

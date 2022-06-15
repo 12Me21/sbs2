@@ -58,22 +58,26 @@ View.add_view('page', {
 	},
 	
 	Start({id, query}) {
-		// todo: we should manually request the userlist.
-		// right now it generally appears automatically due to your own status
-		let room = ChatRoom.rooms[id]
-		if (room) {
-			let z = room.pinned
-			room.pinned = true
-			return {quick: true, ext: {room, z}}
+		let field
+		if ('number'==typeof id) {
+			let room = ChatRoom.rooms[id]
+			if (room) {
+				let z = room.pinned
+				room.pinned = true
+				return {quick: true, ext: {room, z}}
+			}
+			field = 'id'
+		} else {
+			field = 'hash'
 		}
 		return {
 			chain: {
 				values: {
-					pid: id,
+					key: id,
 				},
 				requests: [
-					{type: 'content', fields: "*", query: "id = @pid"},
-					{type: 'message', fields: "*", query: "contentId = @pid AND !notdeleted()", order: 'id_desc', limit: 30},
+					{type: 'content', fields: "*", query: `${field} = @key`},
+					{type: 'message', fields: "*", query: "contentId in @content.id AND !notdeleted()", order: 'id_desc', limit: 30},
 					//				{name: 'Mpinned', type: 'message', fields: "*", query: "id in @content.values.pinned"},
 					{type: 'user', fields: "*", query: "id IN @content.createUserId OR id IN @message.createUserId OR id IN @message.editUserId"},
 				],

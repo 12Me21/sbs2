@@ -165,6 +165,7 @@
 <script src=src/Views/user.js></script>
 <script src=src/Views/comments.js></script>
 <script src=src/Views/editpage.js></script>
+<script src=src/Views/file.js></script>
 
 <script src=src/navigate.js></script>
 
@@ -193,7 +194,7 @@
 	<span data-view=editpage>
 		<a class='textItem' id=$editPageLink>[Back]</a>
 	</span>
-	<span data-view=user>
+	<span data-view=user,file>
 		<a class='textItem' id=$userPageLink>[Page]</a>
 	</span>
 </header>
@@ -270,6 +271,14 @@
 			</resize-handle>
 			<textarea id=$editorTextarea class='FILL'></textarea>
 		</div>
+		<!--[ View: file ]-->
+		<div data-slide=file class='COL'>
+			<img id=$fileImage>
+			<div id=$fileAuthor class='nav ROW'></div>
+			<button id=$fileSetAvatar>set as avatar</button>
+			<div class='pre' id=$fileInfo></div>
+		</div>
+		
 	</main>
 
 	<!--========\
@@ -313,6 +322,7 @@
 					<input readonly class='FILL item' id=$file_url>
 					<button id=$file_done class='item'>Done</button>
 				</div>
+				<div><a id=$file_upload_page>[Page]</a></div>
 				<br id=$file_upload_form>
 				<div class='FILL image-box' style="min-height: 3rem;"><img id=$file_image></div>
 			</sidebar-panel>

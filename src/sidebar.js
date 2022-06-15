@@ -316,6 +316,7 @@ let FileUploader = Object.seal({
 				let url = Req.file_url(file.hash)
 				this.show_parts(2, url, null)
 				$file_url.value = url
+				$file_upload_page.href = "#file/"+file.hash
 				this.last_file = file
 			}
 		}
@@ -359,6 +360,7 @@ let FileUploader = Object.seal({
 		$file_url_insert.hidden = phase!=2
 		$file_url.hidden = phase!=2
 		$file_done.hidden = phase!=2
+		$file_upload_page.hidden = phase!=2
 		// we set to "" first, so the old image isnt visible whilst the new one is loading
 		$file_image.src = ""
 		if (url)

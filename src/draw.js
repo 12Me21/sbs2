@@ -497,6 +497,17 @@ const Draw = Object.seal({
 		return d
 	}.bind(𐀶`<div class='bar rem1-5 sidebarComment ellipsis'><a tabindex=-1><img class='item icon avatar' width=100 height=100><span class='textItem entity-title pre'></span></a>: </div>`),
 	
+	user_label: function(user) {
+		let e = this()
+		let a = e.firstChild
+		a.href = "#user/"+user.id
+		let img = a.firstChild
+		img.src = Req.file_url(user.avatar, "size=100&crop=true")
+		let name = a.lastChild
+		name.textContent = user.username
+		return e
+	}.bind(𐀶`<div class='bar rem1-5'><a tabindex=-1><img class='item icon avatar' width=100 height=100><span class='textItem entity-title pre'></span></div>`),
+	
 	//todo:
 	sidebarPageLabel(content) {
 		
