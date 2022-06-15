@@ -1,5 +1,4 @@
 'use strict'
-delete window.sidebar // obsolete firefox global variable
 
 let Sidebar = Object.seal({
 	scroller: null,

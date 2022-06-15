@@ -34,7 +34,7 @@ View.add_view('file', {
 		}
 	},
 	Render({user, content:[image]}, ext) {
-		this.current = content
+		this.current = image
 		View.set_title(image.name + " - " + image.hash)
 		$fileImage.src = ""
 		$fileImage.src = Req.file_url(image.hash)

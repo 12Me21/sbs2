@@ -879,3 +879,8 @@ html[data-socket-state="dead"] #\$openSidebar {
 	max-height: 75vh;
 }
 
+#\$fileImage {
+	max-width: 100%;
+	height: auto;
+	max-height: 75vh;
+}

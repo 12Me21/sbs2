@@ -110,6 +110,10 @@ METHOD(Generator, 'run', function(ok=console.info, err=e=>{ throw e }) {
 	return this
 })
 
+// obsolete global vars
+delete window.content
+delete window.sidebar
+
 
 // (end of scary part)
 
