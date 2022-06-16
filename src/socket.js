@@ -237,32 +237,36 @@ let Lp = singleton({
 		} }
 		
 	},
-	process_live(events, entitys) {
+	process_live(events, listmapmap) {
 		let comments = []
 		Entity.ascending(events)
-		//events.sort((a,b)=>a.id-b.id)
 		let prev_id = -Infinity
-		for (let {refId, type, action, userId, date, id} of events) {
-			if (id < prev_id) {
+		for (let event of events) {
+			if (event.id < prev_id) {
 				alert("event ids out of order! please report this")
 				print(JSON.stringify(events))
 				console.warn(events)
 			}
-			prev_id = id
-			let maplist = entitys[type]
-			switch (type) { default: {
-				console.warn("unknown event type:", type, events)
+			prev_id = event.id
+			
+			let maplist = listmapmap[event.type]
+			let ref_id = event.refId
+			switch (event.type) { default: {
+				console.warn("unknown event type:", event.type, event)
 			} break; case 'message_event': {
-				let message = maplist.message[~refId]
+				let message = maplist.message[~ref_id]
 				if (message) {
 					Act.message(message, maplist)
 					comments.push(message)
 				}
+			/*} break; case 'activity_event': {
+				let act = maplist.activity[~ref_id]*/
+				
 			} break; case 'user_event': {
-				let user = maplist.user[~refId]
+				let user = maplist.user[~ref_id]
 				if (user) {
 					ChatRoom.update_avatar(user) // messy...
-					if (refId==Req.uid)
+					if (ref_id==Req.uid)
 						View.update_my_user(user)
 				}
 			} }

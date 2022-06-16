@@ -191,7 +191,6 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 		localStorage.removeItem(this.storage_key)
 		this.auth = null
 		Lp.stop()
-		window.alert("logged out")
 		View.flag('loggedIn', false)
 	},
 	

@@ -216,6 +216,13 @@ activity-users {
 #\$localSettings > div {
 	display: flex;
 	flex-wrap: wrap;
+	align-items: center;
+}
+#\$localSettings > div > * {
+	flex-grow: 1;
+	flex-shrink: 0;
+	width: 49%;
+	min-width: 6.5em;
 }
 #\$localSettings > div > :last-child {
 	flex-grow: 1;
@@ -226,12 +233,16 @@ activity-users {
 }
 #\$localSettings > div > label {
 	font-weight: 500;
-	align-self: center;
+	line-height: 1em;
+	padding-bottom: .1875em;
 }
 #\$localSettings > div {
 	column-gap: 0.1875rem;
 	margin-bottom: 0.3125rem;
 }
+
+
+
 /* sidebar debug tab */
 #\$debugOutput {
 	overflow-y: scroll;

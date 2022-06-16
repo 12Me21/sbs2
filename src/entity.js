@@ -48,7 +48,7 @@ Object.assign(Author.prototype, {
 	//			content_name: "",
 })
 
-// class structure:
+// TODO: improve class structure:
 
 // TYPES[thing]:
 // .init(obj) -> instance
@@ -64,51 +64,60 @@ Object.assign(Author.prototype, {
 // - put the new values back into the original object
 // - 
 
-for (let type_name in ABOUT.details.types) {
-	let field_datas = ABOUT.details.types[type_name]
-	let field_defaults = ABOUT.details.objects[type_name]
-	let writables = {}
-	let proto = {
-		// common methods
-		toJSON: {}, // JSON.stringify() etc.
-		then: {}, // Promise, await
-		// conversions
-		[Symbol.toPrimitive]: {value: NO_CONVERT},
-		[Symbol.toStringTag]: {value: "Entity:"+type_name},
-		/*[Symbol.toBlob]:*/
-		Blob: {value() {
+function BaseEntity() {
+}
+BaseEntity.prototype = Object.create(STRICT, {
+	toJSON: {}, // JSON.stringify() etc.
+	then: {}, // Promise, await
+	// conversions
+	[Symbol.toPrimitive]: {value: NO_CONVERT},
+	Blob: {
+		value() {
 			return new Blob([JSON.stringify(this)], {type:"application/json;charset=UTF-8"})
-		}},
-		// type info
-		Type: {value: type_name},
-		Fields: {value: field_datas},
+		}
+	},
+	[Symbol.toStringTag]: {
+		get() { return "qcs:"+this.Type }
+	},
+})
+
+for (let name in ABOUT.details.types) {
+	let proto_desc = {
+		constructor: null,
+		Type: {value: name},
 	}
-	if (type_name == 'message') {
-		proto.Author = {
+	if (name == 'message') {
+		proto_desc.Author = {
 			value: Object.freeze(Object.create(Author.prototype)),
 			writable: true,
 		}
 	}
-	//if (type_name == 'file') {
-	//	proto.url = {value(query) {
-	for (let field_name in field_datas) {
-		let field_data = field_datas[field_name]
-		let field_default = field_defaults[field_name]
-		proto[field_name] = {value: Object.freeze(field_default), enumerable: true, writable: true}
-		if (field_data.type=='datetime')
-			proto[field_name+"2"] = {get() {
-				let d = this[field_name]
+	let fields = ABOUT.details.types[name]
+	let defaults = ABOUT.details.objects[name]
+	for (let key in fields) {
+		let field = fields[key]
+		proto_desc[key] = {
+			enumerable: true, writable: true,
+			value: Object.freeze(defaults[key]),
+		}
+		if (field.type=='datetime')
+			proto_desc[key+"2"] = {get() {
+				let d = this[key]
 				return d ? new Date(d) : null
 			}}
 	}
-	proto = Object.create(STRICT, proto)
+	let proto
 	let cons = (o)=>{
-		Object.setPrototypeOf(o, proto)
-		return o
+		return Object.setPrototypeOf(o, proto)
 	}
-	cons.prototype = proto
-	//cons.Fields = field_datas
-	TYPES[type_name] = cons
+	//Object.setPrototypeOf(cons, BaseEntity)
+	proto_desc.constructor = {value: cons}
+	proto = Object.create(BaseEntity.prototype, proto_desc)
+	Object.defineProperties(cons, {
+		name: {value: "qcs:"+name},
+		prototype: {value: proto},
+	})
+	TYPES[name] = cons
 }
 // change all the maps to be bidirectional
 // ex: {'0':'none', '1':'page', none:0, page:1}
@@ -118,17 +127,6 @@ for (let enm in ABOUT.details.codes) {
 		map[map[code]] = code
 		map.MAX = code
 	}
-}
-
-//ABOUT = null
-
-function map_user(obj, prop, users) {
-	let user = users[obj[prop+"Id"]]
-	obj[prop] = user || null
-}
-function map_date(obj, prop) {
-	if (obj[prop])
-		obj[prop] = new Date(obj[prop])
 }
 
 // functions for processing recieved entities/
@@ -207,7 +205,9 @@ Entity = singleton({
 	},
 	
 	ascending(list, field='id') {
-		if (list.length>1 && list[0][field] > list[1][field])
+		if (list.length>1 && list[0][field] > list[1][field]) {
+			print("warning: events reversed?")
 			list.reverse()
+		}
 	},
 })
