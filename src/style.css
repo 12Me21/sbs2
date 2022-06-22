@@ -696,7 +696,7 @@ input:invalid {
 textarea {
 	;max-width: 100%
 	;border: 2px solid var(--T-textarea-border-color)
-	;border-radius: 2px
+	;border-radius: 0;
 	;box-shadow: 0.125rem 0.1875rem 0.3125rem -0.1875rem #0D0D0D80
 	;font: var(--T-font)
 	;font-size: 0.8125em
@@ -718,7 +718,7 @@ textarea-container > textarea {
 textarea-container > textarea:focus {
 	outline: 5px solid #878;
 	outline-offset: 3px;
-	border-radius: 3px;
+	border-radius: 0;
 	animation-name: none;
 }
 textarea-container, textarea-container > textarea {
