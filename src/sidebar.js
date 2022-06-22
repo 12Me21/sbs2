@@ -267,14 +267,18 @@ let FileUploader = Object.seal({
 			let file = this.last_file
 			if (!file) return
 			let url = Req.file_url(file.hash)
-			let meta = JSON.parse(file.meta)
-			let size = meta.width+"x"+meta.height
 			
+			let meta = JSON.parse(file.meta)
 			let markup = Settings.values.chat_markup
-			if (markup=='12y')
-				url = "!"+url+"#"+size
-			else if (markup=='12y2')
-				url = "!"+url+"["+size+"]"
+			if (markup=='12y') {
+				url = "!"+url
+				if (meta.width && meta.height)
+					url += "#"+meta.width+"x"+meta.height
+			} else if (markup=='12y2') {
+				url = "!"+url
+				if (meta.width && meta.height)
+					url += "["+meta.width+"x"+meta.height+"]"
+			}
 			
 			Sidebar.close_fullscreen()
 			$chatTextarea.focus()
@@ -312,11 +316,7 @@ let FileUploader = Object.seal({
 				if (priv && file.permissions[0])
 					alert("file permissions not set correctly!\nid:"+file.id)
 				
-				let url = Req.file_url(file.hash)
-				this.show_parts(2, url, null)
-				$file_url.value = url
-				$file_upload_page.href = "#file/"+file.hash
-				this.last_file = file
+				this.show_content(file)
 			}
 		}
 		$file_url.onfocus = e=>{
@@ -324,6 +324,13 @@ let FileUploader = Object.seal({
 				$file_url.select()
 			})
 		}
+	},
+	
+	show_content(content) {
+		let url = Req.file_url(content.hash)
+		this.show_parts(2, url, null)
+		$file_upload_page.href = "#file/"+content.hash
+		this.last_file = content
 	},
 	
 	convert_image(file, quality, callback) {
@@ -351,6 +358,7 @@ let FileUploader = Object.seal({
 		img.src = URL.createObjectURL(file)
 	},
 	
+	// file is only set if we're uploading a file
 	show_parts(phase, url, file) {
 		$file_browse.hidden = phase!=0
 		$file_cancel.hidden = phase!=1
@@ -362,8 +370,13 @@ let FileUploader = Object.seal({
 		$file_upload_page.hidden = phase!=2
 		// we set to "" first, so the old image isnt visible whilst the new one is loading
 		$file_image.src = ""
-		if (url)
+		if (url) {
 			$file_image.src = url
+			$file_url.value = url
+			$file_url.scrollLeft = 999
+		} else {
+			$file_url.value = ""
+		}
 		this.file = file || null
 	},
 	file_cancel() {

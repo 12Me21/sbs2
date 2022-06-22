@@ -277,7 +277,10 @@
 		<div data-slide=file class='COL'>
 			<img id=$fileImage>
 			<div id=$fileAuthor class='nav ROW'></div>
-			<button id=$fileSetAvatar>set as avatar</button>
+			<div class='ROW'>
+				<button id=$fileSetAvatar>set as avatar</button>
+				<button id=$fileShowSidebar>show in sidebar</button>
+			</div>
 			<div class='pre' id=$fileInfo></div>
 		</div>
 		
@@ -322,9 +325,9 @@
 					
 					<button id=$file_url_insert class='item'>Insert</button>
 					<input readonly class='FILL item' id=$file_url>
+					<a id=$file_upload_page>[Page]</a>
 					<button id=$file_done class='item'>Done</button>
 				</div>
-				<div><a id=$file_upload_page>[Page]</a></div>
 				<br id=$file_upload_form>
 				<div class='FILL image-box' style="min-height: 3rem;"><img id=$file_image></div>
 			</sidebar-panel>

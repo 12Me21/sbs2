@@ -13,9 +13,12 @@ html {
 	;line-height: normal
 	;" disable ligatures like fi ffi etc.
 	;" (doesn't affect real languages or emoji)
-	;font-variant-ligatures: none
 	;" alternate glyphs for K and k (whatever)
 	;font-feature-settings: "ss04" on
+}
+
+* {
+	font-variant-ligatures: none;
 }
 
 body {
@@ -760,9 +763,19 @@ button.voteButton[data-selected][data-vote="o"] {
 
 /* hecko yo */
 .pageContents {
-	;max-width: 100%
-	;overflow-x: auto
-	;padding: 1.5em
+	max-width: 100%;
+	overflow-x: auto;
+	padding: 1.5rem;
+}
+
+.pageContents.Markup h2,
+.pageContents.Markup h3,
+.pageContents.Markup h4,
+.pageContents.Markup h5 {
+	margin-left: -1.5rem;
+	margin-right: -1.5rem;
+	padding-left: 1rem;
+	padding-right: 1rem;
 }
 
 .pageInfoPane {

@@ -3,14 +3,15 @@
 View.add_view('user', {
 	Start({id, query}) {
 		let user_query
-		if (typeof id == 'number') {
+		if ('number'==typeof id) {
 			user_query = "id = @uid"
-		} else {
-			// todo: maybe username without @ should be invalid?
-			// can potentially collide with id numbers
-			if (id[0]=="@")
-				id = id.substr(1)
+		} else if ('string'==typeof id) {
 			user_query = "username = @uid"
+		} else {
+			return {
+				quick: true,
+				ext: {},
+			}
 		}
 		return {
 			chain: {
@@ -39,11 +40,6 @@ View.add_view('user', {
 		//let activity = resp.activity
 		//let ca = resp.commentaggregate
 		//let content = resp.content
-		
-		if (user.id == Req.uid) {
-			View.flag('myUserPage', true)
-			//path="#editpage?type=userpage&name="+url_escape(user.name)+"'s user page"
-		}
 		View.set_title(" "+user.username+" ") // todo: this is unsafe because of text direction. get set_entity_title working again
 		$userPageAvatar.src = Draw.avatar_url(user, "size=400&crop=true")
 		$userPageLink.hidden = !userpage
@@ -53,6 +49,9 @@ View.add_view('user', {
 			$userPageContents.fill(Markup.convert_lang(userpage.text, userpage.values.markupLang))
 		else
 			$userPageContents.fill()
+	},
+	Quick(ext) {
+		View.set_title("todo")
 	},
 	Cleanup() {
 		$userPageAvatar.src = ""

@@ -86,6 +86,9 @@ const View = ((u=NAMESPACE({
 		pages: {
 			Redirect: (id, query) => ['page', id, query],
 		},
+		category: {
+			Redirect: (id, query) => ['page', id, query],
+		},
 	},
 	// fake-ish
 	errorView: {
@@ -171,7 +174,7 @@ const View = ((u=NAMESPACE({
 			let got_redirect = u.get_view(location)
 			view = u.views[location.type]
 			if (got_redirect)
-				Nav.replace_url(location)
+				Nav.replace_location(location)
 			if (!view)
 				throw 'type'
 			

@@ -12,7 +12,11 @@ const Draw = Object.seal({
 		
 		let hidden = !Entity.has_perm(content.permissions, 0, 'R')
 		let bg
-		if (hidden)
+		if (content.contentType!=1)
+			bg = 'resource/unknownpage.png'
+		else if (content.literalType=='category')
+			bg = 'resource/category.png'
+		else if (hidden)
 			bg = 'resource/hiddenpage.png'
 		else
 			bg = 'resource/page-resource.png'
