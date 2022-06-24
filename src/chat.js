@@ -274,7 +274,6 @@ class ChatRoom {
 			const pinnedListDiv = document.createElement('div')
 			this.pinnedList = new MessageList(pinnedListDiv, this.id)
 			this.extra.prepend(pinnedListDiv)			
-
 			
 			Lp.chain(
 				{
