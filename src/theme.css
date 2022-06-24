@@ -13,7 +13,6 @@ html[data-theme="light"] {
 	--T-link-color: #045;
 	--T-link-hover-color: #009688;
 	--T-link-bg: #E5E5FF;
-	--T-real-name-color: gray;
 	--T-time-color: #333;
 	--T-border-color: #808080;
 	--T-image-border: 1px solid #C0C0C0;
@@ -66,7 +65,6 @@ html[data-theme="dark"] {
 	--T-link-color: #9CE;
 	--T-link-hover-color: #5CE;
 	--T-link-bg: #156;
-	--T-real-name-color: gray;
 	--T-time-color: #EEE;
 	--T-border-color: #000;
 	--T-image-border: 1px solid #808080;

@@ -145,16 +145,12 @@ const Draw = Object.seal({
 		
 		let name = e.querySelector('message-username') // todo: is queryselector ok?
 		let username
-		const url = "#user/"+author.id
 		if (author.nickname == null) {
 			username = author.username
-			name.firstChild.href = url
 		} else {
 			username = author.nickname
 			let nickname = this.nickname()
-			const nicknameLink = nickname.querySelector('a.pre')
-			nickname.querySelector('a.pre').textContent = author.realname
-			nicknameLink.href = url
+			nickname.querySelector('span.pre').textContent = author.realname
 			name.append(nickname)
 		}
 		name.firstChild.textContent = username
@@ -168,12 +164,12 @@ const Draw = Object.seal({
 		block: 𐀶`
 <message-block>
 	<message-header>
-		<message-username><a class='username pre'></a>:</message-username>
+		<message-username><span class='username pre'></span>:</message-username>
 		<time></time>
 	</message-header>
 	<message-contents></message-contents>
 </message-block>`,
-		nickname: 𐀶` <span class='real-name-label'>(<a class='pre'></a>)</span>`,
+		nickname: 𐀶` <span class='real-name-label'>(<span class='pre'></span>)</span>`,
 		avatar: 𐀶`<img class='avatar' width=100 height=100 alt="">`,
 		big_avatar: 𐀶`<div class='bigAvatar'></div>`,
 	}),
