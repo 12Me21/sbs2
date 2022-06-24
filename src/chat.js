@@ -240,6 +240,7 @@ class ChatRoom {
 		// 
 		let extra = inner.firstChild
 		this.extra = extra
+
 		this.limit_checkbox = extra.querySelector('input')
 		this.load_more_button = extra.querySelector('button')
 		//		<div class='pageInfoPane rem2-3 bar'></div>
@@ -258,21 +259,40 @@ class ChatRoom {
 			})
 		}
 		
-		if (page.values.pinned) { //todo: check if actually we have any real pinned messages
-			let pinned_separator = document.createElement('div')
-			pinned_separator.className = "messageGap"
-			this.extra.prepend(pinned_separator)
-			
-			this.pinnedList = document.createElement('div')
-			this.extra.prepend(this.pinnedList)
-		}
-		
 		$chatPaneBox.append(this.chat_pane)
 		
 		///////////
 		this.visible = false
 		this.pinned = false
 		this.scroller = new Scroller(this.messages_outer, this.scroll_inner)
+		
+		if (page.values.pinned) { //todo: check if actually we have any real pinned messages
+			let pinned_separator = document.createElement('div')
+			pinned_separator.className = "messageGap"
+			this.extra.prepend(pinned_separator)
+
+			const pinnedListDiv = document.createElement('div')
+			this.pinnedList = new MessageList(pinnedListDiv, this.id)
+			this.extra.prepend(pinnedListDiv)			
+			
+			Lp.chain(
+				{
+					values: {pinned: page.values.pinned},
+					requests: [
+						{type:'message', fields: '*', query: 'id in @pinned'},
+						{type:'user', fields: '*', query: 'id in @message.createUserId'},
+					]
+				},
+				(resp) => {
+					const { message:pinned } = resp;
+					if (pinned instanceof Array && this.pinnedList)
+						this.scroller.print_top(()=>{
+							for (const m of pinned)
+								this.pinnedList.display_message(m, false)
+						})
+				}
+			)
+		}
 		
 		this.update_page(page)
 		this.update_userlist()
