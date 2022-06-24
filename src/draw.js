@@ -145,7 +145,7 @@ const Draw = Object.seal({
 		
 		let name = e.querySelector('message-username') // todo: is queryselector ok?
 		let username
-		const url = "#user/"+author.id
+		const url = "#user/"+comment.createUserId
 		if (author.nickname == null) {
 			username = author.username
 			name.firstChild.href = url
