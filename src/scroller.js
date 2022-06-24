@@ -1,71 +1,65 @@
 'use strict'
-class ResizeTracker {
-	constructor(measure) {
-		this.measure = measure
-		// ResizeObserver is a very new feature (added in ~2020)
-		if (window.ResizeObserver) {
+let ResizeTracker
+// ResizeObserver is a very new feature (added in ~2020)
+if (window.ResizeObserver) {
+	ResizeTracker = class {
+		constructor(measure) {
+			this.measure = measure
 			this.tracking = new WeakMap()
-			this.observer = new ResizeObserver((events)=>{
+			this.observer = new ResizeObserver(events=>{
 				for (let event of events) {
-					this.check_element(
-						this.tracking.get(event.target),
-						event.contentRect
-					)
+					let item = this.tracking.get(event.target)
+					let rect = event.contentRect
+					//ignore changes for hidden and unchanged elements
+					if (rect.width && rect[this.measure]!=item.size) {
+						item.callback(item.size) // pass old size
+						item.size = rect[this.measure]
+					}
 				}
 			})
-		} else {
+			Object.seal(this)
+		}
+		add(element, callback) {
+			this.observer.observe(element)
+			this.tracking.set(element, {
+				callback: callback,
+				size: element.getBoundingClientRect()[this.measure],
+			})
+		}
+		remove(element) {
+			this.observer.unobserve(element)
+			this.tracking.delete(element)
+		}
+	}
+} else {
+	ResizeTracker = class {
+		constructor(measure) {
+			this.measure = measure
 			this.tracking = []
 			this.interval = window.setInterval(()=>{
 				for (let item of this.tracking) {
-					this.check_element(
-						item,
-						item.element.getBoundingClientRect()
-					)
+					let rect = item.element.getBoundingClientRect()
+					if (rect.width && rect[this.measure]!=item.size) {
+						item.callback(item.size)
+						item.size = rect[this.measure]
+					}
 				}
 			}, 200)
+			Object.seal(this)
 		}
-		Object.seal(this)
-	}
-	check_element(item, rect) {
-		if (!item) return
-		if (!rect.width) return //ignore changes for hidden elements
-		if (rect[this.measure] == item.size) return //need to check if height changed in case of an ignored hide/show cycle
-		item.callback(item.size) // old size?
-		item.size = rect[this.measure]
-	}
-	add(element, callback) {
-		let n = {
-			element: element,
-			callback: callback,
-			size: element.getBoundingClientRect()[this.measure],
+		add(element, callback) {
+			this.tracking.push({
+				element: element,
+				callback: callback,
+				size: element.getBoundingClientRect()[this.measure],
+			})
 		}
-		if (this.observer) {
-			this.observer.observe(element)
-			this.tracking.set(element, n)
-		} else {
-			this.tracking.push(n)
-		}
-	}
-	remove(element) {
-		if (this.observer) {
-			this.observer.unobserve(element)
-			this.tracking.delete(element)
-		} else {
+		remove(element) {
 			let i = this.tracking.findIndex(x => x.element == element)
 			i>=0 && this.tracking.splice(i, 1)
 		}
 	}
 }
-
-/*
-scroll anim mode 1:
-updates --scroll using setAnimationFrame
-
-scroll anim mode 2:
-uses css animations
-
-*/
-
 
 class Scroller {
 	constructor(outer, inner) { // constructor todo. take outer element only. create inner element here.
