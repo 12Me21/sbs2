@@ -61,6 +61,8 @@ if (window.ResizeObserver) {
 	}
 }
 
+
+
 class Scroller {
 	constructor(outer, inner) { // constructor todo. take outer element only. create inner element here.
 		this.outer = outer
@@ -118,6 +120,9 @@ class Scroller {
 		let diff = this.scroll_height() - before
 		this.start_animation(diff)
 	}
+	// todo: instead of these print wrappers, what if we just
+	// used mutation observers to detect stuff being added/removed
+	// or, looked at the height change events?
 	print(callback, animate) {
 		let height = this.before_print(animate)
 		try {
@@ -147,17 +152,17 @@ class Scroller {
 		}
 	}
 	cancel_animation() {
+		if (!this.anim_id)
+			return
 		if (this.anim_type==2) {
-			if (this.anim_id) {
-				this.inner.style.transition = "initial"
-				this.set_shift(0)
-				this.anim_id = null
-			}
+			this.inner.style.transition = "initial"
+			// need to set transform to a /different/ value than before
+			// otherwise it won't cancel the transition...
+			this.inner.style.transform = "translateY(0)"
+			this.anim_id = null
 		} else if (this.anim_type==1) {
-			if (this.anim_id != null) {
-				window.cancelAnimationFrame(this.anim_id)
-				this.end_animation()
-			}
+			window.cancelAnimationFrame(this.anim_id)
+			this.end_animation()
 		}
 	}
 	// only for anim_type 1:
@@ -209,6 +214,7 @@ class Scroller {
 }
 Scroller.track_height = new ResizeTracker('height')
 Scroller.anim_type = 2
+
 //Object.seal(Scroller)
 //Object.seal(Scroller.prototype)
 
