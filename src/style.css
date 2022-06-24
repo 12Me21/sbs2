@@ -331,6 +331,15 @@ time {
 	;font-weight: bold
 	;line-height: 1.2
 }
+
+message-username .username {
+	;color: var(--T-color) !important
+}
+
+message-username a[href]:hover { 
+	;color: var(--T-link-hover-color) !important
+}
+
 message-username { /* khhhh */
 	;line-height: 1.2
 }
@@ -426,8 +435,8 @@ message-part.boundary-bottom {
 	;border-bottom: 2px solid red
 }
 
-.real-name-label {
-	;color: gray
+.real-name-label > a {
+	;color: var(--T-real-name-color) !important
 }
 
 message-controls {

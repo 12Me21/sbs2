@@ -8,6 +8,7 @@ let Entity
 class Author {
 	constructor(message, user) {
 		this.username = user.username
+		this.id = user.id
 		// normal avatar
 		let av = message.values.a
 		if (av && ('string'==typeof av || 'number'==typeof av))
@@ -45,6 +46,7 @@ Object.assign(Author.prototype, {
 	username: "missingno.",
 	realname: null,
 	nickname: null,
+	id: 0,
 	//			content_name: "",
 })
 
