@@ -103,6 +103,7 @@ class Scroller {
 	scroll_instant() {
 		this.outer.scrollTop = 9e9
 	}
+	// why is this split up.. messy... ;todo
 	before_print(animate) {
 		if (this.at_bottom())
 			// only calculate height if we need it for the animation
@@ -134,17 +135,20 @@ class Scroller {
 	set_shift(y) {
 		this.inner.style.transform = y ? `translateY(${y}px)` : ""
 	}
+	// todo: maybe we should always use requestAnimationFrame or something
+	// before the first frame, to allow the page to settle
 	start_animation(dist) {
 		if (Math.abs(dist) <= 1)
 			return
 		if (this.anim_type==2) {
-			this.anim_id = true
 			//let d = parseFloat(getComputedStyle(this.inner).top)
-			this.inner.style.transition = "initial"
+			this.inner.style.transition = "none"
 			this.set_shift(dist)
-			void this.inner.offsetWidth
-			this.inner.style.transition = ""
-			this.set_shift(0)
+			this.anim_id = window.requestAnimationFrame(t=>{
+				this.anim_id = null
+				this.inner.style.transition = ""
+				this.set_shift(0)
+			})
 		} else if (this.anim_type==1) {
 			window.cancelAnimationFrame(this.anim_id)
 			this.anim_id = null
@@ -152,17 +156,14 @@ class Scroller {
 		}
 	}
 	cancel_animation() {
-		if (!this.anim_id)
-			return
+		if (this.anim_id)
+			window.cancelAnimationFrame(this.anim_id)
 		if (this.anim_type==2) {
-			this.inner.style.transition = "initial"
-			// need to set transform to a /different/ value than before
-			// otherwise it won't cancel the transition...
-			this.inner.style.transform = "translateY(0)"
+			this.inner.style.transition = "none"
 			this.anim_id = null
 		} else if (this.anim_type==1) {
-			window.cancelAnimationFrame(this.anim_id)
-			this.end_animation()
+			if (this.anim_id)
+				this.end_animation()
 		}
 	}
 	// only for anim_type 1:
@@ -170,7 +171,6 @@ class Scroller {
 		this.anim_id = null
 		this.anim_pos = 0
 		this.set_shift(0)
-		//this.inner.style.transform = `translateY(0px)`
 	}
 	animate_insertion(dist, prev_time = document.timeline.currentTime) {
 		this.set_shift(dist)
