@@ -240,14 +240,6 @@ class ChatRoom {
 		// 
 		let extra = inner.firstChild
 		this.extra = extra
-		
-		let pinned_separator = document.createElement('div')
-		pinned_separator.className = "messageGap"
-		this.extra.prepend(pinned_separator)
-
-		const pinnedListDiv = document.createElement('div')
-		this.pinnedList = new MessageList(pinnedListDiv, this.id)
-		this.extra.prepend(pinnedListDiv)
 
 		this.limit_checkbox = extra.querySelector('input')
 		this.load_more_button = extra.querySelector('button')
@@ -275,6 +267,15 @@ class ChatRoom {
 		this.scroller = new Scroller(this.messages_outer, this.scroll_inner)
 		
 		if (page.values.pinned) { //todo: check if actually we have any real pinned messages
+			let pinned_separator = document.createElement('div')
+			pinned_separator.className = "messageGap"
+			this.extra.prepend(pinned_separator)
+
+			const pinnedListDiv = document.createElement('div')
+			this.pinnedList = new MessageList(pinnedListDiv, this.id)
+			this.extra.prepend(pinnedListDiv)			
+
+			
 			Lp.chain(
 				{
 					values: {pinned: page.values.pinned},
