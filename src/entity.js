@@ -67,8 +67,6 @@ Object.assign(Author.prototype, {
 function BaseEntity() {
 }
 BaseEntity.prototype = Object.create(STRICT, {
-	toJSON: {}, // JSON.stringify() etc.
-	then: {}, // Promise, await
 	// conversions
 	[Symbol.toPrimitive]: {value: NO_CONVERT},
 	Blob: {
@@ -85,6 +83,8 @@ for (let name in ABOUT.details.types) {
 	let proto_desc = {
 		constructor: null,
 		Type: {value: name},
+		toJSON: {}, // JSON.stringify() etc.
+		then: {}, // promises
 	}
 	if (name == 'message') {
 		proto_desc.Author = {

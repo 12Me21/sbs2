@@ -98,6 +98,29 @@ const View = ((u=NAMESPACE({
 		},
 	},
 	
+	observer: null,
+	toggle_observer(state) {
+		if (!this.observer == !state)
+			return
+		if (state) {
+			this.observer = new IntersectionObserver(function(data) {
+				// todo: load top to bottom on pages
+				data = data.filter(x=>x.isIntersecting).sort((a, b)=>b.boundingClientRect.bottom-a.boundingClientRect.bottom)
+				for (let {target} of data) {
+					if (!target.src) {
+						target.src = target.dataset.src
+						delete target.dataset.src
+						this.unobserve(target)
+					}
+				}
+			})
+		} else {
+			// todo: we should load all unloaded images here
+			this.observer.disconnect()
+			this.observer = null
+		}
+	},
+	
 	// handle redirects
 	get_view(location) {
 		let view = u.views[location.type]

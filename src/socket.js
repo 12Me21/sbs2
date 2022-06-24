@@ -2,6 +2,9 @@
 // todo: if we're disconnected for a long time, we might lose sync
 // so, at that point there's really no way to recover (also we need to re-request our user object in case it updated)
 
+// todo: if the server restarts, lastid is reset
+// so, we need to be careful about sorting etc. bc of this discontinuity
+
 class SocketRequestError extends TypeError {
 	constructor(resp, extra) {
 		super()
