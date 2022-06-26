@@ -247,16 +247,11 @@ activity-users {
 
 
 /* sidebar debug tab */
-#\$debugOutput {
-	overflow-y: scroll;
-}
 #\$debugInput {
 	font: var(--T-monospace-font);
 	resize: vertical;
 	overflow-y: scroll;
-}
-#\$debugOutput > .eval-code {
-	
+	width: 100%;
 }
 
 .debugMessage {

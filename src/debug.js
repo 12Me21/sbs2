@@ -1,10 +1,7 @@
 let Debug = ((u=NAMESPACE({
 	printing: false,
-	output: null,
-	message_count: 0,
 	
 	onload() {
-		u.output = $debugOutput
 		$debugInput.onkeydown = e=>{
 			if (e.isComposing)
 				return
@@ -20,37 +17,13 @@ let Debug = ((u=NAMESPACE({
 	},
 	
 	eval(code) {
-		u.output.prepend(document.createElement('hr'))
-		log(">"+code)
+		print(">"+code)
 		try {
 			let res = eval(code)
-			log(res)
+			print(res)
 		} catch(e) {
-			log(e)
+			print(e)
 		}
-	},
-	
-	log(...args) {
-		do_when_ready(()=>{
-			if (u.printing) {
-				alert("recursive print detected!")
-				return
-			}
-			u.printing = true
-			for (let arg of args) {
-				let elem
-				try {
-					elem = Debug.sidebar_debug(arg)
-				} catch (e) {
-					elem = "error printing!"
-					alert("error while printing!"+e)
-					console.error(e)
-				}
-				u.output.prepend(elem)
-				u.message_count++
-			}
-			u.printing = false
-		})
 	},
 	
 	format_error: function(thing) {
@@ -124,8 +97,4 @@ let Debug = ((u=NAMESPACE({
 	
 }))=>u)()
 
-let log = Debug.log
-
 do_when_ready(Debug.onload)
-
-//console.log = log

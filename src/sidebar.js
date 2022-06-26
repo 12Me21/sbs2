@@ -40,7 +40,6 @@ let Sidebar = Object.seal({
 				$searchInput.focus()
 			}, accesskey: 's'},
 			{name: 'file', label: "📷", elem: $sidebarFilePanel},
-			{name: 'debug', label: "💻", elem: $sidebarDebugPanel},
 			{name: 'user', label: user_label, elem: $sidebarUserPanel},
 		]
 		

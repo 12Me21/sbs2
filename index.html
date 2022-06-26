@@ -332,11 +332,6 @@
 				<div class='FILL image-box' style="min-height: 3rem;"><img id=$file_image></div>
 			</sidebar-panel>
 			
-			<sidebar-panel id=$sidebarDebugPanel class='COL'>
-				<textarea id=$debugInput></textarea>
-				<div class='FILL' id=$debugOutput></div>
-			</sidebar-panel>
-			
 			<sidebar-panel id=$sidebarUserPanel>
 				<div class='registerBox'>
 					<button onclick='RELOAD()'>Reload Page</button>
@@ -355,6 +350,10 @@
 					<div id=$localSettings></div>
 					<button id=$localSettingsSave>Update sitejs/sitecss</button>
 					<button class='rightAlign' id=$logOut>Log out</button>
+				</div>
+				<div class='registerBox'>
+					js eval:
+					<textarea id=$debugInput></textarea>
 				</div>
 			</sidebar-panel>
 		</div>
