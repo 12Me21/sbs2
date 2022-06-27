@@ -287,25 +287,19 @@
 		<!--[ View: images ]-->
 		<div data-slide=images class='COL'>
 			<div id=$imagesWhatever></div>
-			<div id=$imagesNav>
-				<button id=$imagesNavBack>&lt;</button>
-				<span id=$imagesNavPage>0</span>
-				<button id=$imagesNavForward>&gt;</button>
-				<input id=$imagesNavBucket placeholder="bucket" />
+			<div id=$imagesNav class='nav ROW rem1-5'>
+				<button id=$imagesPrev>◀prev</button>
+				<span id=$imagesNavPage class='textItem'>0</span>
+				<button id=$imagesNext>next▶</button>
+				<input id=$imagesNavBucket placeholder="bucket">
 			</div>
-			<!-- fixme: overflows? -->
-			<div id=$imagesCurrent class='ROW'>
-				<div id=$imagesCurrentImgContainer>
-					<img id=$imagesCurrentImg src="" />					
+			<div id=$imagesCurrent class='FILL ROW'>
+				<div id=$imagesCurrentImgContainer class='FILL'>
+					<img id=$imagesCurrentImg>
 				</div>
-				<div>
-					<!-- todo: ask 12 about how to style this -->
-					<a id=$imagesCurrentLink></a>
-					<div id=$imagesCurrentData class='COL'>
-						<button id=$imagesAvatarButton>Set Avatar</button>
-						<hr/>
-						<div id=$imagesForm></div>
-					</div>					
+				<div style="width:50%">
+					<a id=$imagesCurrentLink></a><button id=$imagesAvatarButton>Set Avatar</button><button id=$imagesShowSidebar>show in sidebar</button>
+					<div id=$imagesForm></div>
 				</div>
 			</div>
 		</div>
