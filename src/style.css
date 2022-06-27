@@ -908,3 +908,12 @@ html[data-socket-state="dead"] #\$openSidebar {
 	height: auto;
 	max-height: 75vh;
 }
+
+#\$imagesWhatever img:hover {
+	cursor: pointer;
+}
+
+/* todo: ugh have to actually do css later */
+#\$imagesCurrentImg {
+	max-width: 40%;
+}

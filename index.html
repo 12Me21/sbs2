@@ -166,6 +166,7 @@
 <script src=src/Views/comments.js></script>
 <script src=src/Views/editpage.js></script>
 <script src=src/Views/file.js></script>
+<script src=src/Views/images_new.js></script>
 
 <script src=src/navigate.js></script>
 
@@ -283,7 +284,22 @@
 			</div>
 			<div class='pre' id=$fileInfo></div>
 		</div>
-		
+		<!--[ View: images ]-->
+		<div data-slide=images class='COL'>
+			<div id=$imagesWhatever></div>
+			<div id=$imagesNav>
+				<button id=$imagesNavBack>&lt;</button>
+				<span id=$imagesNavPage>0</span>
+				<button id=$imagesNavForward>&gt;</button>
+			</div>
+			<div id=$imagesCurrent>
+				<img id=$imagesCurrentImg src="" />
+				<!-- todo: ask 12 about how to style this -->
+				<a id=$imagesCurrentLink></a>
+				<button id=$imagesAvatarButton>Set Avatar</button>
+				<div id=$imagesForm></div>
+			</div>
+		</div>
 	</main>
 
 	<!--========\
