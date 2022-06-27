@@ -36,6 +36,10 @@ View.add_view('images', {
 			this.location.query.page = String(this.page+1)
 			Nav.goto(this.location, true)
 		}
+		$imagesNavBucket.onblur = () => {
+			this.location.query.bucket = $imagesNavBucket.value
+			Nav.goto(this.location, true)
+		}
 		this.form = new Form({
 			fields: [
 				['user', 'user_output', {label: "User"}],
@@ -76,11 +80,12 @@ View.add_view('images', {
 				],
 			},
 			ext: {
-				page
+				page,
+				bucket
 			}
 		}
 	},
-	Render({ content=[], user=[] }, { page }, location) {
+	Render({ content=[], user=[] }, { page, bucket }, location) {
 		this.location = location
 		this.page = parseInt(page)
 		this.user = user
@@ -93,9 +98,11 @@ View.add_view('images', {
 		})
 		
 		$imagesNavPage.textContent = String(page)
+		$imagesNavBucket.value = bucket
 	},
 	Cleanup(type) {
 		$imagesWhatever.innerHTML = ''
+		$imagesNavBucket.value = ''
 		this.current = null
 		this.page = null
 		this.location = null
