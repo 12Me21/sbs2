@@ -399,7 +399,7 @@ sidebar-panel {
 sidebar-panel > *,
 scroll-outer > *,
 scroll-middle, scroll-inner, message-list {
-	background: inherit;
+	background-color: inherit;
 }
 
 /*

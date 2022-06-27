@@ -138,8 +138,6 @@ ${resp}`)
 	}
 }
 
-
-
 const Req = { // this stuff can all be static methods on ApiRequest maybe?
 	server: OPTS.has('dev') ?
 		"oboy.smilebasicsource.com/api" : "qcs.shsbs.xyz/api",

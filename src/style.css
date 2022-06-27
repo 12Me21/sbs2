@@ -13,13 +13,12 @@ html {
 	line-height: normal;
 	/* alternate glyphs for K and k (whatever) */
 	font-feature-settings: "ss04" on;
-	/* disable ligatures like fi ffi etc.
-		(doesn't affect real languages or emoji) */
-	font-variant-ligatures: none;
 }
 
 * {
-	font: inherit;
+	/* disable ligatures like fi ffi etc.
+		(doesn't affect real languages or emoji) */
+	font-variant-ligatures: none !important;
 }
 
 body {
@@ -545,6 +544,7 @@ html:not(.f-myUserPage) .myUserPage {
  ************/
 button {
 	cursor: pointer;
+	font: var(--T-font);
 	font-size: 0.8125em;
 	line-height: normal !important;
 	
@@ -657,7 +657,6 @@ input[type="file"] {
 	line-height: calc(var(--bar-height) - 4px);
 }
 input::file-selector-button {
-	font: inherit;
 	vertical-align: top;
 	height: 100%;
 	line-height: 1;
@@ -692,6 +691,7 @@ textarea {
 	;border: 2px solid var(--T-textarea-border-color)
 	;border-radius: 0;
 	;box-shadow: 0.125rem 0.1875rem 0.3125rem -0.1875rem #0D0D0D80
+	;font: var(--T-font)
 	;font-size: 0.8125em
 	;color: var(--T-color)
 	;background: var(--T-bg)
@@ -720,7 +720,7 @@ textarea-container, textarea-container > textarea {
 /* ios safari */
 @supports (-webkit-touch-callout: none) {
 	textarea, input, select {
-		font-size: 16px !important;
+		font-size: 16px;
 	}
 	input, select {
 		line-height: 16px;
@@ -863,16 +863,16 @@ html:not(.f-fileSelected) .fileSelected {
 }
 
 /* websocket state indicator */
-html[data-socket-state="opening"] #\$openSidebar {
+html[data-socket-state="opening"] .toggle-sidebar {
 	;--button-bg: linear-gradient(#6fb7c0, #6fb7c0, blue)
 }
 /*html[data-socket-state="open"] #\$openSidebar {
 	;--button-bg: linear-gradient(#3f9f5f, #3f9f5f, green)
 }*/
-html[data-socket-pending] #\$openSidebar {
+html[data-socket-pending] .toggle-sidebar {
 	;--button-bg: linear-gradient(#e0c87f, #e0c87f, yellow)
 }
-html[data-socket-state="dead"] #\$openSidebar {
+html[data-socket-state="dead"] .toggle-sidebar {
 	;--button-bg: linear-gradient(#f86060, #f86060, red)
 }
 
