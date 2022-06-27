@@ -292,14 +292,19 @@
 				<span id=$imagesNavPage>0</span>
 				<button id=$imagesNavForward>&gt;</button>
 			</div>
+			<!-- fixme: overflows? -->
 			<div id=$imagesCurrent class='ROW'>
-				<img id=$imagesCurrentImg src="" />
-				<!-- todo: ask 12 about how to style this -->
-				<a id=$imagesCurrentLink></a>
-				<div class='COL'>
-					<button id=$imagesAvatarButton>Set Avatar</button>
-					<hr/>
-					<div id=$imagesForm></div>
+				<div id=$imagesCurrentImgContainer>
+					<img id=$imagesCurrentImg src="" />					
+				</div>
+				<div>
+					<!-- todo: ask 12 about how to style this -->
+					<a id=$imagesCurrentLink></a>
+					<div id=$imagesCurrentData class='COL'>
+						<button id=$imagesAvatarButton>Set Avatar</button>
+						<hr/>
+						<div id=$imagesForm></div>
+					</div>					
 				</div>
 			</div>
 		</div>

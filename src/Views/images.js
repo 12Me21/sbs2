@@ -1,123 +1,126 @@
-// todo:
-// - page selector input type
-// - add a page for viewing info about a specific image (image/id? or images/id?), or otherwise some way to find a specific image by id here
+'use strict'
+
+const IMAGES_VIEW_PAGINATION = 20
+const IMAGES_VIEW_SIZE = 64
+
 View.add_view('images', {
 	form: null,
-	selectedFile: null,
-	navButtons: null,
-	currentQuery: null,
-	fileList: null,
-	
-	init() {
-		let nav = $fileNav
-		$fileSearchBucket.onchange = ()=>{
-			this.currentQuery.bucket = $fileSearchBucket.value || undefined
-			Nav.go("images"+Req.query_string(this.currentQuery))
+	current: null,
+	page: null,
+	location: null,
+	user: null,
+	Init() {
+		$imagesWhatever.innerHTML = ''
+		// FIXME: should put this in another function since it's also
+		// done in the file view
+		$imagesAvatarButton.onclick = () => {
+			if (!this.current) return
+			Req.me.avatar = this.current.hash
+			Req.write(Req.me).do = (resp, err)=>{
+				if (!err)
+					print('ok')
+				else
+					alert('edit failed')
+			}
 		}
-		this.navButtons = Draw.nav_buttons()
-		nav.append(this.navButtons.element)
-		this.navButtons.onchange = (n)=>{
-			this.currentQuery.page = n
-			Nav.go("images"+Req.query_string(this.currentQuery))
+		// FIXME: im pretty sure this is something that 12 wanted to be handled
+		// by Draw?
+		// FIXME: this is shit.
+		$imagesNavBack.onclick = () => {
+			if (this.page === undefined || this.page <= 1) return
+			this.location.query.page = String(this.page-1)
+			Nav.goto(this.location, true)
 		}
-		
-		$setAvatarButton.onclick = ()=>{
-			if (!this.selectedFile)
-				return
-			Req.set_basic({avatar: this.selectedFile.id}).then((user)=>{
-				View.update_my_user(user) // have to do this because rannnnnnnnnnndommmmmmm broke user activityyy
-			})
+		$imagesNavForward.onclick = () => {
+			if (this.page === undefined) return
+			this.location.query.page = String(this.page+1)
+			Nav.goto(this.location, true)
 		}
-		$fileUpdateButton.onclick = ()=>{
-			if (!this.selectedFile)
-				return
-			this.readFields(this.selectedFile)
-			Req.put_file(this.selectedFile).then((resp)=>{
-				resp.createUser = this.selectedFile.createUser //ehhhhh
-				this.selectFile(resp)
-			})
-		}
-		
 		this.form = new Form({
 			fields: [
-				['user', 'user_output', {output: true, label: "User"}],
+				['user', 'user_output', {label: "User"}],
 				['filename', 'text', {label: "File Name"}],
 				['bucket', 'text', {label: "Bucket"}],
 				['values', 'text', {label: "Values"}], // todo: add an input type for like, json or specifically these values types idk
 				['permissions', 'text', {label: "Permissions"}], //could be a real permission editor but image permissions don't really work anyway
 				//['size', 'output', {output: true, label: "Size"}], I wish
-				['quantization', 'output', {output: true, label: "Quantization"}],
+				// ['quantization', 'output', {label: "Quantization"}],
 			]
 		})
-		$imageForm.fill(this.form.elem)
+		$imagesForm.fill(this.form.elem)
 	},
-	start(id, query) {
-		this.currentQuery = query
-		let page = +query.page || 1
-		
-		let search = {
-			limit: 20,
-			skip: (page-1)*20,
-			reverse: true,
-		}
-		query.bucket && (search.bucket = query.bucket) // did i really write this like that lol
+	Start({id, query}) {
+		const { page=1, bucket=null } = query;
+		// TODO: bucket search
 		return {
-			chains: [
-				['file', search],
-				['user.0createUserId'],
-			],
-			fields: {},
-			ext: {page, query},
+			chain: {
+				values: {
+					contentType: 3,
+					key: 'bucket',
+					bucket: `"${bucket}"`
+				},
+				requests: [
+					{
+						type:'content',
+						fields:'*',
+						query: `contentType = @contentType AND ${bucket ? '!valuelike(@key,@bucket)' : '!valuekeynotlike(@key)'}`,
+						order: 'id_desc',
+						limit: IMAGES_VIEW_PAGINATION,
+						skip: (page-1) * IMAGES_VIEW_PAGINATION,
+					},
+					{
+						type:'user',
+						fields:'*',
+						query: 'id in @content.createUserId.',
+					}
+				],
+			},
+			ext: {
+				page
+			}
 		}
 	},
-	render(resp, {page, query}) {
-		$fileSearchBucket.value = query.bucket || ""
-		this.navButtons.set(page)
-		let files = resp.file
-		View.set_title("Files")
-		this.fileList = files
-		$fileBox.fill(files.map(file => Draw.file_thumbnail(file, this.selectFile.bind(this))))
+	Render({ content=[], user=[] }, { page }, location) {
+		this.location = location
+		this.page = parseInt(page)
+		this.user = user
+		View.set_title(" Images ")
+		content.forEach(x => {
+			const img = document.createElement('img')
+			img.src = Req.file_url(x.hash, `size=${IMAGES_VIEW_SIZE}`)
+			img.addEventListener('click', y => this.current = x)
+			$imagesWhatever.append(img)
+		})
+		
+		$imagesNavPage.textContent = String(page)
 	},
-	cleanup() {
-		$fileBox.fill()
-		this.selectFile(null)
-		this.fileList = null
-	},
-	// extra
-	readFields(file) {
-		let data = this.form.get()
-		file.name = data.filename
-		file.bucket = data.bucket
-		file.values = JSON.safe_parse(data.values)
-		file.permissions = JSON.safe_parse(data.permissions)
-	},
-	
-	selectFile(file) {
-		$filePageView.src = "" // set to "" to hide old image immediately
-		if (!file) {
-			this.selectedFile = file
-			View.flag('fileSelected', false)
+	Cleanup(type) {
+		$imagesWhatever.innerHTML = ''
+		this.current = null
+		this.page = null
+		this.location = null
+		this.form.reset()
+	},	
+	set current(content) {
+		if (content === null) {
+			$imagesCurrentImg.src = ''
+			$imagesCurrentLink.href = ''
+			$imagesCurrentLink.textContent = ''
 			return
 		}
-		this.selectedFile = file
-		this.form.set({
-			user: file.createUser,
-			filename: file.name,
-			bucket: file.bucket,
-			values: JSON.stringify(file.values),
-			permissions: JSON.stringify(file.permissions),
-			quantization: file.quantization,
-		})
-		let url = Req.file_url(file.id)
-		$fileDownload.href = url
-		$fileDownload.download = file.name
-		
-		$filePageView.src = url
-		//Draw.setBgImage($filePageView, Req.file_url(file.id))
-		View.flag('fileSelected', true)
-		View.flag('canEdit', /u/.test(file.myPerms))
-	},	
-	
+		$imagesCurrentImg.src = Req.file_url(content.hash)
+		$imagesCurrentLink.href = `#file/${content.id}`
+		$imagesCurrentLink.textContent = content.hash
+		const formData = {
+			user: this.user?.find(u => u.id === content.createUserId),
+			filename: content.name,
+			bucket: content.values?.bucket,
+			// fixme: what is this for exactly?
+			values: JSON.stringify(content.values),
+			permissions: JSON.stringify(content.permissions)
+		}
+		this.form?.set(formData)
+		this.form?.write(formData)
+	},
 })
-
 
