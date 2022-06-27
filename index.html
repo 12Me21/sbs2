@@ -334,8 +334,9 @@
 			
 			<sidebar-panel id=$sidebarUserPanel>
 				<div class='registerBox'>
-					<button onclick='RELOAD()'>Reload Page</button>
+					<button onclick='RELOAD()'>Reload</button>
 					<button onclick='Lp.start_websocket(true)'>Reset Socket</button>
+					<button class='rightAlign' id=$logOut>Log out</button>
 				</div>
 				<div class='loggedOut registerBox'>
 					<h2>Log In</h2>
@@ -349,7 +350,6 @@
 				<div class='loggedIn registerBox'>
 					<div id=$localSettings></div>
 					<button id=$localSettingsSave>Update sitejs/sitecss</button>
-					<button class='rightAlign' id=$logOut>Log out</button>
 				</div>
 				<div class='registerBox'>
 					js eval:

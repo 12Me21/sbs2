@@ -7,22 +7,23 @@
 */
 
 html {
-	;background: #FEE ;" (for debug)
-	;color: var(--T-color)
-	;font: var(--T-font)
-	;line-height: normal
-	;" disable ligatures like fi ffi etc.
-	;" (doesn't affect real languages or emoji)
-	;" alternate glyphs for K and k (whatever)
-	;font-feature-settings: "ss04" on
-}
-
-* {
+	background: #FEE; /* (for debug) */
+	color: var(--T-color);
+	font: var(--T-font);
+	line-height: normal;
+	/* alternate glyphs for K and k (whatever) */
+	font-feature-settings: "ss04" on;
+	/* disable ligatures like fi ffi etc.
+		(doesn't affect real languages or emoji) */
 	font-variant-ligatures: none;
 }
 
+* {
+	font: inherit;
+}
+
 body {
-	;background: var(--T-bg)
+	background: var(--T-bg);
 }
 
 /***********
@@ -243,8 +244,6 @@ activity-users {
 	column-gap: 0.1875rem;
 	margin-bottom: 0.3125rem;
 }
-
-
 
 /* sidebar debug tab */
 #\$debugInput {
@@ -546,7 +545,6 @@ html:not(.f-myUserPage) .myUserPage {
  ************/
 button {
 	cursor: pointer;
-	font: var(--T-font);
 	font-size: 0.8125em;
 	line-height: normal !important;
 	
@@ -659,6 +657,7 @@ input[type="file"] {
 	line-height: calc(var(--bar-height) - 4px);
 }
 input::file-selector-button {
+	font: inherit;
 	vertical-align: top;
 	height: 100%;
 	line-height: 1;
@@ -693,7 +692,6 @@ textarea {
 	;border: 2px solid var(--T-textarea-border-color)
 	;border-radius: 0;
 	;box-shadow: 0.125rem 0.1875rem 0.3125rem -0.1875rem #0D0D0D80
-	;font: var(--T-font)
 	;font-size: 0.8125em
 	;color: var(--T-color)
 	;background: var(--T-bg)
@@ -722,7 +720,7 @@ textarea-container, textarea-container > textarea {
 /* ios safari */
 @supports (-webkit-touch-callout: none) {
 	textarea, input, select {
-		font-size: 16px;
+		font-size: 16px !important;
 	}
 	input, select {
 		line-height: 16px;
