@@ -12,16 +12,15 @@ function register_activity(e) {
 //todo: views should be classes that extend a base class
 // then, most of the query is static and etc.
 
-View.add_view('page', {
-	room: null, // currently displayed ChatRoom
-	track_resize_2: new ResizeTracker('width'),
-	textarea: null,
-	
+class PageView extends BaseView {
 	Init() {
-		this.textarea = $chatTextarea
+		this.pre_edit = null
+		this.editing_comment = null
+		this.room = null
 		
-		// up arrow = edit last comment
-		this.textarea.onkeydown = e=>{
+		this.$textarea.enterKeyHint = Settings.chat_enter!='newline' ? "send" : "enter" // uh this won't update though... need a settings change watcher
+		
+		this.$textarea.onkeydown = e=>{
 			if (e.isComposing)
 				return
 			// enter - send
@@ -30,7 +29,7 @@ View.add_view('page', {
 				this.send_message()
 			}
 			// up arrow - edit previous message
-			if (e.keyCode==38 && this.textarea.value=="") {
+			if (e.keyCode==38 && this.$textarea.value=="") {
 				let msg = this.room && this.room.my_last_message()
 				if (msg && msg.x_data) {
 					e.preventDefault()
@@ -38,36 +37,29 @@ View.add_view('page', {
 				}
 			}
 		}
-		$chatSendButton.onclick = e=>{
+		this.$send.onclick = e=>{
 			this.send_message()
 		}
-		$chatCancelEdit.onclick = e=>{
+		this.$cancel.onclick = e=>{
 			this.cancel_edit()
 		}
 		// TODO: global escape handler?
-		document.addEventListener('keydown', e=>{
+		/*document.addEventListener('keydown', e=>{
 			if (e.keyCode==27)
 				this.cancel_edit()
-		})
-		this.textarea_resize()
+		})*/
 		let r = this.textarea_resize.bind(this)
-		this.textarea.addEventListener('input', r, {passive: true})
-		this.track_resize_2.add(this.textarea, ()=>{
+		this.$textarea.addEventListener('input', r, {passive: true})
+		PageView.track_resize_2.add(this.$textarea, ()=>{
 			window.setTimeout(r)
 		})
-	},
-	
+	}
+	Visible() {
+		this.textarea_resize()
+	}
 	Start({id, query}) {
 		let field
 		if ('number'==typeof id) {
-			if (id != 0) {
-				let room = ChatRoom.rooms[id]
-				if (room) {
-					let z = room.pinned
-					room.pinned = true
-					return {quick: true, ext: {room, z}}
-				}
-			}
 			field = 'id'
 		} else {
 			field = 'hash'
@@ -89,29 +81,21 @@ View.add_view('page', {
 				return resp.content[0]
 			},
 		}
-	},
-	Quick({room, z}) {
-		let page = room.page
-		this.room = room
-		this.room.show()
-		this.room.pinned = z
-		this.render_page(page)
-	},
+	}
 	Render({message, content:[page]}, ext) {
 		message.reverse()
 //		let pinned = objects.Mpinned
 		
-		this.room = ChatRoom.obtain_room(page.id, page, message) //n nng
+		this.room = ChatRoom.obtain_room(page.id, page, message, this) //n nng
 		this.room.show()
 		
 		this.render_page(page)
-	},
+	}
 	Cleanup(type) {
 		this.room && this.room.hide() //so it's fucking possible for cleanup to get called TWICE if there's an error, sometimes.
 		this.room = null
 		View.flag('canEdit', false)
-	},
-	
+	}
 	render_page(page) {
 		View.set_entity_title(page)
 		//View.set_entity_path(page.parent)
@@ -119,18 +103,17 @@ View.add_view('page', {
 		$pageCommentsLink.href = "#comments/"+page.id+"?r" // todo: location
 		$pageEditLink.href = "#editpage/"+page.id
 		if (page.createUserId==Req.uid || /c/i.test(page.permissions[Req.uid] || page.permissions[0])) {
-			this.textarea.disabled = false
-			this.textarea.focus()
+			this.$textarea.disabled = false
+			this.$textarea.focus()
 		} else
-			this.textarea.disabled = true
+			this.$textarea.disabled = true
 		this.room.edit_callback = msg=>this.edit_comment(msg)
-	},
-	
+	}
 	textarea_resize() {
-		this.textarea.style.height = ""
-		let height = this.textarea.scrollHeight
-		this.textarea.parentNode.style.height = this.textarea.style.height = height+1+"px"
-	},
+		this.$textarea.style.height = ""
+		let height = this.$textarea.scrollHeight
+		this.$textarea.parentNode.style.height = this.$textarea.style.height = height+1+"px"
+	}
 	
 	send_message() {
 		if (!this.room)
@@ -141,7 +124,7 @@ View.add_view('page', {
 		if (this.editing_comment) { // editing comment
 			let last_edit = this.editing_comment
 			this.cancel_edit()
-			this.textarea.focus()
+			this.$textarea.focus()
 			
 			if (data.text) { // input not blank
 				last_edit.text = data.text
@@ -170,20 +153,20 @@ View.add_view('page', {
 					//if (err) //error sending message
 						//this.write_input(old)
 				}
-				this.textarea.select()
+				this.$textarea.select()
 				document.execCommand('delete')
 				//$chatTextarea.value = ""
 				this.textarea_resize()
 			}
 		}
-	},
+	}
 	
 	read_input(old) {
 		let values = old ? old.values : {}
 		
 		if (old) {
-			if ($chatMarkupSelect.value)
-				values.m = $chatMarkupSelect.value
+			if (this.$markup.value)
+				values.m = this.$markup.value
 			else
 				delete values.m
 		} else {
@@ -198,12 +181,12 @@ View.add_view('page', {
 		
 		return {
 			values: values,
-			text: this.textarea.value,
+			text: this.$textarea.value,
 		}
-	},
+	}
 	
 	write_input(data) {
-		this.textarea.select()
+		this.$textarea.select()
 		if (data.text)
 			document.execCommand('insertText', false, data.text)
 		else
@@ -212,12 +195,9 @@ View.add_view('page', {
 		let markup = data.values.m
 		if ('string'!=typeof markup)
 			markup = ""
-		$chatMarkupSelect.value = markup
-	},
+		this.$markup.value = markup
+	}
 
-	pre_edit: null,
-	editing_comment: null,
-	
 	edit_comment(comment) {
 		if (this.editing_comment)
 			this.cancel_edit()
@@ -229,16 +209,36 @@ View.add_view('page', {
 		this.write_input(comment) // do this after the flag, so the width is right
 		// todo: maybe also save/restore cursor etc.
 		window.setTimeout(x=>{
-			this.textarea.setSelectionRange(99999, 99999) // move cursor to end
-			this.textarea.focus()
-		}, 0)
-	},
-	
+			this.$textarea.setSelectionRange(99999, 99999) // move cursor to end
+			this.$textarea.focus()
+		})
+	}
 	cancel_edit() {
 		if (this.editing_comment) {
 			this.editing_comment = null
 			View.flag('chatEditing', false)
 			this.write_input(this.pre_edit)
 		}
-	},
-})
+	}	
+}
+PageView.track_resize_2 = new ResizeTracker('width')
+PageView.template = HTML`
+<div class='COL'>
+	<div class='FILL SLIDES' $=panes></div>
+	<div class='inputPane loggedIn ROW'>
+		<div class='showWhenEdit COL'>
+			<input $=markup placeholder="markup" style="width:50px;">
+			<button class='FILL' $=cancel>Cancel Edit</button>
+		</div>
+		<textarea-container class='FILL'>
+			<div $=textarea_width></div>
+			<textarea class='chatTextarea' $=textarea accesskey="z"></textarea>
+		</textarea-container>
+		<div class='COL'>
+			(temp)
+			<button class='FILL' $=send>Send</button>
+		</div>
+	</div>
+</div>
+`
+PageView.define('page')

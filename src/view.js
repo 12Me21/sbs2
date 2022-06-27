@@ -1,4 +1,54 @@
 'use strict'
+
+class BaseView {
+	constructor(location) {
+		this.location = location
+		new new.target.template(this)
+		this.Init()
+	}
+	static define(name) {
+		View.add_view(name, this)
+	}
+}
+
+{
+	let temp = document.createElement('template')
+	let make_template = (html)=>{
+		temp.innerHTML = html.replace(/\s*?\n\s*/g, "")
+		let root = temp.content
+		if (root.childNodes.length==1)
+			root = root.firstChild
+		return root
+	}
+	
+	let get_path = (root, node)=>{
+		let path = ""
+		while (node!==root) {
+			let parent = node.parentNode
+			let pos = [].indexOf.call(parent.childNodes, node)
+			path = ".firstChild"+".nextSibling".repeat(pos) + path
+			node = parent
+		}
+		return path
+	}
+	
+	window.HTML = ([html])=>{
+		let root = make_template(html)
+		let init = `const node=document.importNode(this.template, true)
+holder.$root=node`
+		for (let node of root.querySelectorAll("[\\$]")) {
+			let path = get_path(root, node)
+			let id = node.getAttribute('$')
+			node.removeAttribute('$')
+			init += `
+holder.$${id} = node${path}`
+		}
+		let c = new Function("holder", init)
+		c.prototype = {__proto__: null, template: root}
+		return c
+	}
+}
+
 // so really what we need is like, 
 // for Content, a few different views
 
@@ -201,6 +251,8 @@ const View = ((u=NAMESPACE({
 			if (!view)
 				throw 'type'
 			
+			view = new view(location)
+			
 			if (view.Early) {
 				phase = "view.Early"
 				view.Early()
@@ -251,8 +303,13 @@ const View = ((u=NAMESPACE({
 		}
 		u.load_end()
 		//throw "heck darn"
-		for (let elem of $main_slides.children)
-			elem.classList.toggle('shown', elem.dataset.slide == u.current_view.Name)
+		//for (let elem of $main_slides.children)
+		//	elem.classList.toggle('shown', elem.dataset.slide == u.current_view.Name)
+		view.$root.classList.add('shown')
+		$main_slides.fill(view.$root)
+		if (view.Visible)
+			view.Visible()
+		
 		for (let elem of $titlePane.children) {
 			let list = elem.dataset.view
 			if (list)
@@ -272,7 +329,7 @@ const View = ((u=NAMESPACE({
 	add_view(name, data) {
 		data.Name = name
 		u.views[name] = data
-		data.did_init = false
+		//data.did_init = false
 		Object.seal(data)
 	},
 	

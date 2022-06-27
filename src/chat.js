@@ -195,7 +195,7 @@ MessageList.controls_message = null
 MessageList.prototype.max_parts = 500
 
 class ChatRoom {
-	constructor(id, page) {
+	constructor(id, page, pv) {
 		if (this.constructor.rooms[id])
 			throw new Error("tried to create duplicate chatroom")
 		this.constructor.rooms[id] = this
@@ -259,7 +259,7 @@ class ChatRoom {
 			})
 		}
 		
-		$chatPaneBox.append(this.chat_pane)
+		pv.$panes.append(this.chat_pane)
 		
 		///////////
 		this.visible = false
@@ -436,12 +436,12 @@ class ChatRoom {
 		// todo: also call if the current comment being shown in the title is edited
 	}
 	// get/create room
-	static obtain_room(id, page, message) {
+	static obtain_room(id, page, message, pv) {
 		let room = this.rooms[id]
 		if (room)
 			room.update_page(page)
 		else {
-			room = new this(id, page)
+			room = new this(id, page, pv)
 			room.display_initial_messages(message/*, pinned*/) //todo: when page is edited, update pinned messages
 		}
 		return room
