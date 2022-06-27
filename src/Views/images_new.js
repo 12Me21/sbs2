@@ -6,14 +6,32 @@ const IMAGES_VIEW_SIZE = 64
 View.add_view('images', {
 	form: null,
 	current: null,
+	page: null,
+	location: null,
 	Init() {
 		$imagesWhatever.innerHTML = ''
-		$imagesAvatarButton.addEventListener('click', this.add_avatar)
-		// todo (for 12): saw something about making nav buttons? im just doing
-		// a custom thing here for now until you decide to do something about
-		// it ig, ill even scope it just for you </3
-		{
-			
+		$imagesAvatarButton.onclick = () => {
+			if (!this.current) return
+			Req.me.avatar = this.current.hash
+			Req.write(Req.me).do = (resp, err)=>{
+				if (!err)
+					print('ok')
+				else
+					alert('edit failed')
+			}
+		}
+		// FIXME: im pretty sure this is something that 12 wanted to be handled
+		// by Draw?
+		// FIXME: this is shit.
+		$imagesNavBack.onclick = () => {
+			if (this.page === undefined) return
+			this.location.query.page = String(this.page-1)
+			Nav.goto(this.location, true)
+		}
+		$imagesNavForward.onclick = () => {
+			if (this.page === undefined) return
+			this.location.query.page = String(this.page+1)
+			Nav.goto(this.location, true)
 		}
 		this.form = new Form({
 			fields: [
@@ -59,10 +77,11 @@ View.add_view('images', {
 			ext: {
 				page
 			}
-
 		}
 	},
-	Render({ content=[] }, { page }) {
+	Render({ content=[] }, { page }, location) {
+		this.location = location
+		this.page = parseInt(page)
 		View.set_title(" Images ")
 		content.forEach(x => {
 			const img = document.createElement('img')
@@ -72,46 +91,31 @@ View.add_view('images', {
 		})
 		
 		$imagesNavPage.textContent = String(page)
-
-		// fixme: this is shit.
-		$imagesNavBack.onClick = () => {
-			console.log("hewwo?")
-			window.location.replace(`#images?page=${page-1}`)
-		}
-		$imagesNavForward.onClick = () => {
-			window.location.replace(`#images?page=${page+1}`)
-		}
 	},
 	Cleanup(type) {
 		$imagesWhatever.innerHTML = ''
-		$imagesAvatarButton.removeEventListener('click', this.add_avatar)
 		this.current = null
+		this.page = null
+		this.location = null
 	},
 	set current(content) {
 		if (content === null) {
 			$imagesCurrentImg.src = ''
+			$imagesCurrentLink.href = ''
+			$imagesCurrentLink.textContent = ''
 			return
 		}
 		$imagesCurrentImg.src = Req.file_url(content.hash)
+		$imagesCurrentLink.href = `#file/${content.id}`
+		$imagesCurrentLink.textContent = content.hash
 		const formData = {
 			filename: content.name,
 			bucket: content.values?.bucket,
 			// fixme: what is this for exactly?
-			values: content.values,
-			// fixme: idr how to get permissions lol im dumb
-			permissions: null
+			values: JSON.stringify(content.values),
+			permissions: JSON.stringify(content.permissions)
 		}
 		this.form?.set(formData)
 		this.form?.write(formData)
-	},
-	set_avatar() {
-		if (current === null) return
-		Req.me.avatar = this.current.hash
-		Req.write(Req.me).do = (resp, err)=>{
-			if (!err)
-				print('ok')
-			else
-				alert('edit failed')
-		}
 	},
 })
