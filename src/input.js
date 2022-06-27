@@ -590,11 +590,26 @@ const INPUTS = {
 		constructor(p) {
 			super(p)
 			this.input = elem('div')
+			this.avatar = elem('img')
+			this.username = elem('span')
+			this.input.append(this.avatar)
+			this.input.append(this.username)
 			this.input.className = 'bar rem1-5'
 			this.elem = this.input
 		}
+		draw() {
+			
+			void 0
+		}
 		write() {
-			this.input.fill(this.value ? Draw.entity_title_link(this.value) : null)
+			const user = this.value
+			if (!user) return
+			this.avatar.src = Req.file_url(user.avatar, "size=24&crop=true")
+			this.username.textContent = user.username
+			// this.input.fill(this.value ? Draw.entity_title_link(this.value) : null)
+		}
+		read() {
+			void 0
 		}
 	},
 }

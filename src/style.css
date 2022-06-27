@@ -901,3 +901,24 @@ html[data-socket-state="dead"] #\$openSidebar {
 	height: auto;
 	max-height: 75vh;
 }
+
+#\$imagesWhatever img:hover {
+	cursor: pointer;
+}
+
+/* todo: ugh have to actually do css later */
+#\$imagesCurrent {
+	max-width: 100%;
+}
+
+#\$imagesCurrentImg {
+	max-width: 40%;
+}
+
+#\$imagesCurrentImgContainer {
+	flex-grow: 1;
+}
+
+#\$imagesCurrentData {
+	flex-shrink: 0;
+}
