@@ -1,6 +1,6 @@
 'use strict'
 
-View.add_view('user', {
+class UserView extends BaseView {
 	Start({id, query}) {
 		let user_query
 		if ('number'==typeof id) {
@@ -33,7 +33,7 @@ View.add_view('user', {
 			},
 			ext: {},
 		}
-	},
+	}
 	Render(resp, ext) {
 		let user = resp.user[0]
 		let userpage = resp.Puserpage[0]
@@ -41,20 +41,25 @@ View.add_view('user', {
 		//let ca = resp.commentaggregate
 		//let content = resp.content
 		View.set_title(" "+user.username+" ") // todo: this is unsafe because of text direction. get set_entity_title working again
-		$userPageAvatar.src = Draw.avatar_url(user, "size=400&crop=true")
+		this.$avatar.src = Draw.avatar_url(user, "size=200&crop=true")
 		$userPageLink.hidden = !userpage
 		if (userpage)
 			$userPageLink.href = "#page/"+userpage.id
 		if (userpage)
-			$userPageContents.fill(Markup.convert_lang(userpage.text, userpage.values.markupLang))
-		else
-			$userPageContents.fill()
-	},
+			Markup.convert_lang(userpage.text, userpage.values.markupLang, this.$contents)
+	}
 	Quick(ext) {
 		View.set_title("todo")
-	},
-	Cleanup() {
-		$userPageAvatar.src = ""
-		$userPageContents.fill()
-	},
-})
+	}
+}
+
+UserView.template = HTML`
+<div class='userPageBox'>
+	<a $=avatar_link class='userPageAvatar'>
+		<img $=avatar width=200 height=200>
+	</a>
+	<div $=contents class='userPageContents pageContents Markup'></div>
+</div>
+`
+
+UserView.register('user')
