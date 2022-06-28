@@ -328,7 +328,7 @@ let FileUploader = Object.seal({
 	show_content(content) {
 		let url = Req.file_url(content.hash)
 		this.show_parts(2, url, null)
-		$file_upload_page.href = "#file/"+content.hash
+		$file_upload_page.href = "#page/"+content.hash
 		this.last_file = content
 	},
 	

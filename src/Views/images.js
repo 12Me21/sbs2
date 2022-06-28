@@ -113,7 +113,7 @@ class ImagesView extends BaseView {
 			return
 		}
 		this.$imagesCurrentImg.src = Req.file_url(content.hash)
-		this.$imagesCurrentLink.href = `#file/${content.id}`
+		this.$imagesCurrentLink.href = `#page/${content.id}`
 		this.$imagesCurrentLink.textContent = content.hash
 		const formData = {
 			user: this.user[~content.createUserId],
