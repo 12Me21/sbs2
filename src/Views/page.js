@@ -47,11 +47,14 @@ class PageView extends BaseView {
 		this.$cancel.onclick = e=>{
 			this.cancel_edit()
 		}
-		// TODO: global escape handler?
-		/*document.addEventListener('keydown', e=>{
-			if (e.keyCode==27)
+		// ugh these event listeners are so long to define
+		// maybe we should have like,
+		// function to define a passive listener, shorthand
+		// plisten(this.$root, 'keydown', fn...) idk..
+		this.$root.addEventListener('keydown', e=>{
+			if ('Escape'==e.key)
 				this.cancel_edit()
-		})*/
+		})
 		let r = this.textarea_resize.bind(this)
 		this.$textarea.addEventListener('input', r, {passive: true})
 		PageView.track_resize_2.add(this.$textarea, ()=>{
@@ -199,7 +202,25 @@ class PageView extends BaseView {
 	}
 	update_page(page) {
 		this.page = page
-		Markup.convert_lang(page.text, page.values.markupLang, this.$page_contents, {intersection_observer: View.observer})
+		if (page.contentType==ABOUT.details.codes.InternalContentType.file) {
+			// messy code
+			let ne = Draw.button2("Set Avatar", e=>{
+				Req.me.avatar = this.page.hash
+				Req.write(Req.me).do = (resp, err)=>{
+					if (!err)
+						print('set avatar')
+					else
+						alert('edit failed')
+				}
+			})
+			let b = Draw.button2("Show in sidebar", e=>{
+				FileUploader.show_content(this.page)
+				Sidebar.select_tab('file')
+			})
+			this.$page_contents.fill([ne, b])
+		} else {
+			Markup.convert_lang(page.text, page.values.markupLang, this.$page_contents, {intersection_observer: View.observer})
+		}
 	}
 	// 8:10;35
 	Cleanup(type) {
