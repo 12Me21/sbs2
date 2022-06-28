@@ -6,12 +6,11 @@ class BaseView {
 	constructor(location) {
 		this.location = location
 		new.target.template(this)
-		//this.Init()
-		//Object.seal(this)
 	}
 	static register(name) {
 		this.prototype.Name = name
-		View.add_view(name, this)
+		View.views[name] = this
+		Object.seal(this)
 	}
 }
 
@@ -73,38 +72,6 @@ ErrorView.template = HTML`
 <div class='pre' $=error_location></div>
 </div>
 `
-
-// so really what we need is like, 
-// for Content, a few different views
-
-// per Content:
-// - chat
-// - editing
-// - page contents
-// - children (category view)
-
-// per User:
-// - user (show userpage + ???)
-
-// other:
-// - message search
-// - content search
-// - user search?
-// - page create
-
-// personal:
-// - user register / password change etc.
-// - user info change (avatar etc.)
-
-// todo: View class (oops name collision though...)
-
-// TODO:!!!!!!!!
-// idea: the run_on_load system can have multiple event types
-// (onload, after initial activity, after lastid, etc)
-// 
-// ex: we can call .start immediately
-// if it does a request, we need to wait for lastId before doing the requst (on SOME page types)
-// then we wait for onload, before displaying
 
 // hmm idk about using `u` instead of `this` here
 // it's nice that we don't rely on `this` binding
@@ -301,13 +268,6 @@ const View = ((u=NAMESPACE({
 		}
 	},
 	
-	add_view(name, data) {
-		data.Name = name
-		u.views[name] = data
-		//data.did_init = false
-		Object.seal(data)
-	},
-	
 	/// HELPER FUNCTIONS ///
 	// kinda should move these into like, draw.js idk
 	
@@ -418,6 +378,7 @@ const View = ((u=NAMESPACE({
 		u.real_title = entity.name
 		u.change_favicon(null)
 	},
+	// todo: maybe this belongs on BaseView?
 	set_title(text) {
 		let x = document.createElement('span')
 		x.className = "pre" // this is silly ..
