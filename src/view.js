@@ -4,10 +4,11 @@ class BaseView {
 	constructor(location) {
 		this.location = location
 		new new.target.template(this)
-		this.Init()
+		//this.Init()
 		//Object.seal(this)
 	}
 	static define(name) {
+		this.prototype.Name = name
 		View.add_view(name, this)
 	}
 }
