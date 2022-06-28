@@ -905,23 +905,19 @@ html[data-socket-state="dead"] .toggle-sidebar {
 	max-height: 75vh;
 }
 
-#\$imagesWhatever img {
+.images-thumbnails img {
 	cursor: pointer;
 	height: 60px;
 	width: 60px;
 	/*background-color: gray;*/
 }
 
-#\$imagesCurrentImg {
+.images-current {
 	max-height: 100%;
 	max-width: 100%;
 	border: 1px solid gray;
 }
 
-#\$imagesCurrentImgContainer {
+.images-container {
 	flex-grow: 1;
-}
-
-#\$imagesCurrentData {
-	flex-shrink: 0;
 }

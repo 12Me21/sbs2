@@ -209,8 +209,6 @@
 	|| MAIN CONTENTS ||
 	\===============-->
 	<main class='FILL SLIDES' id=$main_slides>
-		<!--[ View: error ]-->
-		<div data-slide=error class='errorPage' id=$errorMessage></div>
 		<!--[ View: comments ]-->
 		<div data-slide=comments>
 			<div id=$commentSearch class='nav'>
@@ -239,7 +237,6 @@
 			<img id=$userPageAvatar width=400 height=400>
 			<div id=$userPageContents class='pageContents Markup'></div>
 		</div>
-		<!--[ View: page ]-->
 		<!--[ View: editpage ]-->
 		<div data-slide=editpage id=$editorPane class='resize-box COL'>
 			<div id=$editorTop class='sized page-container SLIDES'>
@@ -266,25 +263,6 @@
 				<button id=$fileShowSidebar>show in sidebar</button>
 			</div>
 			<div class='pre' id=$fileInfo></div>
-		</div>
-		<!--[ View: images ]-->
-		<div data-slide=images class='COL'>
-			<div id=$imagesWhatever></div>
-			<div id=$imagesNav class='nav ROW rem1-5'>
-				<button id=$imagesPrev>◀prev</button>
-				<span id=$imagesNavPage class='textItem'>0</span>
-				<button id=$imagesNext>next▶</button>
-				<input id=$imagesNavBucket placeholder="bucket">
-			</div>
-			<div id=$imagesCurrent class='FILL ROW'>
-				<div id=$imagesCurrentImgContainer class='FILL'>
-					<img id=$imagesCurrentImg>
-				</div>
-				<div style="width:50%">
-					<a id=$imagesCurrentLink></a><button id=$imagesAvatarButton>Set Avatar</button><button id=$imagesShowSidebar>show in sidebar</button>
-					<div id=$imagesForm></div>
-				</div>
-			</div>
 		</div>
 	</main>
 
