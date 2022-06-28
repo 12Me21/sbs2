@@ -487,3 +487,4 @@ do_when_ready(()=>{
 })
 
 PageView.register('page')
+// todo: redirects from "pages", "category", "file" (for now?)

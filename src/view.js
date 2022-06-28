@@ -16,7 +16,18 @@ class BaseView {
 }
 
 {
-	
+	// get from `root` to `node` using .firstChild and .nextSibling
+	// TODO: optimize this  yeah yeah !
+	//1: sharing results !
+	//  ex. if you have 2 nodes:
+	// A = root.firstChild.nextSibling.nextSibling
+	// B = root.firstChild.nextSibling.firstChild
+	//  then this can be:
+	// temp = root.firstChild.nextSibling
+	// A = temp.nextSibling
+	// B = temp.firstChild
+	//2: using .lastChild, .childNodes[n], etc.?
+	// i wonder if browsers can optimize it better when it's simple though
 	let get_path = (root, node)=>{
 		let path = ""
 		while (node!==root) {
@@ -110,50 +121,7 @@ const View = ((u=NAMESPACE({
 	real_title: null,
 	favicon_element: null,
 	
-	// create public variables here
-	views: {
-		test: {
-			Init() {
-				$testButton.onclick = ()=>{
-					let c = $testTextarea.value
-					$testOut.textContent="Starting..."
-					try {
-						let res = eval(c)
-						$testOut.textContent="Finished:\n"+res
-					} catch (e) {
-						$testOut.textContent="Error:\n"+e
-					}
-				}
-				let fields = ['shiftKey', 'ctrlKey', 'altKey', 'metaKey', 'location', 'isComposing', 'repeat', 'code', 'key', 'charCode', 'char', 'keyCode', 'which']
-				$testInput.onkeypress = e=>{
-					$testOut2.textContent="onkeypress\n"
-					for (let x of fields)
-						$testOut2.textContent += x+": "+e[x]+"\n"
-				}
-				$testInput.onkeydown = e=>{
-					let p = ""
-					for (let x of fields)
-						p += x+": "+e[x]+"\n"
-					$testOut3.textContent="onkeydown\n"+p
-					if (e.keyCode == 13)
-						$testOut4.textContent = "last enter press\n"+p
-				}
-			},
-			Name: 'test',
-			Start() {
-				return {quick: true}
-			},
-			Quick() {
-				u.set_title("Testing")
-			},
-		},
-		pages: {
-			Redirect: (id, query) => ['page', id, query],
-		},
-		category: {
-			Redirect: (id, query) => ['page', id, query],
-		},
-	},
+	views: {__proto__: null},
 	
 	observer: null,
 	toggle_observer(state) {
@@ -178,18 +146,18 @@ const View = ((u=NAMESPACE({
 		}
 	},
 	
-	// handle redirects
-	get_view(location) {
+	// modifies `location` param, returns true if redirect happened
+	handle_redirects(location) {
 		let view = u.views[location.type]
 		let got = false
-		while (view && view.Redirect) { //danger!
+		/*while (view && view.Redirect) { //danger!
 			let ret = view.Redirect(location.id, location.query)
 			if (!ret) // oops no redirect
 				break
 			;[location.type, location.id, location.query] = ret // somehow this line triggers a bug in eslint
 			view = u.views[location.type]
 			got = true
-		}
+		}*/
 		return got
 	},
 	
@@ -251,7 +219,7 @@ const View = ((u=NAMESPACE({
 		try {
 			u.load_start()
 			phase = "view lookup"
-			let got_redirect = u.get_view(location)
+			let got_redirect = u.handle_redirects(location)
 			view = u.views[location.type]
 			if (got_redirect)
 				Nav.replace_location(location)
