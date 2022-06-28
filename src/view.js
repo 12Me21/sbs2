@@ -5,6 +5,7 @@ class BaseView {
 		this.location = location
 		new new.target.template(this)
 		this.Init()
+		//Object.seal(this)
 	}
 	static define(name) {
 		View.add_view(name, this)
@@ -276,7 +277,6 @@ const View = ((u=NAMESPACE({
 			if (view.Init) {
 				phase = "view.Init"
 				view.Init()
-				view.Init = null
 			}
 			u.cleanup(location)
 			phase = "rendering"

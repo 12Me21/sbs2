@@ -41,8 +41,6 @@ function immediate() {
 		do_when_ready(()=> View.update_my_user(Req.me))
 	})
 	
-	ChatRoom.global = new ChatRoom(0)
-	
 	Lp.start_websocket()
 	
 	Act.pull_recent()
