@@ -465,4 +465,4 @@ do_when_ready(()=>{
 	PageView.global.$userlist = $sidebarUserList
 })
 
-PageView.define('page')
+PageView.register('page')

@@ -188,7 +188,7 @@ CommentsView.template = HTML`
 	<div $=commentSearchResults></div>
 </div>
 `
-CommentsView.define('comments')
+CommentsView.register('comments')
 
 /*View.add_view('chatlogs', {
 	redirect: (id, query)=>{

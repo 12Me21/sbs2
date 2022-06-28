@@ -1,5 +1,7 @@
 'use strict'
 
+// TODO: the current system of Early/Init/Render doesn't make sense anymore, probably
+
 class BaseView {
 	constructor(location) {
 		this.location = location
@@ -7,7 +9,7 @@ class BaseView {
 		//this.Init()
 		//Object.seal(this)
 	}
-	static define(name) {
+	static register(name) {
 		this.prototype.Name = name
 		View.add_view(name, this)
 	}

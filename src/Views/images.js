@@ -151,4 +151,4 @@ ImagesView.template = HTML`
 </div>
 `
 
-ImagesView.define('images')
+ImagesView.register('images')

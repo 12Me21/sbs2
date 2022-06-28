@@ -469,14 +469,14 @@ html:not(.f-chatEditing) .showWhenEdit {
 }
 
 /* editor */
-#\$editorTextarea {
+.editor-textarea {
 	;min-height: 3rem
 	;overflow-y: scroll
 	;resize: none
 }
-#\$editorPreviewPane {
+/*#\$editorPreviewPane {
 	height: 50%;
-}
+}*/
 
 /*********/
 
