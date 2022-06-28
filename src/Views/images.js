@@ -6,7 +6,6 @@ class ImagesView extends BaseView {
 		this.page = null
 		this.user = null
 		this.SIZE = 60
-		this.PER_PAGE = 20
 		
 		this.$imagesWhatever.innerHTML = ''
 		// FIXME: should put this in another function since it's also
@@ -76,8 +75,8 @@ class ImagesView extends BaseView {
 						fields: '*',
 						query: `contentType = @file AND ${bucket ? '!valuelike(@key, @bucket)' : '!valuekeynotlike(@key)'}`,
 						order: 'id_desc',
-						limit: this.PER_PAGE,
-						skip: (page-1) * this.PER_PAGE,
+						limit: 20,
+						skip: (page-1) * 20,
 					},
 					{type:'user', fields:'*', query:"id IN @content.createUserId."},
 				],

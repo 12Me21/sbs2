@@ -5,7 +5,7 @@
 class BaseView {
 	constructor(location) {
 		this.location = location
-		new new.target.template(this)
+		new.target.template(this)
 		//this.Init()
 		//Object.seal(this)
 	}
@@ -36,7 +36,7 @@ class BaseView {
 		if (root.childNodes.length==1)
 			root = root.firstChild
 		
-		let init = `const node=document.importNode(this.template, true)
+		let init = `const node=document.importNode(this, true)
 holder.$root=node`
 		for (let node of content.querySelectorAll("[\\$]")) {
 			let path = get_path(root, node)
@@ -45,8 +45,8 @@ holder.$root=node`
 			init += `
 holder.$${id} = node${path}`
 		}
-		let c = new Function("holder", init)
-		c.prototype = {__proto__: null, template: root}
+		let c = new Function("holder", init).bind(root)
+		//c.prototype = {__proto__: null, template: root}
 		return c
 	}
 }
