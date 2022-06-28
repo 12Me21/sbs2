@@ -440,6 +440,7 @@ PageView.currentRoom = null
 PageView.rooms[0] = PageView.global = Object.seal({
 	id: 0,
 	$userlist: null,
+	status: undefined,
 	update_userlist() {
 		let statusmap = PageView.statuses[this.id] || {}
 		this.$userlist.fill()
@@ -452,7 +453,16 @@ PageView.rooms[0] = PageView.global = Object.seal({
 			this.$userlist.append(Draw.userlist_avatar(user, status))
 		})
 	},
+	set_status(s) {
+		this.status = s
+		Lp.set_status(this.id, s)
+	},
+	update_avatar(id) {
+		this.update_userlist()
+	},
 })
-do_when_ready(()=>{PageView.global.$userlist = $sidebarUserList})
+do_when_ready(()=>{
+	PageView.global.$userlist = $sidebarUserList
+})
 
 PageView.define('page')

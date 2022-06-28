@@ -13,14 +13,6 @@ class BaseView {
 }
 
 {
-	let temp = document.createElement('template')
-	let make_template = (html)=>{
-		temp.innerHTML = html.replace(/\s*?\n\s*/g, "")
-		let root = temp.content
-		if (root.childNodes.length==1)
-			root = root.firstChild
-		return root
-	}
 	
 	let get_path = (root, node)=>{
 		let path = ""
@@ -34,10 +26,16 @@ class BaseView {
 	}
 	
 	window.HTML = ([html])=>{
-		let root = make_template(html)
+		let temp = document.createElement('template')
+		temp.innerHTML = html.replace(/\s*?\n\s*/g, "")
+		let content = temp.content
+		let root = content
+		if (root.childNodes.length==1)
+			root = root.firstChild
+		
 		let init = `const node=document.importNode(this.template, true)
 holder.$root=node`
-		for (let node of root.querySelectorAll("[\\$]")) {
+		for (let node of content.querySelectorAll("[\\$]")) {
 			let path = get_path(root, node)
 			let id = node.getAttribute('$')
 			node.removeAttribute('$')
@@ -49,6 +47,18 @@ holder.$${id} = node${path}`
 		return c
 	}
 }
+
+class ErrorView extends BaseView {
+	Init() {
+		
+	}
+}
+ErrorView.template = HTML`
+<div>
+<div class='errorPage' $=error_message></div>
+<div class='pre' $=error_location></div>
+</div>
+`
 
 // so really what we need is like, 
 // for Content, a few different views
@@ -139,13 +149,6 @@ const View = ((u=NAMESPACE({
 		},
 		category: {
 			Redirect: (id, query) => ['page', id, query],
-		},
-	},
-	// fake-ish
-	errorView: {
-		Name: 'error',
-		Cleanup() {
-			$errorMessage.textContent = ""
 		},
 	},
 	
@@ -289,7 +292,7 @@ const View = ((u=NAMESPACE({
 			yield do_when_ready(STEP)
 			
 			u.cleanup(location)
-			u.current_view = view = u.errorView
+			u.current_view = view = new ErrorView(location)
 			if (e==='type') {
 				u.set_title("Unknown page type")
 			} else if (e==='data') {
@@ -297,7 +300,8 @@ const View = ((u=NAMESPACE({
 			} else {
 				console.error("Error during view handling", e)
 				u.set_title("Error during: "+phase)
-				$errorMessage.fill(Debug.sidebar_debug(e))
+				view.$error_message.fill(Debug.sidebar_debug(e))
+				view.$error_location.append(JSON.stringify(location, null, 1))
 			}
 			//$errorMessage.textContent = e
 		}

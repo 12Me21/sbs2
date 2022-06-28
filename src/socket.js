@@ -268,7 +268,7 @@ let Lp = singleton({
 			} break; case 'user_event': {
 				let user = maplist.user[~ref_id]
 				if (user) {
-					ChatRoom.update_avatar(user) // messy...
+					PageView.update_avatar(user) // messy...
 					if (ref_id==Req.uid)
 						View.update_my_user(user)
 				}
@@ -276,7 +276,7 @@ let Lp = singleton({
 		}
 		if (comments.length) {
 			Sidebar.display_messages(comments)
-			ChatRoom.display_messages(comments)
+			PageView.display_messages(comments)
 		}
 	},
 	init() {
