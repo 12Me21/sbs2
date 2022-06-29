@@ -1,7 +1,7 @@
 <!doctype html><html lang=en-QS><meta charset=utf-8>
 <title>SmileBASIC Source 2</title>
 
-<meta name=viewport content="width=device-width, initial-scale=1, height=device-height">
+<meta name=viewport content="width=device-width, height=device-height, initial-scale=1" id=$meta_viewport>
 
 <link rel=icon sizes=16x16 href=resource/icon16.ico> <!-- compatibility -->
 <link rel=icon sizes=16x16 href=resource/icon16.png> <!-- firefox -->
@@ -119,6 +119,12 @@
 	}
 	theme_query.onchange(theme_query)
 	
+	let IOS_SAFARI = CSS.supports('-webkit-touch-callout', 'none')
+	// In safari, this doesn't prevent manual zooming anymore.
+	// it only disables the automatic zoom that happens when a text input is focused
+	if (IOS_SAFARI)
+		$meta_viewport.content += ", user-scalable=no"
+	
 	console.log("🌅 early init done")
 	markup_warned = false
 </script>
@@ -165,7 +171,6 @@
 <script src=src/Views/user.js></script>
 <script src=src/Views/comments.js></script>
 <script src=src/Views/editpage.js></script>
-<script src=src/Views/file.js></script>
 <script src=src/Views/images.js></script>
 
 <script src=src/navigate.js></script>
@@ -209,19 +214,6 @@
 	|| MAIN CONTENTS ||
 	\===============-->
 	<main class='FILL SLIDES' id=$main_slides>
-		<!--[ View: error ]-->
-		<div data-slide=error class='errorPage' id=$errorMessage></div>
-		<!--[ View: comments ]-->
-		<div data-slide=comments>
-			<div id=$commentSearch class='nav'>
-				<br id=$commentSearchForm>
-				<button id=$commentSearchButton>🔍Search</button>
-				<button id=$commentSearchPrev>◀prev</button>
-				<button id=$commentSearchNext>next▶</button>
-				<span id=$commentSearchStatus></span>
-			</div>
-			<div id=$commentSearchResults></div>
-		</div>
 		<!--[ View: test ]-->
 		<div data-slide=test>
 			<textarea id=$testTextarea></textarea><br>
@@ -234,46 +226,6 @@
 				<div id=$testOut4 class='pre'></div>
 			</div>
 		</div>
-		<!--[ View: user ]-->
-		<div data-slide=user>
-			<img id=$userPageAvatar width=400 height=400>
-			<div id=$userPageContents class='pageContents Markup'></div>
-		</div>
-		<!--[ View: page ]-->
-		<div data-slide=page id=$chatContainer class='COL'>
-			<div class='FILL SLIDES' id=$chatPaneBox></div>
-			<div class='inputPane loggedIn ROW'>
-				<div class='showWhenEdit COL'>
-					<input id=$chatMarkupSelect placeholder="markup" style="width:50px;">
-					<button class='FILL' id=$chatCancelEdit>Cancel Edit</button>
-				</div>
-				<textarea-container class='FILL'>
-					<div id=$chatTextareaWidth></div>
-					<textarea class='chatTextarea' id=$chatTextarea accesskey="z"></textarea>
-				</textarea-container>
-				<div class='COL'>
-					(temp)
-					<button class='FILL' id=$chatSendButton>Send</button>
-				</div>
-			</div>
-		</div>
-		<!--[ View: editpage ]-->
-		<div data-slide=editpage id=$editorPane class='resize-box COL'>
-			<div id=$editorTop class='sized page-container SLIDES'>
-				<scroll-outer data-slide=preview id=$editorPreviewOuter><scroll-inner id=$editorPreview class='pageContents'></scroll-inner></scroll-outer>
-				<div data-slide=fields id=$editorFields>
-					<textarea id=$editorData style="resize:none;width:100%;height:100%;"></textarea>
-				</div>
-			</div>
-			<resize-handle id=$editorResize>
-				preview:<input type=checkbox id=$editorPreviewButton>
-				<span id=$editorPreviewControls>
-					| live:<input type=checkbox id=$editorLiveButton>
-					<button id=$editorRenderButton>render full</button>
-				</span>
-			</resize-handle>
-			<textarea id=$editorTextarea class='FILL'></textarea>
-		</div>
 		<!--[ View: file ]-->
 		<div data-slide=file class='COL'>
 			<img id=$fileImage>
@@ -283,25 +235,6 @@
 				<button id=$fileShowSidebar>show in sidebar</button>
 			</div>
 			<div class='pre' id=$fileInfo></div>
-		</div>
-		<!--[ View: images ]-->
-		<div data-slide=images class='COL'>
-			<div id=$imagesWhatever></div>
-			<div id=$imagesNav class='nav ROW rem1-5'>
-				<button id=$imagesPrev>◀prev</button>
-				<span id=$imagesNavPage class='textItem'>0</span>
-				<button id=$imagesNext>next▶</button>
-				<input id=$imagesNavBucket placeholder="bucket">
-			</div>
-			<div id=$imagesCurrent class='FILL ROW'>
-				<div id=$imagesCurrentImgContainer class='FILL'>
-					<img id=$imagesCurrentImg>
-				</div>
-				<div style="width:50%">
-					<a id=$imagesCurrentLink></a><button id=$imagesAvatarButton>Set Avatar</button><button id=$imagesShowSidebar>show in sidebar</button>
-					<div id=$imagesForm></div>
-				</div>
-			</div>
 		</div>
 	</main>
 

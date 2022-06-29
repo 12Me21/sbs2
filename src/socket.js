@@ -234,7 +234,7 @@ let Lp = singleton({
 			this.process_live(data.events, data.objects)
 		} break;case 'userlistupdate': {
 			Entity.do_listmap(data.objects)
-			ChatRoom.update_userlists(data.statuses, data.objects)
+			PageView.update_userlists(data.statuses, data.objects)
 		} break;case 'badtoken': {
 			//
 		} }
@@ -268,15 +268,18 @@ let Lp = singleton({
 			} break; case 'user_event': {
 				let user = maplist.user[~ref_id]
 				if (user) {
-					ChatRoom.update_avatar(user) // messy...
+					PageView.update_avatar(user) // messy...
 					if (ref_id==Req.uid)
 						View.update_my_user(user)
 				}
 			} }
 		}
 		if (comments.length) {
-			Sidebar.display_messages(comments)
-			ChatRoom.display_messages(comments)
+			try {
+				PageView.display_messages(comments)
+			} finally {
+				Sidebar.display_messages(comments)
+			}
 		}
 	},
 	init() {

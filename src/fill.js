@@ -114,6 +114,13 @@ METHOD(Generator, 'run', function(ok=console.info, err=e=>{ throw e }) {
 delete window.content
 delete window.sidebar
 
+for (let c of "pn")
+	Object.defineProperty(window, c, {
+		get(){throw new SyntaxError('eek')},
+		set(n){delete window[c]; window[c]=n},
+		configurable: true,
+	})
+
 
 // (end of scary part)
 

@@ -1,9 +1,7 @@
 'use strict'
 // todo: should have some indicator whether the input fields reflect the current search results or have been edited
 
-View.add_view('comments', {
-	form: null,
-	
+class CommentsView extends BaseView {
 	Early() {
 		this.form = new Form({
 			fields: [
@@ -20,12 +18,9 @@ View.add_view('comments', {
 				['reverse', 'checkbox', {label: "Newest First", param: 'r'}],
 			],
 		})
-	},
-	
-	location: null,
-	
+	}
 	Init() {
-		$commentSearchForm.replaceWith(this.form.elem)
+		this.$commentSearchForm.replaceWith(this.form.elem)
 		let go = (dir)=>{
 			if (!this.location) return
 			this.form.read()
@@ -52,11 +47,11 @@ View.add_view('comments', {
 				this.location.query.page = "1"
 			Nav.goto(this.location, true)
 		}
-		$commentSearchButton.onclick = ()=>{ go() }
-		View.bind_enter($commentSearch, $commentSearchButton.onclick)
-		$commentSearchPrev.onclick = ()=>{ go(-1) }
-		$commentSearchNext.onclick = ()=>{ go(+1) }
-	},
+		this.$commentSearchButton.onclick = ()=>{ go() }
+		View.bind_enter(this.$commentSearch, this.$commentSearchButton.onclick)
+		this.$commentSearchPrev.onclick = ()=>{ go(-1) }
+		this.$commentSearchNext.onclick = ()=>{ go(+1) }
+	}
 	Start({id, query}) {
 		this.form.from_query(query)
 		let data = this.form.get()
@@ -71,48 +66,43 @@ View.add_view('comments', {
 			chain: search,
 			ext: {data, merge},
 		}
-	},
-	Quick({data}, location) {
-		this.location = location
-		View.set_title("Comments")
-		this.form.set(data)
-		this.form.write(data)
-		$commentSearchResults.fill()
-		$commentSearchStatus.textContent = "(no query)"
-	},
+	}
 	Render({message:comments, content:pages}, {data, merge}, location) {
 		this.location = location // todo: formal system for this (setting query string when form submit)
 		
 		View.set_title("Comments")
 		this.form.set(data)
-		this.form.write(data)
+		this.form.write()
 		
-		$commentSearchResults.fill()
+		this.$commentSearchResults.fill()
 		if (!comments.length) {
-			$commentSearchStatus.textContent = "(no results)"
+			this.$commentSearchStatus.textContent = "(no results)"
 		} else {
-			$commentSearchStatus.textContent = "results: "+comments.length
+			this.$commentSearchStatus.textContent = "results: "+comments.length
 			if (merge) {
 				let x = document.createElement('message-list')
-				$commentSearchResults.append(x)
+				this.$commentSearchResults.append(x)
 				let list = new MessageList(x, comments[0].contentId) // mmndnhhhgghdhfhdh i sure hope it does (contentId)
 				for (let comment of comments)
 					list.display_message(comment, false)
 			} else {
 				for (let c of comments) {
 					let parent = pages[~c.contentId]
-					$commentSearchResults.append(Draw.search_comment(c, parent))
+					this.$commentSearchResults.append(Draw.search_comment(c, parent))
 					// todo: maybe have them display in a more compact form without controls by default, and then have a button to render a message list 
 					// also, maybe if you load enough comments to reach the adjacent item, it should merge that in,
 				}
 			}
 		}
-	},
-	Cleanup() {
-		$commentSearchResults.fill()
-		this.location = null
-	},
-	
+	}	
+	Quick({data}, location) {
+		this.location = location
+		View.set_title("Comments")
+		this.form.set(data)
+		this.form.write()
+		this.$commentSearchResults.fill()
+		this.$commentSearchStatus.textContent = "(no query)"
+	}
 	build_search(data) {
 		// check if form is empty
 		if (!data.search && !(data.users && data.users.length) && !data.range && !data.start && !data.end && !data.page)
@@ -184,10 +174,23 @@ View.add_view('comments', {
 			},
 			merge,
 		]
-	},
-})
+	}
+}
+CommentsView.template = HTML`
+<div>
+	<div $=commentSearch class='nav'>
+		<br $=commentSearchForm>
+		<button $=commentSearchButton>🔍Search</button>
+		<button $=commentSearchPrev>◀prev</button>
+		<button $=commentSearchNext>next▶</button>
+		<span $=commentSearchStatus></span>
+	</div>
+	<div $=commentSearchResults></div>
+</div>
+`
+CommentsView.register('comments')
 
-View.add_view('chatlogs', {
+/*View.add_view('chatlogs', {
 	redirect: (id, query)=>{
 		let q = {r: true}
 		// we do it this way so the ORDER is preserved :D
@@ -210,7 +213,5 @@ View.add_view('chatlogs', {
 		}
 		return ['comments', id, q]
 	},
-	//TODO: results are links to chatlog viewer which lets you load surrounding messages etc.
-	// show page name etc.
-})
+})*/
 

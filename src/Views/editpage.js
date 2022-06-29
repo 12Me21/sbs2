@@ -1,43 +1,37 @@
 'use strict'
 
-View.add_view('editpage', {
-	textarea: null,
-	preview: null,
-	page: null,
-	show_preview: false,
-	live_preview: false,
-	
+class EditView extends BaseView {
 	Init() {
-		this.textarea = $editorTextarea
-		this.preview = $editorPreview
+		this.page = null
+		this.show_preview = false
+		this.live_preview = false
 		
-		View.attach_resize($editorTop, $editorResize, false, 1, null, null, 300)
+		View.attach_resize(this.$top, this.$resize, false, 1, null, null, 300)
 		$editorSave.onclick = e=>{
 			if (!this.page)
 				return
-			let data = JSON.parse($editorData.value)
-			data.text = this.textarea.value
+			let data = JSON.parse(this.$data.value)
+			data.text = this.$textarea.value
 			Object.assign(this.page, data)
 			this.save()
 		}
 		let batch = (cb,w=0)=>e=>w++||requestAnimationFrame(_=>cb(e,w=0))
-		$editorPreviewButton.onchange = e=>{
+		this.$preview_button.onchange = e=>{
 			this.toggle_preview(e.target.checked)
 		}
-		$editorLiveButton.onchange = e=>{
+		this.$live_button.onchange = e=>{
 			this.live_preview = e.target.checked
 			if (this.live_preview)
 				this.update_preview()
 		}
-		$editorTextarea.addEventListener('input', batch(e=>{
+		this.$textarea.addEventListener('input', batch(e=>{
 			if (this.show_preview && this.live_preview)
 				this.update_preview()
 		}), {passive: true})
-		$editorRenderButton.onclick = e=>{
+		this.$render_button.onclick = e=>{
 			this.update_preview(true)
 		}
-	},
-	
+	}
 	Start({id, query}) {
 		if (id==null) {
 			return {quick: true, ext: {}}
@@ -57,7 +51,7 @@ View.add_view('editpage', {
 				return resp.content[0]
 			},
 		}
-	},
+	}
 	Quick(ext, location) {
 		// hack to create new page object
 		// todo: clean up TYPES
@@ -70,21 +64,20 @@ View.add_view('editpage', {
 		page.permissions = {"0":"CR"}
 		
 		this.got_page(page, true)
-	},
+	}
 	Render({content:[page], user}, ext) {
 		this.got_page(page, false)
-	},
-	Cleanup(type) {
-		this.page = null
-		$editorPreview.fill()
-	},
-	
+	}
+	Insert_Text(text) {
+		this.$textarea.focus()
+		document.execCommand('insertText', false, text)
+	}
 	got_page(page, creating) {
 		View.set_entity_title(page)
 		this.page = page
 		$editorSave.textContent = creating ? "Create" : "Save"
 		$editPageLink.href = "#page/"+page.id
-		this.textarea.value = page.text //todo: preserve undo?
+		this.$textarea.value = page.text //todo: preserve undo?
 		// only show writable fields
 		let writable = {}
 		for (let [k,v] of Object.entries(page)) {
@@ -94,28 +87,28 @@ View.add_view('editpage', {
 					writable[k] = v
 			}
 		}
-		$editorData.value = JSON.stringify(writable, null, 1)
+		this.$data.value = JSON.stringify(writable, null, 1)
 		
-		$editorPreviewButton.checked = false
+		this.$preview_button.checked = false
 		this.toggle_preview(false)
-		$editorLiveButton.checked = true
+		this.$live_button.checked = true
 		this.live_preview = true
 		//this.update_preview()
-	},
+	}
 	toggle_preview(state) {
 		this.show_preview = state
-		$editorPreviewOuter.classList.toggle('shown', state)
-		$editorFields.classList.toggle('shown', !state)
-		$editorPreviewControls.hidden = !state
+		this.$preview_outer.classList.toggle('shown', state)
+		this.$fields.classList.toggle('shown', !state)
+		this.$preview_controls.hidden = !state
 		if (state) {
 			this.update_preview()
 		} else {
-			$editorPreview.fill()
+			this.$preview.fill()
 		}
-	},
+	}
 	update_preview(full) {
-		Markup.convert_lang(this.textarea.value, this.page.values.markupLang, this.preview, {preview: !full})
-	},
+		Markup.convert_lang(this.$textarea.value, this.page.values.markupLang, this.$preview, {preview: !full})
+	}
 	save() {
 		Req.write(this.page).do = (resp, err)=>{
 			if (err) {
@@ -126,4 +119,25 @@ View.add_view('editpage', {
 			this.got_page(resp, false)
 		}
 	}
-})
+}
+
+EditView.template = HTML`
+<div data-slide=editpage class='resize-box COL'>
+	<div $=top class='sized page-container SLIDES'>
+		<scroll-outer data-slide=preview $=preview_outer><scroll-inner $=preview class='pageContents'></scroll-inner></scroll-outer>
+		<div data-slide=fields $=fields>
+			<textarea $=data style="resize:none;width:100%;height:100%;"></textarea>
+		</div>
+	</div>
+	<resize-handle $=resize>
+		preview:<input type=checkbox $=preview_button>
+		<span $=preview_controls>
+			| live:<input type=checkbox $=live_button>
+			<button $=render_button>render full</button>
+		</span>
+	</resize-handle>
+	<textarea $=textarea class='FILL editor-textarea'></textarea>
+</div>
+`
+
+EditView.register('editpage')

@@ -265,6 +265,8 @@ let FileUploader = Object.seal({
 		$file_url_insert.onclick = e=>{
 			let file = this.last_file
 			if (!file) return
+			if (!View.current_view.Insert_Text) return
+			
 			let url = Req.file_url(file.hash)
 			
 			let meta = JSON.parse(file.meta)
@@ -280,8 +282,7 @@ let FileUploader = Object.seal({
 			}
 			
 			Sidebar.close_fullscreen()
-			$chatTextarea.focus()
-			document.execCommand('insertText', false, url)
+			View.current_view.Insert_Text(url)
 		}
 		$file_upload.onclick = e=>{
 			if (!this.file) return
@@ -328,7 +329,7 @@ let FileUploader = Object.seal({
 	show_content(content) {
 		let url = Req.file_url(content.hash)
 		this.show_parts(2, url, null)
-		$file_upload_page.href = "#file/"+content.hash
+		$file_upload_page.href = "#page/"+content.hash
 		this.last_file = content
 	},
 	

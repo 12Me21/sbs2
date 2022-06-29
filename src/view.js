@@ -1,35 +1,77 @@
 'use strict'
-// so really what we need is like, 
-// for Content, a few different views
 
-// per Content:
-// - chat
-// - editing
-// - page contents
-// - children (category view)
+// TODO: the current system of Early/Init/Render doesn't make sense anymore, probably
 
-// per User:
-// - user (show userpage + ???)
+class BaseView {
+	constructor(location) {
+		this.location = location
+		new.target.template(this)
+	}
+	static register(name) {
+		this.prototype.Name = name
+		View.views[name] = this
+		Object.seal(this)
+	}
+}
 
-// other:
-// - message search
-// - content search
-// - user search?
-// - page create
+{
+	// get from `root` to `node` using .firstChild and .nextSibling
+	// TODO: optimize this  yeah yeah !
+	//1: sharing results !
+	//  ex. if you have 2 nodes:
+	// A = root.firstChild.nextSibling.nextSibling
+	// B = root.firstChild.nextSibling.firstChild
+	//  then this can be:
+	// temp = root.firstChild.nextSibling
+	// A = temp.nextSibling
+	// B = temp.firstChild
+	//2: using .lastChild, .childNodes[n], etc.?
+	// i wonder if browsers can optimize it better when it's simple though
+	let get_path = (root, node)=>{
+		let path = ""
+		while (node!==root) {
+			let parent = node.parentNode
+			let pos = [].indexOf.call(parent.childNodes, node)
+			path = ".firstChild"+".nextSibling".repeat(pos) + path
+			node = parent
+		}
+		return path
+	}
+	
+	window.HTML = ([html])=>{
+		let temp = document.createElement('template')
+		temp.innerHTML = html.replace(/\s*?\n\s*/g, "")
+		let content = temp.content
+		let root = content
+		if (root.childNodes.length==1)
+			root = root.firstChild
+		
+		let init = `const node=document.importNode(this, true)
+holder.$root=node`
+		for (let node of content.querySelectorAll("[\\$]")) {
+			let path = get_path(root, node)
+			let id = node.getAttribute('$')
+			node.removeAttribute('$')
+			init += `
+holder.$${id} = node${path}`
+		}
+		let c = new Function("holder", init).bind(root)
+		//c.prototype = {__proto__: null, template: root}
+		return c
+	}
+}
 
-// personal:
-// - user register / password change etc.
-// - user info change (avatar etc.)
-
-// todo: View class (oops name collision though...)
-
-// TODO:!!!!!!!!
-// idea: the run_on_load system can have multiple event types
-// (onload, after initial activity, after lastid, etc)
-// 
-// ex: we can call .start immediately
-// if it does a request, we need to wait for lastId before doing the requst (on SOME page types)
-// then we wait for onload, before displaying
+class ErrorView extends BaseView {
+	Init() {
+		
+	}
+}
+ErrorView.template = HTML`
+<div>
+<div class='errorPage' $=error_message></div>
+<div class='pre' $=error_location></div>
+</div>
+`
 
 // hmm idk about using `u` instead of `this` here
 // it's nice that we don't rely on `this` binding
@@ -46,57 +88,7 @@ const View = ((u=NAMESPACE({
 	real_title: null,
 	favicon_element: null,
 	
-	// create public variables here
-	views: {
-		test: {
-			Init() {
-				$testButton.onclick = ()=>{
-					let c = $testTextarea.value
-					$testOut.textContent="Starting..."
-					try {
-						let res = eval(c)
-						$testOut.textContent="Finished:\n"+res
-					} catch (e) {
-						$testOut.textContent="Error:\n"+e
-					}
-				}
-				let fields = ['shiftKey', 'ctrlKey', 'altKey', 'metaKey', 'location', 'isComposing', 'repeat', 'code', 'key', 'charCode', 'char', 'keyCode', 'which']
-				$testInput.onkeypress = e=>{
-					$testOut2.textContent="onkeypress\n"
-					for (let x of fields)
-						$testOut2.textContent += x+": "+e[x]+"\n"
-				}
-				$testInput.onkeydown = e=>{
-					let p = ""
-					for (let x of fields)
-						p += x+": "+e[x]+"\n"
-					$testOut3.textContent="onkeydown\n"+p
-					if (e.keyCode == 13)
-						$testOut4.textContent = "last enter press\n"+p
-				}
-			},
-			Name: 'test',
-			Start() {
-				return {quick: true}
-			},
-			Quick() {
-				u.set_title("Testing")
-			},
-		},
-		pages: {
-			Redirect: (id, query) => ['page', id, query],
-		},
-		category: {
-			Redirect: (id, query) => ['page', id, query],
-		},
-	},
-	// fake-ish
-	errorView: {
-		Name: 'error',
-		Cleanup() {
-			$errorMessage.textContent = ""
-		},
-	},
+	views: {__proto__: null},
 	
 	observer: null,
 	toggle_observer(state) {
@@ -121,18 +113,18 @@ const View = ((u=NAMESPACE({
 		}
 	},
 	
-	// handle redirects
-	get_view(location) {
+	// modifies `location` param, returns true if redirect happened
+	handle_redirects(location) {
 		let view = u.views[location.type]
 		let got = false
-		while (view && view.Redirect) { //danger!
+		/*while (view && view.Redirect) { //danger!
 			let ret = view.Redirect(location.id, location.query)
 			if (!ret) // oops no redirect
 				break
 			;[location.type, location.id, location.query] = ret // somehow this line triggers a bug in eslint
 			view = u.views[location.type]
 			got = true
-		}
+		}*/
 		return got
 	},
 	
@@ -194,12 +186,14 @@ const View = ((u=NAMESPACE({
 		try {
 			u.load_start()
 			phase = "view lookup"
-			let got_redirect = u.get_view(location)
+			let got_redirect = u.handle_redirects(location)
 			view = u.views[location.type]
 			if (got_redirect)
 				Nav.replace_location(location)
 			if (!view)
 				throw 'type'
+			
+			view = new view(location)
 			
 			if (view.Early) {
 				phase = "view.Early"
@@ -224,7 +218,6 @@ const View = ((u=NAMESPACE({
 			if (view.Init) {
 				phase = "view.Init"
 				view.Init()
-				view.Init = null
 			}
 			u.cleanup(location)
 			phase = "rendering"
@@ -237,7 +230,7 @@ const View = ((u=NAMESPACE({
 			yield do_when_ready(STEP)
 			
 			u.cleanup(location)
-			u.current_view = view = u.errorView
+			u.current_view = view = new ErrorView(location)
 			if (e==='type') {
 				u.set_title("Unknown page type")
 			} else if (e==='data') {
@@ -245,14 +238,20 @@ const View = ((u=NAMESPACE({
 			} else {
 				console.error("Error during view handling", e)
 				u.set_title("Error during: "+phase)
-				$errorMessage.fill(Debug.sidebar_debug(e))
+				view.$error_message.fill(Debug.sidebar_debug(e))
+				view.$error_location.append(JSON.stringify(location, null, 1))
 			}
 			//$errorMessage.textContent = e
 		}
 		u.load_end()
 		//throw "heck darn"
-		for (let elem of $main_slides.children)
-			elem.classList.toggle('shown', elem.dataset.slide == u.current_view.Name)
+		//for (let elem of $main_slides.children)
+		//	elem.classList.toggle('shown', elem.dataset.slide == u.current_view.Name)
+		view.$root.classList.add('shown')
+		$main_slides.fill(view.$root)
+		if (view.Visible)
+			view.Visible()
+		
 		for (let elem of $titlePane.children) {
 			let list = elem.dataset.view
 			if (list)
@@ -267,13 +266,6 @@ const View = ((u=NAMESPACE({
 			console.log("☀️ First page rendered!")
 			u.first = false
 		}
-	},
-	
-	add_view(name, data) {
-		data.Name = name
-		u.views[name] = data
-		data.did_init = false
-		Object.seal(data)
 	},
 	
 	/// HELPER FUNCTIONS ///
@@ -386,6 +378,7 @@ const View = ((u=NAMESPACE({
 		u.real_title = entity.name
 		u.change_favicon(null)
 	},
+	// todo: maybe this belongs on BaseView?
 	set_title(text) {
 		let x = document.createElement('span')
 		x.className = "pre" // this is silly ..

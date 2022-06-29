@@ -37,9 +37,9 @@ Settings.fields = {
 		type: 'select',
 		options: ['submit', 'newline'],
 		update(value) {
-			do_when_ready(()=>{
+/*			do_when_ready(()=>{
 				$chatTextarea.enterKeyHint = value=='newline' ? "enter" : "send"
-			})
+			})*/
 		},
 	},
 	lazy_loading: {
