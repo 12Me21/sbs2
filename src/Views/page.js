@@ -75,8 +75,8 @@ class PageView extends BaseView {
 				requests: [
 					{type: 'content', fields: "*", query: `${field} = @key`},
 					{type: 'message', fields: "*", query: "contentId in @content.id AND !notdeleted()", order: 'id_desc', limit: 30},
-					//				{name: 'Mpinned', type: 'message', fields: "*", query: "id in @content.values.pinned"},
-					{type: 'user', fields: "*", query: "id IN @content.createUserId OR id IN @message.createUserId OR id IN @message.editUserId"},
+					{name: 'Mpinned', type: 'message', fields: "*", query: "id IN @content.values.pinned"},
+					{type: 'user', fields: "*", query: "id IN @content.createUserId OR id IN @message.createUserId OR id IN @message.editUserId OR id IN @Mpinned.createUserId OR id IN @Mpinned.editUserId"},
 				],
 			},
 			ext: {},
@@ -85,11 +85,10 @@ class PageView extends BaseView {
 			},
 		}
 	}
-	Render({message, content:[page]}, ext) {
+	Render({message, content:[page], Mpinned:pinned, user}, ext) {
 		this.id = page.id
 		
 		message.reverse()
-//		let pinned = objects.Mpinned
 		
 		this.set_status("active")
 		
@@ -125,35 +124,22 @@ class PageView extends BaseView {
 		this.pinned = false
 		this.scroller = new Scroller(this.$outer, this.$inner)
 		
-		if (page.values.pinned) { //todo: check if actually we have any real pinned messages
+		if (pinned) {
 			let pinned_separator = document.createElement('div')
 			pinned_separator.className = "messageGap"
 			this.$extra.prepend(pinned_separator)
 
 			const pinnedListDiv = document.createElement('div')
 			this.pinnedList = new MessageList(pinnedListDiv, this.id)
-			this.$extra.prepend(pinnedListDiv)			
-			
-			Lp.chain({
-				values: {pinned: page.values.pinned},
-				requests: [
-					{type:'message', fields: '*', query: 'id IN @pinned'},
-					{type:'user', fields: '*', query: 'id IN @message.createUserId'},
-				]
-			}, (resp)=>{
-				const {message: pinned} = resp;
-				if (pinned instanceof Array && this.pinnedList)
-					this.scroller.print_top(()=>{
-						for (const m of pinned)
-							this.pinnedList.display_message(m, false)
-					})
-			})
+			this.$extra.prepend(pinnedListDiv)
+
+			Entity.link_comments({message:pinned, user})
 		}
 		
 		this.update_page(page)
 		this.update_userlist()
 		
-		this.display_initial_messages(message/*, pinned*/) //todo: when page is edited, update pinned messages
+		this.display_initial_messages(message, pinned) //todo: when page is edited, update pinned messages
 		
 		PageView.currentRoom = this
 		
@@ -197,7 +183,8 @@ class PageView extends BaseView {
 		// show pinned comments
 		if (pinned instanceof Array && this.pinnedList)
 			this.scroller.print_top(()=>{
-				this.pinnedList.fill(pinned.map(m=>Draw.single_message(m)))
+				for (const m of pinned)
+					this.pinnedList.display_message(m, false)
 			})
 	}
 	update_page(page) {
