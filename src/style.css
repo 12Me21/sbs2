@@ -631,7 +631,8 @@ input[type="number"] {
 input[type="checkbox"] {
 	max-width: 8em;
 }
-input, output, select {
+input, output, select, textarea {
+	font: inherit;
 	font-size: 0.875em;
 	background-color: var(--T-bg);
 	border: 2px solid var(--T-textarea-border-color);
@@ -689,9 +690,7 @@ textarea {
 	;max-width: 100%
 	;border: 2px solid var(--T-textarea-border-color)
 	;border-radius: 0;
-	;box-shadow: 0.125rem 0.1875rem 0.3125rem -0.1875rem #0D0D0D80
-	;font: var(--T-font)
-	;font-size: 0.8125em
+	;box-shadow: 0.125rem 0.1875rem 0.3125rem -0.1875rem #0D0D0D80;
 	;color: var(--T-color)
 	;background: var(--T-bg)
 	;white-space: break-spaces; /* optional */
@@ -715,15 +714,6 @@ textarea-container > textarea:focus {
 }
 textarea-container, textarea-container > textarea {
 	;max-height: 25vh
-}
-
-/* ios safari */
-@supports (-webkit-touch-callout: none) {
-	/* give space to the left so the cursor can reach there */
-	textarea-container > textarea {
-		padding-left: 2px;
-		width: -webkit-fill-available; width: -moz-available; width: stretch;
-	}
 }
 
 
@@ -911,4 +901,22 @@ html[data-socket-state="dead"] .toggle-sidebar {
 
 .images-container {
 	flex-grow: 1;
+}
+
+@media all and (max-width: 700px) {
+	input, textarea {
+		font-size: 1em;
+	}
+	/*message-block {
+		--chat-gutter: 3rem;
+	}*/
+}
+
+/* ios safari */
+@supports (-webkit-touch-callout: none) {
+	/* give space to the left so the cursor can reach there */
+	textarea-container > textarea {
+		padding-left: 2px;
+		width: -webkit-fill-available; width: -moz-available; width: stretch;
+	}
 }
