@@ -275,8 +275,11 @@ let Lp = singleton({
 			} }
 		}
 		if (comments.length) {
-			Sidebar.display_messages(comments)
-			PageView.display_messages(comments)
+			try {
+				PageView.display_messages(comments)
+			} finally {
+				Sidebar.display_messages(comments)
+			}
 		}
 	},
 	init() {

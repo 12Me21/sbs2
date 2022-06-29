@@ -1,7 +1,7 @@
 <!doctype html><html lang=en-QS><meta charset=utf-8>
 <title>SmileBASIC Source 2</title>
 
-<meta name=viewport content="width=device-width, initial-scale=1, height=device-height">
+<meta name=viewport content="width=device-width, height=device-height, initial-scale=1" id=$meta_viewport>
 
 <link rel=icon sizes=16x16 href=resource/icon16.ico> <!-- compatibility -->
 <link rel=icon sizes=16x16 href=resource/icon16.png> <!-- firefox -->
@@ -118,6 +118,12 @@
 			document.documentElement.dataset.theme = query.matches ? 'dark' : 'light'
 	}
 	theme_query.onchange(theme_query)
+	
+	let IOS_SAFARI = CSS.supports('-webkit-touch-callout', 'none')
+	// In safari, this doesn't prevent manual zooming anymore.
+	// it only disables the automatic zoom that happens when a text input is focused
+	if (IOS_SAFARI)
+		$meta_viewport.content += ", user-scalable=no"
 	
 	console.log("🌅 early init done")
 	markup_warned = false

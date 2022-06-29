@@ -716,14 +716,9 @@ textarea-container > textarea:focus {
 textarea-container, textarea-container > textarea {
 	;max-height: 25vh
 }
+
 /* ios safari */
 @supports (-webkit-touch-callout: none) {
-	textarea, input, select {
-		font-size: 16px;
-	}
-	input, select {
-		line-height: 16px;
-	}
 	/* give space to the left so the cursor can reach there */
 	textarea-container > textarea {
 		padding-left: 2px;
@@ -892,7 +887,7 @@ html[data-socket-state="dead"] .toggle-sidebar {
 	transition: max-height 0.25s ease;
 }
 .Markup [data-big] {
-	max-height: 75vh;
+	max-height: 60vh;
 }
 
 #\$fileImage {
