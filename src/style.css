@@ -21,6 +21,10 @@ html {
 	font-variant-ligatures: none !important;
 }
 
+.Markup {
+	font: inherit;
+}
+
 body {
 	background: var(--T-bg);
 }
@@ -540,7 +544,7 @@ html:not(.f-myUserPage) .myUserPage {
  ************/
 button {
 	cursor: pointer;
-	font: var(--T-font);
+	font: inherit;
 	font-size: 0.8125em;
 	line-height: normal !important;
 	
