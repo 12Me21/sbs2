@@ -1,9 +1,9 @@
 'use strict'
 
-function register_activity(e) {
+//function register_activity(e) {
 	// 1: if currently inactive, switch to active
 	// 2: record time
-}
+//}
 // 3: on a ~1 minute interval timer, check if last activity time was > 3 minutes or whatever, and go inactive
 
 //;['wheel','keydown','mousedown','mousemove','touchstart'].forEach(event => document.addEventListener(event, registerActivity))
@@ -23,17 +23,16 @@ class PageView extends BaseView {
 		this.list = null
 		
 		this.$textarea.enterKeyHint = Settings.chat_enter!='newline' ? "send" : "enter" // uh this won't update though... need a settings change watcher
-		
 		this.$textarea.onkeydown = e=>{
 			if (e.isComposing)
 				return
 			// enter - send
-			if (Settings.values.chat_enter!='newline' && e.keyCode==13 && !e.shiftKey) {
+			if ('Enter'==e.key && !e.shiftKey && Settings.values.chat_enter!='newline') {
 				e.preventDefault()
 				this.send_message()
 			}
 			// up arrow - edit previous message
-			if (e.keyCode==38 && this.$textarea.value=="") {
+			if ('ArrowUp'==e.key && this.$textarea.value=="") {
 				let msg = this.my_last_message()
 				if (msg && msg.x_data) {
 					e.preventDefault()
@@ -47,14 +46,11 @@ class PageView extends BaseView {
 		this.$cancel.onclick = e=>{
 			this.cancel_edit()
 		}
-		// ugh these event listeners are so long to define
-		// maybe we should have like,
-		// function to define a passive listener, shorthand
-		// plisten(this.$root, 'keydown', fn...) idk..
-		this.$root.addEventListener('keydown', e=>{
+		this.$root.onkeydown = e=>{
 			if ('Escape'==e.key)
 				this.cancel_edit()
-		})
+		}
+		
 		let r = this.textarea_resize.bind(this)
 		this.$textarea.addEventListener('input', r, {passive: true})
 		PageView.track_resize_2.add(this.$textarea, ()=>{
