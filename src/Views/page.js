@@ -173,6 +173,10 @@ class PageView extends BaseView {
 			this.$textarea.disabled = true
 		this.edit_callback = msg=>this.edit_comment(msg)
 	}
+	Insert_Text(text) {
+		this.$textarea.focus()
+		document.execCommand('insertText', false, text)
+	}
 	set_status(s) {
 		this.status = s
 		Lp.set_status(this.id, s)
