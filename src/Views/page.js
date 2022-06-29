@@ -124,7 +124,7 @@ class PageView extends BaseView {
 		this.pinned = false
 		this.scroller = new Scroller(this.$outer, this.$inner)
 		
-		if (pinned) {
+		if (pinned instanceof Array && pinned.length > 0) {
 			let pinned_separator = document.createElement('div')
 			pinned_separator.className = "messageGap"
 			this.$extra.prepend(pinned_separator)
