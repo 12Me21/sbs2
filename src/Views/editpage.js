@@ -34,7 +34,7 @@ class EditView extends BaseView {
 	}
 	Start({id, query}) {
 		if (id==null) {
-			return {quick: true, ext: {}}
+			return {quick: true}
 		}
 		return {
 			chain: {
@@ -46,13 +46,12 @@ class EditView extends BaseView {
 					{type: 'user', fields: "*", query: "id IN @content.createUserId"},
 				],
 			},
-			ext: {},
 			check(resp) {
 				return resp.content[0]
 			},
 		}
 	}
-	Quick(ext, location) {
+	Quick() {
 		// hack to create new page object
 		// todo: clean up TYPES
 		let page = TYPES.content(Object.assign({}, TYPES.content.prototype))
@@ -65,7 +64,7 @@ class EditView extends BaseView {
 		
 		this.got_page(page, true)
 	}
-	Render({content:[page], user}, ext) {
+	Render({content:[page], user}) {
 		this.got_page(page, false)
 	}
 	Insert_Text(text) {

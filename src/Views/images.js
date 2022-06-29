@@ -64,6 +64,8 @@ class ImagesView extends BaseView {
 		let search = "contentType = @file"
 		if (bucket)
 			search += " AND !valuelike(@key, @bucket)"
+		this.page = page
+		this.bucket = bucket
 		return {
 			chain: {
 				values: {
@@ -76,11 +78,9 @@ class ImagesView extends BaseView {
 					{type:'user', fields:'*', query:"id IN @content.createUserId."},
 				],
 			},
-			ext: {page, bucket},
 		}
 	}
-	Render({content, user}, {page, bucket}) {
-		this.page = page
+	Render({content, user}) {
 		this.user = user
 		View.set_title(" Images ")
 		for (let file of content) {
@@ -90,8 +90,8 @@ class ImagesView extends BaseView {
 			//let meta = JSON.parse(file.meta)
 			this.$imagesWhatever.append(img)
 		}
-		this.$imagesNavPage.textContent = page
-		this.$imagesNavBucket.value = bucket
+		this.$imagesNavPage.textContent = this.page
+		this.$imagesNavBucket.value = this.bucket
 		this.select_image(null)
 	}
 	select_image(content) {

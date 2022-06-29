@@ -32,7 +32,6 @@ class PageView extends BaseView {
 					{type: 'user', fields: "*", query: "id IN @content.createUserId OR id IN @message.createUserId OR id IN @message.editUserId OR id IN @Mpinned.createUserId OR id IN @Mpinned.editUserId"},
 				],
 			},
-			ext: {},
 			check(resp) {
 				return resp.content[0]
 			},
@@ -81,7 +80,7 @@ class PageView extends BaseView {
 			window.setTimeout(r)
 		})
 	}
-	Render({message, content:[page], Mpinned:pinned, user}, ext) {
+	Render({message, content:[page], Mpinned:pinned, user}) {
 		this.id = page.id
 		PageView.rooms[this.id] = this
 		this.visible = false

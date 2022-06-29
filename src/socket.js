@@ -268,7 +268,7 @@ let Lp = singleton({
 			} break; case 'user_event': {
 				let user = maplist.user[~ref_id]
 				if (user) {
-					PageView.update_avatar(user) // messy...
+					StatusDisplay.update_user(user) // messy...
 					if (ref_id==Req.uid)
 						View.update_my_user(user)
 				}

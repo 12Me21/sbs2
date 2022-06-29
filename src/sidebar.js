@@ -265,7 +265,7 @@ let FileUploader = Object.seal({
 		$file_url_insert.onclick = e=>{
 			let file = this.last_file
 			if (!file) return
-			if (!View.current_view.Insert_Text) return
+			if (!View.current.Insert_Text) return
 			
 			let url = Req.file_url(file.hash)
 			
@@ -282,7 +282,7 @@ let FileUploader = Object.seal({
 			}
 			
 			Sidebar.close_fullscreen()
-			View.current_view.Insert_Text(url)
+			View.current.Insert_Text(url)
 		}
 		$file_upload.onclick = e=>{
 			if (!this.file) return

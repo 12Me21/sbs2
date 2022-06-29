@@ -10,7 +10,6 @@ class UserView extends BaseView {
 		} else {
 			return {
 				quick: true,
-				ext: {},
 			}
 		}
 		return {
@@ -31,10 +30,9 @@ class UserView extends BaseView {
 			check(resp) {
 				return resp.user[0]
 			},
-			ext: {},
 		}
 	}
-	Render(resp, ext) {
+	Render(resp) {
 		let user = resp.user[0]
 		let userpage = resp.Puserpage[0]
 		//let activity = resp.activity
@@ -48,7 +46,7 @@ class UserView extends BaseView {
 		if (userpage)
 			Markup.convert_lang(userpage.text, userpage.values.markupLang, this.$contents)
 	}
-	Quick(ext) {
+	Quick() {
 		View.set_title("todo")
 	}
 }

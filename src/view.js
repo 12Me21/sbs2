@@ -95,15 +95,14 @@ ErrorView.template = HTML`
 const View = ((u=NAMESPACE({
 	// this will always be the currently rendered view
 	// (set before `render` is called, and unset before `cleanup` is called)
-	// current_view.cleanup should always be correct!
-	current_view: null,
+	// current.cleanup should always be correct!
+	current: null,
+	views: {__proto__: null},
 	
 	first: true,
 	
 	real_title: null,
 	favicon_element: null,
-	
-	views: {__proto__: null},
 	
 	observer: null,
 	toggle_observer(state) {
@@ -133,6 +132,7 @@ const View = ((u=NAMESPACE({
 		let view = u.views[location.type]
 		if (view && view.Redirect) {
 			view.Redirect(location)
+			Nav.replace_location(location)
 			return true
 		}
 	},
@@ -175,16 +175,16 @@ const View = ((u=NAMESPACE({
 	},
 	
 	cleanup(new_location) {
-		if (u.current_view && u.current_view.Cleanup)
+		if (u.current && u.current.Cleanup)
 			try {
-				u.current_view.Cleanup(new_location)
+				u.current.Cleanup(new_location)
 			} catch (e) {
 				// we ignore this error, because it's probably not important
 				// and also cleanup gets called during error handling so we don't want to get into a loop of errors
 				console.error(e, "error in cleanup function")
 				print(e)
 			}
-		u.current_view = null
+		u.current = null
 	},
 	
 	cancel() {
@@ -211,16 +211,14 @@ const View = ((u=NAMESPACE({
 		try {
 			u.load_start()
 			phase = "view lookup"
-			let got_redirect = u.handle_redirects(location)
+			u.handle_redirects(location)
+			
 			let view_class = u.views[location.type]
-			if (got_redirect)
-				Nav.replace_location(location)
 			view = new view_class(location)
 			
-			if (view.Early) {
-				phase = "view.Early"
-				view.Early()
-			}
+			phase = "view.Early"
+			view.Early && view.Early()
+			
 			phase = "view.Start"
 			let data = view.Start(location)
 			let resp
@@ -229,29 +227,31 @@ const View = ((u=NAMESPACE({
 				resp = yield Lp.chain(data.chain, STEP)
 				
 				phase = "view.Check"
-				if (data.check && !data.check(resp, data.ext))
+				if (data.check && !data.check(resp))
 					throw 'data'
 			}
 			yield do_when_ready(STEP)
 			
 			if (u.first)
 				console.log("🌄 Rendering first page")
-			if (view.Init) {
-				phase = "view.Init"
-				view.Init()
-			}
-			u.cleanup(location)
+			
+			phase = "view.Init"
+			view.Init && view.Init()
+			
+			phase = "cleanup"
+			u.cleanup(location) // passing the new location
+			
 			phase = "rendering"
-			u.current_view = view
+			u.current = view
 			if (data.quick)
-				view.Quick(data.ext, location)
+				view.Quick()
 			else
-				view.Render(resp, data.ext, location)
+				view.Render(resp)
 		} catch (e) {
 			yield do_when_ready(STEP)
 			
 			u.cleanup(location)
-			u.current_view = view = new ErrorView(location)
+			u.current = view = new ErrorView(location)
 			if (e==='type') {
 				u.set_title("Unknown page type")
 			} else if (e==='data') {
@@ -262,12 +262,9 @@ const View = ((u=NAMESPACE({
 				view.$error_message.fill(Debug.sidebar_debug(e))
 				view.$error_location.append(JSON.stringify(location, null, 1))
 			}
-			//$errorMessage.textContent = e
 		}
 		u.load_end()
 		//throw "heck darn"
-		//for (let elem of $main_slides.children)
-		//	elem.classList.toggle('shown', elem.dataset.slide == u.current_view.Name)
 		view.$root.classList.add('shown')
 		$main_slides.fill(view.$root)
 		if (view.Visible)
@@ -276,7 +273,7 @@ const View = ((u=NAMESPACE({
 		for (let elem of $titlePane.children) {
 			let list = elem.dataset.view
 			if (list)
-				elem.classList.toggle('shown', list.split(",").includes(u.current_view.Name))
+				elem.classList.toggle('shown', list.split(",").includes(u.current.Name))
 		}
 		u.flag('viewReady', true)
 		Sidebar.close_fullscreen()

@@ -54,32 +54,27 @@ class CommentsView extends BaseView {
 	}
 	Start({id, query}) {
 		this.form.from_query(query)
-		let data = this.form.get()
 		if (id)
-			data.pages = [id]
+			this.form.inputs.pages.value = [id]
+		let data = this.form.get()
 		let [search, merge] = this.build_search(data)
+		this.merge = merge
 		
 		if (!search)
-			return {quick: true, ext: {data}}
+			return {quick: true}
 		
-		return {
-			chain: search,
-			ext: {data, merge},
-		}
+		return {chain: search}
 	}
-	Render({message:comments, content:pages}, {data, merge}, location) {
-		this.location = location // todo: formal system for this (setting query string when form submit)
-		
+	Render({message:comments, content:pages}) {
 		View.set_title("Comments")
-		this.form.set(data)
 		this.form.write()
-		
 		this.$commentSearchResults.fill()
+		
 		if (!comments.length) {
 			this.$commentSearchStatus.textContent = "(no results)"
 		} else {
 			this.$commentSearchStatus.textContent = "results: "+comments.length
-			if (merge) {
+			if (this.merge) {
 				let x = document.createElement('message-list')
 				this.$commentSearchResults.append(x)
 				let list = new MessageList(x, comments[0].contentId) // mmndnhhhgghdhfhdh i sure hope it does (contentId)
@@ -95,10 +90,8 @@ class CommentsView extends BaseView {
 			}
 		}
 	}	
-	Quick({data}, location) {
-		this.location = location
+	Quick() {
 		View.set_title("Comments")
-		this.form.set(data)
 		this.form.write()
 		this.$commentSearchResults.fill()
 		this.$commentSearchStatus.textContent = "(no query)"

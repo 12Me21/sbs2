@@ -206,10 +206,11 @@ class StatusDisplay {
 	redraw() {
 		this.$elem.fill()
 		Object.for(this.statuses(), (status, id)=>{
-			let user = StatusDisplay.status_user(id)
+			let user = StatusDisplay.get_user(id)
 			this.$elem.append(Draw.userlist_avatar(user, status))
 		})
 	}
+	// set your own status
 	set_status(s) {
 		// todo: maybe there's a better place to filter this
 		if (s==this.my_status)
@@ -217,29 +218,45 @@ class StatusDisplay {
 		this.my_status = s
 		Lp.set_status(this.id, s)
 	}
-	update_avatar(user) {
-		this.redraw()
+	// when a user's avatar etc. changes
+	redraw_user(user) {
+		if (this.statuses[user.id])
+			this.redraw()
 	}
+	// get statuses for this room
 	statuses() {
 		return StatusDisplay.statuses[this.id] || {__proto__:null}
 	}
 	
-	static status_user(id) {
-		let user = this.status_users[~id]
+	// lookup a user from the cache
+	static get_user(id) {
+		let user = this.users[~id]
 		if (!user)
 			throw new TypeError("can't find status user "+id)
 		return user
 	}
+	// called during `userlistupdate`
 	static update(statuses, objects) {
 		Object.assign(this.statuses, statuses)
-		Object.assign(this.status_users, objects.user)
+		Object.assign(this.users, objects.user)
 		// TODO: this is a hack .. we need a way to send signals to pages to tell them to redraw userlists.
 		this.global.redraw()
 		Object.for(PageView.rooms, room=>room.userlist.redraw())
 	}
+	// called during `user_event` (i.e. when a user is edited)
+	static update_user(user) {
+		// if we don't need this avatar,
+		if (!this.users[~user.id])
+			return
+		this.users[~user.id] = user
+		this.global.redraw_user(user)
+		Object.for(PageView.rooms, room=>room.userlist.redraw_user(user))
+	}
 }
 StatusDisplay.statuses = {__proto__:null}
-StatusDisplay.status_users = {__proto__:null}
+// todo: this is never cleared, so technically it leaks memory.
+// but unless there are thousands of users, it won't matter
+StatusDisplay.users = {__proto__:null}
 StatusDisplay.global = new StatusDisplay(0, null)
 do_when_ready(()=>{
 	StatusDisplay.global.$elem = $sidebarUserList
