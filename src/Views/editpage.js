@@ -122,7 +122,7 @@ class EditView extends BaseView {
 }
 
 EditView.template = HTML`
-<div data-slide=editpage class='resize-box COL'>
+<view-root class='resize-box COL'>
 	<div $=top class='sized page-container SLIDES'>
 		<scroll-outer data-slide=preview $=preview_outer><scroll-inner $=preview class='pageContents'></scroll-inner></scroll-outer>
 		<div data-slide=fields $=fields>
@@ -137,7 +137,7 @@ EditView.template = HTML`
 		</span>
 	</resize-handle>
 	<textarea $=textarea class='FILL editor-textarea'></textarea>
-</div>
+</view-root>
 `
 
 View.register('editpage', EditView)

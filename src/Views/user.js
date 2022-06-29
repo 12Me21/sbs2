@@ -54,12 +54,12 @@ class UserView extends BaseView {
 }
 
 UserView.template = HTML`
-<div class='userPageBox'>
+<view-root class='userPageBox'>
 	<a $=avatar_link class='userPageAvatar'>
 		<img $=avatar width=200 height=200>
 	</a>
 	<div $=contents class='userPageContents pageContents Markup'></div>
-</div>
+</view-root>
 `
 
 View.register('user', UserView)

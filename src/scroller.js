@@ -208,6 +208,7 @@ class Scroller {
 		}
 	}
 	destroy() {
+		// probably unneccessary but idk.. memory leaks
 		Scroller.track_height.remove(this.inner)
 		Scroller.track_height.remove(this.outer)
 	}

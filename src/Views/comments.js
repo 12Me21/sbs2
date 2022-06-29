@@ -177,7 +177,7 @@ class CommentsView extends BaseView {
 	}
 }
 CommentsView.template = HTML`
-<div>
+<view-root>
 	<div $=commentSearch class='nav'>
 		<br $=commentSearchForm>
 		<button $=commentSearchButton>🔍Search</button>
@@ -186,7 +186,7 @@ CommentsView.template = HTML`
 		<span $=commentSearchStatus></span>
 	</div>
 	<div $=commentSearchResults></div>
-</div>
+</view-root>
 `
 View.register('comments', CommentsView)
 View.register('chatlogs', {

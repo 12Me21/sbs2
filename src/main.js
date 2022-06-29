@@ -41,7 +41,7 @@ function immediate() {
 		do_when_ready(()=> View.update_my_user(Req.me))
 	})
 	
-	PageView.global.set_status("active")
+	StatusDisplay.global.set_status("active")
 	
 	Lp.start_websocket()
 	

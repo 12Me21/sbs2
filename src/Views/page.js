@@ -13,14 +13,38 @@
 // then, most of the query is static and etc.
 
 class PageView extends BaseView {
+	Start({id, query}) {
+		let field
+		if ('number'==typeof id) {
+			field = 'id'
+		} else {
+			field = 'hash'
+		}
+		return {
+			chain: {
+				values: {
+					key: id,
+				},
+				requests: [
+					{type: 'content', fields: "*", query: `${field} = @key`},
+					{type: 'message', fields: "*", query: "contentId in @content.id AND !notdeleted()", order: 'id_desc', limit: 30},
+					{name: 'Mpinned', type: 'message', fields: "*", query: "id IN @content.values.pinned"},
+					{type: 'user', fields: "*", query: "id IN @content.createUserId OR id IN @message.createUserId OR id IN @message.editUserId OR id IN @Mpinned.createUserId OR id IN @Mpinned.editUserId"},
+				],
+			},
+			ext: {},
+			check(resp) {
+				return resp.content[0]
+			},
+		}
+	}
 	Init() {
 		this.pre_edit = null
 		this.editing_comment = null
 		this.room = null
 		this.id = null
-		this.status = undefined
-		this.edit_callback = null
 		this.list = null
+		this.userlist = null
 		
 		this.$textarea.enterKeyHint = Settings.chat_enter!='newline' ? "send" : "enter" // uh this won't update though... need a settings change watcher
 		this.$textarea.onkeydown = e=>{
@@ -57,58 +81,22 @@ class PageView extends BaseView {
 			window.setTimeout(r)
 		})
 	}
-	Visible() {
-		this.textarea_resize()
-	}
-	Start({id, query}) {
-		let field
-		if ('number'==typeof id) {
-			field = 'id'
-		} else {
-			field = 'hash'
-		}
-		return {
-			chain: {
-				values: {
-					key: id,
-				},
-				requests: [
-					{type: 'content', fields: "*", query: `${field} = @key`},
-					{type: 'message', fields: "*", query: "contentId in @content.id AND !notdeleted()", order: 'id_desc', limit: 30},
-					{name: 'Mpinned', type: 'message', fields: "*", query: "id IN @content.values.pinned"},
-					{type: 'user', fields: "*", query: "id IN @content.createUserId OR id IN @message.createUserId OR id IN @message.editUserId OR id IN @Mpinned.createUserId OR id IN @Mpinned.editUserId"},
-				],
-			},
-			ext: {},
-			check(resp) {
-				return resp.content[0]
-			},
-		}
-	}
 	Render({message, content:[page], Mpinned:pinned, user}, ext) {
 		this.id = page.id
-		
-		message.reverse()
-		
-		this.set_status("active")
-		
 		PageView.rooms[this.id] = this
+		this.visible = false
+		this.pinned = false
+		PageView.currentRoom = this
 		
-		// resize handle
-		let height = null
-		//height = 0
-		View.attach_resize(this.$page_container, this.$resize_handle, false, 1, 'setting--divider-pos-'+this.id, null, height)
-		// scroller
+		this.userlist = new StatusDisplay(this.id, this.$userlist)
+		
+		this.scroller = new Scroller(this.$outer, this.$inner)
+		// chat messages
 		this.list = new MessageList(this.$message_list, this.id)
 		this.list.elem.addEventListener('edit_message', e=>{
 			// todo: weakmap instead of this x_data field?
-			if (this.edit_callback)
-				this.edit_callback(e.target.x_data)
+			this.edit_comment(e.target.x_data)
 		})
-		// chat
-		this.message_parts = {}
-		this.total_messages = 0
-		
 		this.$load_older.onclick = e=>{
 			let btn = e.target
 			if (btn.disabled) return
@@ -119,74 +107,64 @@ class PageView extends BaseView {
 			})
 		}
 		
+		// resize handle
+		let height = null //height = 0
+		View.attach_resize(this.$page_container, this.$resize_handle, false, 1, 'setting--divider-pos-'+this.id, null, height)
 		///////////
-		this.visible = false
-		this.pinned = false
-		this.scroller = new Scroller(this.$outer, this.$inner)
-		
-		if (pinned instanceof Array && pinned.length > 0) {
-			let pinned_separator = document.createElement('div')
-			pinned_separator.className = "messageGap"
-			this.$extra.prepend(pinned_separator)
-
-			const pinnedListDiv = document.createElement('div')
-			this.pinnedList = new MessageList(pinnedListDiv, this.id)
-			this.$extra.prepend(pinnedListDiv)
-
-			Entity.link_comments({message:pinned, user})
-		}
 		
 		this.update_page(page)
-		this.update_userlist()
 		
-		this.display_initial_messages(message, pinned) //todo: when page is edited, update pinned messages
+		this.userlist.set_status("active")
+		this.userlist.redraw()
 		
-		PageView.currentRoom = this
+		message.reverse()
+		this.display_messages(message, false)
+		
+		if (pinned instanceof Array && pinned.length) {
+			let separator = document.createElement('div')
+			separator.className = "messageGap"
+			this.$extra.prepend(separator)
+			
+			const list = document.createElement('message-list')
+			this.pinned_list = new MessageList(list, this.id)
+			this.$extra.prepend(list)
+			
+			Entity.link_comments({message:pinned, user})
+			
+			this.scroller.print_top(()=>{
+				for (const m of pinned)
+					this.pinned_list.display_message(m, false)
+			})
+		}
 		
 		View.set_entity_title(page)
 		//View.set_entity_path(page.parent)
-		View.flag('canEdit', /u/i.test(page.permissions[Req.uid]))
+		let can_edit = /u/i.test(page.permissions[Req.uid]) // unused
+		
 		$pageCommentsLink.href = "#comments/"+page.id+"?r" // todo: location
 		$pageEditLink.href = "#editpage/"+page.id
-		if (page.createUserId==Req.uid || /c/i.test(page.permissions[Req.uid] || page.permissions[0])) {
-			this.$textarea.disabled = false
+		
+		let can_talk = page.createUserId==Req.uid || Entity.has_perm(page.permissions, Req.uid, 'C')
+		this.$textarea.disabled = !can_talk
+		if (can_talk)
 			this.$textarea.focus()
-		} else
-			this.$textarea.disabled = true
-		this.edit_callback = msg=>this.edit_comment(msg)
+	}
+	Visible() {
+		this.textarea_resize()
+	}
+	// 8:10;35
+	Cleanup(type) {
+		this.userlist.set_status(null)
+		PageView.currentRoom = null
+		delete PageView.rooms[this.id]
+		this.scroller.destroy()
+		PageView.track_resize_2.remove(this.$textarea)
 	}
 	Insert_Text(text) {
 		this.$textarea.focus()
 		document.execCommand('insertText', false, text)
 	}
-	set_status(s) {
-		this.status = s
-		Lp.set_status(this.id, s)
-	}
-	update_avatar(id) {
-		this.update_userlist()
-	}
-	update_userlist() {
-		let statusmap = PageView.statuses[this.id] || {}
-		this.$userlist.fill()
-		Object.for(statusmap, (status, id)=>{
-			let user = PageView.status_users[~id]
-			if (!user) {
-				print("unknown user ("+id+") in userlist")
-				return
-			}
-			this.$userlist.append(Draw.userlist_avatar(user, status))
-		})
-	}
-	display_initial_messages(comments, pinned) {
-		this.display_messages(comments, false)
-		// show pinned comments
-		if (pinned instanceof Array && this.pinnedList)
-			this.scroller.print_top(()=>{
-				for (const m of pinned)
-					this.pinnedList.display_message(m, false)
-			})
-	}
+
 	update_page(page) {
 		this.page = page
 		if (page.contentType==ABOUT.details.codes.InternalContentType.file) {
@@ -209,15 +187,6 @@ class PageView extends BaseView {
 			Markup.convert_lang(page.text, page.values.markupLang, this.$page_contents, {intersection_observer: View.observer})
 		}
 	}
-	// 8:10;35
-	Cleanup(type) {
-		if (this.status!=undefined)
-			Lp.set_status(this.id, null)
-		PageView.currentRoom = null
-		delete PageView.rooms[this.id]
-		this.scroller.destroy()
-		View.flag('canEdit', false)
-	}
 	my_last_message() {
 		return Object.values(this.list.parts).findLast((msg)=>{
 			return msg && msg.x_data.createUserId == Req.uid
@@ -236,29 +205,6 @@ class PageView extends BaseView {
 			this.scroller.print_top(()=>{
 				this.list.limit_messages()
 			})
-		}
-	}
-	/////
-	static listening_rooms() {
-		let list = [0]
-		for (let id in this.rooms)
-			list.push(id)
-		return list
-	}
-	static update_avatar(user) {
-		let s = this.status_users[~user.id]
-		if (!s) return
-		this.status_users[~user.id] = user
-		Object.for(this.rooms, (room, id)=>{
-			if (this.statuses[id][user.id])
-				room.update_avatar(user.id)
-		})
-	}
-	static update_userlists(statuses, {user}) {
-		Object.assign(this.statuses, statuses)
-		Object.assign(this.status_users, user)
-		for (let id in this.rooms) {
-			this.rooms[id].update_userlist()
 		}
 	}
 	// display a list of messages from multiple rooms
@@ -280,18 +226,8 @@ class PageView extends BaseView {
 		}
 	}
 	static title_notification(comment) {
-		View.title_notification(comment.text, Draw.avatar_url(comment.Author, "size=120&crop=true"))
+		View.title_notification(comment.text, Draw.avatar_url(comment.Author, "size=100&crop=true"))
 		// todo: also call if the current comment being shown in the title is edited
-	}
-	// get/create room
-	static obtain_room(id, page, message, pv) {
-		let room = this.rooms[id]
-		if (room)
-			room.update_page(page)
-		else {
-			room = new this(id, page, pv)
-		}
-		return room
 	}
 	textarea_resize() {
 		this.$textarea.style.height = ""
@@ -336,7 +272,6 @@ class PageView extends BaseView {
 				}
 				this.$textarea.select()
 				document.execCommand('delete')
-				//$chatTextarea.value = ""
 				this.textarea_resize()
 			}
 		}
@@ -386,8 +321,9 @@ class PageView extends BaseView {
 			return
 		this.pre_edit = this.read_input()
 		this.editing_comment = comment
-		View.flag('chatEditing', true)
-		this.write_input(comment) // do this after the flag, so the width is right
+		this.Flag('editing', true)
+		// do this after the flag, so the width is right
+		this.write_input(comment) 
 		// todo: maybe also save/restore cursor etc.
 		window.setTimeout(x=>{
 			this.$textarea.setSelectionRange(99999, 99999) // move cursor to end
@@ -397,14 +333,14 @@ class PageView extends BaseView {
 	cancel_edit() {
 		if (this.editing_comment) {
 			this.editing_comment = null
-			View.flag('chatEditing', false)
+			this.Flag('editing', false)
 			this.write_input(this.pre_edit)
 		}
-	}	
+	}
 }
 PageView.track_resize_2 = new ResizeTracker('width')
 PageView.template = HTML`
-<div class='COL'>
+<view-root class='COL'>
 	<div class='FILL SLIDES' $=panes>
 		<chat-pane class='resize-box shown COL'>
 			<scroll-outer class='sized page-container' $=page_container>
@@ -438,40 +374,10 @@ PageView.template = HTML`
 			<button class='FILL' $=send>Send</button>
 		</div>
 	</div>
-</div>
+</view-root>
 `
-PageView.statuses = {}
-PageView.status_users = {}
-PageView.rooms = {}
+PageView.rooms = {__proto__:null}
 PageView.currentRoom = null
-
-PageView.rooms[0] = PageView.global = Object.seal({
-	id: 0,
-	$userlist: null,
-	status: undefined,
-	update_userlist() {
-		let statusmap = PageView.statuses[this.id] || {}
-		this.$userlist.fill()
-		Object.for(statusmap, (status, id)=>{
-			let user = PageView.status_users[~id]
-			if (!user) {
-				print("unknown user ("+id+") in userlist")
-				return
-			}
-			this.$userlist.append(Draw.userlist_avatar(user, status))
-		})
-	},
-	set_status(s) {
-		this.status = s
-		Lp.set_status(this.id, s)
-	},
-	update_avatar(id) {
-		this.update_userlist()
-	},
-})
-do_when_ready(()=>{
-	PageView.global.$userlist = $sidebarUserList
-})
 
 View.register('page', PageView)
 View.register('pages', {

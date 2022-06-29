@@ -117,7 +117,7 @@ class ImagesView extends BaseView {
 }
 
 ImagesView.template = HTML`
-<div class='COL'>
+<view-root class='COL'>
 	<div $=imagesWhatever class='images-thumbnails'></div>
 	<div $=imagesNav class='nav ROW rem1-5'>
 		<button $=imagesPrev>◀prev</button>
@@ -134,7 +134,7 @@ ImagesView.template = HTML`
 			<div $=imagesForm></div>
 		</div>
 	</div>
-</div>
+</view-root>
 `
 
 View.register('images', ImagesView)

@@ -68,9 +68,6 @@ html:not(.f-loggedIn) .loggedIn,
 html.f-loggedIn .loggedOut {
 	display: none;
 }
-html:not(.f-canEdit) .canEdit {
-	display: none;
-}
 
 /* border list things */
 .bottomBorder {
@@ -461,14 +458,14 @@ message-controls:hover + message-part {
 	align-items: stretch;
 	background: var(--bar-bg);
 }
-html.f-chatEditing #\$chatTextarea {
+view-root.f-editing #\$chatTextarea {
 	background: var(--edit-textarea-bg);
 }
 #\$chatTextarea[disabled] {
 	background: silver;
 }
-html.f-chatEditing .hideWhenEdit,
-html:not(.f-chatEditing) .showWhenEdit {
+view-root.f-editing .hideWhenEdit,
+view-root:not(.f-editing) .showWhenEdit {
 	display: none;
 }
 

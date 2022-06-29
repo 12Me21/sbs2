@@ -19,6 +19,9 @@ class BaseView {
 		this.location = location
 		new.target.template(this)
 	}
+	Flag(name, state) {
+		this.$root.classList.toggle("f-"+name, state)
+	}
 }
 
 {

@@ -138,7 +138,9 @@ Entity = singleton({
 		'resource', 'chat', 'program', 'tutorial', 'documentation',
 	],
 	has_perm(perms, uid, perm) {
-		return perms && perms[uid] && perms[uid].includes(perm)
+		if (uid!=0 && perms[0] && perms[0].includes(perm))
+			return true
+		return perms[uid] && perms[uid].includes(perm)
 	},
 	
 	filter_nickname(name) {

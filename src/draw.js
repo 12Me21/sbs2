@@ -116,6 +116,7 @@ const Draw = Object.seal({
 		let e = this()
 		e.href = Nav.entity_link(user)
 		e.firstChild.src = Req.file_url(user.avatar, "size=100&crop=true")
+		e.dataset.uid = user.id
 		if (status == "idle")
 			e.classList.add('status-idle')
 		return e

@@ -234,7 +234,7 @@ let Lp = singleton({
 			this.process_live(data.events, data.objects)
 		} break;case 'userlistupdate': {
 			Entity.do_listmap(data.objects)
-			PageView.update_userlists(data.statuses, data.objects)
+			StatusDisplay.update(data.statuses, data.objects)
 		} break;case 'badtoken': {
 			//
 		} }

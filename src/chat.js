@@ -7,9 +7,8 @@ class MessageList {
 		this.elem = element
 		this.elem.classList.add('message-list') // todo: just create a new elem <message-list> ?
 		this.pid = pid
-		this.parts = Object.create(null)
+		this.parts = {__proto__:null}
 		this.total_parts = 0
-		this.edit_callback = edit
 	}
 	get_messages_near(last, newer, amount, callback) {
 		let order = newer ? 'id' : 'id_desc'
@@ -196,8 +195,52 @@ MessageList.prototype.max_parts = 500
 
 Object.seal(MessageList)
 
-// todo: when starting to render any page
-//- run generatestatus and generatelisteners
-//- if changed, refresh long poller with new data
-//- when rendering chat, we need to retrieve the listeners list from Req
+
 
+class StatusDisplay {
+	constructor(id, element) {
+		this.id = id
+		this.$elem = element
+		this.my_status = undefined
+	}
+	redraw() {
+		this.$elem.fill()
+		Object.for(this.statuses(), (status, id)=>{
+			let user = StatusDisplay.status_user(id)
+			this.$elem.append(Draw.userlist_avatar(user, status))
+		})
+	}
+	set_status(s) {
+		// todo: maybe there's a better place to filter this
+		if (s==this.my_status)
+			return
+		this.my_status = s
+		Lp.set_status(this.id, s)
+	}
+	update_avatar(user) {
+		this.redraw()
+	}
+	statuses() {
+		return StatusDisplay.statuses[this.id] || {__proto__:null}
+	}
+	
+	static status_user(id) {
+		let user = this.status_users[~id]
+		if (!user)
+			throw new TypeError("can't find status user "+id)
+		return user
+	}
+	static update(statuses, objects) {
+		Object.assign(this.statuses, statuses)
+		Object.assign(this.status_users, objects.user)
+		// TODO: this is a hack .. we need a way to send signals to pages to tell them to redraw userlists.
+		this.global.redraw()
+		Object.for(PageView.rooms, room=>room.userlist.redraw())
+	}
+}
+StatusDisplay.statuses = {__proto__:null}
+StatusDisplay.status_users = {__proto__:null}
+StatusDisplay.global = new StatusDisplay(0, null)
+do_when_ready(()=>{
+	StatusDisplay.global.$elem = $sidebarUserList
+})
