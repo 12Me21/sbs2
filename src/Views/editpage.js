@@ -140,4 +140,4 @@ EditView.template = HTML`
 </div>
 `
 
-EditView.register('editpage')
+View.register('editpage', EditView)
