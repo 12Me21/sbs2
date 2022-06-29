@@ -5,7 +5,6 @@ class ImagesView extends BaseView {
 		this.current = null
 		this.page = null
 		this.user = null
-		this.SIZE = 60
 		
 		this.$imagesWhatever.innerHTML = ''
 		// FIXME: should put this in another function since it's also
@@ -49,7 +48,6 @@ class ImagesView extends BaseView {
 			fields: [
 				['user', 'user_output', {label: "User"}],
 				['filename', 'text', {label: "File Name"}],
-				['bucket', 'text', {label: "Bucket"}],
 				['values', 'text', {label: "Values"}], // todo: add an input type for like, json or specifically these values types idk
 				['meta', 'output', {label: "Meta"}],
 				['permissions', 'text', {label: "Permissions"}], //could be a real permission editor but image permissions don't really work anyway
@@ -59,9 +57,13 @@ class ImagesView extends BaseView {
 		})
 		this.$imagesForm.fill(this.form.elem)
 	}
-	Start({id, query}) {
-		const {page=1, bucket=null} = query;
+	Start(location) {
+		let bucket = location.query.bucket;
+		let page = (location.query.page|0) || 1;
 		// TODO: bucket search
+		let search = "contentType = @file"
+		if (bucket)
+			search += " AND !valuelike(@key, @bucket)"
 		return {
 			chain: {
 				values: {
@@ -70,36 +72,24 @@ class ImagesView extends BaseView {
 					bucket: JSON.stringify(bucket),
 				},
 				requests: [
-					{
-						type: 'content',
-						fields: '*',
-						query: `contentType = @file AND ${bucket ? '!valuelike(@key, @bucket)' : '!valuekeynotlike(@key)'}`,
-						order: 'id_desc',
-						limit: 20,
-						skip: (page-1) * 20,
-					},
+					{type: 'content', fields: '*', query: search, order: 'id_desc', limit: 20, skip: (page-1)*20},
 					{type:'user', fields:'*', query:"id IN @content.createUserId."},
 				],
 			},
 			ext: {page, bucket},
 		}
 	}
-	Render({content, user}, {page, bucket}, location) {
-		this.location = location
-		this.page = page|0
+	Render({content, user}, {page, bucket}) {
+		this.page = page
 		this.user = user
 		View.set_title(" Images ")
-		content.forEach(x=>{
+		for (let file of content) {
 			const img = document.createElement('img')
-			img.src = Req.file_url(x.hash, `size=${this.SIZE}`)
-			img.onclick = e=>{this.select_image(x)}
-			let meta = JSON.parse(x.meta)
-			/*if (meta.width && meta.height) {
-				img.width = meta.width
-				img.height = meta.height
-			}*/
+			img.src = Req.file_url(file.hash, "size=60")
+			img.onclick = e=>{this.select_image(file)}
+			//let meta = JSON.parse(file.meta)
 			this.$imagesWhatever.append(img)
-		})
+		}
 		this.$imagesNavPage.textContent = page
 		this.$imagesNavBucket.value = bucket
 		this.select_image(null)
@@ -115,16 +105,13 @@ class ImagesView extends BaseView {
 		this.$imagesCurrentImg.src = Req.file_url(content.hash)
 		this.$imagesCurrentLink.href = `#page/${content.id}`
 		this.$imagesCurrentLink.textContent = content.hash
-		const formData = {
+		this.form.set({
 			user: this.user[~content.createUserId],
 			filename: content.name,
-			bucket: content.values.bucket,
-			// fixme: what is this for exactly?
 			values: JSON.stringify(content.values),
 			meta: content.meta,
-			permissions: JSON.stringify(content.permissions)
-		}
-		this.form.set(formData)
+			permissions: JSON.stringify(content.permissions),
+		})
 		this.form.write()
 	}
 }
