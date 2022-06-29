@@ -188,30 +188,26 @@ CommentsView.template = HTML`
 	<div $=commentSearchResults></div>
 </div>
 `
-CommentsView.register('comments')
-
-/*View.add_view('chatlogs', {
-	redirect: (id, query)=>{
+View.register('comments', CommentsView)
+View.register('chatlogs', {
+	Redirect(location) {
 		let q = {r: true}
 		// we do it this way so the ORDER is preserved :D
-		for (let key in query) {
-			if (key=='t')
-				q.s = query.t // name changed
-			else if (key=='pid')
-				q.pid = query.pid
-			else if (key=='uid')
-				q.uid = query.uid
-		}
+		Object.for(location.query, (value, key)=>{
+			if (key=='t') key = 's'
+			if (key=='s' || key=='pid' || key=='uid')
+				q[key] = value
+		})
+		location.query = q
 		// switch to "comments/<id>" url if there is one pid
-		id = null
+		location.id = null
 		if (q.pid) {
 			let pids = CONVERT.number_list.decode(q.pid)
 			if (pids && pids.length==1) {
 				delete q.pid
-				id = pids[0]
+				location.id = pids[0]
 			}
 		}
-		return ['comments', id, q]
+		location.type = 'comments'
 	},
-})*/
-
+})

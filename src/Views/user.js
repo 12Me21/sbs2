@@ -62,4 +62,4 @@ UserView.template = HTML`
 </div>
 `
 
-UserView.register('user')
+View.register('user', UserView)

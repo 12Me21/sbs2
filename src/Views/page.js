@@ -486,5 +486,10 @@ do_when_ready(()=>{
 	PageView.global.$userlist = $sidebarUserList
 })
 
-PageView.register('page')
-// todo: redirects from "pages", "category", "file" (for now?)
+View.register('page', PageView)
+View.register('pages', {
+	Redirect(location) {location.type='page'},
+})
+View.register('category', {
+	Redirect(location) {location.type='page'},
+})

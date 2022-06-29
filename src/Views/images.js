@@ -137,4 +137,4 @@ ImagesView.template = HTML`
 </div>
 `
 
-ImagesView.register('images')
+View.register('images', ImagesView)

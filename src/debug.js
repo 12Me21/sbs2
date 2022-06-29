@@ -5,7 +5,7 @@ let Debug = ((u=NAMESPACE({
 		$debugInput.onkeydown = e=>{
 			if (e.isComposing)
 				return
-			if (e.keyCode==13 && !e.shiftKey) {
+			if ('Enter'==e.key && !e.shiftKey) {
 				e.preventDefault()
 				let code = $debugInput.value
 				if (!code) return

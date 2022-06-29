@@ -1,16 +1,23 @@
 'use strict'
 
-// TODO: the current system of Early/Init/Render doesn't make sense anymore, probably
+// process of loading a View
+// TODO: this was designed before views were changed to classes, so some of it is redundant and needs to be reorganied
+
+// - Early is called immediately, after the constructor. it's basically redundant now.
+
+// - Start is called right after Early (this is where you build the api request)
+// if Start returns .quick:true, then:
+//  - Init is called, then Quick is called
+// otherwise:
+//  - data is requested from the server
+//  - Init is called, then Render is called
+
+// - Visible is called after the view is inserted into the page (i.e. has been rendered and attached to the document. this exists so that, ex: the resizing textarea's size can be calculated)
 
 class BaseView {
 	constructor(location) {
 		this.location = location
 		new.target.template(this)
-	}
-	static register(name) {
-		this.prototype.Name = name
-		View.views[name] = this
-		Object.seal(this)
 	}
 }
 
@@ -73,6 +80,11 @@ ErrorView.template = HTML`
 </div>
 `
 
+// so this class is kinda a mess,
+// it includes mostly:
+// - things which affect the header or entire page (ex: setting the title/favicon)
+// - control functions for managing the loading of different views
+
 // hmm idk about using `u` instead of `this` here
 // it's nice that we don't rely on `this` binding
 // but also means we can't add new methods at runtime
@@ -116,16 +128,26 @@ const View = ((u=NAMESPACE({
 	// modifies `location` param, returns true if redirect happened
 	handle_redirects(location) {
 		let view = u.views[location.type]
-		let got = false
-		/*while (view && view.Redirect) { //danger!
-			let ret = view.Redirect(location.id, location.query)
-			if (!ret) // oops no redirect
-				break
-			;[location.type, location.id, location.query] = ret // somehow this line triggers a bug in eslint
-			view = u.views[location.type]
-			got = true
-		}*/
-		return got
+		if (view && view.Redirect) {
+			view.Redirect(location)
+			return true
+		}
+	},
+	
+	register(name, view_class) {
+		if (view_class.Redirect)
+			;
+		else if (view_class.prototype instanceof BaseView)
+			view_class.prototype.Name = name
+		else
+			throw new TypeError('tried to register invalid view')
+		view_class.Name = name
+		Object.seal(view_class)
+		View.views[name] = view_class
+	},
+	
+	register_redirect(name, func) {
+		this.views[name] = {Redirect: func}
 	},
 	
 	load_start() {
@@ -187,18 +209,14 @@ const View = ((u=NAMESPACE({
 			u.load_start()
 			phase = "view lookup"
 			let got_redirect = u.handle_redirects(location)
-			view = u.views[location.type]
+			let view_class = u.views[location.type]
 			if (got_redirect)
 				Nav.replace_location(location)
-			if (!view)
-				throw 'type'
-			
-			view = new view(location)
+			view = new view_class(location)
 			
 			if (view.Early) {
 				phase = "view.Early"
 				view.Early()
-				view.Early = null
 			}
 			phase = "view.Start"
 			let data = view.Start(location)
@@ -363,7 +381,7 @@ const View = ((u=NAMESPACE({
 	// this shouldnt be here i think
 	bind_enter(block, action) {
 		block.addEventListener('keypress', (e)=>{
-			if (!e.shiftKey && e.keyCode == 13) {
+			if ('Enter'==e.key && !e.shiftKey) {
 				e.preventDefault()
 				action()
 			}
