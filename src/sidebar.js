@@ -255,6 +255,21 @@ let FileUploader = Object.seal({
 					this.got_file(file)
 			}
 		})
+		document.addEventListener('dragover', e=>{
+			if (e.dataTransfer.types.includes("Files"))
+				e.preventDefault()
+		})
+		document.addEventListener('drop', e=>{
+			if (e.target instanceof HTMLTextAreaElement)
+				return
+			let file = e.dataTransfer.files[0]
+			if (file) {
+				e.preventDefault()
+				if (/^image\//.test(file.type))
+					this.got_file(file)
+			}
+		})
+		
 		//todo: write decoder for xpm :)
 		$file_browse.onchange = e=>{
 			let file = $file_browse.files[0]

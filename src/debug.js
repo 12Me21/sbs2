@@ -10,6 +10,8 @@ let Debug = ((u=NAMESPACE({
 				let code = $debugInput.value
 				if (!code) return
 				u.eval(code)
+				// todo: option to not clear (or button to retrieve previous entry?) for devices without undo
+				// also it's kinda nicer when your code persists tbh?
 				$debugInput.select()
 				document.execCommand('delete')
 			}
