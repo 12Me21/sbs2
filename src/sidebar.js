@@ -215,6 +215,11 @@ let Sidebar = Object.seal({
 })
 
 window.print = Sidebar.print.bind(Sidebar)
+Object.defineProperty(window, 'log', {
+	configurable: true,
+	get() { return window.print },
+	set(x) { window.print(x) },
+})
 
 do_when_ready(x=>Sidebar.onload())
 
