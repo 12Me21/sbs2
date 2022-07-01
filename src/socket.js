@@ -82,11 +82,15 @@ let Lp = singleton({
 	maybe_reconnect(e) {
 		if (Settings.values.socket_debug=='yes')
 			print('maybe reconnect '+(e?e.type:""))
-		if (!this.is_alive() && !this.no_restart && 'visible'==document.visibilityState && navigator.onLine) {
-			this.start_websocket()
-			if (this.fails > 3 || Date.now() - this.last_reconnect < 5000) {
-				print('too many ')
-				return
+		if (!this.no_restart && 'visible'==document.visibilityState && navigator.onLine) {
+			if (this.is_alive()) {
+				this.ping(()=>{})
+			} else {
+				if (this.fails > 3 || Date.now() - this.last_reconnect < 5000) {
+					print('too many ')
+					return
+				}
+				this.start_websocket()
 			}
 		}
 	},
@@ -280,6 +284,7 @@ let Lp = singleton({
 	init() {
 		document.addEventListener('visibilitychange', e=>this.maybe_reconnect(e))
 		window.addEventListener('pageshow', e=>this.maybe_reconnect(e))
+		window.addEventListener('focus', e=>this.maybe_reconnect(e))
 		window.addEventListener('online', e=>this.start_websocket(true))
 	},
 })
