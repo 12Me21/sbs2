@@ -604,7 +604,7 @@ const INPUTS = {
 		write() {
 			const user = this.value
 			if (!user) return
-			this.avatar.src = Req.file_url(user.avatar, "size=24&crop=true")
+			this.avatar.src = Draw.avatar_url(user)
 			this.username.textContent = user.username
 			// this.input.fill(this.value ? Draw.entity_title_link(this.value) : null)
 		}

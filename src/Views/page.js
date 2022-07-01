@@ -225,7 +225,7 @@ class PageView extends BaseView {
 		}
 	}
 	static title_notification(comment) {
-		View.title_notification(comment.text, Draw.avatar_url(comment.Author, "size=100&crop=true"))
+		View.title_notification(comment.text, Draw.avatar_url(comment.Author))
 		// todo: also call if the current comment being shown in the title is edited
 	}
 	textarea_resize() {

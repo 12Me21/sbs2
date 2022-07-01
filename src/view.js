@@ -92,7 +92,7 @@ ErrorView.template = HTML`
 // it's nice that we don't rely on `this` binding
 // but also means we can't add new methods at runtime
 // maybe best to just write View.prop ...
-const View = ((u=NAMESPACE({
+const View = NAMESPACE({
 	// this will always be the currently rendered view
 	// (set before `render` is called, and unset before `cleanup` is called)
 	// current.cleanup should always be correct!
@@ -100,9 +100,6 @@ const View = ((u=NAMESPACE({
 	views: {__proto__: null},
 	
 	first: true,
-	
-	real_title: null,
-	favicon_element: null,
 	
 	observer: null,
 	toggle_observer(state) {
@@ -129,7 +126,7 @@ const View = ((u=NAMESPACE({
 	
 	// modifies `location` param, returns true if redirect happened
 	handle_redirects(location) {
-		let view = u.views[location.type]
+		let view = this.views[location.type]
 		if (view && view.Redirect) {
 			view.Redirect(location)
 			Nav.replace_location(location)
@@ -154,52 +151,52 @@ const View = ((u=NAMESPACE({
 	},
 	
 	load_start() {
-		u.flag('loading', true)
+		this.flag('loading', true)
 	},
 	load_end() {
-		u.flag('loading', false)
+		this.flag('loading', false)
 	},
 	
 	flags: {},
 	flag(flag, state) {
-		u.flags[flag] = state
+		this.flags[flag] = state
 		document.documentElement.classList.toggle("f-"+flag, state)
 	},
 	
 	update_my_user(user) {
 		if (user.id != Req.uid)
-			return //uh oh
+			throw new TypeError("tried to replace yourself with another user! id:"+user.id)
 		Req.me = user
 		let icon = Draw.avatar(Req.me)
-		Sidebar.my_avatar.fill(icon)
+		Sidebar.$my_avatar.fill(icon)
 	},
 	
 	cleanup(new_location) {
-		if (u.current && u.current.Cleanup)
+		if (this.current && this.current.Cleanup)
 			try {
-				u.current.Cleanup(new_location)
+				this.current.Cleanup(new_location)
 			} catch (e) {
 				// we ignore this error, because it's probably not important
 				// and also cleanup gets called during error handling so we don't want to get into a loop of errors
 				console.error(e, "error in cleanup function")
 				print(e)
 			}
-		u.current = null
+		this.current = null
 	},
 	
 	cancel() {
-		if (u.loading_view) {
-			u.loading_view.return()
-			u.loading_view = null
-			u.load_end()
+		if (this.loading_view) {
+			this.loading_view.return()
+			this.loading_view = null
+			this.load_end()
 		}
 	},
 	
 	loading_view: null,
 	
 	handle_view(location, callback, onerror) {
-		u.cancel()
-		u.loading_view = u.handle_view2(location).run(callback, onerror)
+		this.cancel()
+		this.loading_view = this.handle_view2(location).run(callback, onerror)
 	},
 	
 	// technically STEP could be a global etc. but hhhh ....
@@ -209,11 +206,11 @@ const View = ((u=NAMESPACE({
 		let view
 		
 		try {
-			u.load_start()
+			this.load_start()
 			phase = "view lookup"
-			u.handle_redirects(location)
+			this.handle_redirects(location)
 			
-			let view_class = u.views[location.type]
+			let view_class = this.views[location.type]
 			view = new view_class(location)
 			
 			phase = "view.Early"
@@ -232,17 +229,17 @@ const View = ((u=NAMESPACE({
 			}
 			yield do_when_ready(STEP)
 			
-			if (u.first)
+			if (this.first)
 				console.log("🌄 Rendering first page")
 			
 			phase = "view.Init"
 			view.Init && view.Init()
 			
 			phase = "cleanup"
-			u.cleanup(location) // passing the new location
+			this.cleanup(location) // passing the new location
 			
 			phase = "rendering"
-			u.current = view
+			this.current = view
 			if (data.quick)
 				view.Quick()
 			else
@@ -250,20 +247,20 @@ const View = ((u=NAMESPACE({
 		} catch (e) {
 			yield do_when_ready(STEP)
 			
-			u.cleanup(location)
-			u.current = view = new ErrorView(location)
+			this.cleanup(location)
+			this.current = view = new ErrorView(location)
 			if (e==='type') {
-				u.set_title("Unknown page type")
+				this.set_title("Unknown page type")
 			} else if (e==='data') {
-				u.set_title("Data not found")
+				this.set_title("Data not found")
 			} else {
 				console.error("Error during view handling", e)
-				u.set_title("Error during: "+phase)
+				this.set_title("Error during: "+phase)
 				view.$error_message.fill(Debug.sidebar_debug(e))
 				view.$error_location.append(JSON.stringify(location, null, 1))
 			}
 		}
-		u.load_end()
+		this.load_end()
 		//throw "heck darn"
 		view.$root.classList.add('shown')
 		$main_slides.fill(view.$root)
@@ -273,16 +270,16 @@ const View = ((u=NAMESPACE({
 		for (let elem of $titlePane.children) {
 			let list = elem.dataset.view
 			if (list)
-				elem.classList.toggle('shown', list.split(",").includes(u.current.Name))
+				elem.classList.toggle('shown', list.split(",").includes(this.current.Name))
 		}
-		u.flag('viewReady', true)
+		this.flag('viewReady', true)
 		Sidebar.close_fullscreen()
 		
 		Lp.flush_statuses(()=>{})
 		
-		if (u.first) {
+		if (this.first) {
 			console.log("☀️ First page rendered!")
-			u.first = false
+			this.first = false
 		}
 	},
 	
@@ -347,34 +344,57 @@ const View = ((u=NAMESPACE({
 		}
 	},
 	
+	// these all set the page's <h1> and <title>, and reset the favicon
+	real_title: null,
+	set_title2(h1, title) {
+		$pageTitle.fill(h1)
+		document.title = title
+		this.real_title = title
+		this.change_favicon(null)
+	},
+	set_title(text) {
+		let x = document.createElement('span')
+		x.className = "pre" // todo: this is silly ..
+		x.textContent = text
+		this.set_title2(x, text)
+	},
+	// todo: this should support users etc. too?
+	set_entity_title(entity) {
+		this.set_title2(Draw.content_label(entity), entity.name)
+	},
+	
+	// temporarily set <title> and favicon, for displaying a chat message
+	// pass text=`false` to reset them (todo: why do we use false?unused)
 	title_notification(text, icon) {
 		if (!Req.me)
 			return
 		if (text == false) {
-			document.title = u.real_title
-			u.change_favicon(null)
-		} else {
-			document.title = text
-			u.change_favicon(icon || null)
+			text = this.real_title
+			icon = null
 		}
+		document.title = text
+		this.change_favicon(icon || null)
 	},
 	
+	favicon_element: null,
+	// todo: this stopped working in safari lol...
 	change_favicon(src) {
-		if (!u.favicon_element) {
+		if (!this.favicon_element) {
 			if (src == null)
 				return
 			// remove the normal favicons
 			for (let e of document.head.querySelectorAll('link[rel~="icon"]'))
 				e.remove()
 			// add our new one
-			u.favicon_element = document.createElement('link')
-			u.favicon_element.rel = "icon"
-			u.favicon_element.href = src
-			document.head.prepend(u.favicon_element)
-		} else if (u.favicon_element.href != src) {
+			this.favicon_element = document.createElement('link')
+			this.favicon_element.rel = "icon"
+			this.favicon_element.href = src
+			document.head.prepend(this.favicon_element)
+		} else if (this.favicon_element.href != src) {
+			//todo: technically we should add back /all/ the icons here
 			if (src == null)
 				src = "resource/icon16.png"
-			u.favicon_element.href = src
+			this.favicon_element.href = src
 		}
 	},
 	
@@ -387,49 +407,7 @@ const View = ((u=NAMESPACE({
 			}
 		})
 	},
-	
-	// set tab <title>
-	// todo: now this only works on Content, not all entities?
-	set_entity_title(entity) {
-		$pageTitle.fill(Draw.content_label(entity))
-		document.title = entity.name
-		u.real_title = entity.name
-		u.change_favicon(null)
-	},
-	// todo: maybe this belongs on BaseView?
-	set_title(text) {
-		let x = document.createElement('span')
-		x.className = "pre" // this is silly ..
-		x.textContent = text
-		$pageTitle.fill(x)
-		document.title = text
-		u.real_title = text
-		u.change_favicon(null)
-	},
-	
-	// set path (in header)
-	set_path(path) {
-		$path.fill(Draw.title_path(path))
-	},
-	/*set_entity_path(page) {
-		if (!page) {
-			set_path([])
-			return
-		}
-		let node = page.Type=='category' ? page : page.parent
-		let path = []
-		while (node) {
-			path.unshift([Nav.entityPath(node), node.name])
-			node = node.parent
-		}
-		if (page.Type == 'category')
-			path.push(null)
-		else
-			path.push([Nav.entityPath(page), page.name])
-		set_path(path)
-	},*/
-	
-}))=>u)()
+})
 
 // todo: id can be a string now,
 // so, we need to test if it is valid + in range (positive) in many places

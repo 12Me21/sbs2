@@ -114,6 +114,12 @@ METHOD(Generator, 'run', function(ok=console.info, err=e=>{ throw e }) {
 delete window.content
 delete window.sidebar
 
+METHOD(Map, 'pop', function(key) {
+	let v = this.get(key)
+	this.remove(key)
+	return v
+})
+
 for (let c of "pn")
 	Object.defineProperty(window, c, {
 		get(){throw new SyntaxError('eek')},
@@ -194,16 +200,9 @@ RegExp.prototype.rmatch = function(str) {
 
 //let 𖹭 = Object.create.bind(Object,null,{𖹭:{set(f){Object.seal(Object.assign(this,f))}}}) // not used anymore :(
 
+// why do we have these
 const singleton = (obj) => Object.seal(obj)
 const NAMESPACE = Object.seal
-
-// activating strict mode:
-// x = function(){"use strict"; ... }()
-
-// examples:
-// let MySingleton = function(){"use strict"; return singleton({
-//    <fields>,
-// })}()
 
 function 𐀶([html]) {
 	let temp = document.createElement('template')

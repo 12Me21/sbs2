@@ -10,8 +10,12 @@ class ActivityItem {
 		this.user_elem = this.elem.lastChild.lastChild
 		this.page_elem = this.elem.firstChild
 		this.time_elem = this.elem.lastChild.firstChild
-		Draw.update_activity_page(this)
+		this.redraw_page()
 		this.top()
+	}
+	redraw_page() {
+		this.elem.href = Nav.entity_link(this.content)
+		this.page_elem.fill(Draw.content_label(this.content))
 	}
 	top() {
 		let first = Act.container.firstElementChild
@@ -40,7 +44,7 @@ class ActivityItem {
 	update_content(content) {
 		if (content.lastRevisionId > this.content.lastRevisionId) {
 			this.content = content
-			Draw.update_activity_page(this)
+			this.redraw_page()
 		}
 	}
 	update_user(uid, user, date) {

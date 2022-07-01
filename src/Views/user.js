@@ -39,7 +39,7 @@ class UserView extends BaseView {
 		//let ca = resp.commentaggregate
 		//let content = resp.content
 		View.set_title(" "+user.username+" ") // todo: this is unsafe because of text direction. get set_entity_title working again
-		this.$avatar.src = Draw.avatar_url(user, "size=200&crop=true")
+		this.$avatar.src = Draw.avatar_url(user, 200)
 		$userPageLink.hidden = !userpage
 		if (userpage)
 			$userPageLink.href = "#page/"+userpage.id

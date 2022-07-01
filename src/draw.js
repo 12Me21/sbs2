@@ -1,6 +1,8 @@
 'use strict'
 // HTML RENDERING
 const Draw = Object.seal({
+	// TODO: rewrite the css/layout for these
+	// also, update the icons for the current site's features
 	//📥 content‹Content›
 	//📤 ‹ParentNode›
 	content_label: function(content, block) {
@@ -10,7 +12,7 @@ const Draw = Object.seal({
 		
 		let hidden = !Entity.has_perm(content.permissions, 0, 'R')
 		let bg
-		if (content.contentType!=1)
+		if (content.contentType!=CODES.page)
 			bg = 'resource/unknownpage.png'
 		else if (content.literalType=='category')
 			bg = 'resource/category.png'
@@ -31,20 +33,11 @@ const Draw = Object.seal({
 `,
 		𐀶`
 <a class='bar rem1-5 linkBar'>
-<span class='item icon iconBg' role=img alt=""></span>
-<span class='textItem entity-title pre'>...</span>
+	<span class='item icon iconBg' role=img alt=""></span>
+	<span class='textItem entity-title pre'>...</span>
 </a>
 `,
 	]),
-	
-	//📥 user‹User›
-	//📥 params‹String›
-	//📤 ‹String›
-	avatar_url(user, params) {
-		if (!user || !user.avatar)
-			return "resource/avatar.png"
-		return Req.file_url(user.avatar, params)
-	},
 	
 	//📥 text‹String›
 	//📤 ‹ParentNode›
@@ -53,6 +46,21 @@ const Draw = Object.seal({
 		e.textContent = text
 		return e
 	}.bind(𐀶`<span class='textItem pre'>`),
+	
+	// user: User / Author
+	avatar_url(user, size=100) {
+		if (!user || !user.avatar)
+			return "resource/avatar.png"
+		return Req.file_url(user.avatar, "size="+size+"&crop=true")
+	},
+	
+	//📥 user‹User›
+	//📤 ‹ParentNode›
+	avatar: function(user) {
+		let e = this()
+		e.src = Draw.avatar_url(user)
+		return e
+	}.bind(𐀶`<img class='item avatar' width=100 height=100 alt="">`),
 	
 	// used by activity
 	//📥 user‹User›
@@ -65,14 +73,6 @@ const Draw = Object.seal({
 		return a
 	}.bind(𐀶`<a tabindex=-1 role=gridcell>`),
 	
-	//📥 user‹User›
-	//📤 ‹ParentNode›
-	avatar: function(user) {
-		let e = this()
-		e.src = Draw.avatar_url(user, "size=100&crop=true")
-		return e
-	}.bind(𐀶`<img class='item avatar' width=100 height=100 alt="">`),
-	
 	//📥 file‹Content›
 	//📥 onclick‹Function›
 	//📤 ‹ParentNode›
@@ -84,38 +84,16 @@ const Draw = Object.seal({
 		img.alt = file.name
 		img.title = file.name
 		if (onclick)
-			e.onclick = (event) => { onclick(file, event) } // bad
+			e.onclick = e=>{onclick(file, e)} // bad
 		return e
-	}.bind(𐀶`<div class='fileThumbnail item'><img>`),
-	
-	//📥 path‹???›
-	//📤 ‹ParentNode›
-	title_path(path) {
-		let element = document.createDocumentFragment()
-		if (!path)
-			return element
-		path.forEach((item, i, path)=>{
-			if (item) { //todo: use entities here instead
-				let link = document.createElement('a')
-				link.href = item[0]
-				link.textContent = item[1]
-				link.className += ' textItem entity-title pre'
-				element.append(link)
-			}
-			if (i < path.length-1) {
-				let slash = element.child('span', 'pathSeparator textItem')
-				slash.textContent = "/"
-			}
-		})
-		return element
-	},
+	}.bind(𐀶`<div class='fileThumbnail item'><img></div>`),
 	
 	//📥 user‹User›
 	//📤 ‹ParentNode›
 	userlist_avatar: function(user, status) {
 		let e = this()
 		e.href = Nav.entity_link(user)
-		e.firstChild.src = Req.file_url(user.avatar, "size=100&crop=true")
+		e.firstChild.src = Draw.avatar_url(user)
 		e.dataset.uid = user.id
 		if (status == "idle")
 			e.classList.add('status-idle')
@@ -130,15 +108,16 @@ const Draw = Object.seal({
 		let author = comment.Author
 		
 		e.dataset.uid = comment.createUserId
-		e.dataset.merge = MessageList.prototype.merge_hash(comment) //nnn
+		e.dataset.merge = comment.Author.merge_hash
 		
 		let avatar
 		if (author.bigAvatar) {
 			avatar = this.big_avatar()
-			avatar.style.backgroundImage = `url("${Req.file_url(author.bigAvatar, "size=500")}")`
+			let url = Req.file_url(author.bigAvatar, "size=500")
+			avatar.style.backgroundImage = `url("${url}")`
 		} else {
 			avatar = this.avatar()
-			avatar.src = Req.file_url(author.avatar, "size=100&crop=true")
+			avatar.src = Draw.avatar_url(author)
 		}
 		e.prepend(avatar)
 		
@@ -149,7 +128,7 @@ const Draw = Object.seal({
 		} else {
 			username = author.nickname
 			let nickname = this.nickname()
-			nickname.querySelector('span.pre').textContent = author.realname
+			nickname.querySelector('span.pre').textContent = author.username
 			name.append(nickname)
 		}
 		name.firstChild.textContent = username
@@ -181,7 +160,7 @@ const Draw = Object.seal({
 		if (comment.edited)
 			e.className += " edited"
 		
-		// this is a hack, maybe
+		// this is a hack! TODO : dont
 		e.x_data = comment
 		
 		e.dataset.id = comment.id
@@ -258,20 +237,18 @@ const Draw = Object.seal({
 		return [e, e.firstChild]
 	}.bind(𐀶`<button-container><button>`),
 	
+	// UNUSED
 	// <div class='pageInfoPane rem2-3 bar'>
 	//   [author box] [vote box]
 	// </div>
 	page_info(page) {
-		let e = EC('div', 'pageInfoPane rem2-3 bar')
-		//e.append(Draw.author_box(page), vote_box(page))
+		let e = document.createElement('div')
+		e.className = 'pageInfoPane rem2-3 bar'
+		e.append(Draw.author_box(page), vote_box(page))
 		return e
 	},
 	
-	update_activity_page: function(item) {
-		item.elem.href = Nav.entity_link(item.content)
-		item.page_elem.fill(Draw.content_label(item.content))
-	},
-	
+	// UNUSED
 	// [page_edited_time] [entity_title_link]
 	// ? [page_edited_time] [entity_title_link]
 	// ? [page_edited_time]
@@ -294,12 +271,14 @@ const Draw = Object.seal({
 		return elem
 	},
 	
+	// UNUSED
 	// <span class='item'>
 	//   <div class='half half-label'>...</div>
 	//   <??? class='... half'>???<???>
 	// </span>
 	page_edited_time(label, time) {
-		let b = EC('span', 'item')
+		let b = document.createElement('span')
+		b.className = 'item'
 		
 		let a = b.child('div', 'half half-label')
 		a.textContent = label
@@ -382,7 +361,8 @@ const Draw = Object.seal({
 	
 	//
 	user_selector() {
-		let elem = EC('user-select', 'bar rem1-5')
+		let elem = document.createElement('user-select')
+		elem.className = 'bar rem1-5'
 		let input = elem.child('input', 'item')
 		input.placeholder = "Search Username"
 		let dropdown = elem.child('select', 'item')
@@ -481,51 +461,49 @@ const Draw = Object.seal({
 		let d = this()
 		d.dataset.id = comment.id
 		
+		// for bridge messages, display nicknames instead of username
 		let author = comment.Author
-		d.title = `${author.username} in ${comment.contentId}:\n${comment.text}` // todo: page name 🥺  oh︕ emojis render in italic? don't remember adding that...   we should store refs to pages but like intern them so its not a memory leak...
+		let name = author.bridge ? author.nickname+"*" : author.username
 		
-/*		if (comment.editDate && comment.editUserId!=comment.createUserId) {
+		d.title = `${name} in ${comment.contentId}:\n${comment.text}`
+		// todo: page name 🥺  oh︕ emojis render in italic? don't remember adding that...   we should store refs to pages but like intern them so its not a memory leak...
+		
+/*todo: fix,		if (comment.editDate && comment.editUserId!=comment.createUserId) {
 			d.append(
 				entity_title_link(comment.editUser),
 				" edited ",
 			)
 			}*/
-		let nl = d.firstChild
-		nl.href = "#user/"+comment.createUserId
-		nl.firstChild.src = Req.file_url(author.avatar, "size=100&crop=true")
-		nl.lastChild.textContent = author.username
+		let link = d.firstChild
+		link.href = "#user/"+comment.createUserId
+		link.firstChild.src = Draw.avatar_url(author)
+		link.lastChild.textContent = name
 		
 		d.append(comment.text.replace(/\n/g, "  "))
-		//entity_title_link(comment.createUser),
+		
 		return d
-	}.bind(𐀶`<div class='bar rem1-5 sidebarComment ellipsis'><a tabindex=-1><img class='item icon avatar' width=100 height=100><span class='textItem entity-title pre'></span></a>: </div>`),
+	}.bind(𐀶`
+<div class='bar rem1-5 sidebarComment ellipsis'>
+	<a tabindex=-1>
+		<img class='item icon avatar' width=100 height=100>
+		<span class='textItem entity-title pre'></span>
+	</a>:&#32;
+</div>
+`),
 	
 	user_label: function(user) {
 		let e = this()
-		let a = e.firstChild
-		a.href = "#user/"+user.id
-		let img = a.firstChild
-		img.src = Req.file_url(user.avatar, "size=100&crop=true")
-		let name = a.lastChild
-		name.textContent = user.username
+		let link = e.firstChild
+		link.href = "#user/"+user.id
+		link.firstChild.src = Req.avatar_url(user)
+		link.lastChild.textContent = user.username
 		return e
-	}.bind(𐀶`<div class='bar rem1-5'><a tabindex=-1><img class='item icon avatar' width=100 height=100><span class='textItem entity-title pre'></span></div>`),
-	
-	//todo:
-	sidebarPageLabel(content) {
-		
-	},
-	
-	// update the timestamps in the sidebar activity list
-	// (todo: should we update them everywhere else on the site too?)
-	update_timestamps(element) {
-		for (let e of element.querySelectorAll("time.time-ago"))
-			e.textContent = Draw.time_ago_string(new Date(e.dateTime))
-	},
+	}.bind(𐀶`
+<div class='bar rem1-5'>
+	<a tabindex=-1>
+		<img class='item icon avatar' width=100 height=100>
+		<span class='textItem entity-title pre'></span>
+	</a>
+</div>
+`),
 })
-
-function EC(name, classes) {
-	let elem = document.createElement(name)
-	elem.className = classes
-	return elem
-}

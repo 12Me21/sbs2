@@ -1,51 +1,42 @@
 'use strict'
 const TYPES = {}
 
-// permissions class? idk
+let CODES = {__proto__:null}
+for (let enm of Object.values(ABOUT.details.codes)) {
+	for (let [num, name] of Object.entries(enm)) {
+		if (name in CODES && CODES[name]!=+num)
+			print('warning! enum collision')
+		CODES[name] = +num
+	}
+}
+Object.freeze(CODES)
+
+// todo: permissions class? idk
 
 let Entity
 
 class Author {
 	constructor(message, user) {
+		let valid = x => x && ('string'==typeof x || 'number'==typeof x)
+		let {a, big, n} = message.values
 		this.username = user.username
-		// normal avatar
-		let av = message.values.a
-		if (av && ('string'==typeof av || 'number'==typeof av))
-			this.avatar = av
-		else
-			this.avatar = user.avatar
-		// bigavatar
-		let ab = message.values.big
-		if (ab && ('string'==typeof ab || 'number'==typeof ab))
-			this.bigAvatar = ab
-		// == names ==
-		this.username = user.username
-		let nick = null
-		// message from discord bridge
-		//let bridge = 'string'==typeof message.values.b
-		//if (bridge)
-		//	nick = message.values.b
-		let bridge = user.id == 5410
-		// regular nickname
-		if ('string'==typeof message.values.n)
-			nick = message.values.n
-		
-		if (nick != null) {
-			nick = Entity.filter_nickname(nick)
-			if (bridge)
-				this.username = nick
-			this.nickname = nick
-			this.realname = user.username
-		}
+		this.avatar = valid(a) ? String(a) : user.avatar
+		this.nickname = valid(n) ? Entity.filter_nickname(String(n)) : null
+		this.bridge = user.id==5410 && user.username=="sbs_discord_bridge"
+		this.bigAvatar = valid(big) ? String(big) : null
+		this.merge_hash = `${message.contentId},${message.createUserId},${this.avatar},${this.bigAvatar||""},${this.username} ${this.nickname||""}`
 	}
 }
 Object.assign(Author.prototype, {
-	avatar: "0",
-	bigAvatar: null,
 	username: "missingno.",
-	realname: null,
+	avatar: "0",
 	nickname: null,
-	//			content_name: "",
+	bridge: false,
+	bigAvatar: null,
+	merge_hash: "0,0,0,,missingno. ",
+	//			content_name: "", todo, store page title, for listing in sidebar?
+	// this isn't really just "author", so much as um,
+	// extra data to use when rendering a comment
 })
 
 // TODO: improve class structure:

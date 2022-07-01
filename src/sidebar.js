@@ -3,7 +3,7 @@
 let Sidebar = Object.seal({
 	scroller: null,
 	sidebar_tabs: null,
-	my_avatar: null,
+	$my_avatar: null,
 	
 	select_tab(name) {
 		let tab = this.sidebar_tabs.find(tab=>tab.name==name)
@@ -27,7 +27,7 @@ let Sidebar = Object.seal({
 		let user_label
 		if (Req.auth) {
 			user_label = document.createElement('span')
-			this.my_avatar = user_label
+			this.$my_avatar = user_label
 		} else
 			user_label = "log in"
 		

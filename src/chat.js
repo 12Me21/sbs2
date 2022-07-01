@@ -7,7 +7,7 @@ class MessageList {
 		this.elem = element
 		this.elem.classList.add('message-list') // todo: just create a new elem <message-list> ?
 		this.pid = pid
-		this.parts = {__proto__:null}
+		this.parts = new Map()
 		this.total_parts = 0
 	}
 	get_messages_near(last, newer, amount, callback) {
@@ -47,9 +47,8 @@ class MessageList {
 	}
 	single_message(comment) {
 		let [block, contents] = Draw.message_block(comment)
-		block.dataset.merge = this.merge_hash(comment)
 		let part = Draw.message_part(comment)
-		this.parts[comment.id] = part
+		this.parts.set(comment.id, {elem:part, data:comment})
 		this.total_parts = 1
 		contents.append(part)
 		this.elem.append(block)
@@ -59,11 +58,11 @@ class MessageList {
 			this.remove_message(message.id)
 			return null
 		}
-		let old = this.parts[message.id]
+		let old = this.parts.get(message.id)
 		if (old) {
 			let part = Draw.message_part(message)
-			old.replaceWith(part)
-			this.parts[message.id] = part
+			old.elem.replaceWith(part)
+			this.parts.set(message.id, {elem:part, data:message})
 			return part
 		}
 		let contents
@@ -75,7 +74,7 @@ class MessageList {
 			if (oldcontents) {
 				// and the merge-hashes match
 				let oldhash = block.dataset.merge
-				let newhash = this.merge_hash(message)
+				let newhash = message.Author.merge_hash
 				if (oldhash == newhash) {
 					// aand the time isn't > 5 minutes
 					let last = oldcontents[backwards?'firstChild':'lastChild']
@@ -94,47 +93,38 @@ class MessageList {
 		// otherwise create a new message-block
 		if (!contents) {
 			;[block, contents] = Draw.message_block(message) // TODO: the time will be wrong, if we are displaying backwards!!
-			block.dataset.merge = this.merge_hash(message)
 			this.elem[backwards?'prepend':'append'](block)
 		}
 		// draw+insert the new message-part
 		let part = Draw.message_part(message)
 		contents[backwards?'prepend':'append'](part)
-		this.parts[message.id] = part
+		this.parts.set(message.id, {elem:part, data:message})
 		this.total_parts++
 		return part
 	}
 	remove_message(id) {
-		let part = this.parts[id]
+		let part = this.parts.pop(id)
 		if (!part)
-			return false
+			throw new RangeError("Tried to remove nonexistant message-part, id:"+id)
 		
 		let contents = part.parentNode // <message-contents>
-		part.remove()
-		delete this.parts[id]
-		this.total_parts--
+		part.elem.remove()
 		
 		if (!contents.hasChildNodes())
 			contents.parentNode.remove() // remove <message-block> if empty
-		
-		return true
 	}
 	over_limit() {
-		return this.total_parts > this.max_parts /*&& !this.disable_limit*/
+		return this.parts.size > this.max_parts
 	}
 	limit_messages() {
-		for (let id in this.parts) {
-			if (this.total_parts <= this.max_parts)
-				break
-			if (!this.remove_message(id))
-				break //fail
-		}
+		if (this.over_limit())
+			for (let id of this.parts.keys()) {
+				this.remove_message(id)
+				if (!this.over_limit())
+					break
+			}
 	}
-	merge_hash(message) {
-		let user = message.Author
-		return `${message.contentId},${message.createUserId},${user.avatar},${user.bigAvatar||""},${user.username} ${user.nickname || ""}`
-	}
-	
+
 	static show_controls(elem) {
 		if (elem == this.controls_message)
 			return
