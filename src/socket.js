@@ -79,6 +79,7 @@ let Lp = singleton({
 	},
 	fails: 0,
 	last_reconnect: 0,
+	last_message: Date.now(),
 	maybe_reconnect(e) {
 		if (Settings.values.socket_debug=='yes')
 			print('maybe reconnect '+(e?e.type:""))
@@ -90,7 +91,13 @@ let Lp = singleton({
 			if (this.is_alive()) {
 				if (this.last_reconnect-last < 1000)
 					return
-				this.ping(()=>{})
+				let time = 2000
+				if (Date.now()-this.last_message > 30*1000 && (e&&e.type!='focus'))
+					time = 1000
+				let id = window.setTimeout(()=>{
+					this.start_websocket(true)
+				}, time)
+				this.ping(()=>{window.clearTimeout(id)})
 			} else {
 				if (this.fails > 3) {
 					print('too many ')
@@ -143,6 +150,7 @@ let Lp = singleton({
 				alert("websocket wrong event target? multiple sockets still open?")
 				return
 			}
+			this.last_message = Date.now()
 			this.fails = 0
 			this.handle_response(JSON.parse(data))
 		}
