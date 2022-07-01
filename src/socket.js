@@ -82,11 +82,17 @@ let Lp = singleton({
 	maybe_reconnect(e) {
 		if (Settings.values.socket_debug=='yes')
 			print('maybe reconnect '+(e?e.type:""))
-		if (!this.no_restart && 'visible'==document.visibilityState && navigator.onLine) {
+		if (this.no_restart)
+			return
+		let last = this.last_reconnect
+		this.last_reconnect = Date.now()
+		if ('visible'==document.visibilityState && navigator.onLine) {
 			if (this.is_alive()) {
+				if (this.last_reconnect-last < 1000)
+					return
 				this.ping(()=>{})
 			} else {
-				if (this.fails > 3 || Date.now() - this.last_reconnect < 5000) {
+				if (this.fails > 3) {
 					print('too many ')
 					return
 				}
