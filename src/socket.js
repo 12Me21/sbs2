@@ -121,6 +121,7 @@ let Lp = singleton({
 		
 		this.websocket.onerror = e=>{
 			console.warn("websocket error")
+			this.fails++
 			print("📶 websocket connection error")
 			this.got_error = true
 		}
@@ -131,7 +132,7 @@ let Lp = singleton({
 			this.state_change('dead')
 			if (this.got_error) {
 				this.got_error = false
-				return
+				//return
 			}
 			// use timeout to avoid recursion and leaking stack traces
 			window.setTimeout(()=>this.maybe_reconnect())
