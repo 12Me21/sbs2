@@ -59,6 +59,11 @@ Settings.fields = {
 		name: "Big Avatar Id",
 		type: 'text',
 	},
+	socket_debug: {
+		name: "socket debug messages",
+		type: 'select',
+		options: ['no', 'yes'],
+	},
 	sitecss: {
 		name: "Custom CSS",
 		type: 'textarea',

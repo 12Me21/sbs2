@@ -21,7 +21,6 @@ let Lp = singleton({
 	ready: false,
 	last_id: "",
 	no_restart: false,
-	expected_close: false,
 	websocket: null,
 	got_error: false,
 	state_change(state, ping) {
@@ -47,20 +46,11 @@ let Lp = singleton({
 		//do_when_ready(x=>$socketPending.textContent = [...this.handlers.keys()].join(" "), 'socket-pending')
 	},
 	flush_statuses(callback) {
-		//if (Req.uid == 10)
-		//	return
 		this.request({type:'setuserstatus', data:this.status_queue}, ({x})=>{
 			this.status_queue = {}
 			callback()
 		})
 	},
-/*		;['online','offline','focus','blur'].forEach(x=>{
-			window.addEventListener('online', e=>
-		})*/
-		/*window.addEventListener('online', e=>{
-			this.dead = true
-		})*/
-	//		this.processed_listeners = {}
 	stop() {
 		if (this.websocket)
 			this.websocket.close()
@@ -80,13 +70,25 @@ let Lp = singleton({
 			this.websocket.onopen = null
 			this.websocket.onclose = null
 			this.websocket.onmessage = null
-			this.expected_close = false
 			this.websocket.close()
 			this.websocket = null
 		}
 	},
 	is_alive() {
 		return this.websocket && this.websocket.readyState <= WebSocket.OPEN
+	},
+	fails: 0,
+	last_reconnect: 0,
+	maybe_reconnect(e) {
+		if (Settings.values.socket_debug=='yes')
+			print('maybe reconnect '+(e?e.type:""))
+		if (!this.is_alive() && !this.no_restart && 'visible'==document.visibilityState && navigator.onLine) {
+			this.start_websocket()
+			if (this.fails > 3 || Date.now() - this.last_reconnect < 5000) {
+				print('too many ')
+				return
+			}
+		}
 	},
 	start_websocket(force) {
 		if (this.no_restart)
@@ -96,16 +98,18 @@ let Lp = singleton({
 		this.kill_websocket()
 		print('starting websocket...')
 		this.got_error = false
+		this.last_reconnect = Date.now()
+		this.fails++
 		this.websocket = new WebSocket(`wss://${Req.server}/live/ws?lastId=${this.last_id}&token=${encodeURIComponent(Req.auth)}`)
 		this.state_change('opening')
 		
-		this.websocket.onopen = (e)=>{
-			this.state_change('open')
+		this.websocket.onopen = e=>{
 			console.log("🌄 websocket open")
+			this.state_change('open')
 			this.on_ready()
 		}
 		
-		this.websocket.onerror = (e)=>{
+		this.websocket.onerror = e=>{
 			console.warn("websocket error")
 			print("📶 websocket connection error")
 			this.got_error = true
@@ -115,21 +119,12 @@ let Lp = singleton({
 			console.log("ws closed", code, reason, wasClean)
 			this.ready = false
 			this.state_change('dead')
-			let restart = true
-			if (this.no_restart)
-				restart = false
-			if (this.got_error) // network error
-				restart = false
-			if (!this.expected_close) {
-				if ('visible'!=document.visibilityState)
-					restart = false
+			if (this.got_error) {
+				this.got_error = false
+				return
 			}
-			this.expected_close = false
-			// we use timeout to avoid recursion and leaking stack traces
-			if (restart) {
-				this.state_change('opening')
-				window.setTimeout(()=>this.start_websocket())
-			}
+			// use timeout to avoid recursion and leaking stack traces
+			window.setTimeout(()=>this.maybe_reconnect())
 		}
 		
 		this.websocket.onmessage = ({origin, data, target})=>{
@@ -137,6 +132,7 @@ let Lp = singleton({
 				alert("websocket wrong event target? multiple sockets still open?")
 				return
 			}
+			this.fails = 0
 			this.handle_response(JSON.parse(data))
 		}
 	},
@@ -187,7 +183,6 @@ let Lp = singleton({
 		if (response.type=='unexpected' && /ExpiredCheckpoint/.test(response.error)) {
 			print("server restart, lastid reset?")
 			this.last_id = 0
-			this.expected_close = true
 			return
 		}
 		if (response.type=='badtoken') {
@@ -283,33 +278,11 @@ let Lp = singleton({
 		}
 	},
 	init() {
-		window.addEventListener('beforeunload', e=>{
-			this.no_restart = true
-		})
-		
-		document.addEventListener('visibilitychange', e=>{
-			if ('visible'==document.visibilityState) {
-				window.setTimeout(()=>{
-					if (navigator.onLine) {
-						if (this.is_alive()) {
-							this.ping(()=>{})
-						} else
-							this.start_websocket()
-					}
-				}, 100)
-			}
-		})
-		
-		window.addEventListener('online', e=>{
-			print('online')
-			this.start_websocket(true)
-		})
+		document.addEventListener('visibilitychange', e=>this.maybe_reconnect(e))
+		window.addEventListener('pageshow', e=>this.maybe_reconnect(e))
+		window.addEventListener('online', e=>this.start_websocket(true))
 	},
 })
-
-function online_and_visible() {
-	return navigator.onLine && document.visibilityState == 'visible'
-}
 
 /*
 idea: when socket dies, if page isn't visible, we do nothing

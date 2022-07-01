@@ -98,11 +98,11 @@ window.Generator = GeneratorFunction.prototype
 
 METHOD(Generator, 'run', function(ok=console.info, err=e=>{ throw e }) {
 	let step, main = data=>{
-		step = defer=>{ data = defer; step = main }
+		step = defer => [data,step]=[defer,main] 
 		try {
 			let r = this.next(data)
-			if (r.done) { data = r.value; step = ok }
-		} catch (e) { data = e; step = err }
+			if (r.done) [data,step]=[r.value,ok]
+		} catch (e) { [data,step]=[e,err] }
 		step(data)
 	}
 	main()
