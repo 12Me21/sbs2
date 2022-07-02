@@ -7,11 +7,6 @@ document.addEventListener('message_control', e=>{
 		alert(JSON.stringify(e.detail.data, null, 1)) // <small heart>
 })
 
-let TIMES = {
-	get_merge: [],
-	get_merge2: [],
-}
-
 class MessageList {
 	constructor(element, pid, edit) {
 		this.elem = element
@@ -104,22 +99,7 @@ class MessageList {
 		}
 		// new message-part
 		// try to find a message-block to merge with
-		let f = ['get_merge', 'get_merge2']
-		if (Math.random()>0.5)
-			f.reverse()
-		let c = []
-		
-		for (let i=0; i<2; i++) {
-			let t0 = performance.now()
-			c[i] = this[f[i]](message, backwards)
-			TIMES[f[i]].push(t0-performance.now())
-		}
-		if (f[1]=='get_merge')
-			c.reverse()
-		if (c[0]!=c[1])
-		console.warn('disagree!', c[0], c[1], message)
-		let contents = c[0]
-		
+		let contents = this.get_merge(message, backwards)
 		if (!contents) {
 			let block
 			;[block, contents] = Draw.message_block(message)

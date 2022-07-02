@@ -194,9 +194,11 @@ class PageView extends BaseView {
 		// this is kinda bad, we scan in the wrong direction and choose the last match.
 		// but it's the best we can do, with Map or object, since there's no way to iterate backwards
 		let mine
-		for (let {data} of this.list.parts.values)
-			if (data.createUserId == Req.uid)
-				mine = data
+		for (let {data} of this.list.parts.values())
+			if (data.createUserId == Req.uid) {
+				if (!mine || data.id>mine.id)
+					mine = data
+			}
 		return mine
 	}
 	// display a list of messages
