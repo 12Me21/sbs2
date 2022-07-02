@@ -34,6 +34,8 @@ class CommentsView extends BaseView {
 						return
 				}
 				this.form.inputs.page.value = p + dir
+			} else {
+				this.form.inputs.page.value = 1
 			}
 			this.location.query = this.form.to_query()
 			let pages = this.form.inputs.pages.value
@@ -47,21 +49,16 @@ class CommentsView extends BaseView {
 				this.location.query.page = "1"
 			Nav.goto(this.location, true)
 		}
-		this.$search_button.onclick = e=>{
-			e.preventDefault()
-			go()
-		}
 		this.$html_form.onsubmit = e=>{
+			console.log(e)
 			e.preventDefault()
-			go()
-		}
-		this.$prev.onclick = e=>{
-			e.preventDefault()
-			go(-1)
-		}
-		this.$next.onclick = e=>{
-			e.preventDefault()
-			go(+1)
+			let btn = e.submitter
+			if (btn && btn.name=='prev')
+				go(-1)
+			else if (btn && btn.name=='next')
+				go(1)
+			else
+				go(null)
 		}
 	}
 	Start({id, query}) {
@@ -84,24 +81,24 @@ class CommentsView extends BaseView {
 		
 		if (!comments.length) {
 			this.$status.textContent = "(no results)"
+			return
+		}
+		this.$status.textContent = "results: "+comments.length
+		if (this.merge) {
+			let x = document.createElement('message-list')
+			this.$results.append(x)
+			let list = new MessageList(x, comments[0].contentId) // mmndnhhhgghdhfhdh i sure hope it does (contentId)
+			for (let comment of comments)
+				list.display_message(comment, false)
 		} else {
-			this.$status.textContent = "results: "+comments.length
-			if (this.merge) {
-				let x = document.createElement('message-list')
-				this.$results.append(x)
-				let list = new MessageList(x, comments[0].contentId) // mmndnhhhgghdhfhdh i sure hope it does (contentId)
-				for (let comment of comments)
-					list.display_message(comment, false)
-			} else {
-				for (let c of comments) {
-					let parent = pages[~c.contentId]
-					this.$results.append(Draw.search_comment(c, parent))
-					// todo: maybe have them display in a more compact form without controls by default, and then have a button to render a message list 
-					// also, maybe if you load enough comments to reach the adjacent item, it should merge that in,
-				}
+			for (let c of comments) {
+				let parent = pages[~c.contentId]
+				this.$results.append(Draw.search_comment(c, parent))
+				// todo: maybe have them display in a more compact form without controls by default, and then have a button to render a message list 
+				// also, maybe if you load enough comments to reach the adjacent item, it should merge that in,
 			}
 		}
-	}	
+	}
 	Quick() {
 		View.set_title("Comments")
 		this.form.write()
@@ -183,14 +180,14 @@ class CommentsView extends BaseView {
 }
 CommentsView.template = HTML`
 <view-root>
-	<form $=html_form class='nav'>
+	<form $=html_form class='nav' method=dialog>
 		<br $=form_placeholder>
-		<button $=search_button>🔍Search</button>
-		<button $=prev>◀prev</button>
-		<button $=next>next▶</button>
+		<button name=search>🔍Search</button>
+		<button name=prev>◀prev</button>
+		<button name=next>next▶</button>
 		<span $=status></span>
 	</form>
-	<div $=results></div>
+	<div $=results class='comment-search-results'></div>
 </view-root>
 `
 View.register('comments', CommentsView)

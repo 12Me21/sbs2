@@ -1,11 +1,4 @@
 /* main stuff */
-/*
-    (modify-syntax-entry ?\; ". 1c" st)
-    (modify-syntax-entry ?\n "> c" st)
-    ;; Strings.
-    (modify-syntax-entry ?\" "\" 2c" st)
-*/
-
 html {
 	background: #FEE; /* (for debug) */
 	color: var(--T-color);
@@ -70,9 +63,7 @@ html.f-loggedIn .loggedOut {
 }
 
 /* border list things */
-.bottomBorder {
-	border-bottom: 1px solid var(--T-border-color);
-}
+.bottomBorder,
 .border-list > *:not(:last-child),
 .border-list-2 > * {
 	border-bottom: 1px solid var(--T-border-color);
@@ -120,11 +111,6 @@ html.f-loading .loadBG {
 }
 .loadBG/*, resize-handle*/ {
 	transition: background 0.1s ease;
-}
-
-.pathSeparator {
-	padding-left: 0.1875rem;
-	padding-right: 0.1875rem;
 }
 
 
@@ -835,10 +821,7 @@ html:not(.f-fileSelected) .fileSelected {
 }
 
 /* comment search results */
-[data-slide="comments"] {
-	;overflow-y: scroll
-}
-#\$commentSearchResults > div > .linkBar {
+.comment-search-results > div > .linkBar {
 	;background: var(--bar-bg)
 }
 
