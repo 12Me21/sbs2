@@ -108,7 +108,7 @@ const Draw = Object.seal({
 		let author = comment.Author
 		
 		e.dataset.uid = comment.createUserId
-		e.dataset.merge = comment.Author.merge_hash
+		e.nonce = comment.Author.merge_hash
 		
 		let avatar
 		if (author.bigAvatar) {
@@ -166,7 +166,7 @@ const Draw = Object.seal({
 			e.className += " edited"
 		
 		e.dataset.id = comment.id
-		e.dataset.time = comment.createDate2.getTime()
+		e.nonce = comment.createDate2.getTime()
 		Markup.convert_lang(comment.text, comment.values.m, e, {intersection_observer: View.observer})
 		return e
 	}.bind(𐀶`<message-part role=listitem tabindex=-1>`),
