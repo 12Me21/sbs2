@@ -69,48 +69,48 @@ class MessageList {
 		contents.append(part)
 		this.elem.append(block)
 	}
-	get_merge(message, backwards) {
-		find: try {
-			// check if there's a message-block we can merge with
-			let block = this.elem[backwards?'firstChild':'lastChild']
-			if (!block || block.dataset.merge!=message.Author.merge_hash)
-				break find
-			// get message-contents
+	get_merge0(message, backwards) {
+		// check if there's a message-block we can merge with
+		let block = this.elem[backwards?'firstChild':'lastChild']
+		if (block instanceof HTMLElement && block.dataset.merge==message.Author.merge_hash) {
 			let contents = block.lastChild
 			// see if there's a message-part within 5 minutes of new one
 			let last = contents[backwards?'firstChild':'lastChild']
 			// <message-controls> might be before the <message-part>
 			if (backwards && last==MessageList.controls)
 				last = last.nextSibling
-			if (!last || !last.dataset)
-				break find
-			if (Math.abs(message.createDate2-last.dataset.time)<=1e3*60*5)
+			if (last instanceof HTMLElement && Math.abs(message.createDate2-last.dataset.time)<=1e3*60*5)
 				return contents
-		} catch(e) {
-			console.error(e)
-			print("message merging failed!", e)
+		}
+		return null
+	}
+	get_merge1(message, backwards) {
+		// check if there's a message-block we can merge with
+		let block = this.elem[backwards?'firstElementChild':'lastElementChild']
+		if (block && block.dataset.merge==message.Author.merge_hash) {
+			let last = block.querySelector(backwards ? "message-contents > message-part:first-of-type" : "message-contents > message-part:last-child")
+			if (last && Math.abs(message.createDate2-last.dataset.time)<=1e3*60*5)
+				return last.parentNode
 		}
 		return null
 	}
 	//optimize: createDate can really just like,
 	// well ok let's put it in Author, and store it as milliseconds
 	// that way we dont keep parsing createDate strings
-	get_merge2(message, backwards) {
+	get_merge(message, backwards) {
 		// check if there's a message-block we can merge with
 		let block = this.elem[backwards?'firstElementChild':'lastElementChild']
-		if (!block || block.dataset.merge!=message.Author.merge_hash)
-			return null
-		// get message-contents
-		let contents = block.lastElementChild
-		// see if there's a message-part within 5 minutes of new one
-		let last = contents[backwards?'firstElementChild':'lastElementChild']
-		// <message-controls> might be before the <message-part>
-		if (backwards && last==MessageList.controls)
-			last = last.nextElementSibling
-		if (!last)
-			return null
-		if (Math.abs(message.createDate2-last.dataset.time)<=1e3*60*5)
-			return contents
+		if (block && block.dataset.merge==message.Author.merge_hash) {
+			let contents = block.lastElementChild
+			// see if there's a message-part within 5 minutes of new one
+			let last = contents[backwards?'firstElementChild':'lastElementChild']
+			// <message-controls> might be before the <message-part>
+			if (backwards && last==MessageList.controls)
+				last = last.nextElementSibling
+			if (last && Math.abs(message.createDate2-last.dataset.time)<=1e3*60*5)
+				return contents
+		}
+		return null
 	}
 	display_message(message, backwards) {
 		if (message.deleted) {
