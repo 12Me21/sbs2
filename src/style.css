@@ -50,12 +50,12 @@ a[href]:hover {
 }
 
 /* todo: make class for dark bg elements */
-.titlePane a[href] {
-	;color: var(--link-invert-color)
-	;font-weight: normal
+.page-header a[href], .page-header a[href]:visited {
+	color: var(--link-invert-color);
+	font-weight: normal;
 }
-.titlePane a[href]:hover {
-	;color: var(--link-invert-hover-color)
+.page-header a[href]:hover {
+	color: var(--link-invert-hover-color);
 }
 
 /**********/
@@ -83,28 +83,23 @@ html.f-loggedIn .loggedOut {
  ** Title Pane **
  ****************/
 
-.titlePane {
+.page-header {
 	background: var(--databarbgcolor);
 	color: var(--databartxtcolor);
 }
-.titlePane .entity-title {
+.page-header .entity-title {
 	font-weight: normal;
 	color: var(--link-invert-color);
 }
-.titlePane .pageTitle .entity-title {
+.page-header h1 .entity-title {
 	color: var(--databartxtcolor);
 	padding-right: 0.5rem;
 }
-.titlePane .iconBg {
-	width: 2rem;
-}
-.pageTitle {
+.page-header h1 {
+	font-size: 1.625em;
 	font-weight: normal;
 }
-h1 {
-	font-size: 1.625em;
-}
-.titlePane > :first-child { /* sidebar button ??? */
+.page-header > :first-child { /* sidebar button ??? */
 	display: inline-block;
 	min-width: 0.3125rem;
 }
@@ -112,7 +107,7 @@ h1 {
 	;display: none !important
 }
 /* broken? */
-.errorMode .titlePane {
+.errorMode .page-header {
 	color: var(--error-invert-bg);
 	font: var(--T-monospace-font);
 }

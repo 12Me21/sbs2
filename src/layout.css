@@ -1,5 +1,5 @@
 /****************
- ** All Things **
+ ** Everything **
  ****************/
 
 html {
@@ -35,10 +35,6 @@ img {
 	display: none !important;
 }
 
-.cont {
-	display: contents !important;
-}
-
 /*****************
  ** Positioning **
  *****************/
@@ -53,12 +49,6 @@ html, body {
 	left: 0;
 	right: 0;
 	bottom: 0;
-}
-
-/* this is being phased out */
-.fill {
-	width: 100%;
-	height: 100%;
 }
 
 /**********
@@ -87,7 +77,7 @@ html, body {
 
 /*********/
 /* all elements with user content, must be tied up */
-[🪧], .pre {
+.pre {
 	white-space: pre-wrap;
 	unicode-bidi: embed;
 }
@@ -100,10 +90,6 @@ html, body {
 }
 .ellipsis * {
 	white-space: pre !important;
-}
-
-.rightAlign {
-	float: right; /* bad */
 }
 
 /*********
@@ -142,7 +128,7 @@ html, body {
 	width: var(--bar-height);
 }
 .bar .iconBg {
-	width: 1rem;
+	width: 1em;
 	/*margin-right: 0.2rem;*/
 }
 .rem2-3 .iconBg {
@@ -254,7 +240,7 @@ but, then we can't add a border to the image
 /****************
  ** Slides Box **
  ****************/
-.SLIDES { /* idk about tv... channels */
+.SLIDES {
 	display: block;
 	position: relative;
 	overflow: hidden;
@@ -331,10 +317,7 @@ but, then we can't add a border to the image
 	/* make it fullscreen */
 	sidebar-container {
 		position: fixed;
-		left: 0;
-		top: 0;
-		bottom: 0;
-		right: 0;
+		left: 0; top: 0; bottom: 0; right: 0;
 		width: initial !important;
 	}
 	/* this is kinda a hack. basically what we really want is,
@@ -376,6 +359,8 @@ textarea-container > textarea {
 	padding: 0;
 	margin: 0;
 }
+
+/**/
 
 ul, ol, li, /* bullets render outside */
 td, th {  /* border renders outside */

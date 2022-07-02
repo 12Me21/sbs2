@@ -293,6 +293,7 @@ class PageView extends BaseView {
 					text: data.text,
 					values: data.values,
 				}).do = (resp, err)=>{
+					// i remvoed this because you can just undo now
 					//if (err) //error sending message
 						//this.write_input(old)
 				}

@@ -183,8 +183,8 @@
 <!--=======\
 || HEADER ||
 \========-->
-<header class='titlePane bar rem2-3 loadBG' id=$titlePane>
-	<div class='textItem rightAlign'>
+<header class='page-header bar loadBG' style="--bar-height:2.25rem" id=$titlePane>
+	<div class='textItem' style="float:right">
 		<button id=$openSidebar class='item toggle-sidebar'>
 			<span id=$socketPending></span>
 			| | |
@@ -194,7 +194,7 @@
 	<span data-view=editpage>
 		<button id=$editorSave class='item'>Save</button>
 	</span>
-	<h1 id=$pageTitle class='textItem pageTitle'></h1>
+	<h1 id=$pageTitle class='textItem'></h1>
 	<span data-view=page>
 		<a class='textItem' id=$pageCommentsLink>[Logs]</a>-
 		<a class='textItem' id=$pageEditLink>[Edit]</a>
@@ -213,30 +213,7 @@
 	<!--==============\
 	|| MAIN CONTENTS ||
 	\===============-->
-	<main class='FILL SLIDES' id=$main_slides>
-		<!--[ View: test ]-->
-		<div data-slide=test>
-			<textarea id=$testTextarea></textarea><br>
-			<button id=$testButton>Run</button><br>
-			<div id=$testOut class='pre'></div>
-			<textarea id=$testInput></textarea><br>
-			<div style='display:flex;'>
-				<div id=$testOut2 class='pre'></div>
-				<div id=$testOut3 class='pre'></div>
-				<div id=$testOut4 class='pre'></div>
-			</div>
-		</div>
-		<!--[ View: file ]-->
-		<div data-slide=file class='COL'>
-			<img id=$fileImage>
-			<div id=$fileAuthor class='nav ROW'></div>
-			<div class='ROW'>
-				<button id=$fileSetAvatar>set as avatar</button>
-				<button id=$fileShowSidebar>show in sidebar</button>
-			</div>
-			<div class='pre' id=$fileInfo></div>
-		</div>
-	</main>
+	<main class='FILL SLIDES' id=$main_slides></main>
 
 	<!--========\
 	|| SIDEBAR ||
@@ -280,21 +257,21 @@
 					<a id=$file_upload_page>[Page]</a>
 					<button id=$file_done class='item'>Done</button>
 				</div>
+				<br id=$file_upload_form>
+				<div class='FILL image-box' style="min-height:3rem"><img id=$file_image></div>
 				<!-- todo: this should probably be better -->
 				<!--
 					 fixme: apparently we want to display images in the panel instead?
 					 the images view is a temporary solution then in that case
 				-->
-				<a href='#images'>View Images</a>
-				<br id=$file_upload_form>
-				<div class='FILL image-box' style="min-height: 3rem;"><img id=$file_image></div>
+				<a href=#images>View Images</a>
 			</sidebar-panel>
 			
 			<sidebar-panel id=$sidebarUserPanel>
 				<div class='registerBox'>
 					<button onclick='RELOAD()'>Reload</button>
 					<button onclick='Lp.start_websocket(true)'>Reset Socket</button>
-					<button class='rightAlign' id=$logOut>Log out</button>
+					<button id=$logOut style="float:right">Log out</button>
 				</div>
 				<div class='loggedOut registerBox'>
 					<h2>Log In</h2>
