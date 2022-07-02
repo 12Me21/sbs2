@@ -71,20 +71,6 @@ class MessageList {
 	}
 	get_merge(message, backwards) {
 		let t0 = performance.now()
-		// idea: if this isn't fast, we could move the [hash] part out of it
-		// and then, there are only 2 possible selectors
-		// this might be optimized better than what we have now
-		let last = this.elem.querySelector(`message-block[data-merge="${message.Author.merge_hash}"]:${backwards?'first-child':'last-child'} > message-contents > message-part:${backwards?'first-of-type':'last-child'}`)
-		let contents1 = null, last1 = null
-		if (last) {
-			if (Math.abs(message.createDate2-last.dataset.time)<=1e3*60*5) {
-				contents1 = last.parentNode
-				last1 = last
-			}
-		}
-		TIMES.q.push(performance.now() - t0)
-		
-		t0 = performance.now()
 		let contents2 = null, last2 = null
 		find: try {
 			// check if there's a message-block we can merge with
@@ -109,6 +95,21 @@ class MessageList {
 			print("message merging failed!", e)
 		}
 		TIMES.c.push(performance.now() - t0)
+		
+		t0 = performance.now()
+		// idea: if this isn't fast, we could move the [hash] part out of it
+		// and then, there are only 2 possible selectors
+		// this might be optimized better than what we have now
+		let last = this.elem.querySelector(`message-block:${backwards?'first-child':'last-child'} > message-contents > message-part:${backwards?'first-of-type':'last-child'}`)
+		let contents1 = null, last1 = null
+		if (last) {
+			if (last.parentNode.parentNode.dataset.merge==message.Author.merge_hash)
+				if (Math.abs(message.createDate2-last.dataset.time)<=1e3*60*5) {
+					contents1 = last.parentNode
+					last1 = last
+				}
+		}
+		TIMES.q.push(performance.now() - t0)
 		
 		if (contents1 != contents2) {
 			console.log("disagree!", last1, contents1, last2, contents2, message)
