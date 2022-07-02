@@ -20,7 +20,7 @@ class CommentsView extends BaseView {
 		})
 	}
 	Init() {
-		this.$commentSearchForm.replaceWith(this.form.elem)
+		this.$form_placeholder.replaceWith(this.form.elem)
 		let go = (dir)=>{
 			if (!this.location) return
 			this.form.read()
@@ -47,10 +47,22 @@ class CommentsView extends BaseView {
 				this.location.query.page = "1"
 			Nav.goto(this.location, true)
 		}
-		this.$commentSearchButton.onclick = ()=>{ go() }
-		View.bind_enter(this.$commentSearch, this.$commentSearchButton.onclick)
-		this.$commentSearchPrev.onclick = ()=>{ go(-1) }
-		this.$commentSearchNext.onclick = ()=>{ go(+1) }
+		this.$search_button.onclick = e=>{
+			e.preventDefault()
+			go()
+		}
+		this.$html_form.onsubmit = e=>{
+			e.preventDefault()
+			go()
+		}
+		this.$prev.onclick = e=>{
+			e.preventDefault()
+			go(-1)
+		}
+		this.$next.onclick = e=>{
+			e.preventDefault()
+			go(+1)
+		}
 	}
 	Start({id, query}) {
 		this.form.from_query(query)
@@ -68,22 +80,22 @@ class CommentsView extends BaseView {
 	Render({message:comments, content:pages}) {
 		View.set_title("Comments")
 		this.form.write()
-		this.$commentSearchResults.fill()
+		this.$results.fill()
 		
 		if (!comments.length) {
-			this.$commentSearchStatus.textContent = "(no results)"
+			this.$status.textContent = "(no results)"
 		} else {
-			this.$commentSearchStatus.textContent = "results: "+comments.length
+			this.$status.textContent = "results: "+comments.length
 			if (this.merge) {
 				let x = document.createElement('message-list')
-				this.$commentSearchResults.append(x)
+				this.$results.append(x)
 				let list = new MessageList(x, comments[0].contentId) // mmndnhhhgghdhfhdh i sure hope it does (contentId)
 				for (let comment of comments)
 					list.display_message(comment, false)
 			} else {
 				for (let c of comments) {
 					let parent = pages[~c.contentId]
-					this.$commentSearchResults.append(Draw.search_comment(c, parent))
+					this.$results.append(Draw.search_comment(c, parent))
 					// todo: maybe have them display in a more compact form without controls by default, and then have a button to render a message list 
 					// also, maybe if you load enough comments to reach the adjacent item, it should merge that in,
 				}
@@ -93,8 +105,8 @@ class CommentsView extends BaseView {
 	Quick() {
 		View.set_title("Comments")
 		this.form.write()
-		this.$commentSearchResults.fill()
-		this.$commentSearchStatus.textContent = "(no query)"
+		this.$results.fill()
+		this.$status.textContent = "(no query)"
 	}
 	build_search(data) {
 		// check if form is empty
@@ -171,14 +183,14 @@ class CommentsView extends BaseView {
 }
 CommentsView.template = HTML`
 <view-root>
-	<div $=commentSearch class='nav'>
-		<br $=commentSearchForm>
-		<button $=commentSearchButton>🔍Search</button>
-		<button $=commentSearchPrev>◀prev</button>
-		<button $=commentSearchNext>next▶</button>
-		<span $=commentSearchStatus></span>
-	</div>
-	<div $=commentSearchResults></div>
+	<form $=html_form class='nav'>
+		<br $=form_placeholder>
+		<button $=search_button>🔍Search</button>
+		<button $=prev>◀prev</button>
+		<button $=next>next▶</button>
+		<span $=status></span>
+	</form>
+	<div $=results></div>
 </view-root>
 `
 View.register('comments', CommentsView)
