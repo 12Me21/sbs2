@@ -44,9 +44,15 @@ class PageView extends BaseView {
 		this.id = null
 		this.list = null
 		this.userlist = null
+		if (View.lost_textarea) {
+			console.log('reuse textarea!')
+			this.$textarea.replaceWith(View.lost_textarea)
+			this.$textarea = View.lost_textarea
+			View.lost_textarea = null
+		}
 		
 		this.$textarea.enterKeyHint = Settings.chat_enter!='newline' ? "send" : "enter" // uh this won't update though... need a settings change watcher
-		this.$textarea.onkeydown = e=>{
+		this.$textarea_container.onkeydown = e=>{
 			if (e.isComposing)
 				return
 			// enter - send
@@ -74,10 +80,11 @@ class PageView extends BaseView {
 				this.cancel_edit()
 		}
 		
-		let r = this.textarea_resize.bind(this)
-		this.$textarea.addEventListener('input', r, {passive: true})
-		PageView.track_resize_2.add(this.$textarea, ()=>{
-			window.setTimeout(r)
+		// todo: make the oninput eventhandler just a shared function since it only acts on e.target?
+		this.r = this.textarea_resize.bind(this)
+		this.$textarea_container.addEventListener('input', this.r, {passive: true})
+		PageView.track_resize_2.add(this.$textarea_container, ()=>{
+			window.setTimeout(this.r)
 		})
 	}
 	Render({message, content:[page], Mpinned:pinned, user}) {
@@ -157,11 +164,21 @@ class PageView extends BaseView {
 	}
 	// 8:10;35
 	Cleanup(type) {
+		this.dead=true
+		// we need to be very careful to prevent mem leaks here...
+		// maybe we can attach the evnt listeners to $textarea_container instead
+		// that way they only trigger if the textarea is inplace
+		let textarea = this.$textarea
+		this.$textarea = null
+		document.head.append(textarea) // yeah uhh just put it   there
+		View.lost_textarea = textarea
+		console.log('cleanup', View.lost_textarea)
+		
 		this.userlist.set_status(null)
 		PageView.currentRoom = null
 		delete PageView.rooms[this.id]
 		this.scroller.destroy()
-		PageView.track_resize_2.remove(this.$textarea)
+		PageView.track_resize_2.remove(this.$textarea_container)
 	}
 	Insert_Text(text) {
 		this.$textarea.focus()
@@ -374,7 +391,7 @@ PageView.template = HTML`
 			<input $=markup placeholder="markup" style="width:50px;">
 			<button class='FILL' $=cancel>Cancel Edit</button>
 		</div>
-		<textarea-container class='FILL'>
+		<textarea-container class='FILL' $=textarea_container>
 			<div $=textarea_width></div>
 			<textarea class='chatTextarea' $=textarea accesskey="z"></textarea>
 		</textarea-container>

@@ -99,6 +99,8 @@ const View = NAMESPACE({
 	current: null,
 	views: {__proto__: null},
 	
+	lost_textarea: null,
+	
 	first: true,
 	
 	observer: null,
@@ -232,11 +234,14 @@ const View = NAMESPACE({
 			if (this.first)
 				console.log("🌄 Rendering first page")
 			
-			phase = "view.Init"
-			view.Init && view.Init()
-			
+			// this used to run after init, idk why.
+			// hopefully that isn't important?
 			phase = "cleanup"
 			this.cleanup(location) // passing the new location
+			$main_slides.fill()
+			
+			phase = "view.Init"
+			view.Init && view.Init()
 			
 			phase = "rendering"
 			this.current = view
