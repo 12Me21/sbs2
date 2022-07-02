@@ -2,13 +2,29 @@
 //todo: read my old notes (in chat) about how to handle edited messages
 // ex: when a message is moved between rooms,
 
+document.addEventListener('message_control', e=>{
+	if (e.detail.action=='info')
+		alert(JSON.stringify(e.detail.data, null, 1)) // <small heart>
+})
+
+let TIMES = {
+	q: [],
+	c: [],
+}
+
 class MessageList {
 	constructor(element, pid, edit) {
 		this.elem = element
 		this.elem.classList.add('message-list') // todo: just create a new elem <message-list> ?
 		this.pid = pid
 		this.parts = new Map()
-		this.total_parts = 0
+		
+		// this listens for events created by the message edit/info buttons
+		// and modifies the event to add the message data
+		this.elem.addEventListener('message_control', e=>{
+			let data = this.part_data(e.target)
+			e.detail.data = data // eeehehe
+		}, {capture: true})
 	}
 	get_messages_near(last, newer, amount, callback) {
 		let order = newer ? 'id' : 'id_desc'
@@ -26,13 +42,13 @@ class MessageList {
 	// and inserting out of order...x
 	draw_messages_near(newer, amount, callback) {
 		let block = this.elem[newer?'lastChild':'firstChild']
-		if (!block)
+		if (!block || block.tagName!='MESSAGE-BLOCK')
 			return null
 		let content = block.querySelector('message-contents')
 		let part = content[newer?'lastChild':'firstChild']
 		if (!part)
 			return null
-		let id = part.x_data.id
+		let id = +part.dataset.id
 		return this.get_messages_near(id, newer, amount, resp=>{
 			let first = true
 			for (let c of resp.message) {
@@ -53,53 +69,79 @@ class MessageList {
 		contents.append(part)
 		this.elem.append(block)
 	}
-	display_message(message, backwards) {
-		if (message.deleted) {
-			this.remove_message(message.id)
-			return null
-		}
-		let old = this.parts.get(message.id)
-		if (old) {
-			let part = Draw.message_part(message)
-			old.elem.replaceWith(part)
-			this.parts.set(message.id, {elem:part, data:message})
-			return part
-		}
-		let contents
-		// check whether message can be merged
-		let block = this.elem[backwards?'firstChild':'lastChild']
-		if (block) {
-			// if the prev block has message-contents
-			let oldcontents = block.querySelector('message-contents')
-			if (oldcontents) {
-				// and the merge-hashes match
-				let oldhash = block.dataset.merge
-				let newhash = message.Author.merge_hash
-				if (oldhash == newhash) {
-					// aand the time isn't > 5 minutes
-					let last = oldcontents[backwards?'firstChild':'lastChild']
-					if (last) {
-						if (!last.x_data) {
-							alert("wrong element in message-contents:", last.nodeName)
-						} else {
-							let oldtime = last.x_data.createDate2
-							if (Math.abs(message.createDate2-oldtime) <= 1000*60*5)
-								contents = oldcontents
-						}
-					}
-				}
+	get_merge(message, backwards) {
+		let t0 = performance.now()
+		// idea: if this isn't fast, we could move the [hash] part out of it
+		// and then, there are only 2 possible selectors
+		// this might be optimized better than what we have now
+		let last = this.elem.querySelector(`message-block[data-merge="${message.Author.merge_hash}"]:${backwards?'first-child':'last-child'} > message-contents > message-part:${backwards?'first-of-type':'last-child'}`)
+		let contents1 = null, last1 = null
+		if (last) {
+			if (Math.abs(message.createDate2-last.dataset.time)<=1e3*60*5) {
+				contents1 = last.parentNode
+				last1 = last
 			}
 		}
-		// otherwise create a new message-block
-		if (!contents) {
-			;[block, contents] = Draw.message_block(message) // TODO: the time will be wrong, if we are displaying backwards!!
-			this.elem[backwards?'prepend':'append'](block)
+		TIMES.q.push(performance.now() - t0)
+		
+		t0 = performance.now()
+		let contents2 = null, last2 = null
+		find: try {
+			// check if there's a message-block we can merge with
+			let block = this.elem[backwards?'firstChild':'lastChild']
+			if (!block || block.dataset.merge!=message.Author.merge_hash)
+				break find
+			// get message-contents
+			let contents = block.lastChild
+			// see if there's a message-part within 5 minutes of new one
+			let last = contents[backwards?'firstChild':'lastChild']
+			// <message-controls> might be before the <message-part>
+			if (backwards && last==MessageList.controls)
+				last = last.nextSibling
+			if (!last || !last.dataset)
+				break find
+			if (Math.abs(message.createDate2-last.dataset.time)<=1e3*60*5) {
+				contents2 = contents
+				last2 = last
+			}
+		} catch(e) {
+			console.error(e)
+			print("message merging failed!", e)
 		}
-		// draw+insert the new message-part
+		TIMES.c.push(performance.now() - t0)
+		
+		if (contents1 != contents2) {
+			console.log("disagree!", last1, contents1, last2, contents2, message)
+			TIMES.c.pop()
+			TIMES.q.pop()
+		}
+		return contents2
+	}
+	display_message(message, backwards) {
+		if (message.deleted) {
+			if (this.parts.has(message.id))
+				this.remove_message(message.id)
+			return null
+		}
+		// create new part
 		let part = Draw.message_part(message)
-		contents[backwards?'prepend':'append'](part)
+		let old = this.parts.get(message.id)
 		this.parts.set(message.id, {elem:part, data:message})
-		this.total_parts++
+		// edited version of an existing message-part
+		if (old) {
+			old.elem.replaceWith(part)
+			return part
+		}
+		// new message-part
+		// try to find a message-block to merge with
+		let contents = this.get_merge(message, backwards)
+		if (!contents) {
+			let block
+			;[block, contents] = Draw.message_block(message)
+			// TODO: the displayed time will be wrong, if we are going backwards!!
+			this.elem[backwards?'prepend':'appendChild'](block)
+		}
+		contents[backwards?'prepend':'appendChild'](part)
 		return part
 	}
 	remove_message(id) {
@@ -107,7 +149,7 @@ class MessageList {
 		if (!part)
 			throw new RangeError("Tried to remove nonexistant message-part, id:"+id)
 		
-		let contents = part.parentNode // <message-contents>
+		let contents = part.elem.parentNode // <message-contents>
 		part.elem.remove()
 		
 		if (!contents.hasChildNodes())
@@ -118,30 +160,30 @@ class MessageList {
 	}
 	limit_messages() {
 		if (this.over_limit())
-			for (let id of this.parts.keys()) {
+			for (let id of [...this.parts.keys()].sort()) {
 				this.remove_message(id)
 				if (!this.over_limit())
 					break
 			}
 	}
+	part_data(elem) {
+		return this.parts.get(+elem.dataset.id).data
+	}
 
+	// elem: <message-part> or null
 	static show_controls(elem) {
-		if (elem == this.controls_message)
+		if (elem == this.controls_message) // shouldn't happen?
 			return
-		if (elem) // this must be the element where .x_data is set
+		if (elem)
 			elem.before(this.controls)
 		else
 			this.controls.remove()
 		this.controls_message = elem
 	}
 	static onload() {
-		this.controls = Draw.message_controls(()=>{
-			alert(JSON.stringify(this.controls_message.x_data, null, 1)) // <small heart>
-		}, ()=>{
-			if (this.controls_message) {
-				let ev = new Event('edit_message', {bubbles: true, cancellable: true})
-				this.controls_message.dispatchEvent(ev)
-			}
+		this.controls = Draw.message_controls((e, action)=>{
+			let ev = new CustomEvent('message_control', {bubbles: true, cancellable: true, detail:{data: null, action}})
+			this.controls_message.dispatchEvent(ev)
 		}).elem
 		
 		let listen = (ev, fn)=>{

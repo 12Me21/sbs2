@@ -56,10 +56,10 @@ class PageView extends BaseView {
 			}
 			// up arrow - edit previous message
 			if ('ArrowUp'==e.key && this.$textarea.value=="") {
-				let msg = this.my_last_message()
-				if (msg && msg.x_data) {
+				let comment = this.my_last_message()
+				if (comment) {
 					e.preventDefault()
-					this.edit_comment(msg.x_data)
+					this.edit_comment(comment)
 				}
 			}
 		}
@@ -92,10 +92,14 @@ class PageView extends BaseView {
 		this.scroller = new Scroller(this.$outer, this.$inner)
 		// chat messages
 		this.list = new MessageList(this.$message_list, this.id)
-		this.list.elem.addEventListener('edit_message', e=>{
-			// todo: weakmap instead of this x_data field?
-			this.edit_comment(e.target.x_data)
+		
+		this.$root.addEventListener('message_control', e=>{
+			if (e.detail.action=='edit') {
+				e.stopPropagation()
+				this.edit_comment(e.detail.data)
+			}
 		})
+		
 		this.$load_older.onclick = e=>{
 			let btn = e.target
 			if (btn.disabled) return
@@ -187,9 +191,13 @@ class PageView extends BaseView {
 		}
 	}
 	my_last_message() {
-		return Object.values(this.list.parts).findLast((msg)=>{
-			return msg && msg.x_data.createUserId == Req.uid
-		})
+		// this is kinda bad, we scan in the wrong direction and choose the last match.
+		// but it's the best we can do, with Map or object, since there's no way to iterate backwards
+		let mine
+		for (let {data} of this.list.parts.values)
+			if (data.createUserId == Req.uid)
+				mine = data
+		return mine
 	}
 	// display a list of messages
 	// DON'T call this unless you know what you're doing
@@ -200,7 +208,7 @@ class PageView extends BaseView {
 			for (let comment of comments)
 				this.list.display_message(comment, false)
 		}, animate)
-		if (this.list.over_limit() && !this.limit_checkbox.checked) {
+		if (this.list.over_limit() && !this.$limit_checkbox.checked) {
 			this.scroller.print_top(()=>{
 				this.list.limit_messages()
 			})

@@ -127,9 +127,13 @@ const Draw = Object.seal({
 			username = author.username
 		} else {
 			username = author.nickname
-			let nickname = this.nickname()
-			nickname.querySelector('span.pre').textContent = author.username
-			name.append(nickname)
+			if (author.bridge)
+				name.append(this.bridge())
+			else {
+				let nickname = this.nickname()
+				nickname.querySelector('span.pre').textContent = author.username
+				name.append(nickname)
+			}
 		}
 		name.firstChild.textContent = username
 		
@@ -148,6 +152,7 @@ const Draw = Object.seal({
 	<message-contents></message-contents>
 </message-block>`,
 		nickname: 𐀶` <span class='real-name-label'>(<span class='pre'></span>)</span>`,
+		bridge: 𐀶` <span class='real-name-label'>[discord bridge]</span>`,
 		avatar: 𐀶`<img class='avatar' width=100 height=100 alt="">`,
 		big_avatar: 𐀶`<div class='bigAvatar'></div>`,
 	}),
@@ -159,9 +164,6 @@ const Draw = Object.seal({
 		
 		if (comment.edited)
 			e.className += " edited"
-		
-		// this is a hack! TODO : dont
-		e.x_data = comment
 		
 		e.dataset.id = comment.id
 		e.dataset.time = comment.createDate2.getTime()
@@ -450,10 +452,10 @@ const Draw = Object.seal({
 		return x
 	},
 	
-	message_controls: function(info, edit) {
+	message_controls: function(cb) {
 		let e = this()
-		e.firstChild.onclick = info
-		e.lastChild.onclick = edit
+		e.firstChild.onclick = e=>cb(e, 'info')
+		e.lastChild.onclick = e=>cb(e, 'edit')
 		return {elem: e}
 	}.bind(𐀶`<message-controls><button tab-index=-1>⚙</button><button tab-index=-1>✏</button>`),
 	

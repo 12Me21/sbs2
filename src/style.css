@@ -458,10 +458,10 @@ message-controls:hover + message-part {
 	align-items: stretch;
 	background: var(--bar-bg);
 }
-view-root.f-editing #\$chatTextarea {
+view-root.f-editing .chatTextarea {
 	background: var(--edit-textarea-bg);
 }
-#\$chatTextarea[disabled] {
+.chatTextarea[disabled] {
 	background: silver;
 }
 view-root.f-editing .hideWhenEdit,

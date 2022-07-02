@@ -116,7 +116,7 @@ delete window.sidebar
 
 METHOD(Map, 'pop', function(key) {
 	let v = this.get(key)
-	this.remove(key)
+	this.delete(key)
 	return v
 })
 
