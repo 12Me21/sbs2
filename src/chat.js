@@ -8,8 +8,8 @@ document.addEventListener('message_control', e=>{
 })
 
 let TIMES = {
-	q: [],
-	c: [],
+	get_merge: [],
+	get_merge2: [],
 }
 
 class MessageList {
@@ -70,8 +70,6 @@ class MessageList {
 		this.elem.append(block)
 	}
 	get_merge(message, backwards) {
-		let t0 = performance.now()
-		let contents2 = null, last2 = null
 		find: try {
 			// check if there's a message-block we can merge with
 			let block = this.elem[backwards?'firstChild':'lastChild']
@@ -86,37 +84,42 @@ class MessageList {
 				last = last.nextSibling
 			if (!last || !last.dataset)
 				break find
-			if (Math.abs(message.createDate2-last.dataset.time)<=1e3*60*5) {
-				contents2 = contents
-				last2 = last
-			}
+			if (Math.abs(message.createDate2-last.dataset.time)<=1e3*60*5)
+				return contents
 		} catch(e) {
 			console.error(e)
 			print("message merging failed!", e)
 		}
-		TIMES.c.push(performance.now() - t0)
-		
-		t0 = performance.now()
-		// idea: if this isn't fast, we could move the [hash] part out of it
-		// and then, there are only 2 possible selectors
-		// this might be optimized better than what we have now
-		let last = this.elem.querySelector(`message-block:${backwards?'first-child':'last-child'} > message-contents > message-part:${backwards?'first-of-type':'last-child'}`)
-		let contents1 = null, last1 = null
-		if (last) {
-			if (last.parentNode.parentNode.dataset.merge==message.Author.merge_hash)
-				if (Math.abs(message.createDate2-last.dataset.time)<=1e3*60*5) {
-					contents1 = last.parentNode
-					last1 = last
-				}
+		return null
+	}
+	// @@@@@@@@@@@@@@@@@@@@@
+	get_merge2(message, backwards) {
+		find: try {
+			let contents, last
+			if (backwards) {
+				let block = this.elem.firstChild
+				if (!block || block.dataset.merge!=message.Author.merge_hash)
+					break find
+				contents = block.lastChild
+				last = contents.firstChild
+				if (last==MessageList.controls)
+					last = last.nextSibling
+			} else {
+				let block = this.elem.lastChild
+				if (!block || block.dataset.merge!=message.Author.merge_hash)
+					break find
+				contents = block.lastChild
+				last = contents.lastChild
+			}
+			if (!last)
+				break find
+			if (Math.abs(message.createDate2-last.dataset.time)<=1e3*60*5)
+				return contents
+		} catch(e) {
+			console.error(e)
+			print("message merging failed!", e)
 		}
-		TIMES.q.push(performance.now() - t0)
-		
-		if (contents1 != contents2) {
-			console.log("disagree!", last1, contents1, last2, contents2, message)
-			TIMES.c.pop()
-			TIMES.q.pop()
-		}
-		return contents2
+		return null
 	}
 	display_message(message, backwards) {
 		if (message.deleted) {
@@ -135,7 +138,22 @@ class MessageList {
 		}
 		// new message-part
 		// try to find a message-block to merge with
-		let contents = this.get_merge(message, backwards)
+		let f = ['get_merge', 'get_merge2']
+		if (Math.random()>0.5)
+			f.reverse()
+		let c = []
+		
+		for (let i=0; i<2; i++) {
+			let t0 = performance.now()
+			c[i] = this[f[i]](message, backwards)
+			TIMES[f[i]].push(t0-performance.now())
+		}
+		if (f[1]=='get_merge')
+			c.reverse()
+		if (c[0]!=c[1])
+		console.warn('disagree!', c[0], c[1], message)
+		let contents = c[0]
+		
 		if (!contents) {
 			let block
 			;[block, contents] = Draw.message_block(message)
@@ -170,7 +188,7 @@ class MessageList {
 	part_data(elem) {
 		return this.parts.get(+elem.dataset.id).data
 	}
-
+	
 	// elem: <message-part> or null
 	static show_controls(elem) {
 		if (elem == this.controls_message) // shouldn't happen?
@@ -192,17 +210,17 @@ class MessageList {
 		}
 		
 		/*listen('focusin', e=>{
-			let elem = e.target.closest("message-part, .message-list")
-			if (!elem)
-				this.show_controls(null)
-			else if (elem.tagName=='MESSAGE-PART')
-				this.show_controls(elem)
-		})
-		listen('focusout', e=>{
-			//if (e.target.closest(".message-list"))
-			// TODO: fix flickering when button is clicked
-			this.show_controls(null)
-		})*/
+		  let elem = e.target.closest("message-part, .message-list")
+		  if (!elem)
+		  this.show_controls(null)
+		  else if (elem.tagName=='MESSAGE-PART')
+		  this.show_controls(elem)
+		  })
+		  listen('focusout', e=>{
+		  //if (e.target.closest(".message-list"))
+		  // TODO: fix flickering when button is clicked
+		  this.show_controls(null)
+		  })*/
 		
 		// todo: check out relatedTarget?
 		// TODO: this causes problems on mobile when clicking images/links etc.
