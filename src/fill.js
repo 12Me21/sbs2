@@ -13,7 +13,6 @@ if (!Object.hasOwn)
 	Object.hasOwn = Function.prototype.call.bind(Object.prototype.hasOwnProperty)
 // everything, just in case
 Object.proto = Object.getOwnPropertyDescriptors(Object.prototype)
-
 // - remove properties:
 for (let key of Object.getOwnPropertyNames(Object.prototype))
 	delete Object.prototype[key]
@@ -150,6 +149,7 @@ if (!document.timeline)
 //  - can pass null/undefined to empty the node
 //  - accepts an array of items to insert
 //  - doesn't allow strings
+//  * ISN't like, 20 characters longest method name ever
 Node.prototype.fill = function(x) {
 	this.textContent = ""
 	if (Array.isArray(x))
