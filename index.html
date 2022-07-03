@@ -88,15 +88,14 @@
 	}
 	
 	//let store_prefix = OPTS.has('dev') ? "dev-" : ""
-	
 	// load settings very early
 	let Settings = {
-		values: Object.create(null),
+		values: {__proto__:null},
 	}
 	if (window.location.search=="?nosettings") {
 		Settings = {
-			get values() { return Object.create(null) },
-			get fields() { return Object.create(null) },
+			get values() { return {__proto__:null} },
+			get fields() { return {__proto__:null} },
 			set fields(v) { },
 		}
 	} else {
@@ -120,8 +119,7 @@
 	theme_query.onchange(theme_query)
 	
 	let IOS_SAFARI = CSS.supports('-webkit-touch-callout', 'none')
-	// In safari, this doesn't prevent manual zooming anymore.
-	// it only disables the automatic zoom that happens when a text input is focused
+	// disable the automatic zoom when focusing text inputs in safari
 	if (IOS_SAFARI)
 		$meta_viewport.content += ", user-scalable=no"
 	
@@ -186,8 +184,7 @@
 <header class='page-header bar loadBG' style="--bar-height:2.25rem" id=$titlePane>
 	<div class='textItem' style="float:right">
 		<button id=$openSidebar class='item toggle-sidebar'>
-			<span id=$socketPending></span>
-			| | |
+			<span id=$socketPending></span>| | |
 		</button>
 	</div>
 	<noscript>if you're reading this, your html parser is broken, or js was disabled after the page loaded (probably by a browser extension)</noscript>
@@ -301,6 +298,8 @@
 </horizontal-split>
 
 <script hidden>'use strict'
+	if (Settings.values.sitecss)
+		$customCSS.textContent = Settings.values.sitecss
 	document.currentScript.remove() // 💭
 	// whitespace between nodes in html (due to line breaks, indentation, etc.) creates text nodes which need to be stripped:
 	{
