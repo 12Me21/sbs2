@@ -30,7 +30,6 @@ class ActivityItem {
 		this.elem.tabIndex = 0
 	}
 	redraw_time() {
-		if (!this.date) return
 		this.time_elem.textContent = Draw.time_ago_string(this.date)
 	}
 	update_date(date) {
@@ -50,7 +49,7 @@ class ActivityItem {
 	}
 	update_user(uid, user, date) {
 		// hmm user is almost identical to ActivityItem. could reuse class for both?
-		if (!user) {
+		if (!user || this.parent.hide_user) {
 			//console.warn('update user uid?', uid)
 			return
 		}
@@ -82,12 +81,13 @@ ActivityItem.HTML = 𐀶`
 `
 
 class ActivityContainer {
-	constructor(element_name) {
+	constructor(hide_user=false) {
 		this.container = document.createElement('scroll-inner')
 		this.interval = null
 		this.container.setAttribute('role', 'treegrid')
 		this.elem = null
 		this.items = {}
+		this.hide_user = hide_user
 	}
 
 	init(element) {
@@ -113,7 +113,7 @@ class ActivityContainer {
 	) {
 		const pid = watch.contentId
 		const uid = null
-		const date = watch.Message ? watch.Message.createDate2 : null
+		const date = watch.Message.createDate2
 		ActivityItem.handle(this.items, pid, content, uid, user, date, this)
 	}
 	
@@ -136,7 +136,7 @@ class ActivityContainer {
 const Act = new ActivityContainer()
 Act.init("$sidebarActivity")
 
-const WatchAct = new ActivityContainer()
+const WatchAct = new ActivityContainer(true)
 WatchAct.init("$sidebarWatch")
 
 function pull_recent() {
@@ -148,27 +148,27 @@ function pull_recent() {
 		},
 		requests: [
 			{type:'message_aggregate', fields:'contentId, createUserId, maxCreateDate, maxId', query:"createDate > @yesterday"},
-			{type:'watch', fields:'*', order:'lastCommentId'},
+			{type:'watch', fields:'*'},
 			{type:'message', fields:'*', query:"!notdeleted()", order:'id_desc', limit:50},
-			{type:'message', fields:'*', query:"id IN @watch.lastCommentId", order: 'id_desc', name: 'Mwatch'},
-			{type:'content', fields:'name, id, permissions, contentType, lastRevisionId', query:"id IN @message_aggregate.contentId OR id IN @message.contentId OR id IN @watch.contentId"},
+			{type:'content', fields:'name, id, permissions, contentType, lastRevisionId,lastCommentId', query: "!notdeleted() AND id IN @watch.contentId", name: 'Cwatch'},
+			{type:'message', fields: '*', query: 'id in @Cwatch.lastCommentId', order: 'id_desc', name:'Mwatch'},
+			{type:'content', fields:'name, id, permissions, contentType, lastRevisionId', query:"id IN @message_aggregate.contentId OR id IN @message.contentId"},
 			{type:'user', fields:'*', query:"id IN @message_aggregate.createUserId OR id IN @message.createUserId OR id IN @watch.userId"},
 			// todo: activity_aggregate
 		],
 	}, (objects)=>{
 		Entity.link_comments({message:objects.Mwatch, user:objects.user})
-		Entity.link_watch({message:objects.Mwatch, watch:objects.watch})
-		console.log("mwatch", objects.watch)
+		Entity.link_watch({message:objects.Mwatch, watch:objects.watch, content:objects.Cwatch})
+		objects.Cwatch = Entity.do_list(objects.Cwatch, 'content')
+		objects.watch.sort((x, y) => x.Message.id - y.Message.id)
 		console.log('🌄 got initial activity')
-		console.log('watch', objects.watch)
 		Entity.ascending(objects.message, 'id')
 		Sidebar.display_messages(objects.message, true) // TODO: ensure that these are displayed BEFORE any websocket new messages
-		console.log('aggregate', objects.message_aggregate);
 		objects.message_aggregate.sort((a, b)=>a.maxId-b.maxId)
 		for (let x of objects.message_aggregate)
 			Act.message_aggregate(x, objects)
 		for (let x of objects.watch)
-			WatchAct.watch(x, objects)
+			WatchAct.watch(x, {content:objects.Cwatch, user:objects.user})
 	})
 }
 

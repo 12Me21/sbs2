@@ -165,8 +165,6 @@ Entity = singleton({
 			this.do_list(listmap[name], name)
 		if (listmap.message && listmap.user)
 			this.link_comments(listmap)
-		if (listmap.message && listmap.watch)
-			this.link_watch(listmap)
 		return listmap
 	},
 	
@@ -192,13 +190,12 @@ Entity = singleton({
 		}
 	},
 
-	link_watch({message, watch}) {
-		console.log('message', message)
+	link_watch({message, watch, content}) {
 		for (let w of watch) {
-			let m = message[~w.lastCommentId]
-			console.log("hecko??", w, m)
-			if (!m)
-				continue
+			let c = content[~w.contentId]
+			if (!c) continue
+			let m = message[~c.lastCommentId]
+			if (!m) continue
 			w.Message = m
 		}
 	},
