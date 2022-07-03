@@ -83,6 +83,13 @@ for (let name in ABOUT.details.types) {
 			writable: true,
 		}
 	}
+	if (name == 'watch') {
+		// FIXME: this could possibly happen before it's defined
+		proto_desc.Message = {
+			value: Object.freeze(Object.create(TYPES['message'].prototype)),
+			writable: true,
+		}
+	}
 	let fields = ABOUT.details.types[name]
 	let defaults = ABOUT.details.objects[name]
 	for (let key in fields) {
@@ -158,6 +165,8 @@ Entity = singleton({
 			this.do_list(listmap[name], name)
 		if (listmap.message && listmap.user)
 			this.link_comments(listmap)
+		if (listmap.message && listmap.watch)
+			this.link_watch(listmap)
 		return listmap
 	},
 	
@@ -180,6 +189,17 @@ Entity = singleton({
 			if (!u)
 				continue
 			m.Author = new Author(m, u)
+		}
+	},
+
+	link_watch({message, watch}) {
+		console.log('message', message)
+		for (let w of watch) {
+			let m = message[~w.lastCommentId]
+			console.log("hecko??", w, m)
+			if (!m)
+				continue
+			w.Message = m
 		}
 	},
 	

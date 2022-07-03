@@ -33,6 +33,7 @@ let Sidebar = Object.seal({
 		
 		this.sidebar_tabs = [
 			{name: 'activity', label: "✨", elem: $sidebarActivityPanel, accesskey: 'a'},
+			{name: 'watch', label: "W", elem: $sidebarWatchPanel, accesskey: 'w' },
 			//{label: "W", elem: $sidebarWatchPanel},
 			
 			{name: 'search', label: "🔍", elem: $sidebarNavPanel, onswitch: ()=>{

@@ -217,6 +217,7 @@ let Lp = singleton({
 				console.warn("got response without handler:", response)
 		}
 		if (response.error) {
+			console.log(response)
 			let err = new SocketRequestError(response)
 			if (handler && handler.request.type == response.type)
 				handler.callback(SELF_DESTRUCT(err), err)
