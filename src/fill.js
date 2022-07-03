@@ -61,7 +61,7 @@ function field_name(name) {
 	return `.${name}`
 }
 
-let STRICT = new Proxy(Object.create(null), {
+let STRICT = new Proxy({__proto__:null}, {
 	get(t, name, obj) {
 		name = field_name(name)
 		throw new FieldError(
@@ -199,6 +199,7 @@ RegExp.prototype.rmatch = function(str) {
 
 
 //let 𖹭 = Object.create.bind(Object,null,{𖹭:{set(f){Object.seal(Object.assign(this,f))}}}) // not used anymore :(
+//let 𖹭 = x=>{__proto__:null,set 𖹭(f){Object.seal(Object.assign(this,f))}} // golfed..
 
 // why do we have these
 const singleton = (obj) => Object.seal(obj)

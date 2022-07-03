@@ -33,7 +33,7 @@
 
 class Form {
 	constructor(p) {
-		this.inputs = Object.create(null) // map of name -> INPUT instances
+		this.inputs = {__proto__:null} // map of name -> INPUT instances
 		
 		this.elem = document.createElement('form-table')
 		let body = this.elem

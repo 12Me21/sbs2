@@ -276,7 +276,6 @@ const View = NAMESPACE({
 			let list = elem.dataset.view
 			elem.classList.toggle('shown', list.split(",").includes(this.current.Name))
 		}
-		this.flag('viewReady', true)
 		Sidebar.close_fullscreen()
 		
 		Lp.flush_statuses(()=>{})
