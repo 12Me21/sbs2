@@ -6,38 +6,45 @@ class ActivityItem {
 		this.content = content
 		this.users = {}
 		this.date = "0"
-		this.elem = this.constructor.HTML()
-		this.user_elem = this.elem.lastChild.lastChild
-		this.page_elem = this.elem.firstChild
-		this.time_elem = this.elem.lastChild.firstChild
+		this.$elem = this.constructor.HTML()
+		this.$user = this.$elem.lastChild.lastChild
+		this.$page = this.$elem.firstChild
+		this.$time = this.$elem.lastChild.firstChild
+		if (parent.hide_user) {
+			this.$user.remove()
+			this.$elem.classList.add('activity-watch')
+		}
 		this.redraw_page()
+		// every item is assumed to be the newest, when created
+		// make sure you create activityitems in the right order
 		this.top()
 	}
 	redraw_page() {
-		this.elem.href = Nav.entity_link(this.content)
-		this.page_elem.fill(Draw.content_label(this.content))
+		this.$elem.href = Nav.entity_link(this.content)
+		this.$page.fill(Draw.content_label(this.content))
 	}
+	// todo: .top() might make more sense as method on ActivityContainer
 	top() {
 		const con = this.parent.container
 		let first = con.firstElementChild
-		if (first == this.elem)
+		if (first == this.$elem)
 			return
-		con.prepend(this.elem)
+		con.prepend(this.$elem)
 		if (con.contains(document.activeElement))
 			return
 		let hole = con.querySelector(`:scope > [tabindex="0"]`)
 		if (hole)
 			hole.tabIndex = -1
-		this.elem.tabIndex = 0
+		this.$elem.tabIndex = 0
 	}
 	redraw_time() {
-		this.time_elem.textContent = Draw.time_ago_string(this.date)
+		this.$time.textContent = Draw.time_ago_string(this.date)
 	}
 	update_date(date) {
 		if (date > this.date) {
 			this.date = date
-			this.time_elem.title = this.date.toString()
-			this.time_elem.setAttribute('datetime', this.date.toISOString())
+			this.$time.title = this.date.toString()
+			this.$time.setAttribute('datetime', this.date.toISOString())
 			this.redraw_time()
 			this.top()
 		}
@@ -58,7 +65,7 @@ class ActivityItem {
 		// todo: show user dates on hover?
 		if (date > u.date) { // todo: update user object. why don't users have editDate...
 			if (u.date=="0" || u.elem.previousSibling) // hack
-				this.user_elem.prepend(u.elem)
+				this.$user.prepend(u.elem)
 			u.date = date
 		}
 	}
@@ -82,6 +89,7 @@ class ActivityContainer {
 	}
 	
 	init(element) {
+		// this should probably be handled by um  sidebar instead
 		this.elem = element
 		this.elem.fill(this.container)
 		this.refresh_time_interval()
