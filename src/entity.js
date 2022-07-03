@@ -83,6 +83,13 @@ for (let name in ABOUT.details.types) {
 			writable: true,
 		}
 	}
+	if (name == 'watch') {
+		// FIXME: this could possibly happen before it's defined
+		proto_desc.Message = {
+			value: Object.freeze(Object.create(TYPES['message'].prototype)),
+			writable: true,
+		}
+	}
 	let fields = ABOUT.details.types[name]
 	let defaults = ABOUT.details.objects[name]
 	for (let key in fields) {
@@ -180,6 +187,16 @@ Entity = singleton({
 			if (!u)
 				continue
 			m.Author = new Author(m, u)
+		}
+	},
+
+	link_watch({message, watch, content}) {
+		for (let w of watch) {
+			let c = content[~w.contentId]
+			if (!c) continue
+			let m = message[~c.lastCommentId]
+			if (!m) continue
+			w.Message = m
 		}
 	},
 	

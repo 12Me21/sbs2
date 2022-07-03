@@ -274,6 +274,8 @@ let Lp = singleton({
 				let message = maplist.message[~ref_id]
 				if (message) {
 					Act.message(message, maplist)
+					if (WatchAct.items[message.contentId])
+						WatchAct.message(message, maplist)
 					comments.push(message)
 				}
 			/*} break; case 'activity_event': {
