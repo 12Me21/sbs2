@@ -89,15 +89,13 @@ class ActivityContainer {
 		this.items = {}
 		this.hide_user = hide_user
 	}
-
+	
 	init(element) {
-		do_when_ready(()=>{
-			this.elem = document.getElementById(element)
-			this.elem.fill(this.container)
-			this.refresh_time_interval()
-		})		
+		this.elem = element
+		this.elem.fill(this.container)
+		this.refresh_time_interval()
 	}
-
+	
 	refresh_time_interval() {
 		if (this.interval)
 			window.clearInterval(this.interval)
@@ -106,15 +104,15 @@ class ActivityContainer {
 				item.redraw_time()
 		}, 1000*30)
 	}
-
+	
 	watch(
 		watch,
-		{content, user}		
+		{content}
 	) {
 		const pid = watch.contentId
-		const uid = null
-		const date = watch.Message.createDate2
-		ActivityItem.handle(this.items, pid, content, uid, user, date, this)
+		const msg = watch.Message
+		const date = msg ? msg.createDate2 : watch.editDate2
+		ActivityItem.get(this.items, pid, content[~pid], date, this)
 	}
 	
 	message_aggregate(
@@ -134,10 +132,11 @@ class ActivityContainer {
 }
 
 const Act = new ActivityContainer()
-Act.init("$sidebarActivity")
-
 const WatchAct = new ActivityContainer(true)
-WatchAct.init("$sidebarWatch")
+do_when_ready(()=>{
+	Act.init($sidebarActivity)
+	WatchAct.init($sidebarWatch)
+})
 
 function pull_recent() {
 	let start = new Date()
@@ -147,28 +146,32 @@ function pull_recent() {
 			yesterday: start,
 		},
 		requests: [
+			// recent messages
 			{type:'message_aggregate', fields:'contentId, createUserId, maxCreateDate, maxId', query:"createDate > @yesterday"},
-			{type:'watch', fields:'*'},
 			{type:'message', fields:'*', query:"!notdeleted()", order:'id_desc', limit:50},
-			{type:'content', fields:'name, id, permissions, contentType, lastRevisionId,lastCommentId', query: "!notdeleted() AND id IN @watch.contentId", name: 'Cwatch'},
-			{type:'message', fields: '*', query: 'id in @Cwatch.lastCommentId', order: 'id_desc', name:'Mwatch'},
 			{type:'content', fields:'name, id, permissions, contentType, lastRevisionId', query:"id IN @message_aggregate.contentId OR id IN @message.contentId"},
+			// watches
+			{type:'watch', fields:'*'},
+			{name:'Cwatch', type:'content', fields:'name, id, permissions, contentType, lastRevisionId,lastCommentId', query: "!notdeleted() AND id IN @watch.contentId", order:'lastCommentId_desc'},
+			{name:'Mwatch', type:'message', fields: '*', query: 'id in @Cwatch.lastCommentId', order: 'id_desc'},
+			// shared
 			{type:'user', fields:'*', query:"id IN @message_aggregate.createUserId OR id IN @message.createUserId OR id IN @watch.userId"},
 			// todo: activity_aggregate
 		],
 	}, (objects)=>{
-		Entity.link_comments({message:objects.Mwatch, user:objects.user})
-		Entity.link_watch({message:objects.Mwatch, watch:objects.watch, content:objects.Cwatch})
-		objects.Cwatch = Entity.do_list(objects.Cwatch, 'content')
-		objects.watch.sort((x, y) => x.Message.id - y.Message.id)
 		console.log('🌄 got initial activity')
+		Entity.link_comments({message:objects.Mwatch, user:objects.user})
 		Entity.ascending(objects.message, 'id')
-		Sidebar.display_messages(objects.message, true) // TODO: ensure that these are displayed BEFORE any websocket new messages
+		// TODO: ensure that these are displayed BEFORE any websocket new messages
+		Sidebar.display_messages(objects.message, true)
 		objects.message_aggregate.sort((a, b)=>a.maxId-b.maxId)
 		for (let x of objects.message_aggregate)
 			Act.message_aggregate(x, objects)
+		// watches
+		Entity.link_watch({message:objects.Mwatch, watch:objects.watch, content:objects.Cwatch})
+		objects.watch.sort((x, y)=>x.Message.id-y.Message.id)
 		for (let x of objects.watch)
-			WatchAct.watch(x, {content:objects.Cwatch, user:objects.user})
+			WatchAct.watch(x, {content:objects.Cwatch})
 	})
 }
 
