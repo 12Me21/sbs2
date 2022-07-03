@@ -18,13 +18,14 @@ class ActivityItem {
 		this.page_elem.fill(Draw.content_label(this.content))
 	}
 	top() {
-		let first = this.parent.container.firstElementChild
+		const con = this.parent.container
+		let first = con.firstElementChild
 		if (first == this.elem)
 			return
-		this.parent.container.prepend(this.elem)
-		if (this.parent.container.contains(document.activeElement))
+		con.prepend(this.elem)
+		if (con.contains(document.activeElement))
 			return
-		let hole = this.parent.container.querySelector(`:scope > [tabindex="0"]`)
+		let hole = con.querySelector(`:scope > [tabindex="0"]`)
 		if (hole)
 			hole.tabIndex = -1
 		this.elem.tabIndex = 0
@@ -62,16 +63,6 @@ class ActivityItem {
 		}
 	}
 }
-ActivityItem.get = function(map, id, content, date, parent) {
-	let item = map[id] || (map[id] = new this(content, parent))
-	item.update_content(content)
-	item.update_date(date)
-	return item
-}
-ActivityItem.handle = function(map, pid, content, uid, user, date, parent) {
-	let item = this.get(map, pid, content[~pid], date, parent)
-	item.update_user(uid, user[~uid], date)
-}
 ActivityItem.HTML = 𐀶`
 <a class='activity-page' role=row tabindex=-1>
 	<div class='bar rem1-5 ellipsis'></div>
@@ -105,29 +96,46 @@ class ActivityContainer {
 		}, 1000*30)
 	}
 	
+	// get/create the ActivityItem for a given page
+	//  - also updates its page and date info
+	// (the reason i pass pid AND page here, is just in case the
+	//  page data is missing, so we'll at least have the id)
+	update_content(pid, page, date) {
+		let item = this.items[pid] || (this.items[pid] = new ActivityItem(page, this))
+		item.update_content(page)
+		item.update_date(date)
+		return item
+	}
+	// update page, date, and user info, for a given page
+	update({content, user}, pid, uid, date) {
+		let item = this.update_content(pid, content[~pid], date)
+		if (uid)
+			item.update_user(uid, user[~uid], date)
+	}
+	
 	watch(
 		watch,
-		{content}
+		objects
 	) {
 		const pid = watch.contentId
-		const msg = watch.Message
+		const msg = watch.Message // in case page has 0 messages:
 		const date = msg ? msg.createDate2 : watch.editDate2
-		ActivityItem.get(this.items, pid, content[~pid], date, this)
+		this.update(objects, pid, null, date)
 	}
 	
 	message_aggregate(
 		{contentId:pid, createUserId:uid, maxCreateDate2:date},
-		{content, user}
+		objects
 	) {
-		ActivityItem.handle(this.items, pid, content, uid, user, date, this)
+		this.update(objects, pid, uid, date)
 	}
 	
 	message(
 		{contentId:pid, createUserId:uid, createDate2:date, deleted},
-		{content, user}
+		objects
 	) {
 		if (deleted) return // mmnn
-		ActivityItem.handle(this.items, pid, content, uid, user, date, this)
+		this.update(objects, pid, uid, date)
 	}
 }
 
