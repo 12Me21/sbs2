@@ -195,17 +195,13 @@
 		<button id=$editorSave class='item'>Save</button>
 	</span>
 	<h1 id=$pageTitle class='textItem'></h1>
-	<span data-view=page>
-		<a class='textItem' id=$pageCommentsLink>[Logs]</a>-
-		<a class='textItem' id=$pageEditLink>[Edit]</a>
-	</span>
-	<span data-view=editpage>
-		<a class='textItem' id=$editPageLink>[Back]</a>
+	<div class='header-buttons'>
+		<a data-view=page id=$pageCommentsLink>logs</a>
+		<a data-view=page id=$pageEditLink>edit</a>
+		<a data-view=editpage id=$editPageLink>back</a>
 		<!-- todo: tab navigation order is kinda bad here, ideally shift+tab from the editor should take you to the save button. maybe make the header a LIST, and use arrows to select item -->
-	</span>
-	<span data-view=user,file>
-		<a class='textItem' id=$userPageLink>[Page]</a>
-	</span>
+		<a data-view=user id=$userPageLink>page</a>
+	</div>
 </header>
 
 <horizontal-split class='FILL resize-box ROW'>

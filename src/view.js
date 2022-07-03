@@ -272,10 +272,9 @@ const View = NAMESPACE({
 		if (view.Visible)
 			view.Visible()
 		
-		for (let elem of $titlePane.children) {
+		for (let elem of $titlePane.querySelectorAll("[data-view]")) {
 			let list = elem.dataset.view
-			if (list)
-				elem.classList.toggle('shown', list.split(",").includes(this.current.Name))
+			elem.classList.toggle('shown', list.split(",").includes(this.current.Name))
 		}
 		this.flag('viewReady', true)
 		Sidebar.close_fullscreen()

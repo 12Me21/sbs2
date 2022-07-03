@@ -25,13 +25,13 @@ body {
 /***********
  ** Links **
  ***********/
-a[href] {
+:any-link {
 	;text-decoration: none
 }
-a[href], a[href]:visited {
+:any-link {
 	;color: var(--T-link-color)
 }
-a[href]:hover {
+:any-link:hover {
 	;color: var(--T-link-hover-color)
 	;text-decoration: underline
 }
@@ -43,11 +43,10 @@ a[href]:hover {
 }
 
 /* todo: make class for dark bg elements */
-.page-header a[href], .page-header a[href]:visited {
+.page-header :any-link {
 	color: var(--link-invert-color);
-	font-weight: normal;
 }
-.page-header a[href]:hover {
+.page-header :any-link:hover {
 	color: var(--link-invert-hover-color);
 }
 
@@ -111,6 +110,20 @@ html.f-loading .loadBG {
 }
 .loadBG/*, resize-handle*/ {
 	transition: background 0.1s ease;
+}
+.header-buttons {
+	display: inline-flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	height: var(--bar-height);
+}
+.header-buttons > * {
+	height: 50%;
+	font-weight: bold;
+	line-height: 100%;
+	font-size: 0.875em;
+	padding: 0 0.25em;
+	border: 1px solid gray;
 }
 
 
@@ -899,3 +912,4 @@ html[data-socket-state="dead"] .toggle-sidebar {
 		width: -webkit-fill-available; width: -moz-available; width: stretch;
 	}
 }
+
