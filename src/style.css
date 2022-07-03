@@ -183,9 +183,12 @@ sidebar-container {
 	/*;box-shadow: var(--normal-shadow)*/
 	z-index: 30;
 }
-/* sidebar activity tab */
-#\$sidebarActivity {
+/* sidebar activity tabs */
+.activity-scroller {
 	padding-top: 0.1875rem;
+}
+#\$sidebarWatch {
+	padding-top: 0;
 }
 .activity-page {
 	;display: block
@@ -199,6 +202,20 @@ sidebar-container {
 .activity-page-bottom {
 	;display: flex
 	;height: 1.5rem
+}
+.activity-watch {
+	display: flex;
+}
+/* todo: the css/html for watch activity items is mostly a hack */
+.activity-watch > .activity-page-bottom {
+	flex-shrink: 2;
+	flex-grow: 1;
+}
+.activity-watch > .activity-page-bottom > time {
+	width: 100%;
+	text-align: right;
+	padding-left: 0.125em;
+	text-overflow: clip;
 }
 .activity-page-bottom .avatar {
 	;max-width: unset
