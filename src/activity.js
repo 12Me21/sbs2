@@ -1,11 +1,15 @@
 'use strict'
 
+function newer(d1, d2) {
+	return (d2!=null && (d1==null || d2>d1))
+}
+
 class ActivityItem {
 	constructor(content, parent) {
 		this.parent = parent
 		this.content = content
 		this.users = {}
-		this.date = "0"
+		this.date = -Infinity
 		this.$elem = this.constructor.HTML()
 		this.$user = this.$elem.lastChild.lastChild
 		this.$page = this.$elem.firstChild
@@ -38,7 +42,8 @@ class ActivityItem {
 		this.$elem.tabIndex = 0
 	}
 	redraw_time() {
-		this.$time.textContent = Draw.time_ago_string(this.date)
+		if (this.date!=-Infinity)
+			this.$time.textContent = Draw.time_ago_string(this.date)
 	}
 	update_date(date) {
 		if (date > this.date) {
@@ -61,10 +66,11 @@ class ActivityItem {
 			//console.warn('update user uid?', uid)
 			return
 		}
-		let u = this.users[uid] || (this.users[uid] = {user, date:"0", elem: Draw.link_avatar(user)})
+		// todo: update user object for avatar changes etc? why don't users have editDate...
+		let u = this.users[uid] || (this.users[uid] = {user, date: -Infinity, elem: Draw.link_avatar(user)})
 		// todo: show user dates on hover?
-		if (date > u.date) { // todo: update user object. why don't users have editDate...
-			if (u.date=="0" || u.elem.previousSibling) // hack
+		if (date > u.date) {
+			if (u.date==-Infinity || u.elem.previousSibling) // hack
 				this.$user.prepend(u.elem)
 			u.date = date
 		}
@@ -127,7 +133,7 @@ class ActivityContainer {
 	) {
 		const pid = watch.contentId
 		const msg = watch.Message // in case page has 0 messages:
-		const date = msg ? msg.createDate2 : watch.editDate2
+		const date = msg.id ? msg.createDate2 : -Infinity
 		this.update(objects, pid, null, date)
 	}
 	
