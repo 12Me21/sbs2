@@ -156,14 +156,18 @@ class Scroller {
 		}
 	}
 	cancel_animation() {
-		if (this.anim_id)
-			window.cancelAnimationFrame(this.anim_id)
 		if (this.anim_type==2) {
 			this.inner.style.transition = "none"
+			if (this.anim_id) {
+				window.cancelAnimationFrame(this.anim_id)
+				this.set_shift(0)
+			}
 			this.anim_id = null
 		} else if (this.anim_type==1) {
-			if (this.anim_id)
+			if (this.anim_id) {
+				window.cancelAnimationFrame(this.anim_id)
 				this.end_animation()
+			}
 		}
 	}
 	// only for anim_type 1:
