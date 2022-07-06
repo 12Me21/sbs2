@@ -373,8 +373,7 @@ PageView.template = HTML`
 			<scroll-outer class='sized page-container' $=page_container>
 				<div class='pageContents' $=page_contents></div>
 			</scroll-outer>
-			<resize-handle $=resize_handle></resize-handle>
-			<div class='bar rem2-3 userlist' $=userlist>...</div>
+			<resize-handle $=resize_handle,userlist class='bar rem2-3 userlist'></resize-handle>
 			<scroll-outer class='FILL' $=outer>
 				<scroll-inner $=inner>
 					<div $=extra>

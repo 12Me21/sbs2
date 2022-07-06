@@ -310,10 +310,18 @@ activity-users {
 chat-pane .userlist {
 	box-shadow: var(--normal-shadow);
 	z-index: 4;
-	border-bottom: 1px solid var(--T-border-color);
+	/*border-bottom: 1px solid var(--T-border-color);*/
 }
-.userlist {
+.userlist:not(#a) {
 	background: var(--bar-bg);
+	padding: 2px;
+	color: var(--T-color);
+	border: 8px var(--databarbgcolor);
+	border-style: solid none;
+	/*background: var(--bar-bg);*/
+}
+.userlist .avatar {
+	margin-left: 2px;
 }
 
 

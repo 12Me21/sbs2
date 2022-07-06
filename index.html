@@ -216,8 +216,6 @@
 	<sidebar-container id=$sidebar class='sized resize-box sidebar-element COL'>
 		<button class='closeSidebar toggle-sidebar' id=$closeSidebar>Close Sidebar</button>
 		
-		<div class='userlist bar rem1-5' id=$sidebarUserList></div>
-		
 		<tab-list id=$sidebar_tabs role="tablist" aria-label="sidebar tabs"></tab-list>
 		
 		<div id=$sidebarTop class='sized SLIDES'>
@@ -286,7 +284,7 @@
 			</sidebar-panel>
 		</div>
 		
-		<resize-handle id=$sidebarResize></resize-handle>
+		<resize-handle id=$sidebarResize class='userlist bar rem1-5'><span id=$sidebarUserList></span></resize-handle>
 		
 		<div class='FILL' id=$sidebarBottom>
 			<scroll-outer>

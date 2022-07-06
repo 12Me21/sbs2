@@ -62,6 +62,7 @@ holder.$root=node`
 			let path = get_path(root, node)
 			let id = node.getAttribute('$')
 			node.removeAttribute('$')
+			id = id.replace(/,/g, " = holder.$")
 			init += `
 holder.$${id} = node${path}`
 		}
