@@ -307,10 +307,10 @@ activity-users {
 /**************
  ** Userlist **
  **************/
-chat-pane .userlist {
+chat-pane .userlist2 {
 	box-shadow: var(--normal-shadow);
 	z-index: 4;
-	/*border-bottom: 1px solid var(--T-border-color);*/
+	border-bottom: 1px solid var(--T-border-color);
 }
 .userlist {
 	background: var(--databarbgcolor);
@@ -330,9 +330,13 @@ resize-handle.userlist2 {
 	display: flex;
 	background: linear-gradient(var(--databarbgcolor) 0 var(--handle-width), var(--bar-bg) var(--handle-width));
 	height: unset !important;
+	/*min-height: unset;
+	overflow: visible;
+	contain: none;*/
 }
 .userlist2 > .userlist {
 	border: none;
+	box-sizing: content-box;
 	background: var(--databarbgcolor);
 	padding: 3px;
 }
