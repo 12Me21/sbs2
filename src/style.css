@@ -312,10 +312,10 @@ chat-pane .userlist {
 	z-index: 4;
 	/*border-bottom: 1px solid var(--T-border-color);*/
 }
-.userlist:not(#a) {
+.userlist {
 	background: var(--databarbgcolor);
 	color: var(--T-color);
-	border: 4px var(--databarbgcolor);
+	border: 3px var(--databarbgcolor);
 	border-style: solid none;
 	/*background: var(--bar-bg);*/
 }
@@ -324,6 +324,17 @@ chat-pane .userlist {
 	border: 1px solid white;
 	box-sizing: border-box;
 	border-radius: 0;
+}
+
+resize-handle.userlist2 {
+	display: flex;
+	background: linear-gradient(var(--databarbgcolor) 0 var(--handle-width), var(--bar-bg) var(--handle-width));
+	height: unset !important;
+}
+.userlist2 > .userlist {
+	border: none;
+	background: var(--databarbgcolor);
+	padding: 3px;
 }
 
 

@@ -215,7 +215,7 @@
 <sidebar-container id=$sidebar class='sized resize-box sidebar-element COL'>
 	<button class='closeSidebar toggle-sidebar' id=$closeSidebar>Close Sidebar</button>
 	
-	<div class='userlist bar rem1-5' id=$sidebarUserList></div>
+	<div class='userlist bar' style='--bar-height:1.625rem' id=$sidebarUserList></div>
 	
 	<tab-list id=$sidebar_tabs role="tablist" aria-label="sidebar tabs"></tab-list>
 	
@@ -263,6 +263,8 @@
 			<div class='registerBox'>
 				<button onclick='RELOAD()'>Reload</button>
 				<button onclick='Lp.start_websocket(true)'>Reset Socket</button>
+				<button onclick='for(let sheet of document.styleSheets)if(sheet.href)sheet.ownerNode.href+="#"'>reload css</button>
+				
 				<button id=$logOut style="float:right">Log out</button>
 			</div>
 			<div class='loggedOut registerBox'>
