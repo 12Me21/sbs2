@@ -331,7 +331,7 @@ for horizontal-split to stop acting like a .resize-box
 		display: none;
 	}
 	
-	html.f-mobileSidebar horizontal-split > *:not(sidebar-container) {
+	html.f-mobileSidebar not-sidebar {
 		visibility: hidden; /* hide the stuff behind the sidebar so you don't interact with it */
 	}
 	html:not(.f-mobileSidebar) sidebar-container {
