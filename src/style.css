@@ -776,7 +776,7 @@ button.voteButton[data-selected][data-vote="o"] {
 }
 /*   idk   */
 .page-container:not(#a) {
-	min-height: 1rem;
+	min-height: 0px;
 	height: 40vh;
 }
 

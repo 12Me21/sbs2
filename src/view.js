@@ -65,7 +65,9 @@ holder.$root=node`
 			init += `
 holder.$${id} = node${path}`
 		}
-		let c = new Function("holder", init).bind(root)
+		init += `
+return holder`
+		let c = new Function("holder={}", init).bind(root)
 		//c.prototype = {__proto__: null, template: root}
 		return c
 	}

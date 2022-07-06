@@ -203,18 +203,18 @@ const Draw = Object.seal({
 		let list = new MessageList(inner, comment.contentId)
 		list.single_message(comment)
 		
-		let ne = Draw.button2("Load Newer", function(e) {
+		let ne = Draw.button2("Load Newer", ev=>{
 			// todo: make these buttons part of the message-list class
 			list.draw_messages_near(true, 10, (ok)=>{
 				if (!ok)
-					this.disabled = true
+					ev.currentTarget.disabled = true
 			})
 		})
 		
-		inner.before(Draw.button2("Load Older", function(e) {
+		inner.before(Draw.button2("Load Older", ev=>{
 			list.draw_messages_near(false, 10, (ok)=>{
 				if (!ok)
-					this.disabled = true
+					ev.currentTarget.disabled = true
 			})
 		}))
 		

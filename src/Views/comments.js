@@ -19,48 +19,6 @@ class CommentsView extends BaseView {
 			],
 		})
 	}
-	Init() {
-		this.$form_placeholder.replaceWith(this.form.elem)
-		let go = (dir)=>{
-			if (!this.location) return
-			this.form.read()
-			if (dir) {
-				// pages are kinda bad now... like, p=0, that's actually p=1, so you press next and go to p=2.. i need to add range limits on the fields etc.
-				let p = this.form.inputs.page.value || 1 //rrrr
-				if (p+dir<1) {
-					if (dir>=0)
-						p = 1-dir
-					else
-						return
-				}
-				this.form.inputs.page.value = p + dir
-			} else {
-				this.form.inputs.page.value = 1
-			}
-			this.location.query = this.form.to_query()
-			let pages = this.form.inputs.pages.value
-			if (pages && pages.length==1) {
-				this.location.id = pages[0]
-				delete this.location.query.pid
-			} else {
-				this.location.id = null
-			}
-			if (this.location.query.page==0)
-				this.location.query.page = "1"
-			Nav.goto(this.location, true)
-		}
-		this.$html_form.onsubmit = e=>{
-			console.log(e)
-			e.preventDefault()
-			let btn = e.submitter
-			if (btn && btn.name=='prev')
-				go(-1)
-			else if (btn && btn.name=='next')
-				go(1)
-			else
-				go(null)
-		}
-	}
 	Start({id, query}) {
 		this.form.from_query(query)
 		if (id)
@@ -73,6 +31,48 @@ class CommentsView extends BaseView {
 			return {quick: true}
 		
 		return {chain: search}
+	}
+	go(dir) {
+		if (!this.location) return
+		this.form.read()
+		if (dir) {
+			// pages are kinda bad now... like, p=0, that's actually p=1, so you press next and go to p=2.. i need to add range limits on the fields etc.
+			let p = this.form.inputs.page.value || 1 //rrrr
+			if (p+dir<1) {
+				if (dir>=0)
+					p = 1-dir
+				else
+					return
+			}
+			this.form.inputs.page.value = p + dir
+		} else {
+			this.form.inputs.page.value = 1
+		}
+		this.location.query = this.form.to_query()
+		let pages = this.form.inputs.pages.value
+		if (pages && pages.length==1) {
+			this.location.id = pages[0]
+			delete this.location.query.pid
+		} else {
+			this.location.id = null
+		}
+		if (this.location.query.page==0)
+			this.location.query.page = "1"
+		Nav.goto(this.location, true)
+	}
+	Init() {
+		this.$form_placeholder.replaceWith(this.form.elem)
+		this.$html_form.onsubmit = e=>{
+			console.log(e)
+			e.preventDefault()
+			let btn = e.submitter
+			if (btn && btn.name=='prev')
+				this.go(-1)
+			else if (btn && btn.name=='next')
+				this.go(1)
+			else
+				this.go(null)
+		}
 	}
 	Render({message:comments, content:pages}) {
 		View.set_title("Comments")
