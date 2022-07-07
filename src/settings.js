@@ -42,6 +42,19 @@ Settings.fields = {
 			})*/
 		},
 	},
+	speak_new_message: {
+		name: "speak new messages",
+		type: 'select',
+		options: ['off', 'on'],
+		update(value) {
+			if (value=='on' && !speechSynthesis.getVoices().length) {
+				alert("warning! your device does not have tts voices. sorry")
+				// Settings.change('speak_new_message', 'off')
+				// is ^this^ okay? does this run during load?
+				// ...it's not okay! : )
+			}
+		}
+	},
 	lazy_loading: {
 		name: "lazy image loading",
 		type: 'select',
