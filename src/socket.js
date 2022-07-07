@@ -317,10 +317,11 @@ let Lp = singleton({
 			// animationframe callback, so they are synced, if possible
 			let share = []
 			try {
-				PageView.display_messages(comments, true, share)
+				PageView.display_messages(comments, share)
 			} finally {
 				Sidebar.display_messages(comments, false, share)
 				Act.handle_messages(comments, listmapmap.message_event)
+				console.log('share', share)
 				for (let x of share) {
 					if (x.anim_id===0n)
 						x.start_anim_2()

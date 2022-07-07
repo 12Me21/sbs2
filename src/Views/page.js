@@ -225,12 +225,12 @@ class PageView extends BaseView {
 		}
 	}
 	// display a list of messages from multiple rooms
-	static display_messages(comments) {
+	static display_messages(comments, share) {
 		// for each room, display all of the new comments for that room
 		for (let room of Object.values(this.rooms)) {
 			let c = comments.filter(c => c.contentId==room.id)
 			if (c.length)
-				room.display_messages(c, room==this.currentRoom)
+				room.display_messages(c, room==this.currentRoom, share)
 		}
 		// display comment in title
 		// does this belong here, or in the room displaycomments message?

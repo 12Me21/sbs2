@@ -88,8 +88,10 @@ class Scroller {
 				this.scroll_instant()
 		})
 		Scroller.track_height.add(this.inner, (old_size)=>{
-			if (this.at_bottom(undefined, old_size))
+			if (this.at_bottom(undefined, old_size)) {
+				//console.log('SI height change', this)
 				this.scroll_instant()
+			}
 		})
 		
 		Object.seal(this)
@@ -113,6 +115,7 @@ class Scroller {
 	after_print(before, share) {
 		if (before === false)
 			return // not at bottom
+		//console.log('SI after print', this)
 		this.scroll_instant()
 		if (before === true) {
 			this.cancel_animation()
