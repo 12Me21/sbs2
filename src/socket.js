@@ -22,7 +22,6 @@ let Lp = singleton({
 	last_id: "",
 	no_restart: false,
 	websocket: null,
-	got_error: false,
 	state_change(state, ping) {
 		// TODO: also use yellow state for when a request has been sent but not recieved yet.
 		// (maybe use a less annoying color)
@@ -80,6 +79,20 @@ let Lp = singleton({
 	fails: 0,
 	last_reconnect: 0,
 	last_message: Date.now(),
+	pending_retry: null,
+	cancel_retry() {
+		if (this.pending_retry) {
+			window.clearTimeout(this.pending_retry)
+			this.pending_retry = null
+		}
+	},
+	schedule_retry(time, force) {
+		this.cancel_retry()
+		this.pending_retry = window.setTimeout(()=>{
+			this.pending_retry = null
+			this.start_websocket(force)
+		}, time)
+	},
 	maybe_reconnect(e) {
 		if (Settings.values.socket_debug=='yes')
 			print('maybe reconnect '+(e?e.type:""))
@@ -94,27 +107,28 @@ let Lp = singleton({
 				let time = 2000
 				if (Date.now()-this.last_message > 30*1000 && (e&&e.type!='focus'))
 					time = 1000
-				let id = window.setTimeout(()=>{
-					this.start_websocket(true)
-				}, time)
-				this.ping(()=>{window.clearTimeout(id)})
+				this.schedule_retry(time, true)
+				this.ping(()=>{})
 			} else {
-				if (this.fails > 3) {
+				if (this.fails > 5) {
 					print('too many ')
 					return
 				}
-				this.start_websocket()
+				if (this.last_reconnect-last < 1000) {
+					this.schedule_retry(time)
+				} else
+					this.start_websocket()
 			}
 		}
 	},
 	start_websocket(force) {
+		this.cancel_retry()
 		if (this.no_restart)
 			return
 		if (!force && this.is_alive())
 			throw new Error("Tried to open multiple websockets")
 		this.kill_websocket()
 		print('starting websocket...')
-		this.got_error = false
 		this.last_reconnect = Date.now()
 		this.fails++
 		this.websocket = new WebSocket(`wss://${Req.server}/live/ws?lastId=${this.last_id}&token=${encodeURIComponent(Req.auth)}`)
@@ -122,25 +136,30 @@ let Lp = singleton({
 		
 		this.websocket.onopen = e=>{
 			console.log("🌄 websocket open")
+			this.cancel_retry()
 			this.state_change('open')
 			this.on_ready()
 		}
 		
-		this.websocket.onerror = e=>{
+		this.websocket.onerror = ({target})=>{
 			console.warn("websocket error")
 			this.fails++
-			print("📶 websocket connection error")
-			this.got_error = true
+			target.got_error = true
 		}
 		
-		this.websocket.onclose = ({code, reason, wasClean})=>{
+		this.websocket.onclose = ({code, reason, wasClean, target})=>{
 			console.log("ws closed", code, reason, wasClean)
+			let desc
+			if (target.got_error)
+				desc = "websocket closed 📶 (connection error)."
+			else if (wasClean)
+				desc = "websocket closed (clean)."
+			else
+				desc = "websocket closed."
+			print(desc+"\n "+code+" "+reason)
+			
 			this.ready = false
 			this.state_change('dead')
-			if (this.got_error) {
-				this.got_error = false
-				//return
-			}
 			// use timeout to avoid recursion and leaking stack traces
 			window.setTimeout(()=>this.maybe_reconnect())
 		}
@@ -150,6 +169,7 @@ let Lp = singleton({
 				alert("websocket wrong event target? multiple sockets still open?")
 				return
 			}
+			this.cancel_retry()
 			this.last_message = Date.now()
 			this.fails = 0
 			this.handle_response(JSON.parse(data))
