@@ -174,7 +174,7 @@ let Sidebar = Object.seal({
 	
 	displayed_ids: {},
 	
-	display_messages(comments, initial) {
+	display_messages(comments, initial, share) {
 		// todo: show page titles?
 		this.scroller.print(()=>{ //todo: pass inner as arg here
 			for (let c of comments) {
@@ -197,7 +197,7 @@ let Sidebar = Object.seal({
 					this.limit_messages()
 				}
 			}
-		}, !initial)
+		}, !initial, share)
 		if (initial)
 			this.scroller.scroll_instant()
 	},

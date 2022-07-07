@@ -213,11 +213,11 @@ class PageView extends BaseView {
 	// DON'T call this unless you know what you're doing
 	// comments: [Comment]
 	// animate: Boolean - whether to play the scrolling animation
-	display_messages(comments, animate=true) {
+	display_messages(comments, animate=true, share) {
 		this.scroller.print(()=>{
 			for (let comment of comments)
 				this.list.display_message(comment, false)
-		}, animate)
+		}, animate, share)
 		if (this.list.over_limit() && !this.$limit_checkbox.checked) {
 			this.scroller.print_top(()=>{
 				this.list.limit_messages()

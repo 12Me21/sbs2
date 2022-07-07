@@ -110,7 +110,7 @@ class Scroller {
 			return animate ? this.scroll_height() : true
 		return false
 	}
-	after_print(before) {
+	after_print(before, share) {
 		if (before === false)
 			return // not at bottom
 		this.scroll_instant()
@@ -119,17 +119,22 @@ class Scroller {
 			return // no animation
 		}
 		let diff = this.scroll_height() - before
-		this.start_animation(diff)
+		this.start_animation(diff, share)
 	}
 	// todo: instead of these print wrappers, what if we just
 	// used mutation observers to detect stuff being added/removed
 	// or, looked at the height change events?
-	print(callback, animate) {
+	
+	// or, how about this: TODO TODO!
+	// instead of print wrapper
+	// we call before_print(), which checks the height and adds a requestAnimationFrame
+	// then you add your elements, and the animationFrame runs, handling the after print!
+	print(callback, animate, share) {
 		let height = this.before_print(animate)
 		try {
 			callback()
 		} finally {
-			this.after_print(height)
+			this.after_print(height, share)
 		}
 	}
 	set_shift(y) {
@@ -137,23 +142,31 @@ class Scroller {
 	}
 	// todo: maybe we should always use requestAnimationFrame or something
 	// before the first frame, to allow the page to settle
-	start_animation(dist) {
+	start_animation(dist, share) {
 		if (Math.abs(dist) <= 1)
 			return
 		if (this.anim_type==2) {
 			//let d = parseFloat(getComputedStyle(this.inner).top)
 			this.inner.style.transition = "none"
 			this.set_shift(dist)
-			this.anim_id = window.requestAnimationFrame(t=>{
-				this.anim_id = null
-				this.inner.style.transition = ""
-				this.set_shift(0)
-			})
+			if (share) {
+				this.anim_id = 0n
+				share.push(this)
+			} else {
+				this.start_anim_2()
+			}
 		} else if (this.anim_type==1) {
 			window.cancelAnimationFrame(this.anim_id)
 			this.anim_id = null
 			this.animate_insertion(this.anim_pos + dist)
 		}
+	}
+	start_anim_2() {
+		this.anim_id = window.requestAnimationFrame(t=>{
+			this.anim_id = null
+			this.inner.style.transition = ""
+			this.set_shift(0)
+		})
 	}
 	cancel_animation() {
 		if (this.anim_type==2) {

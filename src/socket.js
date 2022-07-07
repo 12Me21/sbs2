@@ -315,11 +315,16 @@ let Lp = singleton({
 		if (comments.length) {
 			// todo: we want the sidebar and chat to use the same
 			// animationframe callback, so they are synced, if possible
+			let share = []
 			try {
-				PageView.display_messages(comments)
+				PageView.display_messages(comments, true, share)
 			} finally {
-				Sidebar.display_messages(comments)
+				Sidebar.display_messages(comments, false, share)
 				Act.handle_messages(comments, listmapmap.message_event)
+				for (let x of share) {
+					if (x.anim_id===0n)
+						x.start_anim_2()
+				}
 			}
 		}
 	},
