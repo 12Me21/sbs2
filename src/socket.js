@@ -285,22 +285,21 @@ let Lp = singleton({
 				console.warn(events)
 			}
 			prev_id = event.id
-			
+			// wait shouldnt listmapmap be called maplistmap?
 			let maplist = listmapmap[event.type]
 			let ref_id = event.refId
+			
 			switch (event.type) { default: {
-				console.warn("unknown event type:", event.type, event)
+				console.warn("unknown event type:", event.type, event, maplist)
 			} break; case 'message_event': {
 				let message = maplist.message[~ref_id]
-				if (message) {
-					Act.message(message, maplist)
-					if (WatchAct.items[message.contentId])
-						WatchAct.message(message, maplist)
+				if (message)
 					comments.push(message)
-				}
 			/*} break; case 'activity_event': {
 				let act = maplist.activity[~ref_id]*/
-				
+			} break; case 'watch_event': {
+				let watch = maplist.watch[~ref_id]
+				console.log('watch event', watch, event)
 			} break; case 'user_event': {
 				let user = maplist.user[~ref_id]
 				if (user) {
@@ -310,11 +309,17 @@ let Lp = singleton({
 				}
 			} }
 		}
+		// group messages to process more efficiently
+		//  note: do we ever even get more than one at a time?
+		//  well, after a disconnect, i guess
 		if (comments.length) {
+			// todo: we want the sidebar and chat to use the same
+			// animationframe callback, so they are synced, if possible
 			try {
 				PageView.display_messages(comments)
 			} finally {
 				Sidebar.display_messages(comments)
+				Act.handle_messages(comments, listmapmap.message_event)
 			}
 		}
 	},

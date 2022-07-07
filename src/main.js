@@ -45,7 +45,7 @@ function immediate() {
 	
 	Lp.start_websocket()
 	
-	pull_recent()
+	Act.pull_recent()
 	
 	Nav.init()
 	

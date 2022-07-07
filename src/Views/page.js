@@ -77,6 +77,16 @@ class PageView extends BaseView {
 				this.edit_comment(e.detail.data)
 			}
 		})
+		
+		this.$watching.onchange = ev=>{
+			let btn = ev.currentTarget
+			if (btn.disabled)
+				return
+			btn.disabled = true
+			Req.set_watch(this.id, btn.checked).do = resp=>{
+				btn.disabled = false
+			}
+		}
 	}
 	Render({message, content:[page], Mpinned:pinned, user, watch}) {
 		this.id = page.id
@@ -348,7 +358,7 @@ PageView.template = HTML`
 		<chat-pane class='resize-box shown COL'>
 			<scroll-outer class='sized page-container' $=page_container>
 				<div class='pageInfoPane'>
-					<label>Watching: <input type=checkbox disabled $=watching></label>
+					<label>Watching: <input type=checkbox $=watching></label>
 				</div>
 				<div class='pageContents' $=page_contents></div>
 			</scroll-outer>

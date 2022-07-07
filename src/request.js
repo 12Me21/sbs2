@@ -236,6 +236,10 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 		return new ApiRequest(`Write/${type}`, 'POST', obj.Blob(), TYPES[type])
 	},
 	
+	set_watch(pid, state=true) {
+		return this.request(`Shortcuts/watch/${state?'add':'delete'}/${pid}`, null, null)
+	},
+	
 	// messages
 	send_message(message) {
 		return this.request('Write/message', null, message)

@@ -1,45 +1,39 @@
 'use strict'
 
-function newer(d1, d2) {
-	return (d2!=null && (d1==null || d2>d1))
-}
-
 class ActivityItem {
 	constructor(content, parent) {
+		if (parent.hide_user)
+			ActivityItem.template_simple(this)
+		else
+			ActivityItem.template(this)
+		
 		this.parent = parent
 		this.content = content
 		this.users = {}
 		this.date = -Infinity
-		this.$elem = this.constructor.HTML()
-		this.$user = this.$elem.lastChild.lastChild
-		this.$page = this.$elem.firstChild
-		this.$time = this.$elem.lastChild.firstChild
-		if (parent.hide_user) {
-			this.$user.remove()
-			this.$elem.classList.add('activity-watch')
-		}
+		
+		this.$root.href = Nav.entity_link(this.content)
 		this.redraw_page()
 		// every item is assumed to be the newest, when created
 		// make sure you create activityitems in the right order
 		this.top()
 	}
 	redraw_page() {
-		this.$elem.href = Nav.entity_link(this.content)
 		this.$page.fill(Draw.content_label(this.content))
 	}
 	// todo: .top() might make more sense as method on ActivityContainer
 	top() {
 		const con = this.parent.container
 		let first = con.firstElementChild
-		if (first == this.$elem)
+		if (first == this.$root)
 			return
-		con.prepend(this.$elem)
+		con.prepend(this.$root)
 		if (con.contains(document.activeElement))
 			return
 		let hole = con.querySelector(`:scope > [tabindex="0"]`)
 		if (hole)
 			hole.tabIndex = -1
-		this.$elem.tabIndex = 0
+		this.$root.tabIndex = 0
 	}
 	redraw_time() {
 		if (this.date!=-Infinity)
@@ -76,12 +70,18 @@ class ActivityItem {
 		}
 	}
 }
-ActivityItem.HTML = 𐀶`
+ActivityItem.template = HTML`
 <a class='activity-page' role=row tabindex=-1>
-	<div class='bar rem1-5 ellipsis'></div>
+	<div $=page class='bar rem1-5 ellipsis'></div>
 	<div class='bar rem1-5 activity-page-bottom ROW'>
-		<time class='time-ago ellipsis'></time>
-		<activity-users aria-orientation=horizontal class='FILL'>
+		<time $=time class='time-ago ellipsis'></time>
+		<activity-users $=user aria-orientation=horizontal class='FILL'>
+`
+ActivityItem.template_simple = HTML`
+<a class='activity-page activity-watch' role=row tabindex=-1>
+	<div $=page class='bar rem1-5 ellipsis'></div>
+	<div class='bar rem1-5 activity-page-bottom ROW'>
+		<time $=time class='time-ago ellipsis'></time>
 `
 
 class ActivityContainer {
@@ -153,47 +153,58 @@ class ActivityContainer {
 	}
 }
 
-const Act = new ActivityContainer()
-const WatchAct = new ActivityContainer(true)
-do_when_ready(()=>{
-	Act.init($sidebarActivity)
-	WatchAct.init($sidebarWatch)
-})
-
-function pull_recent() {
-	let start = new Date()
-	start.setDate(start.getDate() - 1)
-	Lp.chain({
-		values: {
-			yesterday: start,
-		},
-		requests: [
-			// recent messages
-			{type:'message_aggregate', fields:'contentId, createUserId, maxCreateDate, maxId', query:"createDate > @yesterday"},
-			{type:'message', fields:'*', query:"!notdeleted()", order:'id_desc', limit:50},
-			{type:'content', fields:'name, id, permissions, contentType, lastRevisionId', query:"id IN @message_aggregate.contentId OR id IN @message.contentId"},
+let Act = {
+	normal: new ActivityContainer(false),
+	watch: new ActivityContainer(true),
+	init() {
+		this.normal.init($sidebarActivity)
+		this.watch.init($sidebarWatch)
+	},
+	pull_recent() {
+		let start = new Date()
+		start.setDate(start.getDate() - 1)
+		Lp.chain({
+			values: {
+				yesterday: start,
+			},
+			requests: [
+				// recent messages
+				{type:'message_aggregate', fields:'contentId, createUserId, maxCreateDate, maxId', query:"createDate > @yesterday"},
+				{type:'message', fields:'*', query:"!notdeleted()", order:'id_desc', limit:50},
+				{type:'content', fields:'name, id, permissions, contentType, lastRevisionId', query:"id IN @message_aggregate.contentId OR id IN @message.contentId"},
+				// watches
+				{type:'watch', fields:'*'},
+				{name:'Cwatch', type:'content', fields:'name, id, permissions, contentType, lastRevisionId,lastCommentId', query: "!notdeleted() AND id IN @watch.contentId", order:'lastCommentId_desc'},
+				{name:'Mwatch', type:'message', fields: '*', query: 'id in @Cwatch.lastCommentId', order: 'id_desc'},
+				// shared
+				{type:'user', fields:'*', query:"id IN @message_aggregate.createUserId OR id IN @message.createUserId OR id IN @watch.userId"},
+				// todo: activity_aggregate
+			],
+		}, (objects)=>{
+			console.log('🌄 got initial activity')
+			Entity.link_comments({message:objects.Mwatch, user:objects.user})
+			Entity.ascending(objects.message, 'id')
+			// TODO: ensure that these are displayed BEFORE any websocket new messages
+			Sidebar.display_messages(objects.message, true)
+			objects.message_aggregate.sort((a, b)=>a.maxId-b.maxId)
+			for (let x of objects.message_aggregate)
+				this.normal.message_aggregate(x, objects)
 			// watches
-			{type:'watch', fields:'*'},
-			{name:'Cwatch', type:'content', fields:'name, id, permissions, contentType, lastRevisionId,lastCommentId', query: "!notdeleted() AND id IN @watch.contentId", order:'lastCommentId_desc'},
-			{name:'Mwatch', type:'message', fields: '*', query: 'id in @Cwatch.lastCommentId', order: 'id_desc'},
-			// shared
-			{type:'user', fields:'*', query:"id IN @message_aggregate.createUserId OR id IN @message.createUserId OR id IN @watch.userId"},
-			// todo: activity_aggregate
-		],
-	}, (objects)=>{
-		console.log('🌄 got initial activity')
-		Entity.link_comments({message:objects.Mwatch, user:objects.user})
-		Entity.ascending(objects.message, 'id')
-		// TODO: ensure that these are displayed BEFORE any websocket new messages
-		Sidebar.display_messages(objects.message, true)
-		objects.message_aggregate.sort((a, b)=>a.maxId-b.maxId)
-		for (let x of objects.message_aggregate)
-			Act.message_aggregate(x, objects)
-		// watches
-		Entity.link_watch({message:objects.Mwatch, watch:objects.watch, content:objects.Cwatch})
-		objects.watch.sort((x, y)=>x.Message.id-y.Message.id)
-		for (let x of objects.watch)
-			WatchAct.watch(x, {content:objects.Cwatch})
-	})
+			Entity.link_watch({message:objects.Mwatch, watch:objects.watch, content:objects.Cwatch})
+			objects.watch.sort((x, y)=>x.Message.id-y.Message.id)
+			for (let x of objects.watch)
+				this.watch.watch(x, {content:objects.Cwatch})
+		})
+	},
+	handle_messages(comments, maplist) {
+		for (let {contentId:pid, createUserId:uid, createDate2:date, deleted} of comments) {
+			if (!deleted) {
+				this.normal.update(maplist, pid, uid, date)
+				if (this.watch.items[pid])
+					this.watch.update(maplist, pid, null, date)
+			}
+		}
+	},
 }
+do_when_ready(()=>{Act.init()})
 
