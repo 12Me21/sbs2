@@ -8,6 +8,8 @@ html {
 html,
 /* light theme */
 html[data-theme="light"] {
+	color-scheme: light;
+	
 	/* text colors (black) */
 	--T-color: #000;
 	--T-link-color: #045;
@@ -61,6 +63,8 @@ html[data-theme="light"] {
 
 /* dark theme */
 html[data-theme="dark"] {
+	color-scheme: dark;
+	
 	--T-color: #FFF;
 	--T-link-color: #9CE;
 	--T-link-hover-color: #5CE;
