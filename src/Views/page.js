@@ -22,9 +22,10 @@ class PageView extends BaseView {
 				},
 				requests: [
 					{type: 'content', fields: "*", query: `${field} = @key`},
-					{type: 'message', fields: "*", query: "contentId in @content.id AND !notdeleted()", order: 'id_desc', limit: 30},
+					{type: 'message', fields: "*", query: "contentId IN @content.id AND !notdeleted()", order: 'id_desc', limit: 30},
 					{name: 'Mpinned', type: 'message', fields: "*", query: "id IN @content.values.pinned"},
 					{type: 'user', fields: "*", query: "id IN @content.createUserId OR id IN @message.createUserId OR id IN @message.editUserId OR id IN @Mpinned.createUserId OR id IN @Mpinned.editUserId"},
+					{type: 'watch', fields: "*", query: "contentId IN @content.id"}
 				],
 			},
 			check: resp=>resp.content[0]
@@ -76,9 +77,8 @@ class PageView extends BaseView {
 				this.edit_comment(e.detail.data)
 			}
 		})
-		
 	}
-	Render({message, content:[page], Mpinned:pinned, user}) {
+	Render({message, content:[page], Mpinned:pinned, user, watch}) {
 		this.id = page.id
 		PageView.rooms[this.id] = this
 		this.visible = false
@@ -107,6 +107,7 @@ class PageView extends BaseView {
 		///////////
 		
 		this.update_page(page)
+		this.update_watch(watch[0])
 		
 		this.userlist.set_status("active")
 		this.userlist.redraw()
@@ -160,6 +161,11 @@ class PageView extends BaseView {
 		Edit.insert(this.$textarea, text)
 	}
 
+	// render the watch state
+	update_watch(watch) {
+		this.watch = watch
+		this.$watching.checked = !!this.watch
+	}
 	update_page(page) {
 		this.page = page
 		if (page.contentType==ABOUT.details.codes.InternalContentType.file) {
@@ -341,6 +347,9 @@ PageView.template = HTML`
 	<div class='FILL SLIDES' $=panes>
 		<chat-pane class='resize-box shown COL'>
 			<scroll-outer class='sized page-container' $=page_container>
+				<div class='pageInfoPane'>
+					<label>Watching: <input type=checkbox disabled $=watching></label>
+				</div>
 				<div class='pageContents' $=page_contents></div>
 			</scroll-outer>
 			<resize-handle $=resize_handle class='bar userlist2' style='--bar-height:2.4375rem'><div $=userlist class='userlist item'></div></resize-handle>
@@ -382,3 +391,9 @@ View.register('pages', {
 View.register('category', {
 	Redirect(location) {location.type='page'},
 })
+
+//todo: some unified system for listening to updates relating to the current page/pageid
+// - message create/delete/edit
+// - watch create/delete/edit
+// - content edit/delete
+// - user status changes
