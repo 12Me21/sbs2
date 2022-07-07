@@ -320,17 +320,10 @@ but, then we can't add a border to the image
 		left: 0; top: 0; bottom: 0; right: 0;
 		width: initial !important;
 	}
-	/* this is kinda a hack. basically what we really want is,
-for horizontal-split to stop acting like a .resize-box
-*/
-	horizontal-split {
-		contain: size !important; /* and maybe some others */
-	}
 	/* hide all sidebar elements except the sidebar itself */
 	.sidebar-element:not(sidebar-container) {
 		display: none;
 	}
-	
 	html.f-mobileSidebar not-sidebar {
 		visibility: hidden; /* hide the stuff behind the sidebar so you don't interact with it */
 	}

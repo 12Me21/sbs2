@@ -14,12 +14,7 @@
 
 class PageView extends BaseView {
 	Start({id, query}) {
-		let field
-		if ('number'==typeof id) {
-			field = 'id'
-		} else {
-			field = 'hash'
-		}
+		let field = 'number'==typeof id ? 'id' : 'hash'
 		return {
 			chain: {
 				values: {
@@ -32,24 +27,12 @@ class PageView extends BaseView {
 					{type: 'user', fields: "*", query: "id IN @content.createUserId OR id IN @message.createUserId OR id IN @message.editUserId OR id IN @Mpinned.createUserId OR id IN @Mpinned.editUserId"},
 				],
 			},
-			check(resp) {
-				return resp.content[0]
-			},
+			check: resp=>resp.content[0]
 		}
 	}
 	Init() {
-		this.pre_edit = null
-		this.editing_comment = null
-		this.room = null
-		this.id = null
-		this.list = null
-		this.userlist = null
-		if (View.lost_textarea) {
-			console.log('reuse textarea!')
-			this.$textarea.replaceWith(View.lost_textarea)
-			this.$textarea = View.lost_textarea
-			View.lost_textarea = null
-		}
+		if (View.lost)
+			this.$textarea.value = View.lost
 		
 		this.$textarea.enterKeyHint = Settings.chat_enter!='newline' ? "send" : "enter" // uh this won't update though... need a settings change watcher
 		this.$textarea_container.onkeydown = e=>{
@@ -86,6 +69,14 @@ class PageView extends BaseView {
 		PageView.track_resize_2.add(this.$textarea_container, ()=>{
 			window.setTimeout(this.r)
 		})
+		
+		this.$root.addEventListener('message_control', e=>{
+			if (e.detail.action=='edit') {
+				e.stopPropagation()
+				this.edit_comment(e.detail.data)
+			}
+		})
+		
 	}
 	Render({message, content:[page], Mpinned:pinned, user}) {
 		this.id = page.id
@@ -99,13 +90,6 @@ class PageView extends BaseView {
 		this.scroller = new Scroller(this.$outer, this.$inner)
 		// chat messages
 		this.list = new MessageList(this.$message_list, this.id)
-		
-		this.$root.addEventListener('message_control', e=>{
-			if (e.detail.action=='edit') {
-				e.stopPropagation()
-				this.edit_comment(e.detail.data)
-			}
-		})
 		
 		this.$load_older.onclick = e=>{
 			let btn = e.target
@@ -164,16 +148,8 @@ class PageView extends BaseView {
 	}
 	// 8:10;35
 	Cleanup(type) {
-		this.dead=true
-		// we need to be very careful to prevent mem leaks here...
-		// maybe we can attach the evnt listeners to $textarea_container instead
-		// that way they only trigger if the textarea is inplace
-		let textarea = this.$textarea
-		this.$textarea = null
-		document.head.append(textarea) // yeah uhh just put it   there
-		View.lost_textarea = textarea
-		console.log('cleanup', View.lost_textarea)
-		
+		View.lost = this.$textarea.value
+		this.dead = true
 		this.userlist.set_status(null)
 		PageView.currentRoom = null
 		delete PageView.rooms[this.id]
@@ -181,8 +157,7 @@ class PageView extends BaseView {
 		PageView.track_resize_2.remove(this.$textarea_container)
 	}
 	Insert_Text(text) {
-		this.$textarea.focus()
-		document.execCommand('insertText', false, text)
+		Edit.insert(this.$textarea, text)
 	}
 
 	update_page(page) {
@@ -297,8 +272,7 @@ class PageView extends BaseView {
 					//if (err) //error sending message
 						//this.write_input(old)
 				}
-				this.$textarea.select()
-				document.execCommand('delete')
+				Edit.clear(this.$textarea)
 				this.textarea_resize()
 			}
 		}
@@ -329,11 +303,7 @@ class PageView extends BaseView {
 	}
 	
 	write_input(data) {
-		this.$textarea.select()
-		if (data.text)
-			document.execCommand('insertText', false, data.text)
-		else
-			document.execCommand('delete')
+		Edit.set(this.$textarea, data.text)
 		this.textarea_resize()
 		let markup = data.values.m
 		if ('string'!=typeof markup)

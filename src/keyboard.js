@@ -1,5 +1,28 @@
 'use strict'
 
+// Use these to modify <textarea> contents without losing undo history
+// Other safe operations are:
+// - elem.select()
+// - elem.setSelectionRange(start, end, dir)
+// - document.execCommand(cmd, ?, data)
+let Edit = {
+	clear(elem) {
+		elem.select()
+		document.execCommand('delete')
+	},
+	set(elem, text) {
+		elem.select()
+		if (text)
+			document.execCommand('insertText', false, text)
+		else
+			document.execCommand('delete')
+	},
+	insert(elem, text) {
+		elem.focus()
+		document.execCommand('insertText', false, text)
+	},
+}
+
 function switch_tab(next, no_focus) {
 	if (!next)
 		return

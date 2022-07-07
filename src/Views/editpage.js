@@ -68,8 +68,7 @@ class EditView extends BaseView {
 		this.got_page(page, false)
 	}
 	Insert_Text(text) {
-		this.$textarea.focus()
-		document.execCommand('insertText', false, text)
+		Edit.insert(this.$textarea, text)
 	}
 	got_page(page, creating) {
 		View.set_entity_title(page)

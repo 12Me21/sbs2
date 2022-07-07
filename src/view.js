@@ -106,6 +106,8 @@ const View = NAMESPACE({
 	
 	first: true,
 	
+	lost: null,
+	
 	observer: null,
 	toggle_observer(state) {
 		if (!this.observer == !state)
