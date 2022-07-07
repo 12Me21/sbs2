@@ -115,7 +115,7 @@ let Lp = singleton({
 					return
 				}
 				if (this.last_reconnect-last < 1000) {
-					this.schedule_retry(time)
+					this.schedule_retry(1000)
 				} else
 					this.start_websocket()
 			}
