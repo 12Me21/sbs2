@@ -155,10 +155,9 @@ class Scroller {
 				this.anim = null
 				if (this.anim_type==2) {
 					this.inner.classList.remove('scroll-anim3')
-					this.set_offset(dist)
+					this.inner.style.setProperty('--scroll', dist+"px")
 					void this.inner.offsetWidth
 					this.inner.classList.add('scroll-anim3')
-					this.set_offset()
 				} else if (this.anim_type==1) {
 					this.anim_step(dist, time)
 				}
