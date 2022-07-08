@@ -116,7 +116,6 @@ html, body {
 	line-height: var(--bar-height);
 }
 .item, .textItem {
-	max-width: 100%;
 	max-width: -webkit-fill-available;
 	max-width: -moz-available;
 	max-width: stretch;
