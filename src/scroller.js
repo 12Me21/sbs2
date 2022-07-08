@@ -158,8 +158,7 @@ class Scroller {
 					this.set_offset(dist)
 					void this.inner.offsetWidth
 					this.inner.classList.add('scroll-anim3')
-					void this.inner.offsetWidth
-					this.set_offset("0")
+					this.set_offset()
 				} else if (this.anim_type==1) {
 					this.anim_step(dist, time)
 				}
