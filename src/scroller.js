@@ -94,7 +94,6 @@ class Scroller {
 		
 		this.anim_type = Scroller.anim_type
 		this.anim = null
-		this.moving = false
 		if (this.anim_type==2)
 			this.inner.classList.add('scroll-anim3')
 		
@@ -186,7 +185,6 @@ class Scroller {
 			dist *= Math.pow(0.75, dt)
 			if (Math.abs(dist) <= 1) {
 				this.set_offset()
-				this.moving = false
 			} else
 				this.anim_step(dist, time)
 		})

@@ -154,7 +154,7 @@ class PageView extends BaseView {
 	}
 	Visible() {
 		this.textarea_resize()
-		this.scroller.scroll_instant()
+		//this.scroller.scroll_instant()
 	}
 	// 8:10;35
 	Cleanup(type) {
