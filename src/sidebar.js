@@ -176,7 +176,6 @@ let Sidebar = Object.seal({
 	
 	display_messages(comments, initial, share) {
 		// todo: show page titles?
-		console.log('print initial', initial)
 		this.scroller.print(()=>{
 			for (let c of comments) {
 				let old = this.displayed_ids[c.id]

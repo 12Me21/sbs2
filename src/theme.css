@@ -64,7 +64,7 @@ html[data-theme="light"] {
 /* dark theme */
 html[data-theme="dark"] {
 	color-scheme: dark;
-	
+	caret-color: var(--T-color);
 	--T-color: #FFF;
 	--T-link-color: #9CE;
 	--T-link-hover-color: #5CE;
