@@ -88,10 +88,8 @@ class Scroller {
 				this.scroll_instant()
 		})
 		Scroller.track_height.add(this.inner, (old_size)=>{
-			if (this.at_bottom(undefined, old_size)) {
-				//console.log('SI height change', this, Date.now())
+			if (this.at_bottom(undefined, old_size))
 				this.scroll_instant()
-			}
 		})
 		
 		Object.seal(this)
@@ -145,6 +143,21 @@ class Scroller {
 	}
 	// todo: maybe we should always use requestAnimationFrame or something
 	// before the first frame, to allow the page to settle
+	cancel_animation() {
+		if (this.anim_type==2) {
+			this.inner.style.transition = "none"
+			if (this.anim_id) {
+				window.cancelAnimationFrame(this.anim_id)
+				this.set_shift(0)
+			}
+			this.anim_id = null
+		} else if (this.anim_type==1) {
+			if (this.anim_id) {
+				window.cancelAnimationFrame(this.anim_id)
+				this.end_animation()
+			}
+		}
+	}
 	start_animation(dist, share) {
 		if (Math.abs(dist) <= 1)
 			return
@@ -170,21 +183,6 @@ class Scroller {
 			this.inner.style.transition = ""
 			this.set_shift(0)
 		})
-	}
-	cancel_animation() {
-		if (this.anim_type==2) {
-			this.inner.style.transition = "none"
-			if (this.anim_id) {
-				window.cancelAnimationFrame(this.anim_id)
-				this.set_shift(0)
-			}
-			this.anim_id = null
-		} else if (this.anim_type==1) {
-			if (this.anim_id) {
-				window.cancelAnimationFrame(this.anim_id)
-				this.end_animation()
-			}
-		}
 	}
 	// only for anim_type 1:
 	end_animation() {
