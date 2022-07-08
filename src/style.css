@@ -1,3 +1,5 @@
+@charset "utf-8";
+
 /* main stuff */
 html {
 	background: #FEE; /* (for debug) */
@@ -383,14 +385,15 @@ message-block {
 	;font-size: 1em /* ? */
 }
 message-block > img.avatar {
-	;display: inline-block
-	;position: absolute
-	;width: var(--chat-avatar-size)
-	;height: var(--chat-avatar-size)
-	;border: none ;" 1px solid #777
-	;margin-right: calc(var(--chat-gutter) - var(--chat-avatar-size))
-	;"background-color: transparent
-	;"background-color: #AAB
+	display: inline-block;
+	position: absolute;
+	width: var(--chat-avatar-size);
+	height: var(--chat-avatar-size);
+	border: none; /*1px solid #777*/
+	margin-right: calc(var(--chat-gutter) - var(--chat-avatar-size));
+	/*background-color: transparent*/
+	/*background-color: #AAB*/
+						
 }
 message-block > .bigAvatar {
 	;position: absolute
@@ -422,63 +425,64 @@ message-block > message-header > time {
 }
 
 message-contents {
-	;display: block
-	;min-height: 1.5rem ;" this is so the message controls always have somewhere to be shown
-	;margin-block: 0.125rem
-	;" do we need all these
-	;overflow-y: hidden
-	;background: var(--T-bg)
-	
-	;contain: none ;" because of overlapping with avatar
+	display: block;
+	min-height: 1.5rem; /*this is so the message controls always have somewhere to be shown*/
+	margin-block: 0.125rem;
+	/* do we need all these */
+	overflow-y: hidden;
+	background: var(--T-bg);
+	contain: none; /* because of overlapping with avatar */
 }
 
 message-part {
-	;overflow: visible
-	;display: block
-	;min-height: 1rem ;" this is so the message controls always have somewhere to be shown
-	;padding-block: 0.125rem
-	;padding-left: calc(var(--chat-gutter) + 0.1875rem)
-	;--T-bg: transparent
+	display: block;
+	overflow: visible;
+	min-height: 1rem; /* this is so the message controls always have somewhere to be shown */
+	padding: 0.125rem 0;
+	padding-left: calc(var(--chat-gutter) + 0.1875rem);
+	/* padding overlaps with avatars, so clip the bg to content-box */
+	-webkit-background-clip: content !important;
+	-webkit-background-clip: content-box !important;
+	background-clip: content-box !important;
 }
 message-part.edited {
-	;" todo: fix this styling
-	;" we may just need an extra container for message-parts...
-	;padding-left: calc(var(--chat-gutter) + 0.1875rem - 2px)
-	;border-left: 2px solid gray
-	;"outline-left: 2px solid gray
+	/* todo: fix this styling */
+	/* we may just need an extra container for message-parts... */
+	padding-left: 0;
+	border-left: calc(var(--chat-gutter) + 0.1875rem) solid;
+	border-left-color: linear-gradient(to left, gray 2px, transparent 2px);
+	/* outline-left: 2px solid gray */
 }
 message-part:focus {
-	;background: var(--message-focus-bg)
-	;outline: none
+	background: var(--message-focus-bg);
+	outline: none;
 }
 message-part.boundary-top {
-	;border-top: 2px solid red
+	border-top: 2px solid red;
 }
 message-part.boundary-bottom {
-	;border-bottom: 2px solid red
+	border-bottom: 2px solid red;
 }
 
 .real-name-label {
-	;color: gray
+	color: gray;
 }
 
 message-controls {
-	;display: inline-flex
-	;position: absolute
-	;width: var(--chat-gutter)
-	;height: 1.3125rem
-	;z-index: 9
-	;" don't remove these prefixes
-	;-webkit-user-select: none
-	;-moz-user-select: none
-	;user-select: none
+	display: inline-flex;
+	position: absolute;
+	width: var(--chat-gutter);
+	height: 1.3125rem;
+	z-index: 9;
+	/* don't remove these prefixes */
+	-webkit-user-select: none; -moz-user-select: none; user-select: none;
 }
 message-controls > button {
 	;flex-grow: 1
 	;padding: 0
 }
 message-controls:hover + message-part {
-	;background: var(--message-hover-bg)
+	background: var(--message-hover-bg);
 }
 
 .messageGap {

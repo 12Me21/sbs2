@@ -379,7 +379,7 @@ PageView.template = HTML`
 	<div class='inputPane loggedIn ROW'>
 		<div class='showWhenEdit COL'>
 			<input $=markup placeholder="markup" style="width:50px;">
-			<button class='FILL' $=cancel>Cancel Edit</button>
+			<button class='FILL' $=cancel>Cancel</button>
 		</div>
 		<textarea-container class='FILL' $=textarea_container>
 			<div $=textarea_width></div>
