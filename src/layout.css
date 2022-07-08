@@ -123,9 +123,6 @@ html, body {
 .bar button.item {
 	/*height: calc(var(--bar-height) - 1px - 1px);*/
 }
-.bar .avatar {
-	width: var(--bar-height);
-}
 .bar .iconBg {
 	width: 1em;
 	/*margin-right: 0.2rem;*/

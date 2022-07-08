@@ -99,7 +99,7 @@ const Draw = Object.seal({
 		if (status == "idle")
 			e.classList.add('status-idle')
 		return e
-	}.bind(𐀶`<a tabindex=-1><img class='item avatar' width=100 height=100 alt="">`),
+	}.bind(𐀶`<a tabindex=-1><img class='avatar' width=100 height=100 alt="">`),
 	
 	//📥 comment‹Message›
 	//📤 ‹ParentNode›
