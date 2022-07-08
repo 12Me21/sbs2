@@ -213,13 +213,14 @@ class PageView extends BaseView {
 	// comments: [Comment]
 	// animate: Boolean - whether to play the scrolling animation
 	display_messages(comments, initial=false, share) {
-		if (!initial)
-			this.scroller.print(true)
-		for (let comment of comments)
-			this.list.display_message(comment, false)
+		this.scroller.print(()=>{
+			for (let comment of comments)
+				this.list.display_message(comment, false)
+		}, !initial)
 		if (this.list.over_limit() && !this.$limit_checkbox.checked) {
-			this.scroller.print_top()
-			this.list.limit_messages()
+			this.scroller.print_top(()=>{
+				this.list.limit_messages()
+			})
 		}
 	}
 	// display a list of messages from multiple rooms

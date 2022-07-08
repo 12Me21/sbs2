@@ -126,37 +126,51 @@ class Scroller {
 	set_offset(y) {
 		this.inner.style.transform = y ? `translateY(${y}px)` : ""
 	}
-	print_top() {
+	print_top(fn) {
 		// eh
+		fn()
 	}
-	print(smooth) {
-		if (!this.at_bottom())
+	print(fn, smooth) {
+		if (!this.at_bottom()) {
+			fn()
 			return
+		}
 		this.cancel_animation()
+		// could use scrollTop instead of scroll_height()
+		// since scroll_instant() will increase it by the distance added.
+		// except, this doesnt work until the inner height is > outer height (i.e. not when the container is mostly empty)
 		let before = smooth && this.scroll_height()
 		//
-		this.anim = requestAnimationFrame(time=>{
-			this.anim = null
+		try {
+			fn()
+		} finally {
 			this.scroll_instant()
 			if (!smooth)
 				return
-			let dist = this.scroll_height() - before
+			let after = this.scroll_height()
+			let dist = after - before
 			if (Math.abs(dist) <= 1)
 				return
-			if (this.anim_type==2) {
+			//this.override_height = smooth ? null : false
+			this.anim = requestAnimationFrame(time=>{
 				this.moving = true
-				this.inner.style.transition = "none"
-				this.set_offset(dist)
-				void this.inner.offsetWidth
-				this.inner.style.transition = ""
-				this.set_offset()
-			} else if (this.anim_type==1) {
-				this.moving = true
-				this.anim_step(dist, time)
-			}
-		})
+				this.anim = null
+				if (this.anim_type==2) {
+					this.inner.style.transition = "none"
+					this.set_offset(dist)
+					void this.inner.offsetWidth
+					this.inner.style.transition = ""
+					this.set_offset()
+				} else if (this.anim_type==1) {
+					this.anim_step(dist, time)
+				}
+			})
+		}
 	}
 	cancel_animation() {
+		if (this.anim)
+			cancelAnimationFrame(this.anim)
+		this.anim = null
 		if (!this.moving)
 			return
 		this.moving = false
