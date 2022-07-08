@@ -130,6 +130,8 @@ class Scroller {
 		fn()
 	}
 	print(fn, smooth) {
+		// todo: we use this.outer.scrollHeight in at_bottom, then later access inner.gbcr().height for scroll_height()
+		// so, i suppose we could reuse the value
 		if (!this.at_bottom()) {
 			fn()
 			return

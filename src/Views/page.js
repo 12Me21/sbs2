@@ -154,6 +154,8 @@ class PageView extends BaseView {
 	}
 	Visible() {
 		this.textarea_resize()
+		// for some reason this caused major rendering glitches in ios
+		// and doesn't seem to be necessary, so i guess i'll disable it?
 		//this.scroller.scroll_instant()
 	}
 	// 8:10;35
