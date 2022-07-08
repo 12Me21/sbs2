@@ -151,33 +151,30 @@ class Scroller {
 			let dist = after - before
 			if (Math.abs(dist) <= 1)
 				return
-			this.moving = true
-			this.inner.style.transition = "none"
-			this.set_offset(dist)
-			//this.override_height = smooth ? null : false
-			this.anim = requestAnimationFrame(time=>{
-				this.anim = null
-				if (this.anim_type==2) {
-					this.inner.style.transition = ""
-					this.set_offset()
-				} else if (this.anim_type==1) {
-					this.anim_step(dist, time)
-				}
-			})
+			if (this.anim_type==2)
+				this.inner.style.transition = "none"
+			if (this.anim_type!=0) {
+				this.set_offset(dist)
+				//this.override_height = smooth ? null : false
+				this.anim = requestAnimationFrame(time=>{
+					this.anim = null
+					if (this.anim_type==2) {
+						this.inner.style.transition = ""
+						this.set_offset()
+					} else if (this.anim_type==1) {
+						this.anim_step(dist, time)
+					}
+				})
+			}
 		}
 	}
 	cancel_animation() {
 		if (this.anim)
 			cancelAnimationFrame(this.anim)
 		this.anim = null
-		if (!this.moving)
-			return
-		this.moving = false
-		if (this.anim_type==2) {
+		if (this.anim_type==2)
 			this.inner.style.transition = "none"
-		} else if (this.anim_type==1) {
-			this.set_offset()
-		}
+		this.set_offset()
 	}
 	// mode 1 only
 	anim_step(dist, prev_time) {

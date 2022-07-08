@@ -115,6 +115,7 @@ class MessageList {
 			throw new RangeError("Tried to remove nonexistant message-part, id:"+id)
 		
 		// remove edit buttons if they're on this message
+		print('del?', part, MessageList.controls_message)
 		if (part.elem == MessageList.controls_message)
 			MessageList.show_controls(null)
 		let contents = part.elem.parentNode // <message-contents>
