@@ -448,9 +448,9 @@ message-part {
 message-part.edited {
 	/* todo: fix this styling */
 	/* we may just need an extra container for message-parts... */
-	padding-left: 0;
-	border-left: calc(var(--chat-gutter) + 0.1875rem) solid;
-	border-left-color: linear-gradient(to left, gray 2px, transparent 2px);
+	box-shadow: 2px 0 goldenrod inset;
+	padding-left: 6px;
+	border-left: calc(var(--chat-gutter) + 0.1875rem - 6px) solid transparent;
 	/* outline-left: 2px solid gray */
 }
 message-part:focus {
