@@ -6,7 +6,7 @@ document.addEventListener('message_control', e=>{
 	if (e.detail.action=='info')
 		alert(JSON.stringify(e.detail.data, null, 1)) // <small heart>
 	if (e.detail.action=='speak')
-		speakMessage(e.detail.data)
+		TTSSystem.speakMessage(e.detail.data)
 })
 
 class MessageList {
