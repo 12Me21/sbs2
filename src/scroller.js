@@ -95,8 +95,6 @@ class Scroller {
 		this.anim_type = Scroller.anim_type
 		this.anim = null
 		this.moving = false
-		if (this.anim_type==2)
-			this.inner.classList.add('scroll-anim3')
 		
 		// autoscroll is enabled within this distance from the bottom
 		this.bottom_region = 10
@@ -156,10 +154,10 @@ class Scroller {
 				this.moving = true
 				this.anim = null
 				if (this.anim_type==2) {
-					this.inner.style.transition = "none"
+					this.inner.classList.remove('scroll-anim3')
 					this.set_offset(dist)
 					void this.inner.offsetWidth
-					this.inner.style.transition = ""
+					this.inner.classList.add('scroll-anim3')
 					this.set_offset()
 				} else if (this.anim_type==1) {
 					this.anim_step(dist, time)
@@ -175,7 +173,7 @@ class Scroller {
 			return
 		this.moving = false
 		if (this.anim_type==2) {
-			this.inner.style.transition = "none"
+			this.inner.classList.remove('scroll-anim3')
 		} else if (this.anim_type==1) {
 			this.set_offset()
 		}
