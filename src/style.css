@@ -434,16 +434,51 @@ message-contents {
 	contain: none; /* because of overlapping with avatar */
 }
 
+/*
+<message-block>
+┌───────────┲━━━━━━━━━━━━━━━━━━━━━┱─┐
+│ ╭───────╮ ┃ <message-header>    ┃ │
+│ │.avatar│ ┗━━━━━━━━━━━━━━━━━━━━━┛ │
+│ ┢━━━━━━━┿┯┯━━━━━━━━━━━━━━━━━━━━━┓ │
+│ ┃       ┊╎╎ <message-part>      ┃ │
+│ ┃╌╌╌╌╌╌╌╯╎╎←-(padding-left)     ┃ │
+│ ┃       ←╎╎-(border-left)       ┃ │
+│ ┡━━━━━━━━┷┷━━━━━━━━━━━━━━━━━━━━━┩ │
+│ │      <message-contents>       │ │
+│ ┢━━━━━━━━┯┯━━━━━━━━━━━━━━━━━━━━━┪ │
+│ ┃        ╎╎ <message-part>      ┃ │
+│ ┃        ╎╎    ...              ┃ │
+└─┺━━━━━━━━┷┷━━━━━━━━━━━━━━━━━━━━━┹─┘
+
+<message-block> contains
+- <img class=avatar>
+- <message-header> (with username/time)
+- <message-contents>
+
+within <message-contents> is a list of <message-part>s
+(<message-controls> is also inserted here, immediately after the highlighted <message-part>)
+
+each <message-part> actually extends all the way to the left, and uses padding and/or borders to shift the content out of this 'gutter'
+(the .avatar is set to position: absolute, so it can overlap the first <message-part>s padding)
+
+the reason I don't use padding on the CONTAINER instead, is because i need to display <message-controls>:
+I need the <message-part>s to extend into the gutter, so that i can detect which <message-part> the mouseover/mouseleave events are for, when the cursor is in over gutter
+
+(I also can't use left margin on <message-block>, since mouse events only apply within the border-box)
+*/
+
 message-part {
 	display: block;
 	overflow: visible;
 	min-height: 1rem; /* this is so the message controls always have somewhere to be shown */
+	/* we can't use margin here, because then we don't get pointer events */
 	padding: 0.125rem 0;
-	padding-left: calc(var(--chat-gutter) + 0.1875rem);
+	border-left: solid transparent var(--chat-gutter);
+	padding-left: 0.1875rem;
 	/* padding overlaps with avatars, so clip the bg to content-box */
-	-webkit-background-clip: content !important;
-	-webkit-background-clip: content-box !important;
-	background-clip: content-box !important;
+	-webkit-background-clip: padding !important;
+	-webkit-background-clip: padding-box !important;
+	background-clip: padding-box !important;
 }
 message-part.edited {
 	/* todo: fix this styling */
