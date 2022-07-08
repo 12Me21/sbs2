@@ -192,9 +192,9 @@ const TTSSystem = {
 						this.renderSpeechScript(elem, opts)
 					else {
 						const huh = "./resource/meow.wav"
+						finalizeChunk()
 						opts.mediaCache ||= {}
-						if (opts.mediaCache[huh] == undefined)
-							opts.mediaCache[huh] = this.loadSound(huh)
+						opts.utter.push(opts.mediaCache[huh] ||= this.loadSound(huh))
 						console.log(`TTS Ignored ${elem.type}...`)
 					}
 				break }
@@ -210,4 +210,8 @@ const TTSSystem = {
 	},
 }
 
-// TODO: strikethrough, sup, sub, tables (maybe read head?)
+// TODO: strikethrough, sup, sub, tables (maybe read head?),
+//       ruby (true already handled), horiz. rule, maybe lists,
+//       maybe headers? (louder volume?), quote text (with barely-used src),
+//       maybe anchors should work (as in `[[#test]]`),
+// (from quick run through of 12y markup guide and glance at comments)
