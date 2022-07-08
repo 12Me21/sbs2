@@ -62,178 +62,6 @@ if (window.ResizeObserver) {
 }
 
 
-
-class Scroller {
-	constructor(outer, inner) { // constructor todo. take outer element only. create inner element here.
-		this.outer = outer
-		this.inner = inner
-		
-		this.middle = document.createElement('scroll-middle')
-		this.middle.append(this.inner)
-		this.outer.append(this.middle)
-		
-		this.anim_type = Scroller.anim_type
-		this.anim_id = null
-		this.anim_pos = 0
-		if (this.anim_type==2)
-			this.inner.classList.add('scroll-anim3')
-		
-		// amount of remaining distance to scroll per 1/60 second
-		this.rate = 0.25
-		// autoscroll is enabled within this distance from the bottom
-		this.bottom_region = 10
-		
-		Scroller.track_height.add(this.outer, (old_size)=>{
-			if (this.at_bottom(old_size, undefined))
-				this.scroll_instant()
-		})
-		Scroller.track_height.add(this.inner, (old_size)=>{
-			if (this.at_bottom(undefined, old_size))
-				this.scroll_instant()
-		})
-		
-		Object.seal(this)
-	}
-	scroll_height() {
-		return this.inner.getBoundingClientRect().height
-	}
-	at_bottom(outer_height = this.outer.clientHeight, scroll_height = this.outer.scrollHeight) {
-		return scroll_height-outer_height-this.outer.scrollTop < this.bottom_region
-	}
-	scroll_instant() {
-		this.outer.scrollTop = 9e9
-	}
-	// why is this split up.. messy... ;todo
-	before_print(animate) {
-		if (this.at_bottom())
-			// only calculate height if we need it for the animation
-			return animate ? this.scroll_height() : true
-		return false
-	}
-	after_print(before, share) {
-		if (before === false)
-			return // not at bottom
-		//console.log('SI after print', this, Date.now())
-		this.scroll_instant()
-		if (before === true) {
-			this.cancel_animation()
-			return // no animation
-		}
-		let diff = this.scroll_height() - before
-		this.start_animation(diff, share)
-	}
-	// todo: instead of these print wrappers, what if we just
-	// used mutation observers to detect stuff being added/removed
-	// or, looked at the height change events?
-	
-	// or, how about this: TODO TODO!
-	// instead of print wrapper
-	// we call before_print(), which checks the height and adds a requestAnimationFrame
-	// then you add your elements, and the animationFrame runs, handling the after print!
-	print(callback, animate, share) {
-		let height = this.before_print(animate)
-		try {
-			callback()
-		} finally {
-			this.after_print(height, share)
-		}
-	}
-	set_shift(y) {
-		this.inner.style.transform = y ? `translateY(${y}px)` : ""
-	}
-	// todo: maybe we should always use requestAnimationFrame or something
-	// before the first frame, to allow the page to settle
-	cancel_animation() {
-		if (this.anim_type==2) {
-			this.inner.style.transition = "none"
-			if (this.anim_id) {
-				window.cancelAnimationFrame(this.anim_id)
-				this.set_shift(0)
-			}
-			this.anim_id = null
-		} else if (this.anim_type==1) {
-			if (this.anim_id) {
-				window.cancelAnimationFrame(this.anim_id)
-				this.end_animation()
-			}
-		}
-	}
-	start_animation(dist, share) {
-		if (Math.abs(dist) <= 1)
-			return
-		if (this.anim_type==2) {
-			//let d = parseFloat(getComputedStyle(this.inner).top)
-			this.inner.style.transition = "none"
-			this.set_shift(dist)
-			if (share) {
-				this.anim_id = 0n
-				share.push(this)
-			} else {
-				this.start_anim_2()
-			}
-		} else if (this.anim_type==1) {
-			window.cancelAnimationFrame(this.anim_id)
-			this.anim_id = null
-			this.animate_insertion(this.anim_pos + dist)
-		}
-	}
-	start_anim_2() {
-		this.anim_id = window.requestAnimationFrame(t=>{
-			this.anim_id = null
-			this.inner.style.transition = ""
-			this.set_shift(0)
-		})
-	}
-	// only for anim_type 1:
-	end_animation() {
-		this.anim_id = null
-		this.anim_pos = 0
-		this.set_shift(0)
-	}
-	animate_insertion(dist, prev_time = document.timeline.currentTime) {
-		this.set_shift(dist)
-		this.anim_pos = dist
-		let id = this.anim_id = window.requestAnimationFrame((time)=>{
-			// if the animation was cancelled or another was started
-			if (this.anim_id != id)
-				return
-			// delta time adjusted version of
-			// new_dist = dist * (1-this.rate) @ 60fps
-			let dt = Math.min((time-prev_time) / (1000/60), 2)
-			let new_dist = dist * Math.pow(1-this.rate, dt)
-			// abs allows animation to play backwards (for deleting)
-			if (Math.abs(new_dist) <= 1)
-				this.end_animation()
-			else
-				this.animate_insertion(new_dist, time)
-		})
-	}
-	// todo: this should be used instead of print() if you're making changes
-	// to elements above the current scroll position
-	print_top(callback) {
-		let height1 = this.scroll_height()
-		let scroll = this.outer.scrollTop
-		
-		try {
-			let elem = callback()
-			elem && this.inner.prepend(elem)
-		} finally {
-			// problem: the resize detection gets triggered here, I think
-			// and.. idk it causes you to jump downwards sometimes if I set the scrollTop here
-			
-			//let diff = this.scroll_height()-height1
-			//this.outer.scrollTop = scroll + diff
-		}
-	}
-	destroy() {
-		// probably unneccessary but idk.. memory leaks
-		Scroller.track_height.remove(this.inner)
-		Scroller.track_height.remove(this.outer)
-	}
-}
-Scroller.track_height = new ResizeTracker('height')
-Scroller.anim_type = 2
-
 //Object.seal(Scroller)
 //Object.seal(Scroller.prototype)
 
@@ -253,3 +81,110 @@ Scroller.anim_type = 2
 // idea: what if we, after an element is inserted, lock the scroll-inner height to its current value
 // then, on inserting a new element, we expand the height to fit the new content
 // have to use resizeobserver to adjust.. nnn
+
+
+class Scroller {
+	constructor(outer, inner) {
+		this.outer = outer
+		this.inner = inner
+		
+		this.middle = document.createElement('scroll-middle')
+		this.middle.append(this.inner)
+		this.outer.append(this.middle)
+		
+		this.anim_type = Scroller.anim_type
+		this.anim = null
+		this.moving = false
+		if (this.anim_type==2)
+			this.inner.classList.add('scroll-anim3')
+		
+		// autoscroll is enabled within this distance from the bottom
+		this.bottom_region = 10
+		
+		Scroller.track_height.add(this.outer, (old_size)=>{
+			if (this.at_bottom(old_size, undefined))
+				this.scroll_instant()
+		})
+		Scroller.track_height.add(this.inner, (old_size)=>{
+			if (this.at_bottom(undefined, old_size))
+				this.scroll_instant()
+		})
+		
+		Object.seal(this)
+	}
+	at_bottom(outer=this.outer.clientHeight, scroll=this.outer.scrollHeight) {
+		return scroll-outer-this.outer.scrollTop < this.bottom_region
+	}
+	scroll_instant() {
+		this.outer.scrollTop = 9e9
+	}
+	scroll_height() {
+		// inner.GBCR().height = inner.clientHeight = outer.scrollHeight
+		// but the latter 2 are rounded to integers
+		return this.inner.getBoundingClientRect().height
+	}
+	set_offset(y) {
+		this.inner.style.transform = y ? `translateY(${y}px)` : ""
+	}
+	print_top() {
+		// eh
+	}
+	print(smooth) {
+		if (!this.at_bottom())
+			return
+		this.cancel_animation()
+		let before = smooth && this.scroll_height()
+		//
+		this.anim = requestAnimationFrame(time=>{
+			this.anim = null
+			this.scroll_instant()
+			if (!smooth)
+				return
+			let dist = this.scroll_height() - before
+			if (Math.abs(dist) <= 1)
+				return
+			if (this.anim_type==2) {
+				this.moving = true
+				this.inner.style.transition = "none"
+				this.set_offset(dist)
+				void this.inner.offsetWidth
+				this.inner.style.transition = ""
+				this.set_offset()
+			} else if (this.anim_type==1) {
+				this.moving = true
+				this.anim_step(dist, time)
+			}
+		})
+	}
+	cancel_animation() {
+		if (!this.moving)
+			return
+		this.moving = false
+		if (this.anim_type==2) {
+			this.inner.style.transition = "none"
+		} else if (this.anim_type==1) {
+			this.set_offset()
+		}
+	}
+	// mode 1 only
+	anim_step(dist, prev_time) {
+		this.set_offset(dist)
+		this.anim = window.requestAnimationFrame(time=>{
+			this.anim = null
+			let dt = Math.min((time-prev_time) / (1000/60), 2)
+			dist *= Math.pow(0.75, dt)
+			if (Math.abs(dist) <= 1) {
+				this.set_offset()
+				this.moving = false
+			} else
+				this.anim_step(dist, time)
+		})
+	}
+	destroy() {
+		// probably unneccessary but idk.. memory leaks
+		Scroller.track_height.remove(this.inner)
+		Scroller.track_height.remove(this.outer)
+	}
+}
+Scroller.track_height = new ResizeTracker('height')
+Scroller.anim_type = 2

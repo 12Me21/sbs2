@@ -132,18 +132,17 @@ let Sidebar = Object.seal({
 					return
 				}
 				this.printing = true
-				this.scroller.print(()=>{
-					for (let arg of args) {
-						try {
-							let elem = Debug.sidebar_debug(arg)
-							this.scroller.inner.append(elem)
-						} catch (e) {
-							console.error(e)
-							this.scroller.inner.append("error printing!")
-						}
-						this.message_count++
+				this.scroller.print()
+				for (let arg of args) {
+					try {
+						let elem = Debug.sidebar_debug(arg)
+						this.scroller.inner.append(elem)
+					} catch (e) {
+						console.error(e)
+						this.scroller.inner.append("error printing!")
 					}
-				}, true)
+					this.message_count++
+				}
 				this.limit_messages()
 			} catch (e) {
 				console.error("print error", e, "\n", args)
@@ -176,33 +175,36 @@ let Sidebar = Object.seal({
 	
 	display_messages(comments, initial, share) {
 		// todo: show page titles?
-		this.scroller.print(()=>{ //todo: pass inner as arg here
-			for (let c of comments) {
-				let old = this.displayed_ids[c.id]
-				if (c.deleted) {
-					if (old) {
-						old.remove()
-						delete this.displayed_ids[c.id]
-						this.message_count--
-					}
-				} else {
-					let nw = Draw.sidebar_comment(c)
-					if (old) {
-						old.replaceWith(nw)
-					} else {
-						this.scroller.inner.append(nw)
-						this.message_count++
-					}
-					this.displayed_ids[c.id] = nw
-					this.limit_messages()
+		if (!initial)
+			this.scroller.print(true)
+		for (let c of comments) {
+			let old = this.displayed_ids[c.id]
+			if (c.deleted) {
+				if (old) {
+					old.remove()
+					delete this.displayed_ids[c.id]
+					this.message_count--
 				}
+			} else {
+				let nw = Draw.sidebar_comment(c)
+				if (old) {
+					old.replaceWith(nw)
+				} else {
+					this.scroller.inner.append(nw)
+					this.message_count++
+				}
+				this.displayed_ids[c.id] = nw
+				
 			}
-		}, !initial, share)
+		}
+		this.limit_messages()
 		if (initial)
 			this.scroller.scroll_instant()
 	},
 	
 	limit_messages() {
+		if (this.message_count > 500)
+			this.scroller.print_top()
 		while (this.message_count > 500) {
 			let n = this.scroller.inner.firstChild
 			let id = n.dataset.id

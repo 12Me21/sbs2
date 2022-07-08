@@ -123,7 +123,7 @@ class PageView extends BaseView {
 		this.userlist.redraw()
 		
 		message.reverse()
-		this.display_messages(message, false)
+		this.display_messages(message, true)
 		
 		if (pinned instanceof Array && pinned.length) {
 			let separator = document.createElement('div')
@@ -136,10 +136,8 @@ class PageView extends BaseView {
 			
 			Entity.link_comments({message:pinned, user})
 			
-			this.scroller.print_top(()=>{
-				for (const m of pinned)
-					this.pinned_list.display_message(m, false)
-			})
+			for (const m of pinned)
+				this.pinned_list.display_message(m, false)
 		}
 		
 		View.set_entity_title(page)
@@ -156,6 +154,7 @@ class PageView extends BaseView {
 	}
 	Visible() {
 		this.textarea_resize()
+		this.scroller.scroll_instant()
 	}
 	// 8:10;35
 	Cleanup(type) {
@@ -213,15 +212,14 @@ class PageView extends BaseView {
 	// DON'T call this unless you know what you're doing
 	// comments: [Comment]
 	// animate: Boolean - whether to play the scrolling animation
-	display_messages(comments, animate=true, share) {
-		this.scroller.print(()=>{
-			for (let comment of comments)
-				this.list.display_message(comment, false)
-		}, animate, share)
+	display_messages(comments, initial=false, share) {
+		if (!initial)
+			this.scroller.print(true)
+		for (let comment of comments)
+			this.list.display_message(comment, false)
 		if (this.list.over_limit() && !this.$limit_checkbox.checked) {
-			this.scroller.print_top(()=>{
-				this.list.limit_messages()
-			})
+			this.scroller.print_top()
+			this.list.limit_messages()
 		}
 	}
 	// display a list of messages from multiple rooms
@@ -230,7 +228,7 @@ class PageView extends BaseView {
 		for (let room of Object.values(this.rooms)) {
 			let c = comments.filter(c => c.contentId==room.id)
 			if (c.length)
-				room.display_messages(c, room==this.currentRoom, share)
+				room.display_messages(c, room!=this.currentRoom, share)
 		}
 		// display comment in title
 		// does this belong here, or in the room displaycomments message?
