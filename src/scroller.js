@@ -95,6 +95,8 @@ class Scroller {
 		this.anim_type = Scroller.anim_type
 		this.anim = null
 		this.moving = false
+		if (this.anim_type==2)
+			this.inner.classList.add('scroll-anim3')
 		
 		// autoscroll is enabled within this distance from the bottom
 		this.bottom_region = 10
@@ -133,6 +135,7 @@ class Scroller {
 			fn()
 			return
 		}
+		this.cancel_animation()
 		// could use scrollTop instead of scroll_height()
 		// since scroll_instant() will increase it by the distance added.
 		// except, this doesnt work until the inner height is > outer height (i.e. not when the container is mostly empty)
@@ -142,22 +145,21 @@ class Scroller {
 			fn()
 		} finally {
 			this.scroll_instant()
-			this.cancel_animation()
 			if (!smooth)
 				return
 			let after = this.scroll_height()
 			let dist = after - before
 			if (Math.abs(dist) <= 1)
 				return
+			this.moving = true
+			this.inner.style.transition = "none"
+			this.set_offset(dist)
 			//this.override_height = smooth ? null : false
 			this.anim = requestAnimationFrame(time=>{
-				this.moving = true
 				this.anim = null
 				if (this.anim_type==2) {
-					this.inner.classList.remove('scroll-anim3')
-					this.inner.style.setProperty('--scroll', dist+"px")
-					void this.inner.offsetWidth
-					this.inner.classList.add('scroll-anim3')
+					this.inner.style.transition = ""
+					this.set_offset()
 				} else if (this.anim_type==1) {
 					this.anim_step(dist, time)
 				}
@@ -168,11 +170,11 @@ class Scroller {
 		if (this.anim)
 			cancelAnimationFrame(this.anim)
 		this.anim = null
-		//if (!this.moving)
-		//	return
+		if (!this.moving)
+			return
 		this.moving = false
 		if (this.anim_type==2) {
-			this.inner.classList.remove('scroll-anim3')
+			this.inner.style.transition = "none"
 		} else if (this.anim_type==1) {
 			this.set_offset()
 		}
