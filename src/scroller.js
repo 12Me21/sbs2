@@ -135,7 +135,6 @@ class Scroller {
 			fn()
 			return
 		}
-		this.cancel_animation()
 		// could use scrollTop instead of scroll_height()
 		// since scroll_instant() will increase it by the distance added.
 		// except, this doesnt work until the inner height is > outer height (i.e. not when the container is mostly empty)
@@ -145,8 +144,10 @@ class Scroller {
 			fn()
 		} finally {
 			this.scroll_instant()
-			if (!smooth)
+			if (!smooth) {
+				this.cancel_animation()
 				return
+			}
 			let after = this.scroll_height()
 			let dist = after - before
 			if (Math.abs(dist) <= 1)
