@@ -174,7 +174,7 @@ let Sidebar = Object.seal({
 	
 	displayed_ids: {},
 	
-	display_messages(comments, initial, share) {
+	display_messages(comments, initial) {
 		// todo: show page titles?
 		this.scroller.print(()=>{
 			for (let c of comments) {

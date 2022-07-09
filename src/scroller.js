@@ -94,6 +94,7 @@ class Scroller {
 		
 		this.anim_type = Scroller.anim_type
 		this.anim = null
+		this.locked = false
 		if (this.anim_type==2)
 			this.inner.classList.add('scroll-anim3')
 		
@@ -136,7 +137,7 @@ class Scroller {
 		// eh
 		fn()
 	}
-	print(fn, smooth, share) {
+	print(fn, smooth) {
 		// not scrolled to bottom, don't do anything
 		if (!this.at_bottom()) {
 			fn()

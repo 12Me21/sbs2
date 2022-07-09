@@ -214,7 +214,7 @@ class PageView extends BaseView {
 	// DON'T call this unless you know what you're doing
 	// comments: [Comment]
 	// animate: Boolean - whether to play the scrolling animation
-	display_messages(comments, initial=false, share) {
+	display_messages(comments, initial=false) {
 		this.scroller.print(()=>{
 			for (let comment of comments)
 				this.list.display_message(comment, false)
@@ -226,12 +226,12 @@ class PageView extends BaseView {
 		}
 	}
 	// display a list of messages from multiple rooms
-	static display_messages(comments, share) {
+	static display_messages(comments) {
 		// for each room, display all of the new comments for that room
 		for (let room of Object.values(this.rooms)) {
 			let c = comments.filter(c => c.contentId==room.id)
 			if (c.length)
-				room.display_messages(c, room!=this.currentRoom, share)
+				room.display_messages(c, room!=this.currentRoom)
 		}
 		// display comment in title
 		// does this belong here, or in the room displaycomments message?
@@ -350,6 +350,10 @@ class PageView extends BaseView {
 			this.Flag('editing', false)
 			this.write_input(this.pre_edit)
 		}
+	}
+	static scroll_lock(lock) {
+		for (let room of Object.values(this.rooms))
+			lock ? room.scroller.lock() : room.scroller.unlock()
 	}
 }
 PageView.track_resize_2 = new ResizeTracker('width')
