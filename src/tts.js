@@ -43,26 +43,28 @@ const TTSSystem = {
 	
 	playSound(s) {
 		return new Promise((yay, nay) => {
+			s.elem.volume = ('number'==typeof s.volume) ? s.volume : 1.0
+			
 			let removeListeners
 			
 			let c_ended = e=>yay(removeListeners())
 			let c_error = e=>nay(e,removeListeners())
-			let c_loadeddata = e=>((s.readyState >= HTMLMediaElement) && s.play())
+			let c_loadeddata = e=>((s.elem.readyState >= HTMLMediaElement.HAVE_ENOUGH_DATA) && s.elem.play())
 			
-			s.addEventListener('ended', c_ended)
-			s.addEventListener('error', c_error)
+			s.elem.addEventListener('ended', c_ended)
+			s.elem.addEventListener('error', c_error)
 			
 			removeListeners = ()=>{
-				s.removeEventListener('ended', c_ended)
-				s.removeEventListener('error', c_error)
-				s.removeEventListener('loadeddata', c_loadeddata)
+				s.elem.removeEventListener('ended', c_ended)
+				s.elem.removeEventListener('error', c_error)
+				s.elem.removeEventListener('loadeddata', c_loadeddata)
 			}
 			
 			if (s.readyState < HTMLMediaElement.HAVE_ENOUGH_DATA && !(s.currentTime > 0)) {
-				s.addEventListener('loadeddata', c_loadeddata)
+				s.elem.addEventListener('loadeddata', c_loadeddata)
 			} else {
 				// TODO: play a placeholder sound if sound too long (>25s?)
-				s.currentTime = 0; s.play()
+				s.elem.currentTime = 0; s.elem.play()
 			}
 		})
 	},
@@ -70,9 +72,12 @@ const TTSSystem = {
 	async speakMessage(message, merged = false) {
 		let tree = Markup.langs.parse(message.text, message.values.m)
 		
-		let author = message.Author
-		let memorable_name = author.bridge ? (author.nickname || message.values.b) : author.username
-		let msg = merged ? "" : `${memorable_name} says\n`
+		let msg = ""
+		if (!merged) {
+			let author = message.Author
+			let memorable_name = author.bridge ? (author.nickname || message.values.b) : author.username
+			msg += `${memorable_name} says\n`
+		}
 		
 		this.speakScript(this.renderSpeechScript(tree, { msg }))
 	},
@@ -85,28 +90,52 @@ const TTSSystem = {
 		
 		for (let u of utter) {
 			if (u instanceof SpeechSynthesisUtterance) await this.speakUtterance(u)
-			else if (u instanceof HTMLAudioElement) await this.playSound(u)
+			else if ("object"==typeof u && u.elem instanceof HTMLAudioElement) await this.playSound(u)
 		}
 		
 		// sloppy
 		this.queue.shift()
 	},
 	
+	placeholderSound: "./resource/meow.wav",
+	
+	voiceParams: {
+		voice: null,
+		volume: 1.0,
+		pitch: 1.0,
+		rate: 1.25,
+	},
+	
 	// creates a list of smaller utterances and media to play in sequence
 	renderSpeechScript(tree, opts = {}) {
 		opts.msg ||= ""
-		opts.pitch ||= 1.0
-		opts.rate ||= 1.25
+		opts.volume ||= 1
+		opts.pitch ||= 1
+		opts.rate ||= 1
 		opts.utter ||= []
+		opts.media ||= {}
+		
 		// if (opts.abridged == undefined) opts.abridged = true
 		// Would it be nice to just have a way of reading the entire message
 		// without skipping over complex parts (full URLs, code blocks, table)?
 		
-		function finalizeChunk() {
+		let clamp01 = (x)=>Math.max(0, Math.min(x, 1))
+		
+		let sound = (url)=>{
+			finalizeChunk()
+			opts.media[url] ||= this.loadSound(url)
+			let volume = clamp01(this.voiceParams.volume * opts.volume)
+			opts.utter.push({ elem: opts.media[url], volume })
+		}
+		
+		let finalizeChunk = ()=>{
 			opts.msg = opts.msg.trim()
 			if (!opts.msg.length) return
 			let u = new SpeechSynthesisUtterance(opts.msg)
-			u.pitch = opts.pitch; u.rate = opts.rate
+			u.voice = this.voiceParams.voice
+			u.volume = clamp01(this.voiceParams.volume * opts.volume)
+			u.pitch = clamp01(this.voiceParams.pitch * opts.pitch)
+			u.rate = clamp01(this.voiceParams.rate * opts.rate)
 			opts.utter.push(u); opts.msg = ""
 		}
 		
@@ -167,9 +196,7 @@ const TTSSystem = {
 					opts.msg += "\n" + (elem.args.alt ? `${elem.args.alt} (image)` : `image from ${simplifyUrl(elem.args.url)}`) + "\n"
 				break }
 				case 'audio': {
-					finalizeChunk()
-					opts.mediaCache ||= {}
-					opts.utter.push(opts.mediaCache[elem.args.url] ||= this.loadSound(elem.args.url))
+					sound(elem.args.url)
 					// todo: time limite for audio?
 				break }
 				case 'code': {
@@ -191,10 +218,8 @@ const TTSSystem = {
 					if (elem.content)
 						this.renderSpeechScript(elem, opts)
 					else {
-						const huh = "./resource/meow.wav"
-						finalizeChunk()
-						opts.mediaCache ||= {}
-						opts.utter.push(opts.mediaCache[huh] ||= this.loadSound(huh))
+						sound(this.placeholderSound)
+						// to do : loadSound not affected by volume / pitch changes
 						console.log(`TTS Ignored ${elem.type}...`)
 					}
 				break }
@@ -208,6 +233,10 @@ const TTSSystem = {
 			return opts.utter
 		}
 	},
+	
+	stopAll() {
+		alert("sorry i don't know how right now") // :   )
+	}
 }
 
 // TODO: strikethrough, sup, sub, tables (maybe read head?),

@@ -227,7 +227,7 @@ class PageView extends BaseView {
 		}
 	}
 	static title_notification(comment) {
-		if (Settings.values.speak_new_message == "on")
+		if (Settings.values['tts_notify']=='yes')
 			TTSSystem.speakMessage(comment)
 		
 		View.title_notification(comment.text, Draw.avatar_url(comment.Author))

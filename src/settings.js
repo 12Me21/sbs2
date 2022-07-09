@@ -42,18 +42,42 @@ Settings.fields = {
 			})*/
 		},
 	},
-	speak_new_message: {
-		name: "speak new messages",
+	tts_notify: {
+		name: "TTS Notify",
 		type: 'select',
-		options: ['off', 'on'],
+		options: ['no', 'yes'],
+	},
+	// tts_voice: {
+	// 	name: "TTS Voice",
+	// 	type: 'select',
+	// 	options: ['none'],
+	// },
+	tts_volume: {
+		name: "TTS Volume",
+		type: 'range',
+		range: [0.0, 1.0],
+		step: 'any',
+		notches: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], // 🥴
 		update(value) {
-			if (value=='on' && !speechSynthesis.getVoices().length) {
-				alert("warning! your device does not have tts voices. sorry")
-				// Settings.change('speak_new_message', 'off')
-				// is ^this^ okay? does this run during load?
-				// ...it's not okay! : )
+			if (document.readyState != 'loading') {
+				TTSSystem.voiceParams.volume = value
+				TTSSystem.speakMessage({text:"{#uwu",values:{m:'12y'}}, true)
 			}
-		}
+		},
+	},
+	tts_speed: {
+		name: "TTS Speed",
+		type: 'range',
+		range: [0.5, 2], // (heard range may be narrower)
+		step: 'any',
+		notches: [1],
+		update(value) {
+			if (document.readyState != 'loading') {
+				TTSSystem.voiceParams.rate = value
+				speechSynthesis.cancel()
+				TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
+			}
+		},
 	},
 	lazy_loading: {
 		name: "lazy image loading",
@@ -163,7 +187,25 @@ Settings.draw = function() {
 			elem = document.createElement('textarea')
 		} else if (type=='text') {
 			elem = document.createElement('input')
+		} else if (type=='range') {
+			elem = document.createElement('input')
+			elem.type = 'range'
+			elem.min = data.range[0]; elem.max = data.range[1]
+			elem.step = data.step || 'any'
+			if (data.notches) {
+				let great = row.child('datalist')
+				great.style.display = 'none'
+				for (let e of data.notches.concat(data.range)) {
+					let opt = great.child('option')
+					opt.value = e
+				}
+				elem.setAttribute('list', great.id = `settings_panel__${name}_datalist`)
+			}
 		}
+		
+		// connect label to element (feels nice)
+		elem.id = `settings_panel__${name}`
+		label.htmlFor = elem.id
 		
 		get[name] = ()=>{
 			return elem.value
