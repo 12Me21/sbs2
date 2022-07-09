@@ -323,7 +323,7 @@ chat-pane .userlist2 {
 }
 .userlist .avatar {
 	margin-left: 1px;
-	border: 1px solid white;
+	border: 1px solid goldenrod;
 	box-sizing: border-box;
 	border-radius: 0;
 	width: var(--bar-height);
@@ -334,9 +334,6 @@ resize-handle.userlist2 {
 	display: flex;
 	background: linear-gradient(var(--databarbgcolor) 0 var(--handle-width), var(--bar-bg) var(--handle-width));
 	height: unset !important;
-	/*min-height: unset;
-	overflow: visible;
-	contain: none;*/
 }
 .userlist2 > .userlist {
 	border: none;
