@@ -177,20 +177,22 @@ form-table > .wide {
 
 scroll-outer {
 	overflow-y: scroll;
-	/* we probably don't need these ones: */
-	display: block;
+	display: flex;
 	height: 100%;
+	flex-direction: column;
+}
+scroll-outer.scroller {
+	justify-content: safe flex-end;
 }
 scroll-middle {
-	display: flex;
-	flex-direction: column;
+	display: block;
+	overflow: clip;
 	overflow: hidden;
-	min-height: 100%;
-	justify-content: flex-end;
+	flex-shrink: 0;
 }
 scroll-inner {
 	display: block;
-	flex: 0 0 0; /* safari */
+	/*flex: 0 0 0; /* safari */
 }
 scroll-middle > scroll-inner {
 	position: relative;
@@ -200,6 +202,7 @@ scroll-middle > scroll-inner {
 	/*will-change: top;*/
 }
 
+/* TODO: wait i thought this was broken?? causing lag on ios? seems fine now though, so idk... */
 scroll-middle > scroll-inner.scroll-anim3 {
 	transition: transform .4015s cubic-bezier(.16,1,.3,1);
 }

@@ -91,6 +91,7 @@ class Scroller {
 		this.middle = document.createElement('scroll-middle')
 		this.middle.append(this.inner)
 		this.outer.append(this.middle)
+		this.outer.classList.add('scroller')
 		
 		this.dist = null
 		this.anim_type = Scroller.anim_type
@@ -170,7 +171,7 @@ class Scroller {
 					cancelAnimationFrame(this.anim)
 				// shift upwards to counteract scroll_instant()
 				if (this.anim_type==2)
-					this.inner.style.transition = "none"
+					this.inner.style.transitionDuration = "0s"
 				this.set_offset(dist)
 				// do the animation
 				if (this.locked) {
@@ -193,7 +194,7 @@ class Scroller {
 		this.anim = requestAnimationFrame(time=>{
 			this.anim = null
 			if (this.anim_type==2) {
-				this.inner.style.transition = ""
+				this.inner.style.transitionDuration = ""
 				this.set_offset()
 			} else if (this.anim_type==1) {
 				this.anim_step(dist, time)
@@ -205,7 +206,7 @@ class Scroller {
 			cancelAnimationFrame(this.anim)
 		this.anim = null
 		if (this.anim_type==2)
-			this.inner.style.transition = "none"
+			this.inner.style.transitionDuration = "0s"
 		this.set_offset()
 	}
 	// mode 1 only
