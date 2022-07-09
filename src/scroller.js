@@ -112,6 +112,8 @@ class Scroller {
 		Object.seal(this)
 	}
 	at_bottom(outer=this.outer.clientHeight, scroll=this.outer.scrollHeight) {
+		// todo: we use this.outer.scrollHeight in at_bottom, then later access inner.gbcr().height for scroll_height()
+		// so, i suppose we could reuse the value
 		return scroll-outer-this.outer.scrollTop < this.bottom_region
 	}
 	scroll_instant() {
@@ -120,6 +122,11 @@ class Scroller {
 	scroll_height() {
 		// inner.GBCR().height = inner.clientHeight = outer.scrollHeight
 		// but the latter 2 are rounded to integers
+		
+		// for detecting size change during print, 
+		// could use scrollTop instead of scroll_height()
+		// since scroll_instant() will increase it by the distance added.
+		// except, this doesnt work until the inner height is > outer height (i.e. not when the container is mostly empty)
 		return this.inner.getBoundingClientRect().height
 	}
 	set_offset(y) {
@@ -129,46 +136,66 @@ class Scroller {
 		// eh
 		fn()
 	}
-	print(fn, smooth) {
-		// todo: we use this.outer.scrollHeight in at_bottom, then later access inner.gbcr().height for scroll_height()
-		// so, i suppose we could reuse the value
+	print(fn, smooth, share) {
+		// not scrolled to bottom, don't do anything
 		if (!this.at_bottom()) {
 			fn()
 			return
 		}
-		// could use scrollTop instead of scroll_height()
-		// since scroll_instant() will increase it by the distance added.
-		// except, this doesnt work until the inner height is > outer height (i.e. not when the container is mostly empty)
-		let before = smooth && this.scroll_height()
-		//
+		// anim disabled
+		if (!smooth || this.anim_type==0) {
+			try {
+				fn()
+			} finally {
+				this.scroll_instant()
+				if (this.anim_type!=0)
+					this.cancel_animation()
+			}
+			return
+		}
+		// at bottom + anim enabled
+		let before = this.scroll_height()
 		try {
 			fn()
 		} finally {
 			this.scroll_instant()
-			if (!smooth) {
-				this.cancel_animation()
-				return
-			}
+			// figure out how much was added
 			let after = this.scroll_height()
 			let dist = after - before
-			if (Math.abs(dist) <= 1)
-				return
-			if (this.anim_type==2)
-				this.inner.style.transition = "none"
-			if (this.anim_type!=0) {
+			if (Math.abs(dist) > 1) {
+				// make sure no existing animation is happening
+				if (this.anim)
+					cancelAnimationFrame(this.anim)
+				// shift upwards to counteract scroll_instant()
+				if (this.anim_type==2)
+					this.inner.style.transition = "none"
 				this.set_offset(dist)
-				//this.override_height = smooth ? null : false
-				this.anim = requestAnimationFrame(time=>{
-					this.anim = null
-					if (this.anim_type==2) {
-						this.inner.style.transition = ""
-						this.set_offset()
-					} else if (this.anim_type==1) {
-						this.anim_step(dist, time)
-					}
-				})
+				// do the animation
+				if (this.locked)
+					this.anim = 0n
+				else
+					this.start_anim()
 			}
 		}
+	}
+	lock() {
+		this.locked = true
+	}
+	unlock() {
+		this.locked = false
+		if (this.anim === 0n)
+			this.start_anim()
+	}
+	start_anim(dist) {
+		this.anim = requestAnimationFrame(time=>{
+			this.anim = null
+			if (this.anim_type==2) {
+				this.inner.style.transition = ""
+				this.set_offset()
+			} else if (this.anim_type==1) {
+				this.anim_step(dist, time)
+			}
+		})
 	}
 	cancel_animation() {
 		if (this.anim)
