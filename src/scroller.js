@@ -92,6 +92,7 @@ class Scroller {
 		this.middle.append(this.inner)
 		this.outer.append(this.middle)
 		
+		this.dist = null
 		this.anim_type = Scroller.anim_type
 		this.anim = null
 		this.locked = false
@@ -172,10 +173,11 @@ class Scroller {
 					this.inner.style.transition = "none"
 				this.set_offset(dist)
 				// do the animation
-				if (this.locked)
+				if (this.locked) {
 					this.anim = 0n
-				else
-					this.start_anim()
+					this.dist = dist
+				} else
+					this.start_anim(dist)
 			}
 		}
 	}
@@ -185,7 +187,7 @@ class Scroller {
 	unlock() {
 		this.locked = false
 		if (this.anim === 0n)
-			this.start_anim()
+			this.start_anim(this.dist)
 	}
 	start_anim(dist) {
 		this.anim = requestAnimationFrame(time=>{
