@@ -423,7 +423,10 @@ message-contents {
 	min-height: 1.5rem; /*this is so <message-controls> always has somewhere to be shown*/
 	margin: 0.125rem 0;
 	overflow-y: hidden; /* do we need this */
-	/* because of overlapping with avatar: */
+}
+
+/* because of overlapping with avatar: */
+message-contents, message-part {
 	contain: none;
 }
 
@@ -434,9 +437,9 @@ message-contents {
 │ │.avatar│ ┗━━━━━━━━━━━━━━━━━━━━━┛ │
 │ ┢━━━━━━━┿━┯━━━━━━━━━━━━━━━━━━━━━┓ │
 │ ┃       ┊ ╎ <message-part>      ┃ │
-│ ┃╌╌╌╌╌╌╌╯ ╎                     ┃ │ ←--
-│ ┃       ←-╎-(padding-left)      ┃ │ ←-- (side view is from this angle)
-│ ┡━━━━━━━━━┷━━━━━━━━━━━━━━━━━━━━━┩ │ ←-- 
+│ ┃╌╌╌╌╌╌╌╯ ╎                     ┃ │
+│ ┃       ←-╎-(padding-left)      ┃ │
+│ ┡━━━━━━━━━┷━━━━━━━━━━━━━━━━━━━━━┩ │
 │ │      <message-contents>       │ │
 │ ┢━━━━━━━━┯┯━━━━━━━━━━━━━━━━━━━━━┪ │
 │ ┃        ╎╎<message-part>.edited┃ │
@@ -444,13 +447,12 @@ message-contents {
 │ ┃      ←-╎╎-(border-left)       ┃ │
 └─┺━━━━━━━━┷┷━━━━━━━━━━━━━━━━━━━━━┹─┘
 
-DRAW ORDER / z-index (side view)
-  ←---- y axis ---→
-↑     ━━━━          <message-controls> (nearest, can cover avatar)
-│     ╌╌╌╌━━━━━━━━━ <message-part> (area covering avatar is seethrough)
-Z   ─────           .avatar
-| ━━━ ───────────── <message-header> and <message-contents>
-↓ ----------------- <message-block> (furthest)
+DRAW ORDER / z-index - side view
+ ←---- x axis ----→
+↑  ━━━             <message-controls> (nearest, can cover avatar)
+│  ╌╌╌╌━━━━━━━━━━  <message-part> (area covering avatar is seethrough)
+Z  ───             .avatar
+↓ ---------------- <message-block> (furthest)
 
 <message-block> contains
 - <img class=avatar>
