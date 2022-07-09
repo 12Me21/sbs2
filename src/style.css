@@ -353,33 +353,33 @@ resize-handle.userlist2 {
 }
 
 time {
-	;font-size: 0.875em
-	;color: var(--T-time-color)
-	;vertical-align: baseline
+	font-size: 0.875em;
+	color: var(--T-time-color);
+	vertical-align: baseline;
 }
 
 .username {
-	;font-weight: bold
-	;line-height: 1.2
+	font-weight: bold;
+	line-height: 1.2;
 }
 message-username { /* khhhh */
-	;line-height: 1.2
+	line-height: 1.2;
 }
 /*******************
  ** Chat Messages **
  *******************/
 message-block {
-	;display: block
-	;position: relative
-	;box-sizing: content-box
-	;--chat-gutter: 4rem
-	;--chat-avatar-size: calc(var(--chat-gutter) - 0.5rem)
-	;--chat-message-gap: 0.625rem
-	;padding: 0 0.5rem
-	;padding-top: var(--chat-message-gap)
-	;min-height: var(--chat-avatar-size)
-	;"border-left: 0.5em solid rgb(255,153,153)
-	;font-size: 1em /* ? */
+	display: block;
+	position: relative;
+	box-sizing: content-box;
+	--chat-gutter: 4rem;
+	--chat-avatar-size: calc(var(--chat-gutter) - 0.5rem);
+	--chat-message-gap: 0.625rem;
+	padding: 0 0.5rem;
+	padding-top: var(--chat-message-gap);
+	min-height: var(--chat-avatar-size);
+	/* border-left: 0.5em solid rgb(255,153,153) */
+	font-size: 1em; /* ? */
 }
 message-block > img.avatar {
 	display: inline-block;
@@ -393,59 +393,64 @@ message-block > img.avatar {
 						
 }
 message-block > .bigAvatar {
-	;position: absolute
-	;width: calc(var(--chat-gutter) + 0.5rem)
-	;height: 100%
-	;left: 0
-	;top: 0
-	;background-size: cover
-	;background-position-x: center
-	;background-position-y: top
-	;background-repeat: no-repeat
+	position: absolute;
+	width: calc(var(--chat-gutter) + 0.5rem);
+	height: 100%;
+	left: 0;
+	top: 0;
+	background: no-repeat center top / cover;
 }
 
 message-block > message-header {
-	;display: flex
-	;flex-wrap: wrap-reverse
-	;margin-left: var(--chat-gutter)
-	;" make the timestamp go into margins if there's not enough space
-	;min-height: calc(var(--chat-message-gap) + 1.1875rem) ;" 1.1875 = text line height
-	;margin-top: calc(0rem - var(--chat-message-gap)) ;" the units on 0rem are required?
-	;align-items: flex-start
+	display: flex;
+	flex-wrap: wrap-reverse;
+	margin-left: var(--chat-gutter);
+	/* make the timestamp go into margins if there's not enough space */
+	min-height: calc(var(--chat-message-gap) + 1.1875rem); /* 1.1875 = text line height */
+	margin-top: calc(0rem - var(--chat-message-gap));
+	align-items: flex-start;
 }
 message-block > message-header > time {
-	;flex-grow: 1
-	;text-align: right
-	;font-weight: normal
-	;color: var(--chat-dim-color)
-	;"line-height: 1 ;" this looks better when the time wraps, since it takes up less space, but otherwise, means the time is aligned too low
+	flex-grow: 1;
+	text-align: right;
+	font-weight: normal;
+	color: var(--chat-dim-color);
+	/* line-height: 1 ;" this looks better when the time wraps, since it takes up less space, but otherwise, means the time is aligned too low */
 }
 
 message-contents {
 	display: block;
-	min-height: 1.5rem; /*this is so the message controls always have somewhere to be shown*/
-	margin-block: 0.125rem;
-	/* do we need all these */
-	overflow-y: hidden;
-	background: var(--T-bg);
-	contain: none; /* because of overlapping with avatar */
+	min-height: 1.5rem; /*this is so <message-controls> always has somewhere to be shown*/
+	margin: 0.125rem 0;
+	overflow-y: hidden; /* do we need this */
+	/* because of overlapping with avatar: */
+	contain: none;
 }
 
 /*
-<message-block>
+<message-block> layout:
 ┌───────────┲━━━━━━━━━━━━━━━━━━━━━┱─┐
 │ ╭───────╮ ┃ <message-header>    ┃ │
 │ │.avatar│ ┗━━━━━━━━━━━━━━━━━━━━━┛ │
-│ ┢━━━━━━━┿┯┯━━━━━━━━━━━━━━━━━━━━━┓ │
-│ ┃       ┊╎╎ <message-part>      ┃ │
-│ ┃╌╌╌╌╌╌╌╯╎╎←-(padding-left)     ┃ │
-│ ┃       ←╎╎-(border-left)       ┃ │
-│ ┡━━━━━━━━┷┷━━━━━━━━━━━━━━━━━━━━━┩ │
+│ ┢━━━━━━━┿━┯━━━━━━━━━━━━━━━━━━━━━┓ │
+│ ┃       ┊ ╎ <message-part>      ┃ │
+│ ┃╌╌╌╌╌╌╌╯ ╎                     ┃ │ ←--
+│ ┃       ←-╎-(padding-left)      ┃ │ ←-- (side view is from this angle)
+│ ┡━━━━━━━━━┷━━━━━━━━━━━━━━━━━━━━━┩ │ ←-- 
 │ │      <message-contents>       │ │
 │ ┢━━━━━━━━┯┯━━━━━━━━━━━━━━━━━━━━━┪ │
-│ ┃        ╎╎ <message-part>      ┃ │
-│ ┃        ╎╎    ...              ┃ │
+│ ┃        ╎╎<message-part>.edited┃ │
+│ ┃        ╎╎←-(padding-left)     ┃ │
+│ ┃      ←-╎╎-(border-left)       ┃ │
 └─┺━━━━━━━━┷┷━━━━━━━━━━━━━━━━━━━━━┹─┘
+
+DRAW ORDER / z-index (side view)
+  ←---- y axis ---→
+↑     ━━━━          <message-controls> (nearest, can cover avatar)
+│     ╌╌╌╌━━━━━━━━━ <message-part> (area covering avatar is seethrough)
+Z   ─────           .avatar
+| ━━━ ───────────── <message-header> and <message-contents>
+↓ ----------------- <message-block> (furthest)
 
 <message-block> contains
 - <img class=avatar>
@@ -455,13 +460,19 @@ message-contents {
 within <message-contents> is a list of <message-part>s
 (<message-controls> is also inserted here, immediately after the highlighted <message-part>)
 
-each <message-part> actually extends all the way to the left, and uses padding and/or borders to shift the content out of this 'gutter'
-(the .avatar is set to position: absolute, so it can overlap the first <message-part>s padding)
+each <message-part> actually extends all the way to the left, and uses padding-left to shift the content out of this 'gutter'
+(
+the .avatar is set to position: absolute, so it can overlap the first <message-part>s padding
+)
 
 the reason I don't use padding on the CONTAINER instead, is because i need to display <message-controls>:
 I need the <message-part>s to extend into the gutter, so that i can detect which <message-part> the mouseover/mouseleave events are for, when the cursor is in over gutter
 
 (I also can't use left margin on <message-block>, since mouse events only apply within the border-box)
+
+edited messages use mostly border-left instead of padding-left,
+and and use box-shadow to draw the edited message indicator
+(box-shadow is drawn in the content/padding region, inside the border)
 */
 
 message-part {
@@ -470,20 +481,16 @@ message-part {
 	min-height: 1rem; /* this is so the message controls always have somewhere to be shown */
 	/* we can't use margin here, because then we don't get pointer events */
 	padding: 0.125rem 0;
-	border-left: solid transparent var(--chat-gutter);
-	padding-left: 0.1875rem;
-	/* padding overlaps with avatars, so clip the bg to content-box */
+	padding-left: calc(var(--chat-gutter) + 0.1875rem);
+	/* the padding overlaps with avatars, so clip bg to content-box */
 	-webkit-background-clip: padding !important;
 	-webkit-background-clip: padding-box !important;
 	background-clip: padding-box !important;
 }
 message-part.edited {
-	/* todo: fix this styling */
-	/* we may just need an extra container for message-parts... */
-	box-shadow: 2px 0 goldenrod inset;
-	padding-left: 6px;
 	border-left: calc(var(--chat-gutter) + 0.1875rem - 6px) solid transparent;
-	/* outline-left: 2px solid gray */
+	padding-left: 6px;
+	box-shadow: 2px 0 goldenrod inset;
 }
 message-part:focus {
 	background: var(--message-focus-bg);
@@ -506,25 +513,23 @@ message-controls {
 	width: var(--chat-gutter);
 	height: 1.3125rem;
 	z-index: 9;
-	/* don't remove these prefixes */
 	-webkit-user-select: none; -moz-user-select: none; user-select: none;
 }
 message-controls > button {
-	;flex-grow: 1
-	;padding: 0
+	flex-grow: 1;
+	padding: 0;
 }
 message-controls:hover + message-part {
 	background: var(--message-hover-bg);
 }
 
 .messageGap {
-	;border: 1px dashed gray /*♥*/
-	;margin-top: 0.3125rem
-	;margin-bottom: 0.3125rem
+	border: 1px dashed gray; /*♥*/
+	margin: 0.3125rem 0;
 }
 
 .chat-bottom {
-	height: 0.875rem; /* increased to 0.9rem because we moved message-block padding to top of element */
+	height: 0.875rem; /* increased because we moved message-block padding to top of element */
 }
 
 /* chat input */
@@ -545,56 +550,47 @@ view-root:not(.f-editing) .showWhenEdit {
 
 /* editor */
 .editor-textarea {
-	;min-height: 3rem
-	;overflow-y: scroll
-	;resize: none
+	min-height: 3rem;
+	overflow-y: scroll;
+	resize: none;
 }
 /*#\$editorPreviewPane {
 	height: 50%;
 }*/
 
-/*********/
-
-/* do we even need this */
-.bottomSpacer {
-	;height: 1.5rem
-}
-
 
 /* user page */
 
 .userPageBox {
-	;align-items: flex-start
-	;"max-height: 40vh
-	;overflow: auto
-	;" todo: make this outside of scroller and have activity list scroll separately /* ??? */
+	align-items: flex-start;
+	/*max-height: 40vh;*/
+	overflow: auto;
+	/* todo: make this outside of scroller and have activity list scroll separately /* ??? */
 }
 
 .userPageAvatar {
-	;display: inline-block
-	;width: 10rem
-	;height: 10rem
-	;flex-shrink: 1
-	;margin-bottom: 5px
+	display: inline-block;
+	position: relative;
+	width: 10rem;
+	height: 10rem;
+	flex-shrink: 1;
+	margin-bottom: 5px;
 	
-	;box-shadow: 2px 2px 5px gray
-	;position: relative
-	;z-index: 2
+	z-index: 2;
+	box-shadow: 2px 2px 5px gray;
 }
 .userPageAvatar > img {
-	;width: 100%
-	;height: 100%
+	width: 100%;
+	height: 100%;
 }
 
-.userPageBox .pageContents {
-	;flex-basis: 0
-}
 .userPageContents {
-	;flex-grow: 1
+	flex-basis: 0;
+	flex-grow: 1;
 }
 
 html:not(.f-myUserPage) .myUserPage {
-	;display: none
+	display: none;
 }
 
 /*@media (max-width: 700px) {
@@ -653,47 +649,46 @@ form-table > .label {
 	align-self: center;
 }
 form-table > .field {
-	;vertical-align: middle
+	vertical-align: middle;
 }
 form-table > .wide.label {
-	;text-align: left
-	;font-weight: 500
-	;font-size: 1.1875em
+	text-align: left;
+	font-weight: 500;
+	font-size: 1.1875em;
 }
 
 /* what are these for? */
 /* permissions editor i guess */
 table {
-	;border-collapse: collapse
+	border-collapse: collapse;
 }
 th {
-	;padding-left: 0.3125rem
-	;padding-right: 0.3125rem
+	padding: 0 0.3125rem;
 }
 .permissionRow > th {
-	;padding: 0
-	;text-align: left
+	padding: 0
+	text-align: left
 }
 .permissionRow > td {
-	;padding: 0
-	;text-align: center
+	padding: 0
+	text-align: center
 }
 .permission-table thead th {
-	;padding-left: 0.5rem
-	;padding-right: 0.5rem
+	padding-left: 0.5rem;
+	padding-right: 0.5rem;
 }
 .permission-table td {
-	;text-align: center
+	text-align: center;
 }
 .permission-users td {
-	;text-align: center
+	text-align: center;
 }
 .permission-users th {
-	;text-align: right
+	text-align: right;
 }
 
 user-select {
-	;display: block
+	display: block;
 }
 /* inputs */
 /* these elements's sizes are fucking weird and make no sense */
