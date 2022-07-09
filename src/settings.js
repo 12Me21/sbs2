@@ -60,7 +60,8 @@ Settings.fields = {
 		notches: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], // 🥴
 		update(value) {
 			if (document.readyState != 'loading') {
-				TTSSystem.voiceParams.volume = value
+				TTSSystem.cancel()
+				TTSSystem.synthParams.volume = value
 				TTSSystem.speakMessage({text:"{#uwu",values:{m:'12y'}}, true)
 			}
 		},
@@ -73,8 +74,8 @@ Settings.fields = {
 		notches: [1],
 		update(value) {
 			if (document.readyState != 'loading') {
-				TTSSystem.voiceParams.rate = value
-				speechSynthesis.cancel()
+				TTSSystem.cancel()
+				TTSSystem.synthParams.rate = value
 				TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
 			}
 		},

@@ -3,103 +3,63 @@
 const TTSSystem = {
 	speakUtterance(u) {
 		return new Promise((yay, nay) => {
-			u.addEventListener('end', e=>(e.charIndex < e.target.length) ? nay(e) : yay())
-			u.addEventListener('error', e=>nay(e))
+			u.onend = e=>(e.charIndex < e.target.length) ? nay(e) : yay()
+			u.onerror = e=>nay(e)
+			
 			speechSynthesis.speak(u)
 		})
 	},
 	
-	lastOfMetaUtterance(mu) {
-		let last = mu[mu.length - 1]
-		if (last instanceof SpeechSynthesisUtterance) {
-			return new Promise((yay, nay) => {
-				last.addEventListener('end', e=>(e.charIndex < e.target.length) ? nay(e) : yay())
-				last.addEventListener('error', e=>nay(e))
-			})
-		} else if (last instanceof HTMLAudioElement) {
-			return new Promise((yay, nay) => {
-				let removeListeners
-				
-				let c_ended = e=>yay(removeListeners())
-				let c_error = e=>nay(e,removeListeners())
-				
-				last.addEventListener('ended', c_ended)
-				// last.addEventListener('', c_error)
-				last.addEventListener('error', c_error)
-				
-				removeListeners = ()=>{
-					last.removeEventListener('ended', c_ended)
-					last.removeEventListener('error', c_error)
-				}
-			})
-		}
-	},
-	
-	loadSound(path) {
-		let s = new Audio(path)
-		s.loop = false; s.load()
-		return s
-	},
-	
 	playSound(s) {
 		return new Promise((yay, nay) => {
-			s.elem.volume = ('number'==typeof s.volume) ? s.volume : 1.0
+			let se = s.elem
 			
-			let removeListeners
+			se.currentTime = 0
+			se.volume = ('number'==typeof s.volume) ? s.volume : 1.0
 			
-			let c_ended = e=>yay(removeListeners())
-			let c_error = e=>nay(e,removeListeners())
-			let c_loadeddata = e=>((s.elem.readyState >= HTMLMediaElement.HAVE_ENOUGH_DATA) && s.elem.play())
+			let removeListeners = ()=>{ se.onpause = se.onerror = null }
 			
-			s.elem.addEventListener('ended', c_ended)
-			s.elem.addEventListener('error', c_error)
+			se.onpause = e=>removeListeners((se.currentTime < se.duration) ? nay(e) : yay())
+			se.onerror = e=>removeListeners(nay(e))
 			
-			removeListeners = ()=>{
-				s.elem.removeEventListener('ended', c_ended)
-				s.elem.removeEventListener('error', c_error)
-				s.elem.removeEventListener('loadeddata', c_loadeddata)
-			}
-			
-			if (s.readyState < HTMLMediaElement.HAVE_ENOUGH_DATA && !(s.currentTime > 0)) {
-				s.elem.addEventListener('loadeddata', c_loadeddata)
-			} else {
-				// TODO: play a placeholder sound if sound too long (>25s?)
-				s.elem.currentTime = 0; s.elem.play()
-			}
+			se.play()
 		})
 	},
 	
-	async speakMessage(message, merged = false) {
+	speakMessage(message, merged = false) {
 		let tree = Markup.langs.parse(message.text, message.values.m)
 		
-		let msg = ""
+		let msg
 		if (!merged) {
 			let author = message.Author
 			let memorable_name = author.bridge ? (author.nickname || message.values.b) : author.username
-			msg += `${memorable_name} says\n`
+			msg = `${memorable_name} says\n`
 		}
 		
 		this.speakScript(this.renderSpeechScript(tree, { msg }))
 	},
 	
 	queue: [],
+	current: null,
 	async speakScript(utter) {
-		this.queue.push(utter)
-		if (this.queue.length - 1)
-			await this.lastOfMetaUtterance(this.queue[this.queue.length - 2])
+		if (this.queue.push(utter)-1) return
 		
-		for (let u of utter) {
-			if (u instanceof SpeechSynthesisUtterance) await this.speakUtterance(u)
-			else if ("object"==typeof u && u.elem instanceof HTMLAudioElement) await this.playSound(u)
-		}
-		
-		// sloppy
-		this.queue.shift()
+		try {
+			while (this.queue.length) {
+				for (let u of this.queue[0]) {
+					this.current = u
+					if (u instanceof SpeechSynthesisUtterance) await this.speakUtterance(u)
+					else if (u.elem instanceof HTMLAudioElement) await this.playSound(u)
+				}
+				this.current = null
+				this.queue.shift()
+			}
+		} catch { return }
 	},
 	
 	placeholderSound: "./resource/meow.wav",
 	
-	voiceParams: {
+	synthParams: {
 		voice: null,
 		volume: 1.0,
 		pitch: 1.0,
@@ -115,28 +75,29 @@ const TTSSystem = {
 		opts.utter ||= []
 		opts.media ||= {}
 		
-		// if (opts.abridged == undefined) opts.abridged = true
-		// Would it be nice to just have a way of reading the entire message
-		// without skipping over complex parts (full URLs, code blocks, table)?
+		let clamp01 = x=>Math.max(0, Math.min(x, 1))
 		
-		let clamp01 = (x)=>Math.max(0, Math.min(x, 1))
-		
-		let sound = (url)=>{
+		let sound = url=>{
 			finalizeChunk()
-			opts.media[url] ||= this.loadSound(url)
-			let volume = clamp01(this.voiceParams.volume * opts.volume)
-			opts.utter.push({ elem: opts.media[url], volume })
+			let elem = opts.media[url] ||= new Audio(url)
+			elem.loop = false
+			let volume = clamp01(this.synthParams.volume * opts.volume)
+			opts.utter.push({ elem, volume })
 		}
 		
+		// pushes utterance onto the end of the speech queue.
 		let finalizeChunk = ()=>{
 			opts.msg = opts.msg.trim()
 			if (!opts.msg.length) return
+			
 			let u = new SpeechSynthesisUtterance(opts.msg)
-			u.voice = this.voiceParams.voice
-			u.volume = clamp01(this.voiceParams.volume * opts.volume)
-			u.pitch = clamp01(this.voiceParams.pitch * opts.pitch)
-			u.rate = clamp01(this.voiceParams.rate * opts.rate)
-			opts.utter.push(u); opts.msg = ""
+			u.voice = this.synthParams.voice
+			u.volume = clamp01(this.synthParams.volume * opts.volume)
+			u.pitch = clamp01(this.synthParams.pitch * opts.pitch)
+			u.rate = clamp01(this.synthParams.rate * opts.rate)
+			
+			opts.utter.push(u)
+			opts.msg = ""
 		}
 		
 		// goofy way to do things
@@ -219,8 +180,7 @@ const TTSSystem = {
 						this.renderSpeechScript(elem, opts)
 					else {
 						sound(this.placeholderSound)
-						// to do : loadSound not affected by volume / pitch changes
-						console.log(`TTS Ignored ${elem.type}...`)
+						console.log(`TTS renderer ignored ${elem.type}`)
 					}
 				break }
 			}
@@ -234,13 +194,20 @@ const TTSSystem = {
 		}
 	},
 	
-	stopAll() {
-		alert("sorry i don't know how right now") // :   )
+	cancel() {
+		// clear out queue
+		this.queue = []
+		
+		// cancel current thing
+		speechSynthesis.cancel()
+		if (this.current && this.current.elem instanceof HTMLAudioElement)
+			this.current.elem.pause()
+		this.current = null
 	}
 }
 
-// TODO: strikethrough, sup, sub, tables (maybe read head?),
+// TODO: strikethrough, sup, sub, tables (maybe read head? or read only if smaller than 10 cells?),
 //       ruby (true already handled), horiz. rule, maybe lists,
 //       maybe headers? (louder volume?), quote text (with barely-used src),
-//       maybe anchors should work (as in `[[#test]]`),
+//       maybe anchors should work (as in `[[#test]]`), keys
 // (from quick run through of 12y markup guide and glance at comments)
