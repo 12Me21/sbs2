@@ -435,16 +435,15 @@ message-contents, message-part {
 ┌───────────┲━━━━━━━━━━━━━━━━━━━━━┱─┐
 │ ╭───────╮ ┃ <message-header>    ┃ │
 │ │.avatar│ ┗━━━━━━━━━━━━━━━━━━━━━┛ │
-│ ┢━━━━━━━┿━┯━━━━━━━━━━━━━━━━━━━━━┓ │
-│ ┃       ┊ ╎ <message-part>      ┃ │
-│ ┃╌╌╌╌╌╌╌╯ ╎                     ┃ │
-│ ┃       ←-╎-(padding-left)      ┃ │
-│ ┡━━━━━━━━━┷━━━━━━━━━━━━━━━━━━━━━┩ │
-│ │      <message-contents>       │ │
-│ ┢━━━━━━━━┯┯━━━━━━━━━━━━━━━━━━━━━┪ │
-│ ┃        ╎╎<message-part>.edited┃ │
+│ ┢━━━━━━━┿┯┯━━━━━━━━━━━━━━━━━━━━━┓ │
+│ ┃       ┊╎╎ <message-part>      ┃ │
+│ ┃╌╌╌╌╌╌╌╯╎╎                     ┃ │
 │ ┃        ╎╎←-(padding-left)     ┃ │
 │ ┃      ←-╎╎-(border-left)       ┃ │
+│ ┡━━━━━━━━┷┷━━━━━━━━━━━━━━━━━━━━━┩ │
+│ ┢━━━━━━━━┯┯━━━━━━━━━━━━━━━━━━━━━┪ │
+│ ┃        ╎╎ <message-part>      ┃ │
+│ ┃        ╎╎       ...           ┃ │
 └─┺━━━━━━━━┷┷━━━━━━━━━━━━━━━━━━━━━┹─┘
 
 DRAW ORDER / z-index - side view
@@ -462,19 +461,15 @@ Z  ───             .avatar
 within <message-contents> is a list of <message-part>s
 (<message-controls> is also inserted here, immediately after the highlighted <message-part>)
 
-each <message-part> actually extends all the way to the left, and uses padding-left to shift the content out of this 'gutter'
+each <message-part> actually extends all the way to the left, and uses left border/padding to shift the content out of this 'gutter'
 (
-the .avatar is set to position: absolute, so it can overlap the first <message-part>s padding
+the .avatar is set to position: absolute, so it can overlap the left side of the first <message-part>
 )
 
 the reason I don't use padding on the CONTAINER instead, is because i need to display <message-controls>:
 I need the <message-part>s to extend into the gutter, so that i can detect which <message-part> the mouseover/mouseleave events are for, when the cursor is in over gutter
 
 (I also can't use left margin on <message-block>, since mouse events only apply within the border-box)
-
-edited messages use mostly border-left instead of padding-left,
-and and use box-shadow to draw the edited message indicator
-(box-shadow is drawn in the content/padding region, inside the border)
 */
 
 message-part {
@@ -483,15 +478,15 @@ message-part {
 	min-height: 1rem; /* this is so the message controls always have somewhere to be shown */
 	/* we can't use margin here, because then we don't get pointer events */
 	padding: 0.125rem 0;
-	padding-left: calc(var(--chat-gutter) + 0.1875rem);
+	border-left: calc(var(--chat-gutter) + 0.1875rem - 6px) solid transparent;
+	padding-left: 6px;
+	/*padding-left: calc(var(--chat-gutter) + 0.1875rem);*/
 	/* the padding overlaps with avatars, so clip bg to content-box */
 	-webkit-background-clip: padding !important;
 	-webkit-background-clip: padding-box !important;
 	background-clip: padding-box !important;
 }
 message-part.edited {
-	border-left: calc(var(--chat-gutter) + 0.1875rem - 6px) solid transparent;
-	padding-left: 6px;
 	box-shadow: 2px 0 goldenrod inset;
 }
 message-part:focus {
