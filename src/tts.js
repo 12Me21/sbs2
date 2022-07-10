@@ -61,17 +61,17 @@ const TTSSystem = {
 	
 	synthParams: {
 		voice: null,
-		volume: 1.0,
-		pitch: 1.0,
+		volume: 1,
+		pitch: 1,
 		rate: 1.25,
 	},
 	
 	// creates a list of smaller utterances and media to play in sequence
 	renderSpeechScript(tree, opts = {}) {
 		opts.msg ||= ""
-		opts.volume ||= 1
-		opts.pitch ||= 1
-		opts.rate ||= 1
+		opts.volume ||= this.synthParams.volume
+		opts.pitch ||= this.synthParams.pitch
+		opts.rate ||= this.synthParams.rate
 		opts.utter ||= []
 		opts.media ||= {}
 		
@@ -81,8 +81,17 @@ const TTSSystem = {
 			finalizeChunk()
 			let elem = opts.media[url] ||= new Audio(url)
 			elem.loop = false
-			let volume = clamp01(this.synthParams.volume * opts.volume)
+			let volume = clamp01(opts.volume)
 			opts.utter.push({ elem, volume })
+		}
+		
+		let renderWithAltParams = (elem, {volume = 1, pitch = 1, rate = 1})=>{
+			let prev = [ opts.volume, opts.pitch, opts.rate ]
+			opts.volume *= volume; opts.pitch *= pitch; opts.rate *= rate
+			finalizeChunk()
+			this.renderSpeechScript(elem, opts)
+			finalizeChunk()
+			;[ opts.volume, opts.pitch, opts.rate ] = prev
 		}
 		
 		// pushes utterance onto the end of the speech queue.
@@ -92,9 +101,9 @@ const TTSSystem = {
 			
 			let u = new SpeechSynthesisUtterance(opts.msg)
 			u.voice = this.synthParams.voice
-			u.volume = clamp01(this.synthParams.volume * opts.volume)
-			u.pitch = clamp01(this.synthParams.pitch * opts.pitch)
-			u.rate = clamp01(this.synthParams.rate * opts.rate)
+			u.volume = clamp01(opts.volume)
+			u.pitch = clamp01(opts.pitch)
+			u.rate = clamp01(opts.rate)
 			
 			opts.utter.push(u)
 			opts.msg = ""
@@ -115,21 +124,20 @@ const TTSSystem = {
 				if (elem.length > 2500) opts.msg += "(message too long)"
 				else opts.msg += elem
 			} else if ('object'==typeof elem) switch (elem.type) {
-				case 'bold': {
-					// TODO: is this even.. good to do?
-					finalizeChunk()
-					this.renderSpeechScript(elem, {...opts, pitch: opts.pitch * 0.75})
-					finalizeChunk()
-				break }
 				case 'italic': {
-					finalizeChunk()
-					this.renderSpeechScript(elem, {...opts, rate: opts.rate * 0.9})
-					finalizeChunk()
+					this.renderSpeechScript(elem, opts)
+					// renderWithAltParams(elem, { rate: 0.75 })
+				break }
+				case 'bold': {
+					this.renderSpeechScript(elem, opts)
+					// renderWithAltParams(elem, { pitch: 0.75 })
+				break }
+				case 'strikethrough': {
+					renderWithAltParams(elem, { rate: 1.25, volume: 0.75 })
 				break }
 				case 'underline': {
-					finalizeChunk()
-					this.renderSpeechScript(elem, {...opts, pitch: opts.pitch * 0.9, rate: opts.rate * 0.9})
-					finalizeChunk()
+					this.renderSpeechScript(elem, opts)
+					// renderWithAltParams(elem, { pitch: 0.75, rate: 0.75 })
 				break }
 				case 'video': {
 					opts.msg += `\nvideo from ${simplifyUrl(elem.args.url)}\n`
@@ -175,6 +183,33 @@ const TTSSystem = {
 						opts.msg += ` for ${elem.args.label}`
 					opts.msg += "\n"
 				break }
+				case 'heading': {
+					renderWithAltParams(elem, { rate: 0.75, volume: 1.25 })
+				break }
+				case 'subscript': 
+				case 'superscript': {
+					renderWithAltParams(elem, { volume: 0.75 })
+				break }
+				case 'quote': {
+					opts.msg += "\nquote"
+					if (elem.args.cite)
+						opts.msg += ` from ${elem.args.cite}`
+					opts.msg += "\n"
+					this.renderSpeechScript(elem, opts)
+					opts.msg += "\nend quote\n"
+				break }
+				case 'ruby': {
+					this.renderSpeechScript(elem, opts)
+					if (elem.args.text)
+						opts.msg += ` (${elem.args.text})`
+				break }
+				case 'key':
+				case 'align': {
+					this.renderSpeechScript(elem, opts)
+				break }
+				case 'divider': {
+					opts.msg += '\n'
+				break }
 				default: {
 					if (elem.content)
 						this.renderSpeechScript(elem, opts)
@@ -206,8 +241,6 @@ const TTSSystem = {
 	}
 }
 
-// TODO: strikethrough, sup, sub, tables (maybe read head? or read only if smaller than 10 cells?),
-//       ruby (true already handled), horiz. rule, maybe lists,
-//       maybe headers? (louder volume?), quote text (with barely-used src),
-//       maybe anchors should work (as in `[[#test]]`), keys
+// TODO: tables (maybe read head? or only if <10 cells?), maybe lists,
+//       maybe anchors should work (as in `[[#test]]`)
 // (from quick run through of 12y markup guide and glance at comments)
