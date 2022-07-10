@@ -45,7 +45,7 @@ Settings.fields = {
 	tts_notify: {
 		name: "TTS Notify",
 		type: 'select',
-		options: ['no', 'yes'],
+		options: ['no', 'everyone else', 'yes'],
 	},
 	// tts_voice: {
 	// 	name: "TTS Voice",

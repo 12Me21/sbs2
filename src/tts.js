@@ -270,5 +270,3 @@ const TTSSystem = {
 		this.current = null
 	}
 }
-
-// (from quick run through of 12y markup guide and glance at comments)
