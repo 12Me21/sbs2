@@ -78,11 +78,14 @@ const TTSSystem = {
 		let clamp01 = x=>Math.max(0, Math.min(x, 1))
 		
 		let sound = url=>{
+			if (!url) return
 			finalizeChunk()
-			let elem = opts.media[url] ||= new Audio(url)
-			elem.loop = false
-			let volume = clamp01(opts.volume)
-			opts.utter.push({ elem, volume })
+			let u = { volume: clamp01(opts.volume) }
+			if (url instanceof HTMLAudioElement) u.elem = url
+			else u.elem = opts.media[url] ||= new Audio(url)
+			u.elem.loop = false
+			opts.utter.push(u)
+			return u
 		}
 		
 		let renderWithAltParams = (elem, {volume = 1, pitch = 1, rate = 1})=>{
@@ -240,7 +243,8 @@ const TTSSystem = {
 					if (elem.content)
 						this.renderSpeechScript(elem, opts)
 					else {
-						if (this.placeholderSound) sound(this.placeholderSound)
+						// store loaded copy of placeholderSound for replaying later
+						this.placeholderSound = sound(this.placeholderSound).elem
 						console.log(`TTS renderer ignored ${elem.type}`)
 					}
 				break }

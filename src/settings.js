@@ -56,27 +56,27 @@ Settings.fields = {
 		name: "TTS Volume",
 		type: 'range',
 		range: [0.0, 1.0],
-		step: 'any',
+		step: 1/20,
 		notches: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], // 🥴
-		update(value) {
-			if (document.readyState != 'loading') {
+		update(value, event) {
+			TTSSystem.synthParams.volume = value
+			if (event && event.type == 'change') {
 				TTSSystem.cancel()
-				TTSSystem.synthParams.volume = value
 				if (TTSSystem.placeholderSound) TTSSystem.speakMessage({text:"{#uwu",values:{m:'12y'}}, true)
 				else TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
 			}
-		},
+		}
 	},
 	tts_speed: {
 		name: "TTS Speed",
 		type: 'range',
 		range: [0.5, 2], // (heard range may be narrower)
-		step: 'any',
+		step: 1/20,
 		notches: [1],
-		update(value) {
-			if (document.readyState != 'loading') {
+		update(value, event) {
+			TTSSystem.synthParams.rate = value
+			if (event && event.type == 'change') {
 				TTSSystem.cancel()
-				TTSSystem.synthParams.rate = value
 				TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
 			}
 		},
@@ -146,22 +146,22 @@ Settings.early = function() {
 },
 
 // change a setting after load
-Settings.change = function(name, value) {
+Settings.change = function(name, value, event) {
 	let field = this.fields[name]
 	if (!field)
 		return
 	this.values[name] = value
 	localStorage.setItem("setting-"+name, JSON.stringify(value))
-	field.update && field.update(value)
+	field.update && field.update(value, event)
 }
 
 // todo: replace this
 Settings.draw = function() {
 	let settings = Settings
 	let get = {}
-	let update = (name)=>{
+	let update = (name, event)=>{
 		let value = get[name]()
-		settings.change(name, value)
+		settings.change(name, value, event)
 	}
 	let x = {
 		elem: document.createDocumentFragment(),
@@ -195,13 +195,12 @@ Settings.draw = function() {
 			elem.min = data.range[0]; elem.max = data.range[1]
 			elem.step = data.step || 'any'
 			if (data.notches) {
-				let great = row.child('datalist')
-				great.style.display = 'none'
+				let notches = row.child('datalist')
 				for (let e of data.notches.concat(data.range)) {
-					let opt = great.child('option')
+					let opt = notches.child('option')
 					opt.value = e
 				}
-				elem.setAttribute('list', great.id = `settings_panel__${name}_datalist`)
+				elem.setAttribute('list', notches.id = `settings_panel__${name}_datalist`)
 			}
 		}
 		
@@ -217,8 +216,8 @@ Settings.draw = function() {
 		elem.value = value
 		
 		if (data.autosave != false)
-			elem.onchange = ()=>{
-				update(name)
+			elem.onchange = (event)=>{
+				update(name, event)
 			}
 		
 		elem && row.append(elem)
