@@ -39,6 +39,7 @@ html[data-theme="light"] {
 	--T-gray-bg: #DDD;
 	--edit-textarea-bg: #FFFF80;
 	--normal-shadow: 0 2px 3px #0000004D;
+	--T-edit-color: goldenrod;
 	/* inverted text colors (white) */
 	--databartxtcolor: white;
 	--link-invert-color: #DEF;
@@ -90,6 +91,7 @@ html[data-theme="dark"] {
 	--T-purple-bg: #592C6A;
 	--edit-textarea-bg: #750;
 	--normal-shadow: 0 2px 3px #0000004D;
+	--T-edit-color: teal;
 	/* in dark theme, the inverted colors are just normal dark */
 	
 	--databartxtcolor: var(--T-color);

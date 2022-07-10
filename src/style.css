@@ -487,7 +487,7 @@ message-part {
 	background-clip: padding-box !important;
 }
 message-part.edited {
-	box-shadow: 2px 0 goldenrod inset;
+	box-shadow: 2px 0 inset var(--T-edit-color);
 }
 message-part:focus {
 	background: var(--message-focus-bg);
