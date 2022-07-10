@@ -62,7 +62,8 @@ Settings.fields = {
 			if (document.readyState != 'loading') {
 				TTSSystem.cancel()
 				TTSSystem.synthParams.volume = value
-				TTSSystem.speakMessage({text:"{#uwu",values:{m:'12y'}}, true)
+				if (TTSSystem.placeholderSound) TTSSystem.speakMessage({text:"{#uwu",values:{m:'12y'}}, true)
+				else TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
 			}
 		},
 	},

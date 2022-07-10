@@ -57,7 +57,7 @@ const TTSSystem = {
 		} catch { return }
 	},
 	
-	placeholderSound: "./resource/meow.wav",
+	placeholderSound: null,
 	
 	synthParams: {
 		voice: null,
@@ -115,6 +115,7 @@ const TTSSystem = {
 			if (s.includes("cdn.discordapp.com/")) return "discord"
 			if (s.includes(" ") && !s.includes(".")) return false // silly fake link heuristics
 			if (s.includes(" ") && s.includes(".") && s.indexOf(" ") < s.indexOf(".")) return false
+			if (s.startsWith('#')) return `anchor "${s.substring(1)}"`
 			else try { return new URL(s).hostname.replace("www.", "") }
 			catch { return "invalid URL" }
 		}
@@ -162,7 +163,7 @@ const TTSSystem = {
 					else opts.msg += elem.args.text ? ` ${elem.args.text} (link)` : `\nlink to ${url}\n`
 				break }
 				case 'image': { // pretty safe bet that all images are block elements
-					opts.msg += "\n" + (elem.args.alt ? `${elem.args.alt} (image)` : `image from ${simplifyUrl(elem.args.url)}`) + "\n"
+					opts.msg += (elem.args.alt ? `\n${elem.args.alt} (image)` : `\nimage from ${simplifyUrl(elem.args.url)}`) + "\n"
 				break }
 				case 'audio': {
 					sound(elem.args.url)
@@ -196,25 +197,50 @@ const TTSSystem = {
 						opts.msg += ` from ${elem.args.cite}`
 					opts.msg += "\n"
 					this.renderSpeechScript(elem, opts)
-					opts.msg += "\nend quote\n"
+					opts.msg += "\n(end quote)\n"
 				break }
 				case 'ruby': {
 					this.renderSpeechScript(elem, opts)
 					if (elem.args.text)
 						opts.msg += ` (${elem.args.text})`
 				break }
+				case 'bg':
 				case 'key':
-				case 'align': {
+				case 'list':
+				case 'anchor': {
 					this.renderSpeechScript(elem, opts)
 				break }
+				case 'list_item': {
+					this.renderSpeechScript(elem, opts)
+					opts.msg += "\n"
+				break }
+				case 'align': {
+					opts.msg += "\n"
+					this.renderSpeechScript(elem, opts)
+					opts.msg += "\n"
+				break }
+				case 'table_cell': {
+					this.renderSpeechScript(elem, opts)
+					opts.msg += "; "
+				break }
 				case 'divider': {
-					opts.msg += '\n'
+					opts.msg += "\n"
+				break }
+				case 'table': {
+					let headers = elem.content[0]
+					headers = headers.content[0].args.header ? headers : false
+					if (!headers) opts.msg += "\ntable\n"
+					else {
+						opts.msg += "\ntable with headers: "
+						this.renderSpeechScript(headers, opts)
+						opts.msg += "\n"
+					}
 				break }
 				default: {
 					if (elem.content)
 						this.renderSpeechScript(elem, opts)
 					else {
-						sound(this.placeholderSound)
+						if (this.placeholderSound) sound(this.placeholderSound)
 						console.log(`TTS renderer ignored ${elem.type}`)
 					}
 				break }
@@ -225,6 +251,10 @@ const TTSSystem = {
 		// finalize it and return the utterance list.
 		if (tree.type == 'ROOT') {
 			finalizeChunk()
+			if (!opts.utter.length) {
+				opts.msg += 'nothing'
+				finalizeChunk()
+			}
 			return opts.utter
 		}
 	},
@@ -241,6 +271,4 @@ const TTSSystem = {
 	}
 }
 
-// TODO: tables (maybe read head? or only if <10 cells?), maybe lists,
-//       maybe anchors should work (as in `[[#test]]`)
 // (from quick run through of 12y markup guide and glance at comments)
