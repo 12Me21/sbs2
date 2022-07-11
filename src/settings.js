@@ -72,7 +72,7 @@ Settings.fields = {
 		name: "TTS Speed",
 		type: 'range',
 		range: [0.5, 2], // (heard range may be narrower)
-		step: 1/20,
+		step: "0.05",
 		notches: [1],
 		update(value, type) {
 			TTSSystem.synthParams.rate = value
@@ -157,13 +157,14 @@ Settings.change = function(name, value, type) {
 	if (!field)
 		return
 	this.values[name] = value
-	localStorage.setItem("setting-"+name, JSON.stringify(value))
+	if (type!='init')
+		localStorage.setItem("setting-"+name, JSON.stringify(value))
 	field.update && field.update(value, type)
 }
 
 Settings.update_all = function() {
 	Object.for(this.fields, (data, name)=>{
-		this.change(name, data.get(), 'save')
+		this.change(name, data.read(), 'save')
 	})
 }
 
@@ -173,10 +174,12 @@ Settings.draw = function() {
 	Object.for(this.fields, (data, name)=>{
 		let row = document.createElement('div')
 		f.append(row)
-		let type = data.type
+		
 		let label = row.child('label')
 		label.textContent = data.name+": "
+		
 		let elem
+		let type = data.type
 		if (type=='select') {
 			elem = document.createElement('select')
 			for (let option of data.options) {
@@ -208,14 +211,14 @@ Settings.draw = function() {
 		elem.id = `settings_panel__${name}`
 		label.htmlFor = elem.id
 		
-		data.get = ()=>elem.value
+		data.read = ()=>elem.value
 		
 		let value = this.values[name]
 		elem.value = value
 		
 		if (data.autosave != false)
 			elem.onchange = ev=>{
-				this.change(name, data.get(), 'change')
+				this.change(name, data.read(), 'change')
 			}
 		
 		elem && row.append(elem)
