@@ -134,6 +134,7 @@ Settings.fields = {
 Settings.early = function() {
 	Object.for(this.fields, (field, name)=>{
 		let value = this.values[name]
+		// default value
 		if (value === undefined) {
 			if (field.options)
 				value = field.options[0]

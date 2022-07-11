@@ -78,11 +78,14 @@ const TTSSystem = {
 		let clamp01 = x=>Math.max(0, Math.min(x, 1))
 		
 		let sound = url=>{
-			if (!url) return
+			if (!url)
+				return
 			finalizeChunk()
 			let u = { volume: clamp01(opts.volume) }
-			if (url instanceof HTMLAudioElement) u.elem = url
-			else u.elem = opts.media[url] ||= new Audio(url)
+			if (url instanceof HTMLAudioElement)
+				u.elem = url
+			else
+				u.elem = opts.media[url] ||= new Audio(url)
 			u.elem.loop = false
 			opts.utter.push(u)
 			return u
@@ -100,7 +103,8 @@ const TTSSystem = {
 		// pushes utterance onto the end of the speech queue.
 		let finalizeChunk = ()=>{
 			opts.msg = opts.msg.trim()
-			if (!opts.msg.length) return
+			if (!opts.msg.length)
+				return
 			
 			let u = new SpeechSynthesisUtterance(opts.msg)
 			u.voice = this.synthParams.voice
@@ -125,31 +129,27 @@ const TTSSystem = {
 		
 		for (let elem of tree.content) {
 			if ('string'==typeof elem) {
-				if (elem.length > 2500) opts.msg += "(message too long)"
-				else opts.msg += elem
-			} else if ('object'==typeof elem) switch (elem.type) {
+				if (elem.length > 2500)
+					opts.msg += "(message too long)"
+				else
+					opts.msg += elem
+			} else switch (elem.type) {
 				case 'italic': {
 					this.renderSpeechScript(elem, opts)
 					// renderWithAltParams(elem, { rate: 0.75 })
-				break }
-				case 'bold': {
+				} break;case 'bold': {
 					this.renderSpeechScript(elem, opts)
 					// renderWithAltParams(elem, { pitch: 0.75 })
-				break }
-				case 'strikethrough': {
+				} break;case 'strikethrough': {
 					renderWithAltParams(elem, { rate: 1.25, volume: 0.75 })
-				break }
-				case 'underline': {
+				} break;case 'underline': {
 					this.renderSpeechScript(elem, opts)
 					// renderWithAltParams(elem, { pitch: 0.75, rate: 0.75 })
-				break }
-				case 'video': {
+				} break;case 'video': {
 					opts.msg += `\nvideo from ${simplifyUrl(elem.args.url)}\n`
-				break }
-				case 'youtube': {
+				} break;case 'youtube': {
 					opts.msg += "\nyoutube video\n"
-				break }
-				case 'link': {
+				} break;case 'link': {
 					// depending on if they're labeled or unlabeled,
 					// i treat these as either inline or block respectively.
 					// inline being normal space pause, block being sentence break.
@@ -159,77 +159,57 @@ const TTSSystem = {
 					} else {
 						opts.msg += elem.args.text ? ` ${elem.args.text} (link)` : `\nlink to ${simplifyUrl(elem.args.url)}\n`
 					}
-				break }
-				case 'simple_link': {
+				} break;case 'simple_link': {
 					let url = simplifyUrl(elem.args.url)
 					if (!url) opts.msg += ` ${elem.args.url} (fake link)`
 					else opts.msg += elem.args.text ? ` ${elem.args.text} (link)` : `\nlink to ${url}\n`
-				break }
-				case 'image': { // pretty safe bet that all images are block elements
+				} break;case 'image': { // pretty safe bet that all images are block elements
 					opts.msg += (elem.args.alt ? `\n${elem.args.alt} (image)` : `\nimage from ${simplifyUrl(elem.args.url)}`) + "\n"
-				break }
-				case 'audio': {
+				} break;case 'audio': {
 					sound(elem.args.url)
 					// todo: time limite for audio?
-				break }
-				case 'code': {
+				} break;case 'code': {
 					opts.msg += "\ncode block"
 					if (elem.args.lang && elem.args.lang != 'sb') // sign of the times...
 						opts.msg += ` written in ${elem.args.lang}`
 					opts.msg += "\n"
-				break }
-				case 'icode': {
+				} break;case 'icode': {
 					opts.msg += elem.args.text
-				break }
-				case 'spoiler': {
+				} break;case 'spoiler': {
 					opts.msg += "\nspoiler"
 					if (elem.args.label)
 						opts.msg += ` for ${elem.args.label}`
 					opts.msg += "\n"
-				break }
-				case 'heading': {
+				} break;case 'heading': {
 					renderWithAltParams(elem, { rate: 0.75, volume: 1.25 })
-				break }
-				case 'subscript': 
-				case 'superscript': {
+				} break;case 'subscript': case 'superscript': {
 					renderWithAltParams(elem, { volume: 0.75 })
-				break }
-				case 'quote': {
+				} break;case 'quote': {
 					opts.msg += "\nquote"
 					if (elem.args.cite)
 						opts.msg += ` from ${elem.args.cite}`
 					opts.msg += "\n"
 					this.renderSpeechScript(elem, opts)
 					opts.msg += "\n(end quote)\n"
-				break }
-				case 'ruby': {
+				} break;case 'ruby': {
 					this.renderSpeechScript(elem, opts)
 					if (elem.args.text)
 						opts.msg += ` (${elem.args.text})`
-				break }
-				case 'bg':
-				case 'key':
-				case 'list':
-				case 'anchor': {
+				} break;case 'bg':case 'key':case 'list':case 'anchor': {
 					this.renderSpeechScript(elem, opts)
-				break }
-				case 'list_item': {
+				} break;case 'list_item': {
 					this.renderSpeechScript(elem, opts)
 					opts.msg += "\n"
-				break }
-				case 'align': {
+				} break;case 'align': {
 					opts.msg += "\n"
 					this.renderSpeechScript(elem, opts)
 					opts.msg += "\n"
-				break }
-				case 'table_cell': {
+				} break;case 'table_cell': {
 					this.renderSpeechScript(elem, opts)
 					opts.msg += "; "
-				break }
-				case 'divider': {
+				} break;case 'divider': {
 					opts.msg += "\n"
-				break }
-				case 'table': {
+				} break;case 'table': {
 					let headers = elem.content[0]
 					headers = headers.content[0].args.header ? headers : false
 					if (!headers) opts.msg += "\ntable\n"
@@ -238,8 +218,7 @@ const TTSSystem = {
 						this.renderSpeechScript(headers, opts)
 						opts.msg += "\n"
 					}
-				break }
-				default: {
+				} break;default: {
 					if (elem.content)
 						this.renderSpeechScript(elem, opts)
 					else {
@@ -247,7 +226,7 @@ const TTSSystem = {
 						this.placeholderSound = sound(this.placeholderSound).elem
 						console.log(`TTS renderer ignored ${elem.type}`)
 					}
-				break }
+				}
 			}
 		}
 		
