@@ -5,7 +5,6 @@ Settings.fields = {
 		name: "Theme",
 		type: 'select',
 		options: ['auto', 'light', 'dark'],
-		/*done_early: true,*/
 		update(value) {
 			if (value == 'auto')
 				theme_query.onchange(theme_query)
@@ -56,14 +55,16 @@ Settings.fields = {
 		name: "TTS Volume",
 		type: 'range',
 		range: [0.0, 1.0],
-		step: 1/20,
+		step: "0.05", //making this a string to /potentially/ bypass floating point
 		notches: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], // 🥴
-		update(value, event) {
+		update(value, type) {
 			TTSSystem.synthParams.volume = value
-			if (event && event.type == 'change') {
+			if (type=='change') {
 				TTSSystem.cancel()
-				if (TTSSystem.placeholderSound) TTSSystem.speakMessage({text:"{#uwu",values:{m:'12y'}}, true)
-				else TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
+				if (TTSSystem.placeholderSound)
+					TTSSystem.speakMessage({text:"{#uwu",values:{m:'12y'}}, true)
+				else
+					TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
 			}
 		}
 	},
@@ -73,9 +74,9 @@ Settings.fields = {
 		range: [0.5, 2], // (heard range may be narrower)
 		step: 1/20,
 		notches: [1],
-		update(value, event) {
+		update(value, type) {
 			TTSSystem.synthParams.rate = value
-			if (event && event.type == 'change') {
+			if (type='change') {
 				TTSSystem.cancel()
 				TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
 			}
@@ -107,9 +108,9 @@ Settings.fields = {
 		name: "Custom CSS",
 		type: 'textarea',
 		autosave: false,
-		done_early: true,
-		update(value) {
-			$customCSS.textContent = value
+		update(value, type) {
+			if (type!='init')
+				$customCSS.textContent = value
 		},
 	},
 	sitejs: {
@@ -118,7 +119,7 @@ Settings.fields = {
 		autosave: false,
 		//todo: maybe highlight when changed, to notify user that they need to save manually?
 		// todo: js console tab thing
-		update(value) {
+		update(value, type) {
 			try {
 				eval(value)
 			} catch (e) {
@@ -140,40 +141,38 @@ Settings.early = function() {
 				value = null
 		}
 		this.values[name] = value
-		if (field.update && !field.done_early)
-			field.update(value)
+		if (field.update)
+			field.update(value, 'init')
 	})
 },
 
-// change a setting after load
-Settings.change = function(name, value, event) {
+// change a setting
+
+// type:
+// - 'init' - first time (during page load)
+// - 'change' - changed by user
+// - 'save' - when "save" button clicked 
+Settings.change = function(name, value, type) {
 	let field = this.fields[name]
 	if (!field)
 		return
 	this.values[name] = value
 	localStorage.setItem("setting-"+name, JSON.stringify(value))
-	field.update && field.update(value, event)
+	field.update && field.update(value, type)
+}
+
+Settings.update_all = function() {
+	Object.for(this.fields, (data, name)=>{
+		this.change(name, data.get(), 'save')
+	})
 }
 
 // todo: replace this
 Settings.draw = function() {
-	let settings = Settings
-	let get = {}
-	let update = (name, event)=>{
-		let value = get[name]()
-		settings.change(name, value, event)
-	}
-	let x = {
-		elem: document.createDocumentFragment(),
-		update_all() {
-			Object.for(get, (func, key)=>{
-				update(key)
-			})
-		},
-	}
-	Object.for(settings.fields, (data, name)=>{
+	let f = document.createDocumentFragment()
+	Object.for(this.fields, (data, name)=>{
 		let row = document.createElement('div')
-		x.elem.append(row)
+		f.append(row)
 		let type = data.type
 		let label = row.child('label')
 		label.textContent = data.name+": "
@@ -192,7 +191,8 @@ Settings.draw = function() {
 		} else if (type=='range') {
 			elem = document.createElement('input')
 			elem.type = 'range'
-			elem.min = data.range[0]; elem.max = data.range[1]
+			elem.min = data.range[0]
+			elem.max = data.range[1]
 			elem.step = data.step || 'any'
 			if (data.notches) {
 				let notches = row.child('datalist')
@@ -208,21 +208,19 @@ Settings.draw = function() {
 		elem.id = `settings_panel__${name}`
 		label.htmlFor = elem.id
 		
-		get[name] = ()=>{
-			return elem.value
-		}
+		data.get = ()=>elem.value
 		
-		let value = settings.values[name]
+		let value = this.values[name]
 		elem.value = value
 		
 		if (data.autosave != false)
-			elem.onchange = (event)=>{
-				update(name, event)
+			elem.onchange = ev=>{
+				this.change(name, data.get(), 'change')
 			}
 		
 		elem && row.append(elem)
 	})
-	return x
+	return f
 }
 
 Object.seal(Settings)

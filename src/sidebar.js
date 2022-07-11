@@ -72,7 +72,7 @@ let Sidebar = Object.seal({
 		else
 			this.select_tab('user')
 		
-		$searchButton.onclick = e=>{
+		$searchButton.onclick = ev=>{
 			$searchButton.disabled = true
 			
 			Lp.chain({
@@ -100,8 +100,8 @@ let Sidebar = Object.seal({
 		}
 		View.bind_enter($searchInput, $searchButton.onclick)
 		
-		$loginForm.onsubmit = e=>{
-			e.preventDefault()
+		$loginForm.onsubmit = ev=>{
+			ev.preventDefault()
 			Req.get_auth($loginForm.username.value, $loginForm.password.value).do = (resp, err)=>{
 				if (err) {
 					alert("❌ logging in failed\n"+err)
@@ -112,13 +112,14 @@ let Sidebar = Object.seal({
 				}
 			}
 		}
-		$logOut.onclick = e=>{
+		$logOut.onclick = ev=>{
 			Req.log_out()
 		}
 		let d = Settings.draw()
-		$localSettings.append(d.elem)
-		$localSettingsSave.onclick = ()=>{
-			d.update_all()
+		$localSettings.append(d)
+		
+		$localSettingsSave.onclick = ev=>{
+			Settings.update_all()
 		}
 	},
 	
