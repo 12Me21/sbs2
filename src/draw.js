@@ -455,10 +455,16 @@ const Draw = Object.seal({
 	
 	message_controls: function(cb) {
 		let e = this()
-		e.firstChild.onclick = e=>cb(e, e.shiftKey ? 'speak' : 'info')
+		e.firstChild.onclick = e=>cb(e, 'info')
+		e.children[1].onclick = e=>cb(e, 'speak')
 		e.lastChild.onclick = e=>cb(e, 'edit')
 		return {elem: e}
-	}.bind(𐀶`<message-controls><button tab-index=-1>⚙</button><button tab-index=-1>✏</button>`),
+	}.bind(𐀶`
+<message-controls>
+<button tab-index=-1>⚙</button>
+<button tab-index=-1>💬</button>
+<button tab-index=-1>✏</button>
+`),
 	
 	sidebar_comment: function(comment) {
 		let d = this()

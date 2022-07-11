@@ -372,10 +372,10 @@ message-block {
 	display: block;
 	position: relative;
 	box-sizing: content-box;
-	--chat-gutter: 4rem;
-	--chat-avatar-size: calc(var(--chat-gutter) - 0.5rem);
+	--chat-gutter: 4.5rem;
+	--chat-avatar-size: calc(var(--chat-gutter) - 0.5rem - 0.5rem);
 	--chat-message-gap: 0.625rem;
-	padding: 0 0.5rem;
+	padding-right: 0.5rem;
 	padding-top: var(--chat-message-gap);
 	min-height: var(--chat-avatar-size);
 	/* border-left: 0.5em solid rgb(255,153,153) */
@@ -384,17 +384,18 @@ message-block {
 message-block > img.avatar {
 	display: inline-block;
 	position: absolute;
+	z-index: -1;
 	width: var(--chat-avatar-size);
 	height: var(--chat-avatar-size);
 	border: none; /*1px solid #777*/
-	margin-right: calc(var(--chat-gutter) - var(--chat-avatar-size));
+	margin-left: 0.5rem;
 	/*background-color: transparent*/
 	/*background-color: #AAB*/
 						
 }
 message-block > .bigAvatar {
 	position: absolute;
-	width: calc(var(--chat-gutter) + 0.5rem);
+	width: calc(var(--chat-gutter));
 	height: 100%;
 	left: 0;
 	top: 0;
