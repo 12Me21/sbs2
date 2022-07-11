@@ -44,17 +44,18 @@ const TTSSystem = {
 	async speakScript(utter) {
 		if (this.queue.push(utter)-1) return
 		
-		try {
-			while (this.queue.length) {
+		while (this.queue.length) {
+			try {
 				for (let u of this.queue[0]) {
 					this.current = u
 					if (u instanceof SpeechSynthesisUtterance) await this.speakUtterance(u)
 					else if (u.elem instanceof HTMLAudioElement) await this.playSound(u)
 				}
+			} finally {
 				this.current = null
 				this.queue.shift()
 			}
-		} catch { return }
+		}
 	},
 	
 	placeholderSound: null,
@@ -243,14 +244,20 @@ const TTSSystem = {
 		}
 	},
 	
-	cancel() {
-		// clear out queue
-		this.queue = []
-		
-		// cancel current thing
+	// skip current utterance
+	skip() {
 		speechSynthesis.cancel()
 		if (this.current && this.current.elem instanceof HTMLAudioElement)
 			this.current.elem.pause()
-		this.current = null
+	},
+	
+	// cancel all utterances
+	cancel() {
+		this.queue = []
+		this.skip()
 	}
 }
+
+document.addEventListener('keydown', e=>{
+	if (e.key == 'Control') TTSSystem.skip()
+})
