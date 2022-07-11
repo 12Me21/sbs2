@@ -6,7 +6,7 @@ Settings.fields = {
 		type: 'select',
 		options: ['auto', 'light', 'dark'],
 		update(value) {
-			if (value == 'auto')
+			if ('auto'==value)
 				theme_query.onchange(theme_query)
 			else
 				document.documentElement.dataset.theme = value
@@ -60,7 +60,7 @@ Settings.fields = {
 		notches: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], // 🥴
 		update(value, type) {
 			TTSSystem.synthParams.volume = value
-			if (type=='change') {
+			if ('change'==type) {
 				TTSSystem.cancel()
 				if (TTSSystem.placeholderSound)
 					TTSSystem.speakMessage({text:"{#uwu",values:{m:'12y'}}, true)
@@ -78,7 +78,7 @@ Settings.fields = {
 		notches: [1],
 		update(value, type) {
 			TTSSystem.synthParams.rate = value
-			if (type='change') {
+			if ('change'==type) {
 				TTSSystem.cancel()
 				TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
 			}
@@ -93,7 +93,7 @@ Settings.fields = {
 		notches: [1],
 		update(value, type) {
 			TTSSystem.synthParams.pitch = value
-			if (type='change') {
+			if ('change'==type) {
 				TTSSystem.cancel()
 				TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
 			}
@@ -126,7 +126,7 @@ Settings.fields = {
 		type: 'textarea',
 		autosave: false,
 		update(value, type) {
-			if (type!='init')
+			if ('init'!=type)
 				$customCSS.textContent = value
 		},
 	},
