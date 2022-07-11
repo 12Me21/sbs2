@@ -159,6 +159,8 @@
 <script src=src/draw.js></script>
 <script src=src/input.js></script>
 
+<script src=src/tts.js></script>
+
 <script src=src/debug.js></script>
 <script src=src/settings.js></script>
 <script src=src/scroller.js></script>
@@ -264,6 +266,7 @@
 				<button onclick='RELOAD()'>Reload</button>
 				<button onclick='Lp.start_websocket(true)'>Reset Socket</button>
 				<button onclick='for(let sheet of document.styleSheets)if(sheet.href)sheet.ownerNode.href+="#"'>reload css</button>
+				<button onclick='TTSSystem.cancel()' onmouseover='this.title = `${TTSSystem.queue.length} messages in TTS queue`'>Stop TTS</button>
 				
 				<button id=$logOut style="float:right">Log out</button>
 			</div>

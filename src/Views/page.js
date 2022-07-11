@@ -244,6 +244,10 @@ class PageView extends BaseView {
 		}
 	}
 	static title_notification(comment) {
+		if (Settings.values['tts_notify']!='no')
+			if (Settings.values['tts_notify']=='yes' || comment.createUserId != Req.uid)
+				TTSSystem.speakMessage(comment)
+		
 		View.title_notification(comment.text, Draw.avatar_url(comment.Author))
 		// todo: also call if the current comment being shown in the title is edited
 	}
