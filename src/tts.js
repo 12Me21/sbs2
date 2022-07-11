@@ -109,8 +109,9 @@ const TTSSystem = {
 			let u = new SpeechSynthesisUtterance(opts.msg)
 			u.voice = this.synthParams.voice
 			u.volume = clamp01(opts.volume)
-			u.pitch = clamp01(opts.pitch)
-			u.rate = clamp01(opts.rate)
+			// i'm just going to remove the clamp here and assume the browser handles that
+			u.pitch = opts.pitch
+			u.rate = opts.rate
 			
 			opts.utter.push(u)
 			opts.msg = ""
