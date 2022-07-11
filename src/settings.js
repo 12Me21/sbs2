@@ -55,6 +55,7 @@ Settings.fields = {
 		name: "TTS Volume",
 		type: 'range',
 		range: [0.0, 1.0],
+		default: 0.5,
 		step: "0.05", //making this a string to /potentially/ bypass floating point
 		notches: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], // 🥴
 		update(value, type) {
@@ -73,9 +74,25 @@ Settings.fields = {
 		type: 'range',
 		range: [0.5, 2], // (heard range may be narrower)
 		step: "0.05",
+		default: 1,
 		notches: [1],
 		update(value, type) {
 			TTSSystem.synthParams.rate = value
+			if (type='change') {
+				TTSSystem.cancel()
+				TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
+			}
+		},
+	},
+	tts_pitch: {
+		name: "TTS Pitch",
+		type: 'range',
+		range: [0, 2],
+		step: "0.05",
+		default: 1,
+		notches: [1],
+		update(value, type) {
+			TTSSystem.synthParams.pitch = value
 			if (type='change') {
 				TTSSystem.cancel()
 				TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
@@ -136,7 +153,9 @@ Settings.early = function() {
 		let value = this.values[name]
 		// default value
 		if (value === undefined) {
-			if (field.options)
+			if (field.default!==undefined)
+				value = field.default
+			else if (field.options)
 				value = field.options[0]
 			else
 				value = null
