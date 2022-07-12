@@ -107,7 +107,7 @@ Settings.add({
 
 // this is HERE because it just so happens to be the last script before main.js
 let ls = Settings.values.load_scripts
-if (Array.isArray(ls)) {
+if (Array.isArray(ls) && ls.length) {
 	let html = ls.map(src=>{
 		src = src.replace(/&/g, "&amp;").replace(/"/g, "&quot;")
 		return `<script src="${src}"><\/script>`
