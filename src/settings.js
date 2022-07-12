@@ -94,11 +94,27 @@ class SettingProto {
 		let type = this.type
 		if (type=='select') {
 			elem = document.createElement('select')
-			for (let option of this.options) {
-				let opt = elem.child('option')
-				opt.value = option
-				opt.textContent = option
+			this.elem = elem
+			this.redraw_options = ()=>{
+				this.elem.fill()
+				let found = false
+				let val = this.get_value()
+				for (let option of this.options) {
+					let opt = this.elem.child('option')
+					opt.value = option
+					opt.textContent = option
+					if (option === val)
+						found = true
+				}
+				// add placeholder option if value is missing from options list.. might cause problems though..
+				if ('string'==typeof val && !found) {
+					let opt = this.elem.child('option')
+					opt.value = val
+					opt.textContent = val+" ?"
+				}
+				this.write()
 			}
+			this.redraw_options()
 		} else if (type=='textarea') {
 			elem = document.createElement('textarea')
 		} else if (type=='range') {
