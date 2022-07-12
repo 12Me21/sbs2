@@ -22,7 +22,6 @@ let Sidebar = Object.seal({
 		this.scroller = new Scroller($sidebarScroller.parentNode, $sidebarScroller)
 		// todo: maybe a global ESC handler?
 		/*document.addEventListener('keydown', function(e) {
-		  
 		  })*/
 		let user_label
 		if (Req.auth) {
