@@ -121,8 +121,8 @@ class SettingProto {
 			console.warn('unknown settings type: '+type)
 			elem = document.createElement('input')
 		}
-		// connect label to element (feels nice)
-		label.htmlFor = elem.id = `settings_panel__${this.name}`
+		// connect label to element (feels nice)   (does not fele nice :(
+		//label.htmlFor = elem.id = `settings_panel__${this.name}`
 		this.elem = elem
 		// set the initial value
 		this.write()
