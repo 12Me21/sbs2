@@ -67,6 +67,6 @@ if [ "$1" ]
 then
 	echo 'Copying files' >&2
 	mkdir -vp "$dest"
-	cp -u -r resource "$dest"/
+	cp -u -r resource "$dest"/resource
 	cp -v -u _build.html "$dest"/index.html
 fi
