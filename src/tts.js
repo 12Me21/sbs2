@@ -33,8 +33,8 @@ const TTSSystem = {
 		
 		if (!merged) {
 			let author = message.Author
-			let memorable_name = author.bridge ? (author.nickname || message.values.b) : author.username
-			opts.msg = `${memorable_name} says\n`
+			opts.nickname || (opts.nickname = author.bridge ? (author.nickname || message.values.b) : author.username)
+			opts.msg = `${opts.nickname} says\n`
 		}
 		
 		this.speakScript(this.renderSpeechScript(tree, opts))
@@ -303,8 +303,9 @@ const TTSSystem = {
 		}
 	},
 	
-	useSkipKey(enable) {
-		if (this.skipKey.enabled) {
+	useSkipKey(enable = true) {
+		if (this.skipKey.enabled == enable) return
+		if (!enable) {
 			document.removeEventListener('keydown', TTSSystem.skipKey.keydown)
 			document.removeEventListener('keyup', TTSSystem.skipKey.keyup)
 		} else {
