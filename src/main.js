@@ -1,5 +1,10 @@
 'use strict'
 
+// it would be nice to inject this earlier but 
+let ls = Settings.values.html_inject
+if ('string'==typeof ls)
+	document.write(ls)
+
 document.addEventListener('DOMContentLoaded', dom_ready)
 immediate()
 

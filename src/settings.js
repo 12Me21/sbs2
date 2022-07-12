@@ -199,3 +199,7 @@ Settings.add({
 		}
 	},
 })
+Settings.add({
+	name: 'html_inject', label: 'html to inject', type: 'textarea',
+	order: 100000,
+})
