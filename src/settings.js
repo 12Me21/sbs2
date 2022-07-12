@@ -35,7 +35,6 @@ Settings = Object.seal({
 				break
 			}
 		}
-		alert(Object.keys(field).join(","))
 		let row = field.draw()
 		this.$elem.insertBefore(row, after);
 	},
