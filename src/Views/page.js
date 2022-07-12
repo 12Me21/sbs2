@@ -181,7 +181,7 @@ class PageView extends BaseView {
 		this.page = page
 		if (page.contentType==ABOUT.details.codes.InternalContentType.file) {
 			// messy code
-			let ne = Draw.button2("Set Avatar", e=>{
+			let ne = Draw.button("Set Avatar", e=>{
 				Req.me.avatar = this.page.hash
 				Req.write(Req.me).do = (resp, err)=>{
 					if (!err)
@@ -190,7 +190,7 @@ class PageView extends BaseView {
 						alert('edit failed')
 				}
 			})
-			let b = Draw.button2("Show in sidebar", e=>{
+			let b = Draw.button("Show in sidebar", e=>{
 				FileUploader.show_content(this.page)
 				Sidebar.select_tab('file')
 			})
