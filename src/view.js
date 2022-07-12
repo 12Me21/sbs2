@@ -425,3 +425,11 @@ const View = NAMESPACE({
 // connection error
 // resource not found
 // invalid id
+
+Settings.add({
+	name: 'lazy_loading', label: "lazy image loading", type: 'select',
+	options: ['on', 'off'],
+	update(value) { // bad
+		View.toggle_observer(value=='on')
+	},
+})

@@ -4,9 +4,7 @@ Settings = Object.seal({
 	values: Settings.values,
 	
 	fields: [{
-		name: 'theme',
-		label: "Theme",
-		type: 'select',
+		name: 'theme', label: "Theme", type: 'select',
 		options: ['auto', 'light', 'dark'],
 		update(value) {
 			if ('auto'==value)
@@ -16,122 +14,19 @@ Settings = Object.seal({
 			//else
 			//delete document.documentElement.dataset.theme
 		},
+		order: -10000,
 	}, {
-		name: 'nickname',
-		label: "Chat Nickname",
-		type: 'text',
-	}, {
-		name: 'chat_markup',
-		label: "Chat Markup",
-		type: 'select',
-		options: ['12y', '12y2', 'plaintext'],
-	}, {
-		name: 'scroller_anim_type',
-		label: "scroll animation method",
-		type: 'select',
-		options: ['1', '2', '0'],
-		update(value) {
-			Scroller.anim_type = +value
-		},
-	}, {
-		name: 'chat_enter',
-		label: "chat enter key",
-		type: 'select',
-		options: ['submit', 'newline'],
-		update(value) {
-			/*			do_when_ready(()=>{
-						$chatTextarea.enterKeyHint = value=='newline' ? "enter" : "send"
-						})*/
-		},
-	}, {
-		name: 'tts_notify',
-		label: "TTS Notify",
-		type: 'select',
-		options: ['no', 'everyone else', 'yes'],
-	}, {
-		name: 'tts_volume',
-		label: "TTS Volume",
-		type: 'range',
-		range: [0.0, 1.0],
-		default: 0.5,
-		step: "0.05", //making this a string to /potentially/ bypass floating point
-		notches: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], // 🥴
-		update(value, type) {
-			TTSSystem.synthParams.volume = value
-			if ('change'==type) {
-				TTSSystem.cancel()
-				if (TTSSystem.placeholderSound)
-					TTSSystem.speakMessage({text:"{#uwu",values:{m:'12y'}}, true)
-				else
-					TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
-			}
-		}
-	}, {
-		name: 'tts_speed',
-		label: "TTS Speed",
-		type: 'range',
-		range: [0.5, 2], // (heard range may be narrower)
-		step: "0.05",
-		default: 1,
-		notches: [1],
-		update(value, type) {
-			TTSSystem.synthParams.rate = value
-			if ('change'==type) {
-				TTSSystem.cancel()
-				TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
-			}
-		},
-	}, {
-		name: 'tts_pitch',
-		label: "TTS Pitch",
-		type: 'range',
-		range: [0, 2],
-		step: "0.05",
-		default: 1,
-		notches: [1],
-		update(value, type) {
-			TTSSystem.synthParams.pitch = value
-			if ('change'==type) {
-				TTSSystem.cancel()
-				TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
-			}
-		},
-	}, {
-		name: 'lazy_loading',
-		label: "lazy image loading",
-		type: 'select',
-		options: ['on', 'off'],
-		update(value) { // bad
-			View.toggle_observer(value=='on')
-		},
-	}, {
-		name: 'big_avatar',
-		label: "Big Avatar",
-		type: 'select',
-		options: ['off', 'on'],
-	}, {
-		name: 'big_avatar_id',
-		label: "Big Avatar Id",
-		type: 'text',
-	}, {
-		name: 'socket_debug',
-		label: "socket debug messages",
-		type: 'select',
-		options: ['no', 'yes'],
-	}, {
-		name: 'sitecss',
-		label: "Custom CSS",
-		type: 'textarea',
+		name: 'sitecss', label: "Custom CSS", type: 'textarea',
 		autosave: false,
+		order: 10000,
 		update(value, type) {
 			if ('init'!=type)
 				$customCSS.textContent = value
 		},
 	}, {
-		name: 'sitejs',
-		label: "Custom Javascript",
-		type: 'textarea',
+		name: 'sitejs', label: "Custom Javascript", type: 'textarea',
 		autosave: false,
+		order: 10000,
 		//todo: maybe highlight when changed, to notify user that they need to save manually?
 		// todo: js console tab thing
 		update(value, type) {
@@ -145,7 +40,7 @@ Settings = Object.seal({
 		},
 	} ],
 	// .add() can be called at any time
-	add(field) {
+	add(field, priority) {
 		this.fields.push(field)
 	},
 	// .init() will run after all the scripts are loaded, but before the DOM is ready
@@ -153,10 +48,8 @@ Settings = Object.seal({
 		this.add = function(field) {
 			Object.setPrototypeOf(field, SettingProto.prototype)
 			field.init()
-			if (this.$elem) {
-				let row = field.draw()
-				this.$elem.append(row)
-			}
+			if (this.$elem)
+				this.insert(field)
 		}
 		for (let field of this.fields)
 			this.add(field)
@@ -165,10 +58,22 @@ Settings = Object.seal({
 	$elem: null,
 	draw(elem) {
 		this.$elem = elem
-		for (let field of this.fields) {
-			let row = field.draw()
-			this.$elem.append(row)
+		for (let field of this.fields)
+			this.insert(field)
+	},
+	insert(field) {
+		print('inserting field '+field.name+' '+field.order)
+		let after = null
+		for (let x of this.$elem.children) {
+			let weight = +x.dataset.order
+			if (weight > field.order) {
+				after = x
+				break
+			}
 		}
+		print('before: '+(after ? after.dataset.order : 'null'))
+		let row = field.draw()
+		this.$elem.insertBefore(row, after);
 	},
 	
 	save_all() {
@@ -213,6 +118,7 @@ class SettingProto {
 	// this should be called AFTER .init()
 	draw() {
 		let row = document.createElement('div')
+		row.dataset.order = this.order
 		
 		let label = row.child('label')
 		label.textContent = this.label+": "
@@ -268,3 +174,4 @@ class SettingProto {
 		this.elem.value = this.get_value()
 	}
 }
+SettingProto.prototype.order = 0

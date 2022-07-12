@@ -353,3 +353,9 @@ websocket state indication
 
 */
 
+Settings.add({
+	name: 'socket_debug',
+	label: "socket debug messages",
+	type: 'select',
+	options: ['no', 'yes'],
+})

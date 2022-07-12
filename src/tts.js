@@ -254,3 +254,53 @@ const TTSSystem = {
 		this.current = null
 	}
 }
+
+Settings.add({
+	name: 'tts_notify', label: "TTS Notify", type: 'select',
+	options: ['no', 'everyone else', 'yes'],
+})
+Settings.add({
+	name: 'tts_volume', label: "TTS Volume", type: 'range',
+	range: [0.0, 1.0],
+	default: 0.5,
+	step: "0.05", //making this a string to /potentially/ bypass floating point
+	notches: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], // 🥴
+	update(value, type) {
+		TTSSystem.synthParams.volume = value
+		if ('change'==type) {
+			TTSSystem.cancel()
+			if (TTSSystem.placeholderSound)
+				TTSSystem.speakMessage({text:"{#uwu",values:{m:'12y'}}, true)
+			else
+				TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
+		}
+	}
+})
+Settings.add({
+	name: 'tts_speed', label: "TTS Speed", type: 'range',
+	range: [0.5, 2], // (heard range may be narrower)
+	step: "0.05",
+	default: 1,
+	notches: [1],
+	update(value, type) {
+		TTSSystem.synthParams.rate = value
+		if ('change'==type) {
+			TTSSystem.cancel()
+			TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
+		}
+	},
+})
+Settings.add({
+	name: 'tts_pitch', label: "TTS Pitch", type: 'range',
+	range: [0, 2],
+	step: "0.05",
+	default: 1,
+	notches: [1],
+	update(value, type) {
+		TTSSystem.synthParams.pitch = value
+		if ('change'==type) {
+			TTSSystem.cancel()
+			TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
+		}
+	},
+})

@@ -416,3 +416,33 @@ View.register('category', {
 // - watch create/delete/edit
 // - content edit/delete
 // - user status changes
+
+Settings.add({
+	name: 'nickname', label: "Chat Nickname", type: 'text',
+	order: -9000,
+})
+Settings.add({
+	name: 'chat_markup', label: "Chat Markup", type: 'select',
+	options: ['12y', '12y2', 'plaintext'],
+	order: -8000,
+})
+/*Settings.add({
+	name: 'big_avatar',
+	label: "Big Avatar",
+	type: 'select',
+	options: ['off', 'on'],
+})
+Settings.add({
+	name: 'big_avatar_id',
+	label: "Big Avatar Id",
+	type: 'text',
+})*/
+Settings.add({
+	name: 'chat_enter', label: "chat enter key", type: 'select',
+	options: ['submit', 'newline'],
+	update(value) {
+		/*			do_when_ready(()=>{
+					$chatTextarea.enterKeyHint = value=='newline' ? "enter" : "send"
+					})*/
+	},
+})
