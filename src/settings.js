@@ -27,7 +27,6 @@ Settings = Object.seal({
 			this.insert(field)
 	},
 	insert(field) {
-		print('inserting field '+field.name+' '+field.order)
 		let after = null
 		for (let x of this.$elem.children) {
 			let weight = +x.dataset.order
@@ -36,7 +35,6 @@ Settings = Object.seal({
 				break
 			}
 		}
-		print('before: '+(after ? after.dataset.order : 'null'))
 		let row = field.draw()
 		this.$elem.insertBefore(row, after);
 	},
