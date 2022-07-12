@@ -3,42 +3,7 @@
 Settings = Object.seal({
 	values: Settings.values,
 	
-	fields: [{
-		name: 'theme', label: "Theme", type: 'select',
-		options: ['auto', 'light', 'dark'],
-		update(value) {
-			if ('auto'==value)
-				theme_query.onchange(theme_query)
-			else
-				document.documentElement.dataset.theme = value
-			//else
-			//delete document.documentElement.dataset.theme
-		},
-		order: -10000,
-	}, {
-		name: 'sitecss', label: "Custom CSS", type: 'textarea',
-		autosave: false,
-		order: 10000,
-		update(value, type) {
-			if ('init'!=type)
-				$customCSS.textContent = value
-		},
-	}, {
-		name: 'sitejs', label: "Custom Javascript", type: 'textarea',
-		autosave: false,
-		order: 10000,
-		//todo: maybe highlight when changed, to notify user that they need to save manually?
-		// todo: js console tab thing
-		update(value, type) {
-			try {
-				eval(value)
-			} catch (e) {
-				console.error("failed to run sitejs", e)
-				print(e)
-				print("error in sitejs ^")
-			}
-		},
-	} ],
+	fields: [],
 	// .add() can be called at any time
 	add(field, priority) {
 		this.fields.push(field)
@@ -77,10 +42,14 @@ Settings = Object.seal({
 	},
 	
 	save_all() {
-		for (let field of this.fields)
+		for (let field of this.fields) {
+			//if (field.autosave == false)
 			field.change('save')
+		}
 	},
 })
+
+
 
 class SettingProto {
 	// this reads the data which was loaded from localstorage earlier,
@@ -175,3 +144,44 @@ class SettingProto {
 	}
 }
 SettingProto.prototype.order = 0
+
+
+
+Settings.add({
+	name: 'theme', label: "Theme", type: 'select',
+	options: ['auto', 'light', 'dark'],
+	update(value) {
+		if ('auto'==value)
+			theme_query.onchange(theme_query)
+		else
+			document.documentElement.dataset.theme = value
+		//else
+		//delete document.documentElement.dataset.theme
+	},
+	order: -10000,
+})
+Settings.add({
+	name: 'sitecss', label: "Custom CSS", type: 'textarea',
+	autosave: false,
+	order: Infinity-2,
+	update(value, type) {
+		if ('init'!=type)
+			$customCSS.textContent = value
+	},
+})
+Settings.add({
+	name: 'sitejs', label: "Custom Javascript", type: 'textarea',
+	autosave: false,
+	order: Infinity-1,
+	//todo: maybe highlight when changed, to notify user that they need to save manually?
+	// todo: js console tab thing
+	update(value, type) {
+		try {
+			eval(value)
+		} catch (e) {
+			console.error("failed to run sitejs", e)
+			print(e)
+			print("error in sitejs ^")
+		}
+	},
+})
