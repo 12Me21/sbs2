@@ -109,6 +109,7 @@ Settings.add({
 let ls = Settings.values.load_scripts
 if (Array.isArray(ls) && ls.length) {
 	let html = ls.map(src=>{
+		print('injecting script file: ', src)
 		src = src.replace(/&/g, "&amp;").replace(/"/g, "&quot;")
 		return `<script src="${src}"><\/script>`
 	}).join("\n")
