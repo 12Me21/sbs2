@@ -3,7 +3,7 @@
 const TTSSystem = {
 	speakUtterance(u) {
 		return new Promise((yay, nay) => {
-			u.onend = e=>(e.charIndex < e.target.length) ? nay(e) : yay()
+			u.onend = e=>(e.charIndex < e.target.text.length) ? nay(e) : yay()
 			u.onerror = e=>nay(e)
 			
 			speechSynthesis.speak(u)
@@ -40,20 +40,24 @@ const TTSSystem = {
 	},
 	
 	queue: [],
-	current: null,
+	currentScript: null,
+	currentPart: null,
 	async speakScript(utter) {
-		if (this.queue.push(utter)-1) return
+		this.queue.push(utter)
+		if (this.queue.length > 1 || this.currentScript)
+			return
 		
 		while (this.queue.length) {
 			try {
-				for (let u of this.queue[0]) {
-					this.current = u
+				this.currentScript = this.queue.shift()
+				for (let u of this.currentScript) {
+					this.currentPart = u
 					if (u instanceof SpeechSynthesisUtterance) await this.speakUtterance(u)
 					else if (u.elem instanceof HTMLAudioElement) await this.playSound(u)
 				}
-			} finally {
-				this.current = null
-				this.queue.shift()
+			} catch {} finally {
+				this.currentScript = null
+				this.currentPart = null
 			}
 		}
 	},
@@ -69,24 +73,25 @@ const TTSSystem = {
 	
 	// creates a list of smaller utterances and media to play in sequence
 	renderSpeechScript(tree, opts = {}) {
-		opts.msg ||= ""
+		opts.msg || (opts.msg = "")
+		
+		// TODO: per-user config of this and voice
 		opts.volume ||= this.synthParams.volume
 		opts.pitch ||= this.synthParams.pitch
 		opts.rate ||= this.synthParams.rate
-		opts.utter ||= []
-		opts.media ||= {}
 		
-		let clamp01 = x=>Math.max(0, Math.min(x, 1))
+		opts.utter || (opts.utter = [])
+		opts.media || (opts.media = {})
 		
 		let sound = url=>{
 			if (!url)
 				return
 			finalizeChunk()
-			let u = { volume: clamp01(opts.volume) }
+			let u = { volume: Math.max(0, Math.min(opts.volume, 1)) }
 			if (url instanceof HTMLAudioElement)
 				u.elem = url
 			else
-				u.elem = opts.media[url] ||= new Audio(url)
+				u.elem = opts.media[url] || (opts.media[url] = new Audio(url))
 			u.elem.loop = false
 			opts.utter.push(u)
 			return u
@@ -109,8 +114,7 @@ const TTSSystem = {
 			
 			let u = new SpeechSynthesisUtterance(opts.msg)
 			u.voice = this.synthParams.voice
-			u.volume = clamp01(opts.volume)
-			// i'm just going to remove the clamp here and assume the browser handles that
+			u.volume = opts.volume
 			u.pitch = opts.pitch
 			u.rate = opts.rate
 			
@@ -247,17 +251,51 @@ const TTSSystem = {
 	// skip current utterance
 	skip() {
 		speechSynthesis.cancel()
-		if (this.current && this.current.elem instanceof HTMLAudioElement)
-			this.current.elem.pause()
+		if (this.currentPart && this.currentPart.elem instanceof HTMLAudioElement)
+			this.currentPart.elem.pause()
 	},
 	
 	// cancel all utterances
 	cancel() {
 		this.queue = []
 		this.skip()
+	},
+	
+	skipKeyInfo: { key: 'Control' },
+	skipKey_keydown(event) {
+		let k = TTSSystem.skipKeyInfo
+		if (event.key == k.key) {
+			if (!k.action) {
+				k.action = 'single'
+			} else {
+				k.action = 'double'
+				k.callback && (k.callback = clearTimeout(k.callback))
+			}
+		} else {
+			k.action = null
+		}
+	},
+	skipKey_keyup(event) {
+		if (event.key == k.key) {
+			let k = TTSSystem.skipKeyInfo
+			if (k.action == 'single') {
+				TTSSystem.skip()
+				k.callback = setTimeout(()=>k.action = null, 300)
+			} else if (k.action == 'double') {
+				TTSSystem.cancel()
+				k.action = null
+			}
+		}
+	},
+	
+	useSkipKey(enable) {
+		if (this.skipKeyInfo.enable) {
+			document.removeEventListener('keydown', TTSSystem.skipKey_keydown)
+			document.removeEventListener('keyup', TTSSystem.skipKey_keyup)
+		} else {
+			document.addEventListener('keydown', TTSSystem.skipKey_keydown)
+			document.addEventListener('keyup', TTSSystem.skipKey_keyup)
+		}
+		this.skipKeyInfo.enabled = enable
 	}
 }
-
-document.addEventListener('keydown', e=>{
-	if (e.key == 'Control') TTSSystem.skip()
-})
