@@ -154,21 +154,27 @@ class MessageList {
 	static onload() {
 		// draw the message controls
 		this.controls = document.createElement('message-controls')
+		// hack to set height idk..
 		let e = document.createElement('div')
 		e.append('a')
 		this.controls.append(e)
-		for (let [icon, action] of [["⚙",'info'],/*["💬",'speak'],*/["✏",'edit']]) {
-			let btn = Draw.button(icon, ev=>{
-				let ev2 = new CustomEvent('message_control', {
-					bubbles: true, cancellable: true,
-					detail: {data: null, action},
-				})
-				this.controls_message.dispatchEvent(ev2)
+		// draw the things
+		let handler = ev=>{
+			let action = ev.currentTarget.dataset.action
+			let ev2 = new CustomEvent('message_control', {
+				bubbles: true, cancellable: true,
+				detail: {data: null, action},
 			})
+			this.controls_message.dispatchEvent(ev2)
+		}
+		// yeah
+		for (let action of ['info', /*'speak',*/ 'edit',]) {
+			let btn = document.createElement('button')
+			btn.onclick = handler
+			btn.dataset.action = action
 			btn.tabIndex=-1
 			this.controls.append(btn)
 		}
-		
 		
 		let listen = (ev, fn)=>{
 			document.body.addEventListener(ev, fn, {passive: true})

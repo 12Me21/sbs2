@@ -518,6 +518,15 @@ message-controls > div {
 	width: 0;
 	overflow: hidden;
 }
+message-controls > button[data-action="info"]::before {
+	content: "⚙️";
+}
+message-controls > button[data-action="edit"]::before {
+	content: "✏️";
+}
+message-controls > button[data-action="speak"]::before {
+	content: "💬️";
+}
 message-controls > button:nth-child(n) {
 	flex-grow: 1;
 	padding: 0;
