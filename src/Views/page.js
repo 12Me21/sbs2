@@ -116,7 +116,7 @@ class PageView extends BaseView {
 		View.attach_resize(this.$page_container, this.$resize_handle, false, 1, 'setting--divider-pos-'+this.id, null, height)
 		///////////
 		
-		this.update_page(page)
+		this.update_page(page, user)
 		this.update_watch(watch[0])
 		
 		this.userlist.set_status("active")
@@ -177,9 +177,10 @@ class PageView extends BaseView {
 		this.watch = watch
 		this.$watching.checked = !!this.watch
 	}
-	update_page(page) {
+	update_page(page, user) {
 		this.page = page
-		if (page.contentType==ABOUT.details.codes.InternalContentType.file) {
+		this.author = user[~page.createUserId]
+		if (page.contentType==CODES.file) {
 			// messy code
 			let ne = Draw.button("Set Avatar", e=>{
 				Req.me.avatar = this.page.hash
@@ -198,6 +199,9 @@ class PageView extends BaseView {
 		} else {
 			Markup.convert_lang(page.text, page.values.markupLang, this.$page_contents, {intersection_observer: View.observer})
 		}
+		this.$create_date.lastChild.replaceWith(Draw.time_ago(page.createDate2))
+		this.$author.fill(Draw.user_label(this.author))
+		//this.$edit_date
 	}
 	my_last_message() {
 		// this is kinda bad, we scan in the wrong direction and choose the last match.
@@ -368,6 +372,8 @@ PageView.template = HTML`
 			<scroll-outer class='sized page-container' $=page_container>
 				<div class='pageInfoPane'>
 					<label>Watching: <input type=checkbox $=watching></label>
+					<span $=author></span>
+					<span $=create_date>Created: <time></time></span>
 				</div>
 				<div class='pageContents' $=page_contents></div>
 			</scroll-outer>

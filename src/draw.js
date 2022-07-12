@@ -408,7 +408,7 @@ const Draw = Object.seal({
 		return d
 	}.bind(𐀶`
 <div class='bar rem1-5 sidebarComment ellipsis'>
-	<a tabindex=-1>
+	<a tabindex=-1 class='user-label'>
 		<img class='item icon avatar' width=100 height=100>
 		<span class='textItem entity-title pre'></span>
 	</a>:&#32;
@@ -417,17 +417,14 @@ const Draw = Object.seal({
 	
 	user_label: function(user) {
 		let e = this()
-		let link = e.firstChild
-		link.href = "#user/"+user.id
-		link.firstChild.src = Req.avatar_url(user)
-		link.lastChild.textContent = user.username
+		e.href = "#user/"+user.id
+		e.firstChild.src = Draw.avatar_url(user)
+		e.lastChild.textContent = user.username
 		return e
 	}.bind(𐀶`
-<div class='bar rem1-5'>
-	<a tabindex=-1>
-		<img class='item icon avatar' width=100 height=100>
-		<span class='textItem entity-title pre'></span>
-	</a>
-</div>
+<a tabindex=-1 class='bar rem1-5 user-label'>
+	<img class='item icon avatar' width=100 height=100>
+	<span class='textItem entity-title pre'></span>
+</a>
 `),
 })
