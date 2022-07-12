@@ -261,41 +261,45 @@ const TTSSystem = {
 		this.skip()
 	},
 	
-	skipKeyInfo: { key: 'Control' },
-	skipKey_keydown(event) {
-		let k = TTSSystem.skipKeyInfo
-		if (event.key == k.key) {
-			if (!k.action) {
-				k.action = 'single'
+	skipKey: {
+		enabled: false,
+		key: 'Control',
+		
+		keydown(event) {
+			let k = TTSSystem.skipKey
+			if (event.key == k.key) {
+				if (!k.action) {
+					k.action = 'single'
+				} else {
+					k.action = 'double'
+					k.callback && (k.callback = clearTimeout(k.callback))
+				}
 			} else {
-				k.action = 'double'
-				k.callback && (k.callback = clearTimeout(k.callback))
-			}
-		} else {
-			k.action = null
-		}
-	},
-	skipKey_keyup(event) {
-		if (event.key == k.key) {
-			let k = TTSSystem.skipKeyInfo
-			if (k.action == 'single') {
-				TTSSystem.skip()
-				k.callback = setTimeout(()=>k.action = null, 300)
-			} else if (k.action == 'double') {
-				TTSSystem.cancel()
 				k.action = null
+			}
+		},
+		keyup(event) {
+			let k = TTSSystem.skipKey
+			if (event.key == k.key) {
+				if (k.action == 'single') {
+					TTSSystem.skip()
+					k.callback = setTimeout(()=>k.action = null, 300)
+				} else if (k.action == 'double') {
+					TTSSystem.cancel()
+					k.action = null
+				}
 			}
 		}
 	},
 	
 	useSkipKey(enable) {
-		if (this.skipKeyInfo.enable) {
-			document.removeEventListener('keydown', TTSSystem.skipKey_keydown)
-			document.removeEventListener('keyup', TTSSystem.skipKey_keyup)
+		if (this.skipKey.enabled) {
+			document.removeEventListener('keydown', TTSSystem.skipKey.keydown)
+			document.removeEventListener('keyup', TTSSystem.skipKey.keyup)
 		} else {
-			document.addEventListener('keydown', TTSSystem.skipKey_keydown)
-			document.addEventListener('keyup', TTSSystem.skipKey_keyup)
+			document.addEventListener('keydown', TTSSystem.skipKey.keydown)
+			document.addEventListener('keyup', TTSSystem.skipKey.keyup)
 		}
-		this.skipKeyInfo.enabled = enable
+		this.skipKey.enabled = enable
 	}
 }
