@@ -29,14 +29,15 @@ const TTSSystem = {
 	speakMessage(message, merged = false) {
 		let tree = Markup.langs.parse(message.text, message.values.m)
 		
-		let msg
+		let opts = { ...this.userParams[message.createUserId], msg: '' }
+		
 		if (!merged) {
 			let author = message.Author
 			let memorable_name = author.bridge ? (author.nickname || message.values.b) : author.username
-			msg = `${memorable_name} says\n`
+			opts.msg = `${memorable_name} says\n`
 		}
 		
-		this.speakScript(this.renderSpeechScript(tree, { msg }))
+		this.speakScript(this.renderSpeechScript(tree, opts))
 	},
 	
 	queue: [],
@@ -71,14 +72,24 @@ const TTSSystem = {
 		rate: 1.25,
 	},
 	
+	userParams: {
+		// [userId]: { any fields of synthParams you want to override }
+	},
+	
+	voiceFrom(name) {
+		return speechSynthesis.getVoices().find(v=>v.name.includes(name))
+	},
+	
 	// creates a list of smaller utterances and media to play in sequence
 	renderSpeechScript(tree, opts = {}) {
 		opts.msg || (opts.msg = "")
 		
-		// TODO: per-user config of this and voice
-		opts.volume ||= this.synthParams.volume
-		opts.pitch ||= this.synthParams.pitch
-		opts.rate ||= this.synthParams.rate
+		if ('string'==typeof opts.voice)
+			opts.voice = this.voiceFrom(opts.voice)
+		
+		opts.volume || (opts.volume = this.synthParams.volume)
+		opts.pitch || (opts.pitch = this.synthParams.pitch)
+		opts.rate || (opts.rate = this.synthParams.rate)
 		
 		opts.utter || (opts.utter = [])
 		opts.media || (opts.media = {})
@@ -113,7 +124,7 @@ const TTSSystem = {
 				return
 			
 			let u = new SpeechSynthesisUtterance(opts.msg)
-			u.voice = this.synthParams.voice
+			u.voice = opts.voice
 			u.volume = opts.volume
 			u.pitch = opts.pitch
 			u.rate = opts.rate
