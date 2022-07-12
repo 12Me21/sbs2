@@ -961,6 +961,9 @@ html[data-socket-state="dead"] .toggle-sidebar {
 .Markup [data-big] {
 	max-height: 60vh;
 }
+.Markup img[data-state="error"][alt] {
+	width: 100%; /* idk */
+}
 
 #\$fileImage {
 	max-width: 100%;
