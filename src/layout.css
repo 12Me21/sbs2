@@ -66,8 +66,8 @@ html, body {
 .COL > *, .ROW > * {
 	flex-shrink: 0;
 }
-.ROW > .FILL { min-width: 0; }
-.COL > .FILL { min-height: 0; }
+.ROW > .FILL, .ROW > .sized { min-width: 0; }
+.COL > .FILL, .COL > .sized { min-height: 0; }
 .FILL {
 	flex-grow: 1;
 	flex-shrink: 1;
@@ -309,7 +309,7 @@ but, then we can't add a border to the image
 
 /* normal */
 @media not all and (max-width: 700px) {
-	.closeSidebar {
+	#\$closeSidebar {
 		display: none !important;
 	}
 	html:not(.f-sidebar) .sidebar-element {

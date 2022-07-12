@@ -73,21 +73,6 @@ const Draw = Object.seal({
 		return a
 	}.bind(𐀶`<a tabindex=-1 role=gridcell>`),
 	
-	//📥 file‹Content›
-	//📥 onclick‹Function›
-	//📤 ‹ParentNode›
-	file_thumbnail: function(file, onclick) {
-		let e = this()
-		e.dataset.id = file.id
-		let img = e.firstChild
-		img.src = Req.file_url(file.id, "size=50")
-		img.alt = file.name
-		img.title = file.name
-		if (onclick)
-			e.onclick = e=>{onclick(file, e)} // bad
-		return e
-	}.bind(𐀶`<div class='fileThumbnail item'><img></div>`),
-	
 	//📥 user‹User›
 	//📤 ‹ParentNode›
 	userlist_avatar: function(user, status) {
@@ -222,7 +207,7 @@ const Draw = Object.seal({
 		
 		return outer
 	}.bind(𐀶`
-<div class='bottomBorder'>
+<div class='search-comment'>
 	<message-list></message-list>
 </div>
 `), // todo: it would be nice to put the older/newer buttons to the left of the message so they dont waste vertical space. or maybe have an initial "load surrounding' button next to the page link?
@@ -234,58 +219,6 @@ const Draw = Object.seal({
 		e.onclick = onclick
 		return e
 	}.bind(𐀶`<button>`),
-	
-	// UNUSED
-	// <div class='pageInfoPane rem2-3 bar'>
-	//   [author box] [vote box]
-	// </div>
-	page_info(page) {
-		let e = document.createElement('div')
-		e.className = 'pageInfoPane rem2-3 bar'
-		e.append(Draw.author_box(page), vote_box(page))
-		return e
-	},
-	
-	// UNUSED
-	// [page_edited_time] [entity_title_link]
-	// ? [page_edited_time] [entity_title_link]
-	// ? [page_edited_time]
-	author_box(page) {
-		let elem = document.createDocumentFragment()
-		if (!page)
-			return elem
-		elem.append(
-			Draw.page_edited_time("Author:", page.createDate2), " ",
-			entity_title_link(page.createUser, true)
-		)
-		if (page.editUserId != page.createUserId) {
-			elem.append(
-				" ", Draw.page_edited_time("Edited by:", page.lastRevisionDate),
-				" ", entity_title_link(page.editUser, true)
-			)
-		} else if (page.createDate != page.lastRevisionDate) { //edited by same user
-			elem.append(" ", Draw.page_edited_time("Edited", page.lastRevisionDate))
-		}
-		return elem
-	},
-	
-	// UNUSED
-	// <span class='item'>
-	//   <div class='half half-label'>...</div>
-	//   <??? class='... half'>???<???>
-	// </span>
-	page_edited_time(label, time) {
-		let b = document.createElement('span')
-		b.className = 'item'
-		
-		let a = b.child('div', 'half half-label')
-		a.textContent = label
-		
-		a = Draw.time_ago(time)
-		b.append(a)
-		a.className += " half"
-		return b
-	},
 	
 	time_ago: function(time) {
 		let e = this()

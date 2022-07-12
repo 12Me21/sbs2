@@ -1,6 +1,7 @@
 @charset "utf-8";
 
-/* main stuff */
+/* general */
+
 html {
 	background: #FEE; /* (for debug) */
 	color: var(--T-color);
@@ -16,696 +17,17 @@ html {
 	font-variant-ligatures: none !important;
 }
 
-.Markup {
-	font: inherit;
-}
-
 body {
 	background: var(--T-bg);
 }
 
-/***********
- ** Links **
- ***********/
-:any-link {
-	;text-decoration: none
-}
-:any-link {
-	;color: var(--T-link-color)
-}
-:any-link:hover {
-	;color: var(--T-link-hover-color)
-	;text-decoration: underline
-}
-/* todo: make a special link bar class for links that contain other elements and a class for which of those should be underlined */
-/* and make sure normal links are styled correctly too */
-
-.entity-title {
-	;font-weight: 500
-}
-
-/* todo: make class for dark bg elements */
-.page-header :any-link {
-	color: var(--link-invert-color);
-}
-.page-header :any-link:hover {
-	color: var(--link-invert-hover-color);
-}
-
-/**********/
-
-sup {vertical-align: super;}
-sub {vertical-align: sub;}
-
 /* logged in/out display */
 html:not(.f-loggedIn) .loggedIn,
 html.f-loggedIn .loggedOut {
-	display: none;
-}
-
-/* border list things */
-.bottomBorder,
-.border-list > *:not(:last-child),
-.border-list-2 > * {
-	border-bottom: 1px solid var(--T-border-color);
-}
-
-
-/****************
- ** Title Pane **
- ****************/
-
-.page-header {
-	background: var(--databarbgcolor);
-	color: var(--databartxtcolor);
-}
-.page-header .entity-title {
-	font-weight: normal;
-	color: var(--link-invert-color);
-}
-.page-header h1 .entity-title {
-	color: var(--databartxtcolor);
-	padding-right: 0.5rem;
-}
-.page-header h1 {
-	font-size: 1.625em;
-	font-weight: normal;
-}
-.page-header > :first-child { /* sidebar button ??? */
-	display: inline-block;
-	min-width: 0.3125rem;
-}
-#\$titlePane [data-view]:not(.shown) {
-	;display: none !important
-}
-/* broken? */
-.errorMode .page-header {
-	color: var(--error-invert-bg);
-	font: var(--T-monospace-font);
-}
-
-html.f-error .loadBG {
-	background: var(--error-invert-bg);
-}
-html.f-loading .loadBG {
-	background: var(--loading-invert-bg);
-}
-.loadBG/*, resize-handle*/ {
-	transition: background 0.1s ease;
-}
-.header-buttons {
-	display: inline-flex;
-	flex-direction: column;
-	flex-wrap: wrap;
-	height: var(--bar-height);
-}
-.header-buttons > * {
-	height: 50%;
-	font-weight: bold;
-	line-height: 100%;
-	font-size: 0.875em;
-	padding: 0 0.25em;
-	border: 1px solid gray;
-}
-
-
-/* tabs */
-tab-list {
-	display: flex;
-	flex-direction: row;
-	width: 100%;
-	border-bottom: 1px solid gray;
-	border-top: 1px solid var(--T-border-color);
-	background-color: var(--bar-bg) !important;
-}
-tab-list > button {
-	flex-grow: 1;
-	flex-basis: 0;
-	height: 2rem;
-	padding: 0;
-	font-size: 1em;
-	/*;border-top-left-radius: 5px;
-	;border-top-right-radius: 5px;*/
-	/*;border-style: solid;*/
-	border-bottom-width: 0;
-}
-tab-list > button[aria-selected="true"] {
-	/*;border-style: inset;*/
-	border-bottom-color: var(--bar-bg);
-	/*;border-top-left-radius: 3px;
-	;border-top-right-radius: 3px;*/
-}
-tab-list > button img.avatar {
-	width: auto;
-	height: 100%;
+	display: none !important;
 }
 
-/* sidebar */
-sidebar-container {
-	background: var(--T-bg);
-	width: 30vw; /* just a default */
-	min-width: 10vw;
-	z-index: 20;
-}
-.registerBox {
-	padding: 0.3125rem 0.5rem;
-}
-.closeSidebar {
-	height: 2.3125rem;
-}
-.closeSidebar button {
-	width: 100%;
-}
-
-#\$sidebarResize {
-	box-shadow: var(--normal-shadow);
-	z-index: 30;
-}
-#\$sidebar_tabs {
-	/*;box-shadow: var(--normal-shadow)*/
-	z-index: 30;
-}
-/* sidebar activity tabs */
-.activity-scroller {
-	padding-top: 0.1875rem;
-}
-#\$sidebarWatch {
-	padding-top: 0;
-}
-.activity-page {
-	;display: block
-	;border-bottom: 1px solid var(--T-border-color)
-	;border-top: 1px solid white
-	;padding-left: 0.1875rem
-	;padding-top: 1px
-	;padding-bottom: 1px
-	;background: var(--T-bg)
-}
-.activity-page-bottom {
-	;display: flex
-	;height: 1.5rem
-}
-.activity-watch {
-	display: flex;
-}
-/* todo: the css/html for watch activity items is mostly a hack */
-.activity-watch > .activity-page-bottom {
-	flex-shrink: 2;
-	flex-grow: 1;
-}
-.activity-watch > .activity-page-bottom > time {
-	width: 100%;
-	text-align: right;
-	padding-left: 0.125em;
-	text-overflow: clip;
-}
-.activity-page-bottom .avatar {
-	;max-width: unset
-}
-activity-users {
-	;text-align: right
-	;white-space: pre
-	;overflow-x: visible
-	;padding-right: 0.1875rem
-	;padding-left: 0.1875rem
-}
-/* sidebar settings tab items */
-#\$localSettings > div {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-}
-#\$localSettings > div > * {
-	flex-grow: 1;
-	flex-shrink: 0;
-	width: 49%;
-	min-width: 6.5em;
-}
-#\$localSettings > div > :last-child {
-	flex-grow: 1;
-}
-#\$localSettings > div > textarea {
-	width: 100%;
-	height: 5.1875em;
-}
-#\$localSettings > div > label {
-	font-weight: 500;
-	line-height: 1em;
-	padding-bottom: .1875em;
-}
-#\$localSettings > div {
-	column-gap: 0.1875rem;
-	margin-bottom: 0.3125rem;
-}
-
-/* sidebar debug tab */
-#\$debugInput {
-	font: var(--T-monospace-font);
-	resize: vertical;
-	overflow-y: scroll;
-	width: 100%;
-}
-
-.debugMessage {
-	;background: var(--bar-bg)
-	;padding: 2px 3px
-}
-
-.debugMessage > pre {
-	;font: var(--T-monospace-font)
-	;overflow-x: scroll
-	;white-space: pre
-	;border-bottom: 1px solid var(--T-border-color)
-}
-
-/* page link bars */
-.linkBar {
-	display: block;
-	background: var(--T-bg);
-	
-	padding: 0.1875rem;
-	padding-top: 0.125rem;
-	
-	border-bottom: 1px solid var(--T-border-color);
-	border-top: 1px solid white;
-}
-.linkBar:focus {
-	background: var(--bar-bg);
-}
-
-/*********
- ** Nav **
- *********/
-.nav {
-	background: var(--light-invert-bg);
-	color: var(--databartxtcolor);
-	--T-link-color: var(--link-invert-color);
-	--T-link-hover-color: var(--link-invert-hover-color);
-}
-.nav > span {
-	color: var(--databartxtcolor);
-}
-
-/**************
- ** Userlist **
- **************/
-chat-pane .userlist2 {
-	box-shadow: var(--normal-shadow);
-	z-index: 4;
-	border-bottom: 1px solid var(--T-border-color);
-}
-.userlist {
-	background: var(--databarbgcolor);
-	color: var(--T-color);
-	border: 3px var(--databarbgcolor);
-	border-style: solid none;
-	/*background: var(--bar-bg);*/
-}
-.userlist .avatar {
-	margin-left: 1px;
-	border: 1px solid goldenrod;
-	box-sizing: border-box;
-	border-radius: 0;
-	width: var(--bar-height);
-	height: var(--bar-height);
-}
-
-resize-handle.userlist2 {
-	display: flex;
-	background: linear-gradient(var(--databarbgcolor) 0 var(--handle-width), var(--bar-bg) var(--handle-width));
-	height: unset !important;
-}
-.userlist2 > .userlist {
-	border: none;
-	box-sizing: content-box;
-	background: var(--databarbgcolor);
-	padding: 3px;
-}
-
-
-.avatar {
-	border-radius: 3px;
-	background: var(--T-avatar-bg);
-	/*contain: none; /* so the :focus outline will appear, even though the <a> is small */
-}
-.status-idle > .avatar {
-	filter: grayscale(1);
-}
-
-time {
-	font-size: 0.875em;
-	color: var(--T-time-color);
-	vertical-align: baseline;
-}
-
-.username {
-	font-weight: bold;
-	line-height: 1.2;
-}
-message-username { /* khhhh */
-	line-height: 1.2;
-}
-/*******************
- ** Chat Messages **
- *******************/
-message-block {
-	display: block;
-	position: relative;
-	box-sizing: content-box;
-	--chat-gutter: 4.5rem;
-	--chat-avatar-size: calc(var(--chat-gutter) - 0.5rem - 0.5rem);
-	--chat-message-gap: 0.625rem;
-	padding-right: 0.5rem;
-	padding-top: var(--chat-message-gap);
-	min-height: var(--chat-avatar-size);
-	/* border-left: 0.5em solid rgb(255,153,153) */
-	font-size: 1em; /* ? */
-}
-message-block > img.avatar {
-	display: inline-block;
-	position: absolute;
-	z-index: -1;
-	width: var(--chat-avatar-size);
-	height: var(--chat-avatar-size);
-	border: none; /*1px solid #777*/
-	margin-left: 0.5rem;
-	/*background-color: transparent*/
-	/*background-color: #AAB*/
-						
-}
-message-block > .bigAvatar {
-	position: absolute;
-	width: calc(var(--chat-gutter));
-	height: 100%;
-	left: 0;
-	top: 0;
-	background: no-repeat center top / cover;
-}
-
-message-block > message-header {
-	display: flex;
-	flex-wrap: wrap-reverse;
-	margin-left: var(--chat-gutter);
-	/* make the timestamp go into margins if there's not enough space */
-	min-height: calc(var(--chat-message-gap) + 1.1875rem); /* 1.1875 = text line height */
-	margin-top: calc(0rem - var(--chat-message-gap));
-	align-items: flex-start;
-}
-message-block > message-header > time {
-	flex-grow: 1;
-	text-align: right;
-	font-weight: normal;
-	color: var(--chat-dim-color);
-	/* line-height: 1 ;" this looks better when the time wraps, since it takes up less space, but otherwise, means the time is aligned too low */
-}
-
-message-contents {
-	display: block;
-	min-height: 1.5rem; /*this is so <message-controls> always has somewhere to be shown*/
-	margin: 0.125rem 0;
-	overflow-y: hidden; /* do we need this */
-}
-
-/* because of overlapping with avatar: */
-message-contents, message-part {
-	contain: none;
-}
-
-/*
-<message-block> layout:
-┌───────────┲━━━━━━━━━━━━━━━━━━━━━┱─┐
-│ ╭───────╮ ┃ <message-header>    ┃ │
-│ │.avatar│ ┗━━━━━━━━━━━━━━━━━━━━━┛ │
-│ ┢━━━━━━━┿┯┯━━━━━━━━━━━━━━━━━━━━━┓ │
-│ ┃       ┊╎╎ <message-part>      ┃ │
-│ ┃╌╌╌╌╌╌╌╯╎╎                     ┃ │
-│ ┃        ╎╎←-(padding-left)     ┃ │
-│ ┃      ←-╎╎-(border-left)       ┃ │
-│ ┡━━━━━━━━┷┷━━━━━━━━━━━━━━━━━━━━━┩ │
-│ ┢━━━━━━━━┯┯━━━━━━━━━━━━━━━━━━━━━┪ │
-│ ┃        ╎╎ <message-part>      ┃ │
-│ ┃        ╎╎       ...           ┃ │
-└─┺━━━━━━━━┷┷━━━━━━━━━━━━━━━━━━━━━┹─┘
-
-DRAW ORDER / z-index - side view
- ←---- x axis ----→
-↑  ━━━             <message-controls> (nearest, can cover avatar)
-│  ╌╌╌╌━━━━━━━━━━  <message-part> (area covering avatar is seethrough)
-Z  ───             .avatar
-↓ ---------------- <message-block> (furthest)
-
-<message-block> contains
-- <img class=avatar>
-- <message-header> (with username/time)
-- <message-contents>
-
-within <message-contents> is a list of <message-part>s
-(<message-controls> is also inserted here, immediately after the highlighted <message-part>)
-
-each <message-part> actually extends all the way to the left, and uses left border/padding to shift the content out of this 'gutter'
-(
-the .avatar is set to position: absolute, so it can overlap the left side of the first <message-part>
-)
-
-the reason I don't use padding on the CONTAINER instead, is because i need to display <message-controls>:
-I need the <message-part>s to extend into the gutter, so that i can detect which <message-part> the mouseover/mouseleave events are for, when the cursor is in over gutter
-
-(I also can't use left margin on <message-block>, since mouse events only apply within the border-box)
-*/
-
-message-part {
-	display: block;
-	overflow: visible;
-	min-height: 1rem; /* this is so the message controls always have somewhere to be shown */
-	/* we can't use margin here, because then we don't get pointer events */
-	padding: 0.125rem 0;
-	border-left: calc(var(--chat-gutter) + 0.1875rem - 6px) solid transparent;
-	padding-left: 6px;
-	/*padding-left: calc(var(--chat-gutter) + 0.1875rem);*/
-	/* the padding overlaps with avatars, so clip bg to content-box */
-	-webkit-background-clip: padding !important;
-	-webkit-background-clip: padding-box !important;
-	background-clip: padding-box !important;
-}
-message-part.edited {
-	box-shadow: 2px 0 inset var(--T-edit-color);
-}
-message-part:focus {
-	background: var(--message-focus-bg);
-	outline: none;
-}
-message-part.boundary-top {
-	border-top: 2px solid red;
-}
-message-part.boundary-bottom {
-	border-bottom: 2px solid red;
-}
-
-.real-name-label {
-	color: gray;
-}
-
-message-controls {
-	display: inline-flex;
-	position: absolute;
-	width: var(--chat-gutter);
-	/*height: 1.3125rem;*/
-	z-index: 9;
-	-webkit-user-select: none; -moz-user-select: none; user-select: none;
-}
-message-controls > div {
-	padding: 0.125rem 0;
-	width: 0;
-	overflow: hidden;
-}
-message-controls > button[data-action="info"]::before {
-	content: "⚙️";
-}
-message-controls > button[data-action="edit"]::before {
-	content: "✏️";
-}
-message-controls > button[data-action="speak"]::before {
-	content: "💬️";
-}
-message-controls > button:nth-child(n) {
-	flex-grow: 1;
-	padding: 0;
-	/*background: none !important;*/
-	/*color: black;*/
-	/*-webkit-text-stroke: red 0.5px;*/
-}
-message-controls:hover + message-part {
-	background: var(--message-hover-bg);
-}
-
-.messageGap {
-	border: 1px dashed gray; /*♥*/
-	margin: 0.3125rem 0;
-}
-
-.chat-bottom {
-	height: 0.875rem; /* increased because we moved message-block padding to top of element */
-}
-
-/* chat input */
-.inputPane {
-	align-items: stretch;
-	background: var(--bar-bg);
-}
-view-root.f-editing .chatTextarea {
-	background: var(--edit-textarea-bg);
-}
-.chatTextarea[disabled] {
-	background: silver;
-}
-view-root.f-editing .hideWhenEdit,
-view-root:not(.f-editing) .showWhenEdit {
-	display: none;
-}
-
-/* editor */
-.editor-textarea {
-	min-height: 3rem;
-	overflow-y: scroll;
-	resize: none;
-}
-/*#\$editorPreviewPane {
-	height: 50%;
-}*/
-
-
-/* user page */
-
-.userPageBox {
-	align-items: flex-start;
-	/*max-height: 40vh;*/
-	overflow: auto;
-	/* todo: make this outside of scroller and have activity list scroll separately /* ??? */
-}
-
-.userPageAvatar {
-	display: inline-block;
-	position: relative;
-	width: 10rem;
-	height: 10rem;
-	flex-shrink: 1;
-	margin-bottom: 5px;
-	
-	z-index: 2;
-	box-shadow: 2px 2px 5px gray;
-}
-.userPageAvatar > img {
-	width: 100%;
-	height: 100%;
-}
-
-.userPageContents {
-	flex-basis: 0;
-	flex-grow: 1;
-}
-
-html:not(.f-myUserPage) .myUserPage {
-	display: none;
-}
-
-/*@media (max-width: 700px) {
-	/* this is broken /
-	.userPageBox {
-		;flex-direction: column
-		;max-height: none
-	}
-	.userPageBox .userPageContents {
-		;flex-basis: auto
-		;width: 100%
-	}
-}*/
-
-
-/************
- ** Button **
- ************/
-button {
-	cursor: pointer;
-	font: inherit;
-	font-size: 0.8125em;
-	line-height: normal !important;
-	
-	border: var(--T-button-border);
-	border-radius: 0px;
-	padding: 0 0.5rem;
-	
-	background: var(--button-bg);
-}
-button:hover {
-	background: var(--button-hover-bg);
-}
-button:disabled {
-	color: var(--chat-dim-color); /*todo: proper color here */
-	background: var(--button-disabled-bg);
-}
-button[aria-selected="true"] {
-	backguijkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkiiiinround: var(--button-selected-bg);
-	background: var(--button-selected-bg);
-	box-shadow: 0px 1px 3px inset var(--button-shadow-color);
-}
-button:active {
-	background: var(--button-selected-bg);
-	box-shadow: 0px 1px 3px inset var(--button-shadow-color);
-}
-button:hover {
-	box-shadow: 0px 0px 2px inset var(--button-shadow-color);
-}
-
-/* forms */
-form-table > .label {
-	font-weight: 500;
-	text-align: right;
-	padding-right: 0.5rem;
-	align-self: center;
-}
-form-table > .field {
-	vertical-align: middle;
-}
-form-table > .wide.label {
-	text-align: left;
-	font-weight: 500;
-	font-size: 1.1875em;
-}
-
-/* what are these for? */
-/* permissions editor i guess */
-table {
-	border-collapse: collapse;
-}
-th {
-	padding: 0 0.3125rem;
-}
-.permissionRow > th {
-	padding: 0
-	text-align: left
-}
-.permissionRow > td {
-	padding: 0
-	text-align: center
-}
-.permission-table thead th {
-	padding-left: 0.5rem;
-	padding-right: 0.5rem;
-}
-.permission-table td {
-	text-align: center;
-}
-.permission-users td {
-	text-align: center;
-}
-.permission-users th {
-	text-align: right;
-}
-
-user-select {
-	display: block;
-}
-/* inputs */
+/* inputs and focus */
 /* these elements's sizes are fucking weird and make no sense */
 /*input:not([type]) {
 	width: 12em;
@@ -754,36 +76,22 @@ input::placeholder {
 input:invalid {
 	background: var(--error-bg);
 }
-
-@keyframes focus-switch {
-	from {
-		outline-offset: -5px;
-		outline-width: 5px;
-	}
-}
-:focus {
-	outline: var(--T-focus-outline);
-	outline-width: 2px;
-	outline-offset: -2px;
-	animation-name: focus-switch;
-	animation-duration: 0.1s;
-	animation-timing-function: linear;
-	outline-style: solid;
-}
-
+
+/* textarea */
 textarea {
-	;max-width: 100%
-	;border: 2px solid var(--T-textarea-border-color)
-	;border-radius: 0;
-	;box-shadow: 0.125rem 0.1875rem 0.3125rem -0.1875rem #0D0D0D80;
-	;color: var(--T-color)
-	;background: var(--T-bg)
-	;white-space: break-spaces; /* optional */
+	max-width: 100%;
+	border: 2px solid var(--T-textarea-border-color);
+	border-radius: 0;
+	box-shadow: 0.125rem 0.1875rem 0.3125rem -0.1875rem #0D0D0D80;
+	color: var(--T-color);
+	background: var(--T-bg);
+	white-space: break-spaces; /* optional */
+	tab-width: 3;
 }
 textarea-container {
-	;border: 2px solid var(--T-textarea-border-color)
-	;padding: 5px
-	;background: var(--T-bg)
+	border: 2px solid var(--T-textarea-border-color);
+	padding: 5px;
+	background: var(--T-bg);
 }
 textarea-container > textarea {
 	height: 2.625em; /* should be approx. line-height * 2 */
@@ -798,36 +106,92 @@ textarea-container > textarea:focus {
 	animation-name: none;
 }
 textarea-container, textarea-container > textarea {
-	;max-height: 25vh
+	max-height: 25vh;
+}
+
+/************
+ ** Button **
+ ************/
+button {
+	cursor: pointer;
+	font: inherit;
+	font-size: 0.8125em;
+	line-height: normal !important;
+	
+	border: var(--T-button-border);
+	border-radius: 0px;
+	padding: 0 0.5rem;
+	
+	background: var(--button-bg);
+}
+button:hover {
+	background: var(--button-hover-bg);
+}
+button:disabled {
+	color: var(--chat-dim-color); /*todo: proper color here */
+	background: var(--button-disabled-bg);
+}
+button[aria-selected="true"] {
+	backguijkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkiiiinround: var(--button-selected-bg);
+	background: var(--button-selected-bg);
+	box-shadow: 0px 1px 3px inset var(--button-shadow-color);
+}
+button:active {
+	background: var(--button-selected-bg);
+	box-shadow: 0px 1px 3px inset var(--button-shadow-color);
+}
+button:hover {
+	box-shadow: 0px 0px 2px inset var(--button-shadow-color);
 }
 
 
-/**********
- ** Page **
- **********/
-
-.errorPage {
-	padding: 0.1875rem;
+/* tabs */
+tab-list {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	border-bottom: 1px solid gray;
+	border-top: 1px solid var(--T-border-color);
+	background-color: var(--bar-bg) !important;
 }
-
-button.voteButton[data-selected][data-vote="g"] {
-	;background: linear-gradient(var(--bggreen), #eee)
+tab-list > button {
+	flex-grow: 1;
+	flex-basis: 0;
+	height: 2rem;
+	padding: 0;
+	font-size: 1em;
+	border-bottom: none;
 }
-button.voteButton[data-selected][data-vote="b"] {
-	;background: linear-gradient(var(--bgred), #eee)
+tab-list > button[aria-selected="true"] {
+	border-bottom-color: var(--bar-bg);
 }
-button.voteButton[data-selected][data-vote="o"] {
-	;background: linear-gradient(var(--bgblue), #eee)
+tab-list > button img.avatar {
+	width: auto;
+	height: 100%;
 }
-
-/* TODO FIX */
-/* todo fix more! so this is an issue because vote buttons are now messed up by the button container insertion system, and ummm... something about classes.. ugh*/
-
-/* hecko yo */
-.pageContents {
-	max-width: 100%;
+
+/* focus */
+@keyframes focus-switch {
+	from {
+		outline-width: 5px;
+		outline-offset: -5px;
+	}
+}
+:focus {
+	outline: var(--T-focus-outline);
+	outline-width: 2px;
+	outline-style: solid;
+	outline-offset: -2px;
+	animation: focus-switch 0.1s linear
+}
+
+/* markup stuff */
+.Markup {
+	/* TODO: get rid of all the unnecessary default css */
+	/* we don't need to set color and font etc. */
+	font: inherit;
+	overflow-y: hidden;
 	overflow-x: auto;
-	padding: 1.5rem;
 }
 
 .pageContents.Markup h2,
@@ -840,109 +204,6 @@ button.voteButton[data-selected][data-vote="o"] {
 	padding-right: 1rem;
 }
 
-.pageInfoPane {
-	;padding-left: 0.3125rem
-	;padding-right: 0.3125rem
-	;border-bottom: 1px solid var(--T-border-color)
-	;background: var(--bar-bg)
-	;box-shadow: var(--normal-shadow)
-}
-/*   idk   */
-.page-container:not(#a) {
-	min-height: 0px;
-	height: 40vh;
-}
-
-/* file viewer */
-
-.fileThumbnail {
-	;display: inline-block
-	;width: 52px
-	;height: 52px
-	;cursor: pointer
-}
-.fileThumbnail > img {
-	;box-sizing: content-box
-	;max-width: 50px
-	;max-height: 50px
-	;border: 1px solid black
-}
-.fileView {
-	;max-width: 100%
-	;max-height: 100%
-	;border: 1px solid black
-}
-.fileViewPane {
-	;overflow: auto
-}
-html:not(.f-fileSelected) .fileSelected {
-	;display: none
-}
-
-/***********
- ** Icons **
- ***********/
-.iconBg {
-	;background-repeat: no-repeat
-	;background-size: contain
-	;background-position: center
-	;margin-left: 0.125rem
-	;margin-right: 0.125rem
-}
-
-/* TODO: margin should be fullscreen mode by default, then disabled with @media (min-width) */ /* ? */
-
-/* ehhh */
-.half {
-	;display: block
-	;min-height: 1.125rem
-	;line-height: 1.125rem
-	;text-align: center
-}
-.half-label {
-	;font-weight: bold
-}
-
-.image-box > img {
-	;border: 1px solid black
-}
-
-.no-select {
-	-webkit-user-select: none; user-select: none;
-}
-
-
-/* contain */
-#\$sidebarBottom, .sidebarComment, #\$sidebarActivity > .linkBar {
-	contain: strict;
-}
-
-.Markup {
-	;"line-height: 1.2
-	;overflow-y: hidden
-	;overflow-x: auto
-}
-
-/* comment search results */
-.comment-search-results > div > .linkBar {
-	;background: var(--bar-bg)
-}
-
-/* websocket state indicator */
-html[data-socket-state="opening"] .toggle-sidebar {
-	;--button-bg: linear-gradient(#6fb7c0, #6fb7c0, blue)
-}
-/*html[data-socket-state="open"] #\$openSidebar {
-	;--button-bg: linear-gradient(#3f9f5f, #3f9f5f, green)
-}*/
-html[data-socket-pending] .toggle-sidebar {
-	;--button-bg: linear-gradient(#e0c87f, #e0c87f, yellow)
-}
-html[data-socket-state="dead"] .toggle-sidebar {
-	;--button-bg: linear-gradient(#f86060, #f86060, red)
-}
-
-/* markup stuff */
 .M-spoiler-label {
 	contain: none; /* the focus outline wasnt showing, idk why */
 }
@@ -965,36 +226,572 @@ html[data-socket-state="dead"] .toggle-sidebar {
 	width: 100%; /* idk */
 }
 
-#\$fileImage {
-	max-width: 100%;
-	height: auto;
-	max-height: 75vh;
+/* Links */
+:any-link {
+	text-decoration: none;
+}
+:any-link {
+	color: var(--T-link-color);
+}
+:any-link:hover {
+	color: var(--T-link-hover-color);
+	text-decoration: underline;
+}
+.page-header :any-link {
+	color: var(--link-invert-color);
+}
+.page-header :any-link:hover {
+	color: var(--link-invert-hover-color);
+}
+/* header */
+.page-header {
+	background: var(--databarbgcolor);
+	color: var(--databartxtcolor);
+}
+.page-header .entity-title {
+	font-weight: normal;
+	color: var(--link-invert-color);
+}
+.page-header h1 .entity-title {
+	color: var(--databartxtcolor);
+	padding-right: 0.5rem;
+}
+.page-header h1 {
+	font-size: 1.625em;
+	font-weight: normal;
+}
+#\$titlePane [data-view]:not(.shown) {
+	display: none !important;
+}
+/* broken? */
+.errorMode .page-header {
+	color: var(--error-invert-bg);
+	font: var(--T-monospace-font);
 }
 
+html.f-error .loadBG {
+	background: var(--error-invert-bg);
+}
+html.f-loading .loadBG {
+	background: var(--loading-invert-bg);
+}
+.loadBG/*, resize-handle*/ {
+	transition: background-color 0.1s ease;
+}
+.header-buttons {
+	display: inline-flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	height: var(--bar-height);
+}
+.header-buttons > * {
+	height: 50%;
+	font-weight: bold;
+	line-height: 100%;
+	font-size: 0.875em;
+	padding: 0 0.25em;
+	border: 1px solid gray;
+}
+
+html[data-socket-state="opening"] .toggle-sidebar {
+	;--button-bg: linear-gradient(#6fb7c0, #6fb7c0, blue)
+}
+/*html[data-socket-state="open"] #\$openSidebar {
+	;--button-bg: linear-gradient(#3f9f5f, #3f9f5f, green)
+}*/
+html[data-socket-pending] .toggle-sidebar {
+	;--button-bg: linear-gradient(#e0c87f, #e0c87f, yellow)
+}
+html[data-socket-state="dead"] .toggle-sidebar {
+	;--button-bg: linear-gradient(#f86060, #f86060, red)
+}
+
+
+/* sidebar comments */
+#\$sidebarScroller > * {
+	border-top: 1px solid var(--T-border-color);
+}
+.debugMessage {
+	background: var(--bar-bg);
+	padding: 2px 3px;
+}
+.debugMessage > pre {
+	font: var(--T-monospace-font);
+	overflow-x: scroll;
+	white-space: pre;
+	border-bottom: 1px solid var(--T-border-color);
+}
+
+/* userlist */
+chat-pane .userlist2 {
+	border-bottom: 1px solid var(--T-border-color);
+	box-shadow: var(--normal-shadow);
+	z-index: 4;
+}
+.userlist {
+	border: 3px var(--databarbgcolor);
+	border-style: solid none;
+	background: var(--databarbgcolor);
+	color: var(--T-color);
+}
+.userlist .avatar {
+	box-sizing: border-box;
+	width: var(--bar-height);
+	height: var(--bar-height);
+	margin-left: 1px;
+	border: 1px solid goldenrod;
+	border-radius: 0;
+}
+resize-handle.userlist2 {
+	display: flex;
+	background: linear-gradient(var(--databarbgcolor) 0 var(--handle-width), var(--bar-bg) var(--handle-width));
+	height: unset !important;
+}
+.userlist2 > .userlist {
+	box-sizing: content-box;
+	border: none;
+	padding: 3px;
+	background: var(--databarbgcolor);
+}
+.status-idle > .avatar {
+	filter: grayscale(1);
+}
+
+/* damn forms */
+form-table > .label {
+	font-weight: 500;
+	text-align: right;
+	padding-right: 0.5rem;
+	align-self: center;
+}
+form-table > .field {
+	vertical-align: middle;
+}
+form-table > .wide.label {
+	text-align: left;
+	font-weight: 500;
+	font-size: 1.1875em;
+}
+
+/* general user things */
+.entity-title {
+	font-weight: 500;
+}
+.avatar {
+	border-radius: 3px;
+	background: var(--T-avatar-bg);
+}
+time {
+	font-size: 0.875em;
+	color: var(--T-time-color);
+	vertical-align: baseline;
+}
+.username {
+	font-weight: bold;
+	line-height: 1.2;
+}
+.messageGap {
+	border: 1px dashed gray; /*♥*/
+	margin: 0.3125rem 0;
+}
+.chat-bottom {
+	height: 0.875rem;
+}
+.iconBg {
+	background: no-repeat center / contain;
+	margin: 0 0.125rem;
+}
+
+/* chat messages */
+/*
+<message-block> layout:
+┌───────────┲━━━━━━━━━━━━━━━━━━━━━┱─┐
+│ ╭───────╮ ┃ <message-header>    ┃ │
+│ │.avatar│ ┗━━━━━━━━━━━━━━━━━━━━━┛ │
+│ ┢━━━━━━━┿┯┯━━━━━━━━━━━━━━━━━━━━━┓ │
+│ ┃       ┊╎╎ <message-part>      ┃ │
+│ ┃╌╌╌╌╌╌╌╯╎╎                     ┃ │
+│ ┃        ╎╎←-(padding-left)     ┃ │
+│ ┃      ←-╎╎-(border-left)       ┃ │
+│ ┡━━━━━━━━┷┷━━━━━━━━━━━━━━━━━━━━━┩ │
+│ ┢━━━━━━━━┯┯━━━━━━━━━━━━━━━━━━━━━┪ │
+│ ┃        ╎╎ <message-part>      ┃ │
+│ ┃        ╎╎       ...           ┃ │
+└─┺━━━━━━━━┷┷━━━━━━━━━━━━━━━━━━━━━┹─┘
+
+DRAW ORDER / z-index - side view
+ ←---- x axis ----→
+↑  ━━━             <message-controls> (nearest, can cover avatar)
+│  ╌╌╌╌━━━━━━━━━━  <message-part> (area covering avatar is seethrough)
+Z  ───             .avatar
+↓ ---------------- <message-block> (furthest)
+
+<message-block> contains
+- <img class=avatar>
+- <message-header> (with username/time)
+- <message-contents>
+
+within <message-contents> is a list of <message-part>s
+(<message-controls> is also inserted here, immediately after the highlighted <message-part>)
+
+each <message-part> actually extends all the way to the left, and uses left border/padding to shift the content out of this 'gutter'
+(
+the .avatar is set to position: absolute, so it can overlap the left side of the first <message-part>
+)
+
+the reason I don't use padding on the CONTAINER instead, is because i need to display <message-controls>:
+I need the <message-part>s to extend into the gutter, so that i can detect which <message-part> the mouseover/mouseleave events are for, when the cursor is in over gutter
+
+(I also can't use left margin on <message-block>, since mouse events only apply within the border-box)
+*/
+message-block {
+	display: block;
+	position: relative;
+	box-sizing: content-box;
+	--chat-gutter: 4.5rem;
+	--chat-avatar-size: calc(var(--chat-gutter) - 0.5rem - 0.5rem);
+	--chat-message-gap: 0.625rem;
+	padding-right: 0.5rem;
+	padding-top: var(--chat-message-gap);
+	min-height: var(--chat-avatar-size);
+	/* border-left: 0.5em solid rgb(255,153,153) */
+	font-size: 1em; /* ? */
+}
+message-block > img.avatar {
+	display: inline-block;
+	position: absolute;
+	z-index: -1;
+	width: var(--chat-avatar-size);
+	height: var(--chat-avatar-size);
+	border: none; /*1px solid #777*/
+	margin-left: 0.5rem;
+	/*background-color: transparent*/
+	/*background-color: #AAB*/
+						
+}
+message-block > .bigAvatar {
+	position: absolute;
+	width: calc(var(--chat-gutter));
+	height: 100%;
+	left: 0;
+	top: 0;
+	background: no-repeat center top / cover;
+}
+message-block > message-header {
+	display: flex;
+	flex-wrap: wrap-reverse;
+	margin-left: var(--chat-gutter);
+	/* make the timestamp go into margins if there's not enough space */
+	min-height: calc(var(--chat-message-gap) + 1.1875rem); /* 1.1875 = text line height */
+	margin-top: calc(0rem - var(--chat-message-gap));
+	align-items: flex-start;
+}
+message-block > message-header > time {
+	flex-grow: 1;
+	text-align: right;
+	font-weight: normal;
+	color: var(--chat-dim-color);
+	/* line-height: 1 ;" this looks better when the time wraps, since it takes up less space, but otherwise, means the time is aligned too low */
+}
+message-username {
+	line-height: 1.2;
+}
+.real-name-label {
+	color: gray;
+}
+message-contents {
+	display: block;
+	min-height: 1.5rem; /*this is so <message-controls> always has somewhere to be shown*/
+	margin: 0.125rem 0;
+	overflow-y: hidden; /* do we need this */
+}
+/* because of overlapping with avatar: */
+message-contents, message-part {
+	contain: none;
+}
+/* message parts */
+message-part {
+	display: block;
+	overflow: visible;
+	min-height: 1rem;
+	/* we can't use margin, because it doesn't get mouseover events */
+	padding: 0.125rem 0;
+	border-left: calc(var(--chat-gutter) + 0.1875rem - 6px) solid transparent;
+	padding-left: 6px;
+	/*padding-left: calc(var(--chat-gutter) + 0.1875rem);*/
+	/* the padding overlaps with avatars, so clip bg to content-box */
+	-webkit-background-clip: padding !important;
+	-webkit-background-clip: padding-box !important;
+	background-clip: padding-box !important;
+}
+message-part.edited {
+	box-shadow: 2px 0 inset var(--T-edit-color);
+}
+message-part:focus {
+	background: var(--message-focus-bg);
+	outline: none;
+}
+message-part.boundary-top {
+	border-top: 2px solid red;
+}
+message-part.boundary-bottom {
+	border-bottom: 2px solid red;
+}
+
+/* message action controls */
+message-controls {
+	display: inline-flex;
+	position: absolute;
+	width: var(--chat-gutter);
+	z-index: 9;
+	-webkit-user-select: none; -moz-user-select: none; user-select: none;
+}
+/* hack, ignore */
+message-controls > div {
+	padding: 0.125rem 0;
+	width: 0;
+	overflow: hidden;
+}
+message-controls > button[data-action="info"]::before {
+	content: "⚙️";
+}
+message-controls > button[data-action="edit"]::before {
+	content: "✏️";
+}
+message-controls > button[data-action="speak"]::before {
+	content: "💬️";
+}
+message-controls > button:nth-child(n) {
+	flex-grow: 1;
+	padding: 0;
+}
+message-controls:hover + message-part {
+	background: var(--message-hover-bg);
+}
+
+/* chat input pane */
+.inputPane {
+	align-items: stretch;
+	background: var(--bar-bg);
+}
+view-root.f-editing .chatTextarea {
+	background: var(--edit-textarea-bg);
+}
+.chatTextarea[disabled] {
+	background: silver;
+}
+view-root.f-editing .hideWhenEdit,
+view-root:not(.f-editing) .showWhenEdit {
+	display: none !important;
+}
+
+/* misc views */
+.editor-textarea {
+	min-height: 3rem;
+	overflow-y: scroll;
+	resize: none;
+}
+.errorPage {
+	padding: 0.1875rem;
+}
+.search-comment {
+	border-bottom: 1px solid var(--T-border-color);
+}
+.comment-search-results > div > .linkBar {
+	background: var(--bar-bg);
+}
+.nav {
+	background: var(--light-invert-bg);
+	color: var(--databartxtcolor);
+	--T-link-color: var(--link-invert-color);
+	--T-link-hover-color: var(--link-invert-hover-color);
+}
+.nav > span {
+	color: var(--databartxtcolor);
+}
+
+/* file viewer */
 .images-thumbnails img {
 	cursor: pointer;
 	height: 60px;
 	width: 60px;
-	/*background-color: gray;*/
 }
-
 .images-current {
 	max-height: 100%;
 	max-width: 100%;
 	border: 1px solid gray;
 }
-
 .images-container {
 	flex-grow: 1;
 }
 
+/* page */
+/* hecko yo */
+.pageContents {
+	max-width: 100%;
+	overflow-x: auto;
+	padding: 1.5rem;
+}
+.pageInfoPane {
+	padding: 0 0.3125rem;
+	border-bottom: 1px solid var(--T-border-color);
+	background: var(--bar-bg);
+	box-shadow: var(--normal-shadow);
+}
+.page-container:not(#a) {
+	min-height: 0px;
+	height: 40vh;
+}
+/* user page */
+.userPageBox {
+	align-items: flex-start;
+	overflow: auto;
+}
+
+.userPageAvatar {
+	display: inline-block;
+	position: relative;
+	width: 10rem;
+	height: 10rem;
+	flex-shrink: 1;
+	margin-bottom: 5px;
+	
+	z-index: 2;
+	box-shadow: 2px 2px 5px gray;
+}
+.userPageAvatar > img {
+	width: 100%;
+	height: 100%;
+}
+
+.userPageContents {
+	flex-basis: 0;
+	flex-grow: 1;
+}
+
+html:not(.f-myUserPage) .myUserPage {
+	display: none;
+}
+
+/*@media (max-width: 700px) {
+	/* this is broken /
+	.userPageBox {
+		;flex-direction: column
+		;max-height: none
+	}
+	.userPageBox .userPageContents {
+		;flex-basis: auto
+		;width: 100%
+	}
+}*/
+
+/* sidebar */
+sidebar-container {
+	background: var(--T-bg);
+	width: 30vw; /* just a default */
+	min-width: 10vw;
+	z-index: 20;
+}
+.registerBox {
+	padding: 0.3125rem 0.5rem;
+}
+#\$closeSidebar {
+	height: 2.3125rem;
+	width: 100%;
+}
+
+#\$sidebarResize /*, #\$sidebar_tabs*/ {
+	box-shadow: var(--normal-shadow);
+	z-index: 30;
+}
+.image-box > img {
+	border: 1px solid black;
+}
+
+/* sidebar activity */
+#\$sidebarActivity {
+	padding-top: 0.1875rem;
+}
+.activity-page {
+	display: block;
+	border-bottom: 1px solid var(--T-border-color);
+	border-top: 1px solid white;
+	padding: 1px 0;
+	padding-left: 0.1875rem;
+	background: var(--T-bg);
+}
+.activity-page-bottom {
+	display: flex;
+	height: 1.5rem;
+}
+activity-users {
+	text-align: right;
+	white-space: pre;
+	overflow-x: visible;
+	padding: 0 3px;
+}
+/* todo: the css/html for watch activity items is mostly a hack */
+.activity-watch {
+	display: flex;
+}
+.activity-watch > .activity-page-bottom {
+	flex-shrink: 2;
+	flex-grow: 1;
+}
+.activity-watch > .activity-page-bottom > time {
+	width: 100%;
+	text-align: right;
+	padding-left: 0.125em;
+	text-overflow: clip;
+}
+
+/* sidebar settings list */
+#\$localSettings > div {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+}
+#\$localSettings > div > * {
+	flex-grow: 1;
+	flex-shrink: 0;
+	width: 49%;
+	min-width: 6.5em;
+}
+#\$localSettings > div > :last-child {
+	flex-grow: 1;
+}
+#\$localSettings > div > textarea {
+	width: 100%;
+	height: 5.1875em;
+}
+#\$localSettings > div > label {
+	font-weight: 500;
+	line-height: 1em;
+	padding-bottom: .1875em;
+}
+#\$localSettings > div {
+	column-gap: 0.1875rem;
+	margin-bottom: 0.3125rem;
+}
+#\$debugInput {
+	font: var(--T-monospace-font);
+	resize: vertical;
+	overflow-y: scroll;
+	width: 100%;
+}
+
+/* contain */
+#\$sidebarBottom,
+.sidebar-comment,
+#\$sidebarActivity > .linkBar {
+	contain: strict;
+}
+/* mobile stuff */
 @media all and (max-width: 700px) {
 	input, textarea {
 		font-size: 1em;
 	}
-	/*message-block {
-		--chat-gutter: 3rem;
-	}*/
+	/* message-block { --chat-gutter: 3rem; } */
 }
 
 /* ios safari */
@@ -1005,4 +802,3 @@ html[data-socket-state="dead"] .toggle-sidebar {
 		width: -webkit-fill-available; width: -moz-available; width: stretch;
 	}
 }
-
