@@ -20,7 +20,7 @@ function immediate() {
 		return
 	}
 	
-	View.flag('loggedIn', true)
+	View.login_state(true)
 	
 	Settings.init()
 	

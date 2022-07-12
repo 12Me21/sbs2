@@ -22,8 +22,8 @@ body {
 }
 
 /* logged in/out display */
-html:not(.f-loggedIn) .loggedIn,
-html.f-loggedIn .loggedOut {
+:root:not([data-login]) .loggedIn,
+:root[data-login] .loggedOut {
 	display: none !important;
 }
 
@@ -323,23 +323,25 @@ html[data-socket-state="dead"] .toggle-sidebar {
 }
 
 /* userlist */
-chat-pane .userlist2 {
-	border-bottom: 1px solid var(--T-border-color);
-	box-shadow: var(--normal-shadow);
-	z-index: 4;
+.userlist > a {
+	width: var(--bar-height);
+	height: var(--bar-height);
+	border: 1px solid goldenrod;
+	margin-left: 1px;
 }
 .userlist {
-	border: 3px var(--databarbgcolor);
-	border-style: solid none;
+	display: flex;
+	flex-wrap: wrap;
+	box-sizing: content-box;
+	min-height: var(--bar-height);
+	
+	padding: 3px 0;
 	background: var(--databarbgcolor);
 	color: var(--T-color);
 }
 .userlist .avatar {
-	box-sizing: border-box;
-	width: var(--bar-height);
-	height: var(--bar-height);
-	margin-left: 1px;
-	border: 1px solid goldenrod;
+	width: 100%;
+	height: 100%;
 	border-radius: 0;
 }
 resize-handle.userlist2 {
@@ -348,13 +350,16 @@ resize-handle.userlist2 {
 	height: unset !important;
 }
 .userlist2 > .userlist {
-	box-sizing: content-box;
-	border: none;
 	padding: 3px;
-	background: var(--databarbgcolor);
 }
+
 .status-idle > .avatar {
 	filter: grayscale(1);
+}
+chat-pane .userlist2 {
+	border-bottom: 1px solid var(--T-border-color);
+	box-shadow: var(--normal-shadow);
+	z-index: 4;
 }
 
 /* damn forms */
@@ -693,8 +698,11 @@ html:not(.f-myUserPage) .myUserPage {
 sidebar-container {
 	background: var(--T-bg);
 	width: 30vw; /* just a default */
-	min-width: 10vw;
+	min-width: 6em !important;
 	z-index: 20;
+}
+not-sidebar {
+	min-width: 9em !important;
 }
 .registerBox {
 	padding: 0.3125rem 0.5rem;

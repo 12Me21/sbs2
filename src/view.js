@@ -168,6 +168,10 @@ const View = NAMESPACE({
 		})
 	},
 	
+	login_state(state) {
+		document.documentElement.toggleAttribute('data-login', state)
+	},
+	
 	flags: {},
 	flag(flag, state) {
 		this.flags[flag] = state

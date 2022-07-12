@@ -9,9 +9,10 @@ html {
 	-webkit-text-size-adjust: none; /* this fixes an ios safari bug where some text is "stuck" at larger sizes after rotating the screen */
 }
 
-:not(.Markup *) {
-	vertical-align: top; /* if this isn't `top`, the .bar system's inline elements will overflow */
+.item, .textItem, .bar {
+	/* if this isn't `top`, the .bar system's inline elements will overflow */
 	/* the real solution here is to use flex instead. but ehh */
+	vertical-align: top;
 }
 
 * {
@@ -118,12 +119,9 @@ html, body {
 	line-height: var(--bar-height);
 }
 .item, .textItem {
-	max-width: -webkit-fill-available;
+	/*max-width: -webkit-fill-available;
 	max-width: -moz-available;
-	max-width: stretch;
-}
-.bar button.item {
-	/*height: calc(var(--bar-height) - 1px - 1px);*/
+	max-width: stretch;*/
 }
 .bar .avatar {
 	width: var(--bar-height);
@@ -312,7 +310,7 @@ but, then we can't add a border to the image
 	#\$closeSidebar {
 		display: none !important;
 	}
-	html:not(.f-sidebar) .sidebar-element {
+	:root:not(.f-sidebar) .sidebar-element {
 		display: none !important;
 	}
 }
@@ -328,10 +326,13 @@ but, then we can't add a border to the image
 	.sidebar-element:not(sidebar-container) {
 		display: none;
 	}
-	html.f-mobileSidebar not-sidebar {
-		visibility: hidden; /* hide the stuff behind the sidebar so you don't interact with it */
+	
+	/* hide the stuff behind the sidebar so you don't interact with it */
+	:root.f-mobileSidebar not-sidebar {
+		visibility: hidden; 
 	}
-	html:not(.f-mobileSidebar) sidebar-container {
+	/* hide the sidebar */
+	:root:not(.f-mobileSidebar) sidebar-container {
 		visibility: hidden;
 	}
 }

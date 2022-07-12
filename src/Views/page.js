@@ -390,7 +390,7 @@ PageView.template = HTML`
 			</scroll-outer>
 		</chat-pane>
 	</div>
-	<div class='inputPane loggedIn ROW'>
+	<div class='inputPane ROW'>
 		<div class='showWhenEdit COL'>
 			<input $=markup placeholder="markup" style="width:50px;">
 			<button class='FILL' $=cancel>Cancel</button>
