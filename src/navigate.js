@@ -91,3 +91,26 @@ const Nav = singleton({
 - hashchange does NOT fire if the hash is changed by history.replaceState
 
 */
+
+Settings.add({
+	name: 'load_scripts', label: 'inject scripts (list of urls)', type: 'textarea',
+	order: 100000,
+	
+	read() {
+		return this.elem.value.split("\n").map(x=>x.trim()).filter(x=>x)
+	},
+	write() {
+		let v = this.get_value()
+		this.elem.value = Array.isArray(v) ? v.join("\n") : ""
+	},
+})
+
+// this is HERE because it just so happens to be the last script before main.js
+let ls = Settings.values.load_scripts
+if (Array.isArray(ls)) {
+	let html = ls.map(src=>{
+		src = src.replace(/&/g, "&amp;").replace(/"/g, "&quot;")
+		return `<script src="${src}"><\/script>`
+	}).join("\n")
+	document.write(html)
+}
