@@ -144,26 +144,36 @@ Settings = Object.seal({
 			}
 		},
 	} ],
-	
+	// .add() can be called at any time
+	add(field) {
+		this.fields.push(field)
+	},
+	// .init() will run after all the scripts are loaded, but before the DOM is ready
 	init() {
-		for (let field of this.fields) {
+		this.add = function(field) {
 			Object.setPrototypeOf(field, SettingProto.prototype)
 			field.init()
+			if (this.$elem) {
+				let row = field.draw()
+				this.$elem.append(row)
+			}
 		}
+		for (let field of this.fields)
+			this.add(field)
 	},
-	
-	draw() {
-		let f = document.createDocumentFragment()
+	// render
+	$elem: null,
+	draw(elem) {
+		this.$elem = elem
 		for (let field of this.fields) {
 			let row = field.draw()
-			f.append(row)
+			this.$elem.append(row)
 		}
-		return f
 	},
 	
 	save_all() {
 		for (let field of this.fields)
-			field.change(field.read(), 'save')
+			field.change('save')
 	},
 })
 
@@ -181,7 +191,7 @@ class SettingProto {
 			else
 				value = null
 		}
-		this.change(value, 'init')
+		this.change('init', value)
 	}
 	
 	get_value() {
@@ -193,13 +203,14 @@ class SettingProto {
 	// - 'init' - first time (during page load)
 	// - 'change' - changed by user
 	// - 'save' - when "save" button clicked 
-	change(value, event) {
+	change(event, value=this.read()) {
 		Settings.values[this.name] = value
 		if ('init'!=event)
 			localStorage.setItem("setting-"+this.name, JSON.stringify(value))
 		this.update && this.update(value, event)
 	}
 	// draw html input element
+	// this should be called AFTER .init()
 	draw() {
 		let row = document.createElement('div')
 		
@@ -241,12 +252,10 @@ class SettingProto {
 		label.htmlFor = elem.id = `settings_panel__${this.name}`
 		this.elem = elem
 		// set the initial value
-		this.write(this.get_value())
+		this.write()
 		
 		if (this.autosave != false)
-			elem.onchange = ev=>{
-				this.change(this.read(), 'change')
-			}
+			elem.onchange = ev=>{ this.change('change') }
 		
 		row.append(elem)
 		return row
@@ -255,7 +264,7 @@ class SettingProto {
 	read() {
 		return this.elem.value
 	}
-	write(v) {
-		this.elem.value = v
+	write() {
+		this.elem.value = this.get_value()
 	}
 }

@@ -115,8 +115,7 @@ let Sidebar = Object.seal({
 		$logOut.onclick = ev=>{
 			Req.log_out()
 		}
-		let d = Settings.draw()
-		$localSettings.append(d)
+		Settings.draw($localSettings)
 		
 		$localSettingsSave.onclick = ev=>{
 			Settings.save_all()
