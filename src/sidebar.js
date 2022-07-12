@@ -115,10 +115,14 @@ let Sidebar = Object.seal({
 		$logOut.onclick = ev=>{
 			Req.log_out()
 		}
-		Settings.draw($localSettings)
-		
-		$localSettingsSave.onclick = ev=>{
-			Settings.save_all()
+		if (Req.auth) {
+			// need to check if logged in, since settings.init() is only called in that case.
+			
+			Settings.draw($localSettings)
+			
+			$localSettingsSave.onclick = ev=>{
+				Settings.save_all()
+			}
 		}
 	},
 	
