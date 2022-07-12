@@ -154,7 +154,10 @@ class MessageList {
 	static onload() {
 		// draw the message controls
 		this.controls = document.createElement('message-controls')
-		for (let [icon, action] of [["⚙",'info'],["💬",'speak'],["✏",'edit']]) {
+		let e = document.createElement('div')
+		e.append('a')
+		this.controls.append(e)
+		for (let [icon, action] of [["⚙",'info'],/*["💬",'speak'],*/["✏",'edit']]) {
 			let btn = Draw.button(icon, ev=>{
 				let ev2 = new CustomEvent('message_control', {
 					bubbles: true, cancellable: true,

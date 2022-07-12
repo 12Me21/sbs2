@@ -509,13 +509,21 @@ message-controls {
 	display: inline-flex;
 	position: absolute;
 	width: var(--chat-gutter);
-	height: 1.3125rem;
+	/*height: 1.3125rem;*/
 	z-index: 9;
 	-webkit-user-select: none; -moz-user-select: none; user-select: none;
 }
-message-controls > button {
+message-controls > div {
+	padding: 0.125rem 0;
+	width: 0;
+	overflow: hidden;
+}
+message-controls > button:nth-child(n) {
 	flex-grow: 1;
 	padding: 0;
+	/*background: none !important;*/
+	/*color: black;*/
+	/*-webkit-text-stroke: red 0.5px;*/
 }
 message-controls:hover + message-part {
 	background: var(--message-hover-bg);

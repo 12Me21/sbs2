@@ -278,7 +278,7 @@ Settings.add({
 })
 Settings.add({
 	name: 'tts_speed', label: "TTS Speed", type: 'range',
-	range: [0.5, 2], // (heard range may be narrower)
+	range: [0.5, 5], // (heard range may be narrower)
 	step: "0.05",
 	default: 1,
 	notches: [1],
