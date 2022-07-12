@@ -119,7 +119,7 @@ let Sidebar = Object.seal({
 		$localSettings.append(d)
 		
 		$localSettingsSave.onclick = ev=>{
-			Settings.update_all()
+			Settings.save_all()
 		}
 	},
 	

@@ -22,7 +22,7 @@ function immediate() {
 	
 	View.flag('loggedIn', true)
 	
-	Settings.early()
+	Settings.init()
 	
 	Lp.init()
 	

@@ -3,182 +3,175 @@
 Settings = Object.seal({
 	values: Settings.values,
 	
-	fields: {
-		theme: {
-			label: "Theme",
-			type: 'select',
-			options: ['auto', 'light', 'dark'],
-			update(value) {
-				if ('auto'==value)
-					theme_query.onchange(theme_query)
+	fields: [{
+		name: 'theme',
+		label: "Theme",
+		type: 'select',
+		options: ['auto', 'light', 'dark'],
+		update(value) {
+			if ('auto'==value)
+				theme_query.onchange(theme_query)
+			else
+				document.documentElement.dataset.theme = value
+			//else
+			//delete document.documentElement.dataset.theme
+		},
+	}, {
+		name: 'nickname',
+		label: "Chat Nickname",
+		type: 'text',
+	}, {
+		name: 'chat_markup',
+		label: "Chat Markup",
+		type: 'select',
+		options: ['12y', '12y2', 'plaintext'],
+	}, {
+		name: 'scroller_anim_type',
+		label: "scroll animation method",
+		type: 'select',
+		options: ['1', '2', '0'],
+		update(value) {
+			Scroller.anim_type = +value
+		},
+	}, {
+		name: 'chat_enter',
+		label: "chat enter key",
+		type: 'select',
+		options: ['submit', 'newline'],
+		update(value) {
+			/*			do_when_ready(()=>{
+						$chatTextarea.enterKeyHint = value=='newline' ? "enter" : "send"
+						})*/
+		},
+	}, {
+		name: 'tts_notify',
+		label: "TTS Notify",
+		type: 'select',
+		options: ['no', 'everyone else', 'yes'],
+	}, {
+		name: 'tts_volume',
+		label: "TTS Volume",
+		type: 'range',
+		range: [0.0, 1.0],
+		default: 0.5,
+		step: "0.05", //making this a string to /potentially/ bypass floating point
+		notches: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], // 🥴
+		update(value, type) {
+			TTSSystem.synthParams.volume = value
+			if ('change'==type) {
+				TTSSystem.cancel()
+				if (TTSSystem.placeholderSound)
+					TTSSystem.speakMessage({text:"{#uwu",values:{m:'12y'}}, true)
 				else
-					document.documentElement.dataset.theme = value
-				//else
-				//delete document.documentElement.dataset.theme
-			},
-		},
-		nickname: {
-			label: "Chat Nickname",
-			type: 'text',
-		},
-		chat_markup: {
-			label: "Chat Markup",
-			type: 'select',
-			options: ['12y', '12y2', 'plaintext'],
-		},
-		scroller_anim_type: {
-			label: "scroll animation method",
-			type: 'select',
-			options: ['1', '2', '0'],
-			update(value) {
-				Scroller.anim_type = +value
-			},
-		},
-		chat_enter: {
-			label: "chat enter key",
-			type: 'select',
-			options: ['submit', 'newline'],
-			update(value) {
-				/*			do_when_ready(()=>{
-							$chatTextarea.enterKeyHint = value=='newline' ? "enter" : "send"
-							})*/
-			},
-		},
-		tts_notify: {
-			label: "TTS Notify",
-			type: 'select',
-			options: ['no', 'everyone else', 'yes'],
-		},
-		// tts_voice: {
-		// 	name: "TTS Voice",
-		// 	type: 'select',
-		// 	options: ['none'],
-		// },
-		tts_volume: {
-			label: "TTS Volume",
-			type: 'range',
-			range: [0.0, 1.0],
-			default: 0.5,
-			step: "0.05", //making this a string to /potentially/ bypass floating point
-			notches: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], // 🥴
-			update(value, type) {
-				TTSSystem.synthParams.volume = value
-				if ('change'==type) {
-					TTSSystem.cancel()
-					if (TTSSystem.placeholderSound)
-						TTSSystem.speakMessage({text:"{#uwu",values:{m:'12y'}}, true)
-					else
-						TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
-				}
+					TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
+			}
+		}
+	}, {
+		name: 'tts_speed',
+		label: "TTS Speed",
+		type: 'range',
+		range: [0.5, 2], // (heard range may be narrower)
+		step: "0.05",
+		default: 1,
+		notches: [1],
+		update(value, type) {
+			TTSSystem.synthParams.rate = value
+			if ('change'==type) {
+				TTSSystem.cancel()
+				TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
 			}
 		},
-		tts_speed: {
-			label: "TTS Speed",
-			type: 'range',
-			range: [0.5, 2], // (heard range may be narrower)
-			step: "0.05",
-			default: 1,
-			notches: [1],
-			update(value, type) {
-				TTSSystem.synthParams.rate = value
-				if ('change'==type) {
-					TTSSystem.cancel()
-					TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
-				}
-			},
+	}, {
+		name: 'tts_pitch',
+		label: "TTS Pitch",
+		type: 'range',
+		range: [0, 2],
+		step: "0.05",
+		default: 1,
+		notches: [1],
+		update(value, type) {
+			TTSSystem.synthParams.pitch = value
+			if ('change'==type) {
+				TTSSystem.cancel()
+				TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
+			}
 		},
-		tts_pitch: {
-			label: "TTS Pitch",
-			type: 'range',
-			range: [0, 2],
-			step: "0.05",
-			default: 1,
-			notches: [1],
-			update(value, type) {
-				TTSSystem.synthParams.pitch = value
-				if ('change'==type) {
-					TTSSystem.cancel()
-					TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
-				}
-			},
+	}, {
+		name: 'lazy_loading',
+		label: "lazy image loading",
+		type: 'select',
+		options: ['on', 'off'],
+		update(value) { // bad
+			View.toggle_observer(value=='on')
 		},
-		lazy_loading: {
-			label: "lazy image loading",
-			type: 'select',
-			options: ['on', 'off'],
-			update(value) { // bad
-				View.toggle_observer(value=='on')
-			},
+	}, {
+		name: 'big_avatar',
+		label: "Big Avatar",
+		type: 'select',
+		options: ['off', 'on'],
+	}, {
+		name: 'big_avatar_id',
+		label: "Big Avatar Id",
+		type: 'text',
+	}, {
+		name: 'socket_debug',
+		label: "socket debug messages",
+		type: 'select',
+		options: ['no', 'yes'],
+	}, {
+		name: 'sitecss',
+		label: "Custom CSS",
+		type: 'textarea',
+		autosave: false,
+		update(value, type) {
+			if ('init'!=type)
+				$customCSS.textContent = value
 		},
-		big_avatar: {
-			label: "Big Avatar",
-			type: 'select',
-			options: ['off', 'on'],
+	}, {
+		name: 'sitejs',
+		label: "Custom Javascript",
+		type: 'textarea',
+		autosave: false,
+		//todo: maybe highlight when changed, to notify user that they need to save manually?
+		// todo: js console tab thing
+		update(value, type) {
+			try {
+				eval(value)
+			} catch (e) {
+				console.error("failed to run sitejs", e)
+				print(e)
+				print("error in sitejs ^")
+			}
 		},
-		big_avatar_id: {
-			label: "Big Avatar Id",
-			type: 'text',
-		},
-		socket_debug: {
-			label: "socket debug messages",
-			type: 'select',
-			options: ['no', 'yes'],
-		},
-		sitecss: {
-			label: "Custom CSS",
-			type: 'textarea',
-			autosave: false,
-			update(value, type) {
-				if ('init'!=type)
-					$customCSS.textContent = value
-			},
-		},
-		sitejs: {
-			label: "Custom Javascript",
-			type: 'textarea',
-			autosave: false,
-			//todo: maybe highlight when changed, to notify user that they need to save manually?
-			// todo: js console tab thing
-			update(value, type) {
-				try {
-					eval(value)
-				} catch (e) {
-					console.error("failed to run sitejs", e)
-					print(e)
-					print("error in sitejs ^")
-				}
-			},
-		},
-	},
+	} ],
 	
-	early() {
-		Object.for(this.fields, field=>{
+	init() {
+		for (let field of this.fields) {
+			Object.setPrototypeOf(field, SettingProto.prototype)
 			field.init()
-		})
-	},
-	
-	update_all() {
-		Object.for(this.fields, field=>{
-			field.change(field.read(), 'save')
-		})
+		}
 	},
 	
 	draw() {
 		let f = document.createDocumentFragment()
-		Object.for(this.fields, field=>{
+		for (let field of this.fields) {
 			let row = field.draw()
 			f.append(row)
-		})
+		}
 		return f
+	},
+	
+	save_all() {
+		for (let field of this.fields)
+			field.change(field.read(), 'save')
 	},
 })
 
-let SettingProto = {
-	read() { return this.elem.value },
-	write(v) { this.elem.value = v },
-	
+class SettingProto {
+	// this reads the data which was loaded from localstorage earlier,
+	// applies the default values, and calls the update functions
 	init() {
-		let value = Settings.values[this.name]
+		let value = this.get_value()
 		// default value
 		if (value === undefined) {
 			if (this.default!==undefined)
@@ -189,7 +182,11 @@ let SettingProto = {
 				value = null
 		}
 		this.change(value, 'init')
-	},
+	}
+	
+	get_value() {
+		return Settings.values[this.name]
+	}
 	
 	// value: json-compatible value
 	// event: enum string
@@ -201,7 +198,8 @@ let SettingProto = {
 		if ('init'!=event)
 			localStorage.setItem("setting-"+this.name, JSON.stringify(value))
 		this.update && this.update(value, event)
-	},
+	}
+	// draw html input element
 	draw() {
 		let row = document.createElement('div')
 		
@@ -243,7 +241,7 @@ let SettingProto = {
 		label.htmlFor = elem.id = `settings_panel__${this.name}`
 		this.elem = elem
 		// set the initial value
-		this.write(Settings.values[this.name])
+		this.write(this.get_value())
 		
 		if (this.autosave != false)
 			elem.onchange = ev=>{
@@ -252,10 +250,12 @@ let SettingProto = {
 		
 		row.append(elem)
 		return row
-	},
+	}
+	// read/write html input element
+	read() {
+		return this.elem.value
+	}
+	write(v) {
+		this.elem.value = v
+	}
 }
-
-Object.for(Settings.fields, (data, name)=>{
-	Object.setPrototypeOf(data, SettingProto)
-	data.name = name
-})
