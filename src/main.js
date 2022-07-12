@@ -94,6 +94,8 @@ function dom_ready() {
 		}
 	}
 	
+	View.$header = $titlePane
+	
 	MessageList.onload()
 	
 	print("running "+run_on_load.length+" deferred items")

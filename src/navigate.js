@@ -61,7 +61,7 @@ const Nav = singleton({
 		}
 		// onclick fires like 20ms before hashchange..
 		document.addEventListener('click', event=>{
-			let link = event.target.closest('a[href]')
+			let link = event.target.closest('a')
 			if (link) {
 				let href = link.getAttribute('href')
 				if (href.startsWith("#")) {

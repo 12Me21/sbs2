@@ -25,7 +25,7 @@ class MessageList {
 	}
 	get_messages_near(last, newer, amount, callback) {
 		let order = newer ? 'id' : 'id_desc'
-		let query = `contentId = @pid AND id ${newer?">":"<"} @last`
+		let query = `contentId = @pid AND id ${newer?">":"<"} @last AND !notdeleted()`
 		Lp.chain({
 			values: {last: last, pid: this.pid},
 			requests: [

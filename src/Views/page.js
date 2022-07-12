@@ -370,9 +370,9 @@ PageView.template = HTML`
 	<div class='FILL SLIDES' $=panes>
 		<chat-pane class='resize-box shown COL'>
 			<scroll-outer class='sized page-container' $=page_container>
-				<div class='pageInfoPane'>
+				<div class='pageInfoPane bar rem1-5'>
 					<label>Watching: <input type=checkbox $=watching></label>
-					<span $=author></span>
+					<span $=author style='margin: 0 0.5rem;'></span>
 					<span $=create_date>Created: <time></time></span>
 				</div>
 				<div class='pageContents' $=page_contents></div>

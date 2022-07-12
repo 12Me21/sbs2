@@ -269,14 +269,14 @@ tab-list > button img.avatar {
 	font: var(--T-monospace-font);
 }
 
-html.f-error .loadBG {
+#\$titlePane.error {
 	background: var(--error-invert-bg);
 }
-html.f-loading .loadBG {
+#\$titlePane.loading {
 	background: var(--loading-invert-bg);
 }
 .loadBG/*, resize-handle*/ {
-	transition: background-color 0.1s ease;
+	/*transition: background-color 0.1s ease;*/
 }
 .header-buttons {
 	display: inline-flex;
@@ -774,7 +774,7 @@ activity-users {
 	padding-bottom: .1875em;
 }
 #\$localSettings > div {
-	column-gap: 0.1875rem;
+	column-gap: 0.1875rem; /* todo: we can't use this heck! */
 	margin-bottom: 0.3125rem;
 }
 #\$debugInput {

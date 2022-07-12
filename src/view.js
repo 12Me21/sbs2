@@ -157,11 +157,15 @@ const View = NAMESPACE({
 		this.views[name] = {Redirect: func}
 	},
 	
-	load_start() {
-		this.flag('loading', true)
-	},
-	load_end() {
-		this.flag('loading', false)
+	loading: false,
+	$header: null,
+	loading_state(state, keep_error) {
+		this.loading = state
+		do_when_ready(()=>{
+			if (!keep_error)
+				this.$header.classList.remove('error')
+			this.$header.classList.toggle('loading', state)
+		})
 	},
 	
 	flags: {},
@@ -195,7 +199,7 @@ const View = NAMESPACE({
 		if (this.loading_view) {
 			this.loading_view.return()
 			this.loading_view = null
-			this.load_end()
+			this.loading_state(false)
 		}
 	},
 	
@@ -213,7 +217,9 @@ const View = NAMESPACE({
 		let view
 		
 		try {
-			this.load_start()
+			this.loading_state(true)
+			//yield window.setTimeout(STEP, 1000)
+			
 			phase = "view lookup"
 			this.handle_redirects(location)
 			
@@ -225,6 +231,7 @@ const View = NAMESPACE({
 			
 			phase = "view.Start"
 			let data = view.Start(location)
+			
 			let resp
 			if (!data.quick) {
 				phase = "starting request"
@@ -269,8 +276,9 @@ const View = NAMESPACE({
 				view.$error_message.fill(Debug.sidebar_debug(e))
 				view.$error_location.append(JSON.stringify(location, null, 1))
 			}
+			this.$header.classList.add('error')
 		}
-		this.load_end()
+		this.loading_state(false, true)
 		//throw "heck darn"
 		view.$root.classList.add('shown')
 		$main_slides.fill(view.$root)
