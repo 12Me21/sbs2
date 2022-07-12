@@ -150,16 +150,30 @@ class MessageList {
 			this.controls.remove()
 		this.controls_message = elem
 	}
+	
 	static onload() {
-		this.controls = Draw.message_controls((e, action)=>{
-			let ev = new CustomEvent('message_control', {bubbles: true, cancellable: true, detail:{data: null, action}})
-			this.controls_message.dispatchEvent(ev)
-		}).elem
+		// draw the message controls
+		this.controls = document.createElement('message-controls')
+		for (let [icon, action] of [["⚙",'info'],["💬",'speak'],["✏",'edit']]) {
+			let btn = Draw.button(icon, ev=>{
+				let ev2 = new CustomEvent('message_control', {
+					bubbles: true, cancellable: true,
+					detail: {data: null, action},
+				})
+				this.controls_message.dispatchEvent(ev2)
+			})
+			btn.tabIndex=-1
+			this.controls.append(btn)
+		}
+		
 		
 		let listen = (ev, fn)=>{
 			document.body.addEventListener(ev, fn, {passive: true})
 		}
 		
+		// todo: fix this so focusing shows controls again.
+		// the issue is that clicking the buttons can alter focus
+		// and on mobile, there are other issues too
 		/*listen('focusin', e=>{
 		  let elem = e.target.closest("message-part, .message-list")
 		  if (!elem)
@@ -173,11 +187,11 @@ class MessageList {
 		  this.show_controls(null)
 		  })*/
 		
-		// todo: check out relatedTarget?
-		// TODO: this causes problems on mobile when clicking images/links etc.
-		// probably need to like
-		// replace this handler's event with one that doesn't capture touches
-		// and then add a separate touchstart etc. handler which doesnt accept click and etc. maybe we need to cancel click (or check if it's been handled?) somewhere somehow beforehand
+		// show controls when hovering over a <message-part>
+		
+		// This works on mobile, because touches trigger mouseover.
+		// the touch creates a virtual cursor which stays there,
+		// until you touch somewhere else (which then triggers mouseleave)
 		listen('mouseover', e=>{
 			let elem = e.target.closest("message-part, message-controls, .message-list")
 			if (!elem || elem.classList.contains('message-list'))

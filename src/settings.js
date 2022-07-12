@@ -1,249 +1,261 @@
 'use strict'
 
-Settings.fields = {
-	theme: {
-		name: "Theme",
-		type: 'select',
-		options: ['auto', 'light', 'dark'],
-		update(value) {
-			if ('auto'==value)
-				theme_query.onchange(theme_query)
-			else
-				document.documentElement.dataset.theme = value
-			//else
-			//delete document.documentElement.dataset.theme
-		},
-	},
-	nickname: {
-		name: "Chat Nickname",
-		type: 'text',
-	},
-	chat_markup: {
-		name: "Chat Markup",
-		type: 'select',
-		options: ['12y', '12y2', 'plaintext'],
-	},
-	scroller_anim_type: {
-		name: "scroll animation method",
-		type: 'select',
-		options: ['1', '2', '0'],
-		update(value) {
-			Scroller.anim_type = +value
-		},
-	},
-	chat_enter: {
-		name: "chat enter key",
-		type: 'select',
-		options: ['submit', 'newline'],
-		update(value) {
-/*			do_when_ready(()=>{
-				$chatTextarea.enterKeyHint = value=='newline' ? "enter" : "send"
-			})*/
-		},
-	},
-	tts_notify: {
-		name: "TTS Notify",
-		type: 'select',
-		options: ['no', 'everyone else', 'yes'],
-	},
-	// tts_voice: {
-	// 	name: "TTS Voice",
-	// 	type: 'select',
-	// 	options: ['none'],
-	// },
-	tts_volume: {
-		name: "TTS Volume",
-		type: 'range',
-		range: [0.0, 1.0],
-		default: 0.5,
-		step: "0.05", //making this a string to /potentially/ bypass floating point
-		notches: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], // 🥴
-		update(value, type) {
-			TTSSystem.synthParams.volume = value
-			if ('change'==type) {
-				TTSSystem.cancel()
-				if (TTSSystem.placeholderSound)
-					TTSSystem.speakMessage({text:"{#uwu",values:{m:'12y'}}, true)
+Settings = Object.seal({
+	values: Settings.values,
+	
+	fields: {
+		theme: {
+			label: "Theme",
+			type: 'select',
+			options: ['auto', 'light', 'dark'],
+			update(value) {
+				if ('auto'==value)
+					theme_query.onchange(theme_query)
 				else
+					document.documentElement.dataset.theme = value
+				//else
+				//delete document.documentElement.dataset.theme
+			},
+		},
+		nickname: {
+			label: "Chat Nickname",
+			type: 'text',
+		},
+		chat_markup: {
+			label: "Chat Markup",
+			type: 'select',
+			options: ['12y', '12y2', 'plaintext'],
+		},
+		scroller_anim_type: {
+			label: "scroll animation method",
+			type: 'select',
+			options: ['1', '2', '0'],
+			update(value) {
+				Scroller.anim_type = +value
+			},
+		},
+		chat_enter: {
+			label: "chat enter key",
+			type: 'select',
+			options: ['submit', 'newline'],
+			update(value) {
+				/*			do_when_ready(()=>{
+							$chatTextarea.enterKeyHint = value=='newline' ? "enter" : "send"
+							})*/
+			},
+		},
+		tts_notify: {
+			label: "TTS Notify",
+			type: 'select',
+			options: ['no', 'everyone else', 'yes'],
+		},
+		// tts_voice: {
+		// 	name: "TTS Voice",
+		// 	type: 'select',
+		// 	options: ['none'],
+		// },
+		tts_volume: {
+			label: "TTS Volume",
+			type: 'range',
+			range: [0.0, 1.0],
+			default: 0.5,
+			step: "0.05", //making this a string to /potentially/ bypass floating point
+			notches: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], // 🥴
+			update(value, type) {
+				TTSSystem.synthParams.volume = value
+				if ('change'==type) {
+					TTSSystem.cancel()
+					if (TTSSystem.placeholderSound)
+						TTSSystem.speakMessage({text:"{#uwu",values:{m:'12y'}}, true)
+					else
+						TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
+				}
+			}
+		},
+		tts_speed: {
+			label: "TTS Speed",
+			type: 'range',
+			range: [0.5, 2], // (heard range may be narrower)
+			step: "0.05",
+			default: 1,
+			notches: [1],
+			update(value, type) {
+				TTSSystem.synthParams.rate = value
+				if ('change'==type) {
+					TTSSystem.cancel()
 					TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
-			}
-		}
-	},
-	tts_speed: {
-		name: "TTS Speed",
-		type: 'range',
-		range: [0.5, 2], // (heard range may be narrower)
-		step: "0.05",
-		default: 1,
-		notches: [1],
-		update(value, type) {
-			TTSSystem.synthParams.rate = value
-			if ('change'==type) {
-				TTSSystem.cancel()
-				TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
-			}
+				}
+			},
+		},
+		tts_pitch: {
+			label: "TTS Pitch",
+			type: 'range',
+			range: [0, 2],
+			step: "0.05",
+			default: 1,
+			notches: [1],
+			update(value, type) {
+				TTSSystem.synthParams.pitch = value
+				if ('change'==type) {
+					TTSSystem.cancel()
+					TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
+				}
+			},
+		},
+		lazy_loading: {
+			label: "lazy image loading",
+			type: 'select',
+			options: ['on', 'off'],
+			update(value) { // bad
+				View.toggle_observer(value=='on')
+			},
+		},
+		big_avatar: {
+			label: "Big Avatar",
+			type: 'select',
+			options: ['off', 'on'],
+		},
+		big_avatar_id: {
+			label: "Big Avatar Id",
+			type: 'text',
+		},
+		socket_debug: {
+			label: "socket debug messages",
+			type: 'select',
+			options: ['no', 'yes'],
+		},
+		sitecss: {
+			label: "Custom CSS",
+			type: 'textarea',
+			autosave: false,
+			update(value, type) {
+				if ('init'!=type)
+					$customCSS.textContent = value
+			},
+		},
+		sitejs: {
+			label: "Custom Javascript",
+			type: 'textarea',
+			autosave: false,
+			//todo: maybe highlight when changed, to notify user that they need to save manually?
+			// todo: js console tab thing
+			update(value, type) {
+				try {
+					eval(value)
+				} catch (e) {
+					console.error("failed to run sitejs", e)
+					print(e)
+					print("error in sitejs ^")
+				}
+			},
 		},
 	},
-	tts_pitch: {
-		name: "TTS Pitch",
-		type: 'range',
-		range: [0, 2],
-		step: "0.05",
-		default: 1,
-		notches: [1],
-		update(value, type) {
-			TTSSystem.synthParams.pitch = value
-			if ('change'==type) {
-				TTSSystem.cancel()
-				TTSSystem.speakMessage({text:"example message",values:{m:'plaintext'}}, true)
-			}
-		},
+	
+	early() {
+		Object.for(this.fields, field=>{
+			field.init()
+		})
 	},
-	lazy_loading: {
-		name: "lazy image loading",
-		type: 'select',
-		options: ['on', 'off'],
-		update(value) { // bad
-			View.toggle_observer(value=='on')
-		},
+	
+	update_all() {
+		Object.for(this.fields, field=>{
+			field.change(field.read(), 'save')
+		})
 	},
-	big_avatar: {
-		name: "Big Avatar",
-		type: 'select',
-		options: ['off', 'on'],
+	
+	draw() {
+		let f = document.createDocumentFragment()
+		Object.for(this.fields, field=>{
+			let row = field.draw()
+			f.append(row)
+		})
+		return f
 	},
-	big_avatar_id: {
-		name: "Big Avatar Id",
-		type: 'text',
-	},
-	socket_debug: {
-		name: "socket debug messages",
-		type: 'select',
-		options: ['no', 'yes'],
-	},
-	sitecss: {
-		name: "Custom CSS",
-		type: 'textarea',
-		autosave: false,
-		update(value, type) {
-			if ('init'!=type)
-				$customCSS.textContent = value
-		},
-	},
-	sitejs: {
-		name: "Custom Javascript",
-		type: 'textarea',
-		autosave: false,
-		//todo: maybe highlight when changed, to notify user that they need to save manually?
-		// todo: js console tab thing
-		update(value, type) {
-			try {
-				eval(value)
-			} catch (e) {
-				console.error("failed to run sitejs", e)
-				print(e)
-				print("error in sitejs ^")
-			}
-		},
-	},
-},
+})
 
-Settings.early = function() {
-	Object.for(this.fields, (field, name)=>{
-		let value = this.values[name]
+let SettingProto = {
+	read() { return this.elem.value },
+	write(v) { this.elem.value = v },
+	
+	init() {
+		let value = Settings.values[this.name]
 		// default value
 		if (value === undefined) {
-			if (field.default!==undefined)
-				value = field.default
-			else if (field.options)
-				value = field.options[0]
+			if (this.default!==undefined)
+				value = this.default
+			else if (this.options)
+				value = this.options[0]
 			else
 				value = null
 		}
-		this.values[name] = value
-		if (field.update)
-			field.update(value, 'init')
-	})
-},
-
-// change a setting
-
-// type:
-// - 'init' - first time (during page load)
-// - 'change' - changed by user
-// - 'save' - when "save" button clicked 
-Settings.change = function(name, value, type) {
-	let field = this.fields[name]
-	if (!field)
-		return
-	this.values[name] = value
-	if (type!='init')
-		localStorage.setItem("setting-"+name, JSON.stringify(value))
-	field.update && field.update(value, type)
-}
-
-Settings.update_all = function() {
-	Object.for(this.fields, (data, name)=>{
-		this.change(name, data.read(), 'save')
-	})
-}
-
-// todo: replace this
-Settings.draw = function() {
-	let f = document.createDocumentFragment()
-	Object.for(this.fields, (data, name)=>{
+		this.change(value, 'init')
+	},
+	
+	// value: json-compatible value
+	// event: enum string
+	// - 'init' - first time (during page load)
+	// - 'change' - changed by user
+	// - 'save' - when "save" button clicked 
+	change(value, event) {
+		Settings.values[this.name] = value
+		if ('init'!=event)
+			localStorage.setItem("setting-"+this.name, JSON.stringify(value))
+		this.update && this.update(value, event)
+	},
+	draw() {
 		let row = document.createElement('div')
-		f.append(row)
 		
 		let label = row.child('label')
-		label.textContent = data.name+": "
+		label.textContent = this.label+": "
 		
 		let elem
-		let type = data.type
+		let type = this.type
 		if (type=='select') {
 			elem = document.createElement('select')
-			for (let option of data.options) {
+			for (let option of this.options) {
 				let opt = elem.child('option')
 				opt.value = option
 				opt.textContent = option
 			}
 		} else if (type=='textarea') {
 			elem = document.createElement('textarea')
-		} else if (type=='text') {
-			elem = document.createElement('input')
 		} else if (type=='range') {
 			elem = document.createElement('input')
 			elem.type = 'range'
-			elem.min = data.range[0]
-			elem.max = data.range[1]
-			elem.step = data.step || 'any'
-			if (data.notches) {
+			elem.min = this.range[0]
+			elem.max = this.range[1]
+			elem.step = this.step || 'any'
+			if (this.notches) {
 				let notches = row.child('datalist')
-				for (let e of data.notches.concat(data.range)) {
+				for (let e of this.notches.concat(this.range)) {
 					let opt = notches.child('option')
 					opt.value = e
 				}
-				elem.setAttribute('list', notches.id = `settings_panel__${name}_datalist`)
+				elem.setAttribute('list', notches.id = `settings_panel__${this.name}_datalist`)
 			}
+		} else if (type=='text') {
+			elem = document.createElement('input')
+		} else {
+			console.warn('unknown settings type: '+type)
+			elem = document.createElement('input')
 		}
-		
 		// connect label to element (feels nice)
-		elem.id = `settings_panel__${name}`
-		label.htmlFor = elem.id
+		label.htmlFor = elem.id = `settings_panel__${this.name}`
+		this.elem = elem
+		// set the initial value
+		this.write(Settings.values[this.name])
 		
-		data.read = ()=>elem.value
-		
-		let value = this.values[name]
-		elem.value = value
-		
-		if (data.autosave != false)
+		if (this.autosave != false)
 			elem.onchange = ev=>{
-				this.change(name, data.read(), 'change')
+				this.change(this.read(), 'change')
 			}
 		
-		elem && row.append(elem)
-	})
-	return f
+		row.append(elem)
+		return row
+	},
 }
 
-Object.seal(Settings)
+Object.for(Settings.fields, (data, name)=>{
+	Object.setPrototypeOf(data, SettingProto)
+	data.name = name
+})

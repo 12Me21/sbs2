@@ -228,17 +228,12 @@ const Draw = Object.seal({
 `), // todo: it would be nice to put the older/newer buttons to the left of the message so they dont waste vertical space. or maybe have an initial "load surrounding' button next to the page link?
 	
 	//todo; like, request_button which disables/enables automatically
-	button2: function(label, onclick) {
+	button: function(label, onclick) {
 		let e = this()
 		e.append(label)
 		e.onclick = onclick
 		return e
 	}.bind(𐀶`<button>`),
-	
-	button: function() { // BAD 
-		let e = this()
-		return [e, e.firstChild]
-	}.bind(𐀶`<button-container><button>`),
 	
 	// UNUSED
 	// <div class='pageInfoPane rem2-3 bar'>
@@ -337,7 +332,7 @@ const Draw = Object.seal({
 		row.dataset.id = id
 		// remove button
 		if (id) {
-			let b = Draw.button()
+			//let b = Draw.button()
 			b[1].textContent = "remove"
 			b[1].onclick = ()=>{ row.remove() }
 			row.child('td').append(b[0])
@@ -452,19 +447,6 @@ const Draw = Object.seal({
 		reset()
 		return x
 	},
-	
-	message_controls: function(cb) {
-		let e = this()
-		e.firstChild.onclick = e=>cb(e, 'info')
-		e.children[1].onclick = e=>cb(e, 'speak')
-		e.lastChild.onclick = e=>cb(e, 'edit')
-		return {elem: e}
-	}.bind(𐀶`
-<message-controls>
-<button tab-index=-1>⚙</button>
-<button tab-index=-1>💬</button>
-<button tab-index=-1>✏</button>
-`),
 	
 	sidebar_comment: function(comment) {
 		let d = this()

@@ -375,7 +375,7 @@ PageView.template = HTML`
 			<scroll-outer class='FILL' $=outer>
 				<scroll-inner $=inner>
 					<div $=extra>
-						<button-container><button $=load_older>load older messages</button></button-container>
+						<button $=load_older>load older messages</button>
 						<label><input type=checkbox $=limit_checkbox>disable limit</label>
 					</div>
 					<message-list $=message_list></message-list>

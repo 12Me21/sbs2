@@ -95,6 +95,7 @@ METHOD(Error, Symbol.toPrimitive, function() {
 window.GeneratorFunction = function* () {}.constructor
 window.Generator = GeneratorFunction.prototype
 
+// how programmers walk:
 METHOD(Generator, 'run', function(ok=console.info, err=e=>{ throw e }) {
 	let step, main = data=>{
 		step = defer => [data,step]=[defer,main] 
@@ -112,6 +113,7 @@ METHOD(Generator, 'run', function(ok=console.info, err=e=>{ throw e }) {
 // obsolete global vars
 delete window.content
 delete window.sidebar
+delete window.name
 
 METHOD(Map, 'pop', function(key) {
 	let v = this.get(key)
