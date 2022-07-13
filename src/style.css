@@ -527,8 +527,8 @@ message-part {
 	min-height: 1rem;
 	/* we can't use margin, because it doesn't get mouseover events */
 	padding: 0.125rem 0;
-	border-left: calc(var(--chat-gutter) + 0.1875rem - 6px) solid transparent;
-	padding-left: 6px;
+	border-left: calc(var(--chat-gutter) - 0.5rem + 3px) solid transparent;
+	padding-left: calc(0.1875rem + 0.5rem - 3px);
 	/*padding-left: calc(var(--chat-gutter) + 0.1875rem);*/
 	/* the padding overlaps with avatars, so clip bg to content-box */
 	-webkit-background-clip: padding !important;
@@ -536,7 +536,7 @@ message-part {
 	background-clip: padding-box !important;
 }
 message-part.edited {
-	box-shadow: 2px 0 inset var(--T-edit-color);
+	box-shadow: 1.25px 0 inset var(--T-edit-color);
 }
 message-part:focus {
 	background: var(--message-focus-bg);
