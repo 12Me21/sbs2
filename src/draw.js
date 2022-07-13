@@ -430,13 +430,12 @@ const Draw = Object.seal({
 })
 
 class ResizeBar {
-	constructor(element, tab, horiz, dir, save, callback, def) {
+	constructor(element, tab, side, save, def) {
 		this.$elem = element
 		this.$handle = tab
-		this.horiz = horiz
-		this.dir = dir
+		this.horiz = side=='left'||side=='right'
+		this.dir = side=='top'||side=='left' ? 1 : -1
 		this.save = save
-		this.callback = callback
 		
 		this.start_pos = null
 		this.start_size = null
@@ -478,7 +477,6 @@ class ResizeBar {
 	update_size(px) {
 		this.size = Math.max(px, 0)
 		this.$elem.style.setProperty(this.horiz?'width':'height', this.size+"px")
-		this.callback && this.callback(this.size)
 	}
 	
 	static grab(bar) {

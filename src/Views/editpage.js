@@ -6,7 +6,7 @@ class EditView extends BaseView {
 		this.show_preview = false
 		this.live_preview = false
 		
-		new ResizeBar(this.$top, this.$resize, false, 1, null, null, 300)
+		new ResizeBar(this.$top, this.$resize, 'top')
 		
 		$editorSave.onclick = e=>{
 			if (!this.page)
@@ -106,7 +106,11 @@ class EditView extends BaseView {
 		}
 	}
 	update_preview(full) {
+		let shouldScroll = this.$preview_outer.scrollHeight-this.$preview_outer.clientHeight-this.$preview_outer.scrollTop
 		Markup.convert_lang(this.$textarea.value, this.page.values.markupLang, this.$preview, {preview: !full})
+		//console.log(shouldScroll, 'scr?')
+		if (shouldScroll < 20)
+			this.$preview_outer.scrollTop = 9e9
 	}
 	save() {
 		Req.write(this.page).do = (resp, err)=>{
@@ -122,20 +126,20 @@ class EditView extends BaseView {
 
 EditView.template = HTML`
 <view-root class='resize-box COL'>
-	<div $=top class='sized page-container SLIDES'>
+	<div $=top class='sized page-container SLIDES' style='height:40%'>
 		<scroll-outer data-slide=preview $=preview_outer><scroll-inner $=preview class='pageContents'></scroll-inner></scroll-outer>
-		<div data-slide=fields $=fields>
-			<textarea $=data style="resize:none;width:100%;height:100%;"></textarea>
+		<div data-slide=fields $=fields class='ROW'>
+			<textarea $=data style="resize:none;margin:0.5rem;" class='FILL code-textarea'></textarea>
 		</div>
 	</div>
-	<resize-handle $=resize>
-		preview:<input type=checkbox $=preview_button>
+	<resize-handle $=resize style=--handle-width:2em;>
+		<label>preview:<input type=checkbox $=preview_button></label>
 		<span $=preview_controls>
-			| live:<input type=checkbox $=live_button>
+			| <label>live:<input type=checkbox $=live_button></label>
 			<button $=render_button>render full</button>
 		</span>
 	</resize-handle>
-	<textarea $=textarea class='FILL editor-textarea'></textarea>
+	<textarea $=textarea class='FILL editor-textarea' style='margin:3px;'></textarea>
 </view-root>
 `
 

@@ -106,7 +106,7 @@ class PageView extends BaseView {
 		
 		// resize handle
 		let height = null //height = 0
-		new ResizeBar(this.$page_container, this.$resize_handle, false, 1, 'setting--divider-pos-'+this.page_id, null, height)
+		new ResizeBar(this.$page_container, this.$resize_handle, 'top', 'setting--divider-pos-'+this.page_id, height)
 		///////////
 		
 		this.update_page(page, user)
