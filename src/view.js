@@ -37,7 +37,14 @@ class BaseView {
 	}
 }
 
-{
+let HTML = ([html])=>{
+	let temp = document.createElement('template')
+	temp.innerHTML = html.replace(/\s*?\n\s*/g, "")
+	let content = temp.content
+	let root = content
+	if (root.childNodes.length==1)
+		root = root.firstChild
+	
 	// get from `root` to `node` using .firstChild and .nextSibling
 	// TODO: optimize this  yeah yeah !
 	//1: sharing results !
@@ -61,30 +68,21 @@ class BaseView {
 		return path
 	}
 	
-	window.HTML = ([html])=>{
-		let temp = document.createElement('template')
-		temp.innerHTML = html.replace(/\s*?\n\s*/g, "")
-		let content = temp.content
-		let root = content
-		if (root.childNodes.length==1)
-			root = root.firstChild
-		
-		let init = `const node=document.importNode(this, true)
+	let init = `const node=document.importNode(this, true)
 holder.$root=node`
-		for (let node of content.querySelectorAll("[\\$]")) {
-			let path = get_path(root, node)
-			let id = node.getAttribute('$')
-			node.removeAttribute('$')
-			id = id.replace(/,/g, " = holder.$")
-			init += `
-holder.$${id} = node${path}`
-		}
+	for (let node of content.querySelectorAll("[\\$]")) {
+		let path = get_path(root, node)
+		let id = node.getAttribute('$')
+		node.removeAttribute('$')
+		id = id.replace(/,/g, " = holder.$")
 		init += `
-return holder`
-		let c = new Function("holder={}", init).bind(root)
-		//c.prototype = {__proto__: null, template: root}
-		return c
+holder.$${id} = node${path}`
 	}
+	init += `
+return holder`
+	let c = new Function("holder={}", init).bind(root)
+	//c.prototype = {__proto__: null, template: root}
+	return c
 }
 
 class ErrorView extends BaseView {
@@ -93,10 +91,10 @@ class ErrorView extends BaseView {
 	}
 }
 ErrorView.template = HTML`
-<div>
-<div class='errorPage' $=error_message></div>
-<div class='pre' $=error_location></div>
-</div>
+<view-root>
+	<div class='errorPage' $=error_message></div>
+	<div class='pre' style='font:var(--T-monospace-font);' $=error_location></div>
+</view-root>
 `
 
 // so this class is kinda a mess,
@@ -201,6 +199,7 @@ const View = NAMESPACE({
 		let STEP=yield
 		let phase = "..."
 		let view
+		let data
 		
 		try {
 			this.loading_state(true)
@@ -210,13 +209,15 @@ const View = NAMESPACE({
 			this.handle_redirects(location)
 			
 			let view_class = this.views[location.type]
+			if (!view_class)
+				throw 'type'
 			view = new view_class(location)
 			
 			phase = "view.Early"
 			view.Early && view.Early()
 			
 			phase = "view.Start"
-			let data = view.Start(location)
+			data = view.Start(location)
 			
 			let resp
 			if (!data.quick) {
@@ -253,15 +254,16 @@ const View = NAMESPACE({
 			this.cleanup(location)
 			this.current = view = new ErrorView(location)
 			if (e==='type') {
-				this.set_title("Unknown page type")
+				this.set_title(`Unknown view: ‘${location.type}’`)
 			} else if (e==='data') {
 				this.set_title("Data not found")
+				//view.$error_message.append(JSON.stringify(data, null, 1))
 			} else {
 				console.error("Error during view handling", e)
 				this.set_title("Error during: "+phase)
 				view.$error_message.fill(Debug.sidebar_debug(e))
-				view.$error_location.append(JSON.stringify(location, null, 1))
 			}
+			view.$error_location.append("location: "+JSON.stringify(location, null, 1))
 			this.$header.classList.add('error')
 		}
 		this.loading_state(false, true)

@@ -85,69 +85,75 @@ if (window.ResizeObserver) {
 
 class Scroller {
 	constructor(outer, inner) {
-		this.outer = outer
-		this.inner = inner
+		this.$outer = outer
+		this.$inner = inner
 		
-		this.middle = document.createElement('scroll-middle')
-		this.middle.append(this.inner)
-		this.outer.append(this.middle)
+		let middle = document.createElement('scroll-middle')
+		middle.append(this.$inner)
+		this.$outer.append(middle)
 		
 		this.dist = null
 		this.anim_type = Scroller.anim_type
 		this.anim = null
 		this.locked = false
 		if (this.anim_type==2)
-			this.inner.classList.add('scroll-anim3')
+			this.$inner.classList.add('scroll-anim3')
 		
 		// autoscroll is enabled within this distance from the bottom
 		this.bottom_region = 10
 		
-		Scroller.track_height.add(this.outer, (old_size)=>{
+		// i think it might not be totally reliable if both these fire at once...
+		Scroller.track_height.add(this.$outer, (old_size)=>{
 			if (this.at_bottom(old_size, undefined))
 				this.scroll_instant()
 		})
-		Scroller.track_height.add(this.inner, (old_size)=>{
+		Scroller.track_height.add(this.$inner, (old_size)=>{
 			if (this.at_bottom(undefined, old_size))
 				this.scroll_instant()
 		})
 		
 		Object.seal(this)
 	}
-	at_bottom(outer=this.outer.clientHeight, scroll=this.outer.scrollHeight) {
-		// todo: we use this.outer.scrollHeight in at_bottom, then later access inner.gbcr().height for scroll_height()
+	at_bottom(outer=this.$outer.clientHeight, scroll=this.$outer.scrollHeight) {
+		// todo: we use this.outer.scrollHeight in at_bottom, then later access $inner.gbcr().height for scroll_height()
 		// so, i suppose we could reuse the value
-		return scroll-outer-this.outer.scrollTop < this.bottom_region
+		// alternatively, what if we just stored the old value of scroll_bottom during resize? we can also calculate it by comparing the rects uhh
+		// outer.bottom vs inner.bottom
+		
+		// yeah it might be better actually, if we measured the bottom position rather than 
+		return scroll-outer-this.$outer.scrollTop < this.bottom_region
 	}
 	scroll_instant() {
-		this.outer.scrollTop = 9e9
+		this.$outer.scrollTop = 9e9
 	}
 	scroll_height() {
-		// inner.GBCR().height = inner.clientHeight = outer.scrollHeight
+		// $inner.GBCR().height = $inner.clientHeight = outer.scrollHeight
 		// but the latter 2 are rounded to integers
 		
 		// for detecting size change during print, 
 		// could use scrollTop instead of scroll_height()
 		// since scroll_instant() will increase it by the distance added.
-		// except, this doesnt work until the inner height is > outer height (i.e. not when the container is mostly empty)
-		return this.inner.getBoundingClientRect().height
+		// except, this doesnt work until the $inner height is > outer height (i.e. not when the container is mostly empty)
+		return this.$inner.getBoundingClientRect().height
 	}
 	set_offset(y) {
-		this.inner.style.transform = y ? `translateY(${y}px)` : ""
+		this.$inner.style.transform = y ? `translateY(${y}px)` : ""
 	}
 	print_top(fn) {
 		// eh
-		fn()
+		// i think we're saved by scroll anchoring here, or something
+		fn(this.$inner)
 	}
 	print(fn, smooth) {
 		// not scrolled to bottom, don't do anything
 		if (!this.at_bottom()) {
-			fn()
+			fn(this.$inner)
 			return
 		}
 		// anim disabled
 		if (!smooth || this.anim_type==0) {
 			try {
-				fn()
+				fn(this.$inner)
 			} finally {
 				this.scroll_instant()
 				if (this.anim_type!=0)
@@ -156,21 +162,22 @@ class Scroller {
 			return
 		}
 		// at bottom + anim enabled
-		let before = this.scroll_height()
+		let before = this.$outer.scrollTop//scroll_height()
 		try {
-			fn()
+			fn(this.$inner)
 		} finally {
 			this.scroll_instant()
 			// figure out how much was added
-			let after = this.scroll_height()
+			let after = this.$outer.scrollTop//.scroll_height()
 			let dist = after - before
 			if (Math.abs(dist) > 1) {
 				// make sure no existing animation is happening
+				// todo: somehow continue the current animation rather than
 				if (this.anim)
 					cancelAnimationFrame(this.anim)
 				// shift upwards to counteract scroll_instant()
 				if (this.anim_type==2)
-					this.inner.style.transition = "none"
+					this.$inner.style.transition = "none"
 				this.set_offset(dist)
 				// do the animation
 				if (this.locked) {
@@ -193,7 +200,7 @@ class Scroller {
 		this.anim = requestAnimationFrame(time=>{
 			this.anim = null
 			if (this.anim_type==2) {
-				this.inner.style.transition = ""
+				this.$inner.style.transition = ""
 				this.set_offset()
 			} else if (this.anim_type==1) {
 				this.anim_step(dist, time)
@@ -205,7 +212,7 @@ class Scroller {
 			cancelAnimationFrame(this.anim)
 		this.anim = null
 		if (this.anim_type==2)
-			this.inner.style.transition = "none"
+			this.$inner.style.transition = "none"
 		this.set_offset()
 	}
 	// mode 1 only
@@ -223,8 +230,12 @@ class Scroller {
 	}
 	destroy() {
 		// probably unneccessary but idk.. memory leaks
-		Scroller.track_height.remove(this.inner)
-		Scroller.track_height.remove(this.outer)
+		// i don't think we actually call this reliably though?
+		// honestly uhh i think we just need to rely on it being cleared
+		// automatically
+		// oh except our polyfill thing .. heck
+		Scroller.track_height.remove(this.$inner)
+		Scroller.track_height.remove(this.$outer)
 	}
 }
 Scroller.track_height = new ResizeTracker('height')

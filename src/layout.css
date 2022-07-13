@@ -9,12 +9,6 @@ html {
 	-webkit-text-size-adjust: none; /* this fixes an ios safari bug where some text is "stuck" at larger sizes after rotating the screen */
 }
 
-.item, .textItem, .bar {
-	/* if this isn't `top`, the .bar system's inline elements will overflow */
-	/* the real solution here is to use flex instead. but ehh */
-	vertical-align: top;
-}
-
 * {
 	margin: 0;
 	box-sizing: border-box;
@@ -22,9 +16,7 @@ html {
 	/* (these are all inherited properties) */
 	word-break: inherit;
 	font-family: inherit;
-	/*line-height: inherit;*/
-	font-variant-ligatures: inherit;
-	/* to be safe */
+	font-variant-ligatures: none;
 	contain: paint; /* optional */
 }
 
@@ -57,23 +49,13 @@ html, body {
 /**********
  ** Flex **
  **********/
-.COL {
-	display: flex;
-	flex-direction: column;
-}
-.ROW {
-	display: flex;
-}
-.COL > *, .ROW > * {
-	flex-shrink: 0;
-}
-.ROW > .FILL, .ROW > .sized { min-width: 0; }
-.COL > .FILL, .COL > .sized { min-height: 0; }
-.FILL {
-	flex-grow: 1;
-	flex-shrink: 1;
-	flex-basis: 0;
-}
+.ROW, .COL { display: flex; }
+.COL { flex-flow: column; }
+
+.ROW > * { flex: none; min-width: 0; }
+.COL > * { flex: none; min-height: 0; }
+.FILL { flex: 0mm; }
+
 .justify-between {
 	justify-content: space-between;
 }
@@ -107,6 +89,11 @@ html, body {
 	box-sizing: content-box;
 	min-height: var(--bar-height);
 	line-height: var(--bar-height);
+}
+.bar, .bar * {
+	/* if this isn't `top`, the .bar system's inline elements will overflow, because of their line-height */
+	/* the real solution here is to use flex instead. but ehh */
+	vertical-align: top !important;
 }
 .textItem { /* basically anything within a .bar */
 	display: inline;

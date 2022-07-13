@@ -135,14 +135,14 @@ let Sidebar = Object.seal({
 					return
 				}
 				this.printing = true
-				this.scroller.print(()=>{
+				this.scroller.print(inner=>{
 					for (let arg of args) {
 						try {
 							let elem = Debug.sidebar_debug(arg)
-							this.scroller.inner.append(elem)
+							inner.append(elem)
 						} catch (e) {
 							console.error(e)
-							this.scroller.inner.append("error printing!")
+							inner.append("error printing!")
 						}
 						this.message_count++
 					}
@@ -179,7 +179,7 @@ let Sidebar = Object.seal({
 	
 	display_messages(comments, initial) {
 		// todo: show page titles?
-		this.scroller.print(()=>{
+		this.scroller.print(inner=>{
 			for (let c of comments) {
 				let old = this.displayed_ids[c.id]
 				if (c.deleted) {
@@ -193,7 +193,7 @@ let Sidebar = Object.seal({
 					if (old) {
 						old.replaceWith(nw)
 					} else {
-						this.scroller.inner.append(nw)
+						inner.append(nw)
 						this.message_count++
 					}
 					this.displayed_ids[c.id] = nw
@@ -207,9 +207,9 @@ let Sidebar = Object.seal({
 	
 	limit_messages() {
 		if (this.message_count > 500)
-			this.scroller.print_top(()=>{
+			this.scroller.print_top(inner=>{
 				while (this.message_count > 500) {
-					let n = this.scroller.inner.firstChild
+					let n = inner.firstChild
 					let id = n.dataset.id
 					if (id)
 						delete this.displayed_ids[+id]

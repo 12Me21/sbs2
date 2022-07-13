@@ -2,8 +2,8 @@
 // todo: navigate and view could maybe be merged?
 
 // redirect newdev -> oboy
-Markup.renderer.url_scheme['https:'] = 
-Markup.renderer.url_scheme['http:'] = 
+Markup.renderer.url_scheme['https:'] =
+Markup.renderer.url_scheme['http:'] =
 	(url, thing)=>{
 		if (thing=='image' && url.host=="newdev.smilebasicsource.com")
 			url.host = "oboy.smilebasicsource.com"
