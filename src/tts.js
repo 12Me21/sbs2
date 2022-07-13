@@ -26,14 +26,25 @@ const TTSSystem = {
 		})
 	},
 	
+	getUserParam(message) {
+		if (message.Author.bridge)
+			return this.userParams[message.Author.nickname || message.values.b]
+		else
+			return this.userParams[message.createUserId]
+	},
+	
 	speakMessage(message, merged = false) {
 		let tree = Markup.langs.parse(message.text, message.values.m)
 		
-		let opts = { ...this.userParams[message.createUserId], msg: '' }
+		let opts = { ...this.getUserParam(message), msg: "" }
 		
 		if (!merged) {
-			let author = message.Author
-			opts.nickname || (opts.nickname = author.bridge ? (author.nickname || message.values.b) : author.username)
+			if (!opts.nickname) {
+				if (message.Author.bridge)
+					opts.nickname = message.Author.nickname || message.values.b
+				else
+					opts.nickname = message.Author.username
+			}
 			opts.msg = `${opts.nickname} says\n`
 		}
 		
@@ -73,7 +84,7 @@ const TTSSystem = {
 	},
 	
 	userParams: {
-		// [userId]: { any fields of synthParams you want to override }
+		// [userId || bridge name]: { any fields of synthParams you want to override }
 	},
 	
 	voiceFrom(name) {
@@ -273,8 +284,20 @@ const TTSSystem = {
 	},
 	
 	skipKey: {
-		enabled: false,
+		_enabled: false,
 		key: 'Control',
+		
+		enable(state = true) {
+			if (this._enabled == state) return
+			if (!state) {
+				document.removeEventListener('keydown', this.keydown)
+				document.removeEventListener('keyup', this.keyup)
+			} else {
+				document.addEventListener('keydown', this.keydown)
+				document.addEventListener('keyup', this.keyup)
+			}
+			this._enabled = state
+		},
 		
 		keydown(event) {
 			let k = TTSSystem.skipKey
@@ -301,17 +324,5 @@ const TTSSystem = {
 				}
 			}
 		}
-	},
-	
-	useSkipKey(enable = true) {
-		if (this.skipKey.enabled == enable) return
-		if (!enable) {
-			document.removeEventListener('keydown', TTSSystem.skipKey.keydown)
-			document.removeEventListener('keyup', TTSSystem.skipKey.keyup)
-		} else {
-			document.addEventListener('keydown', TTSSystem.skipKey.keydown)
-			document.addEventListener('keyup', TTSSystem.skipKey.keyup)
-		}
-		this.skipKey.enabled = enable
 	}
 }
