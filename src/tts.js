@@ -27,7 +27,7 @@ const TTSSystem = {
 	},
 	
 	getUserParam(message) {
-		if (message.Author.bridge)
+		if (message.Author && message.Author.bridge)
 			return this.userParams[message.Author.nickname || message.values.b]
 		else
 			return this.userParams[message.createUserId]
@@ -40,7 +40,7 @@ const TTSSystem = {
 		
 		if (!merged) {
 			if (!opts.nickname) {
-				if (message.Author.bridge)
+				if (message.Author && message.Author.bridge)
 					opts.nickname = message.Author.nickname || message.values.b
 				else
 					opts.nickname = message.Author.username
