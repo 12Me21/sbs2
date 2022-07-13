@@ -217,8 +217,6 @@ function 𐀶([html]) {
 }
 
 // shouldn't really be here but this needs to be defined pretty early..
-let run_on_load = []
-let do_when_ready = func => run_on_load.push(func)
 do_when_ready.then = do_when_ready
 let DEFER = func => run_on_load.push(func)
 //console.log("deferring render", go)

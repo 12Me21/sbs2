@@ -88,6 +88,11 @@ textarea {
 	white-space: break-spaces; /* optional */
 	tab-width: 3;
 }
+.code-textarea {
+	line-break: anywhere;
+	white-space: break-spaces; !important;
+	font: var(--T-monospace-font);
+}
 textarea-container {
 	border: 2px solid var(--T-textarea-border-color);
 	padding: 5px;
@@ -780,7 +785,6 @@ activity-users {
 	margin-bottom: 0.3125rem;
 }
 #\$debugInput {
-	font: var(--T-monospace-font);
 	resize: vertical;
 	overflow-y: scroll;
 	width: 100%;

@@ -35,7 +35,7 @@ class PageView extends BaseView {
 		if (View.lost)
 			this.$textarea.value = View.lost
 		
-		this.$textarea.enterKeyHint = Settings.chat_enter!='newline' ? "send" : "enter" // uh this won't update though... need a settings change watcher
+		this.$textarea.enterKeyHint = Settings.values.chat_enter!='newline' ? "send" : "enter" // uh this won't update though... need a settings change watcher
 		this.$textarea_container.onkeydown = e=>{
 			if (e.isComposing)
 				return
@@ -53,22 +53,18 @@ class PageView extends BaseView {
 				}
 			}
 		}
-		this.$send.onclick = e=>{
-			this.send_message()
-		}
-		this.$cancel.onclick = e=>{
-			this.cancel_edit()
-		}
+		this.$send.onclick = e=>{ this.send_message() }
+		this.$cancel.onclick = e=>{ this.cancel_edit() }
 		this.$root.onkeydown = e=>{
 			if ('Escape'==e.key)
 				this.cancel_edit()
 		}
 		
 		// todo: make the oninput eventhandler just a shared function since it only acts on e.target?
-		this.r = this.textarea_resize.bind(this)
-		this.$textarea_container.addEventListener('input', this.r, {passive: true})
+		let r = this.textarea_resize.bind(this)
+		this.$textarea_container.addEventListener('input', r, {passive: true})
 		PageView.track_resize_2.add(this.$textarea_container, ()=>{
-			window.setTimeout(this.r)
+			window.setTimeout(r)
 		})
 		
 		this.$root.addEventListener('message_control', e=>{
@@ -83,23 +79,20 @@ class PageView extends BaseView {
 			if (btn.disabled)
 				return
 			btn.disabled = true
-			Req.set_watch(this.id, btn.checked).do = resp=>{
+			Req.set_watch(this.page_id, btn.checked).do = resp=>{
 				btn.disabled = false
 			}
 		}
 	}
 	Render({message, content:[page], Mpinned:pinned, user, watch}) {
-		this.id = page.id
+		this.page_id = page.id
 		PageView.rooms[this.id] = this
-		this.visible = false
-		this.pinned = false
-		PageView.currentRoom = this
 		
-		this.userlist = new StatusDisplay(this.id, this.$userlist)
+		this.userlist = new StatusDisplay(this.page_id, this.$userlist)
 		
 		this.scroller = new Scroller(this.$outer, this.$inner)
 		// chat messages
-		this.list = new MessageList(this.$message_list, this.id)
+		this.list = new MessageList(this.$message_list, this.page_id)
 		
 		this.$load_older.onclick = e=>{
 			let btn = e.target
@@ -113,7 +106,7 @@ class PageView extends BaseView {
 		
 		// resize handle
 		let height = null //height = 0
-		View.attach_resize(this.$page_container, this.$resize_handle, false, 1, 'setting--divider-pos-'+this.id, null, height)
+		new ResizeBar(this.$page_container, this.$resize_handle, false, 1, 'setting--divider-pos-'+this.page_id, null, height)
 		///////////
 		
 		this.update_page(page, user)
@@ -131,7 +124,7 @@ class PageView extends BaseView {
 			this.$extra.prepend(separator)
 			
 			const list = document.createElement('message-list')
-			this.pinned_list = new MessageList(list, this.id)
+			this.pinned_list = new MessageList(list, this.page_id)
 			this.$extra.prepend(list)
 			
 			Entity.link_comments({message:pinned, user})
@@ -159,12 +152,11 @@ class PageView extends BaseView {
 		//this.scroller.scroll_instant()
 	}
 	// 8:10;35
-	Cleanup(type) {
+	Destroy(type) {
 		View.lost = this.$textarea.value
 		this.dead = true
 		this.userlist.set_status(null)
-		PageView.currentRoom = null
-		delete PageView.rooms[this.id]
+		delete PageView.rooms[this.page_id]
 		this.scroller.destroy()
 		PageView.track_resize_2.remove(this.$textarea_container)
 	}
@@ -222,39 +214,21 @@ class PageView extends BaseView {
 		this.scroller.print(()=>{
 			for (let comment of comments)
 				this.list.display_message(comment, false)
-		}, !initial)
+		}, !initial && View.current==this)
 		if (this.list.over_limit() && !this.$limit_checkbox.checked) {
 			this.scroller.print_top(()=>{
 				this.list.limit_messages()
 			})
 		}
-	}
-	// display a list of messages from multiple rooms
-	static display_messages(comments) {
-		// for each room, display all of the new comments for that room
-		for (let room of Object.values(this.rooms)) {
-			let c = comments.filter(c => c.contentId==room.id)
-			if (c.length)
-				room.display_messages(c, room!=this.currentRoom)
-		}
 		// display comment in title
-		// does this belong here, or in the room displaycomments message?
-		// I feel like here is better so each room doesn't need to be checking if it's current.. idk
-		if (this.currentRoom) {
-			let last = comments.findLast((c)=>
-				c.contentId==this.currentRoom.id && Entity.is_new_comment(c))
+		// todo: also call if the current comment being shown in the title is edited
+		if (View.current==this) {
+			let last = comments.findLast(msg=>Entity.is_new_comment(msg))
 			if (last)
-				this.title_notification(last)
+				View.comment_notification(last)
 		}
 	}
-	static title_notification(comment) {
-		if (Settings.values['tts_notify']!='no')
-			if (Settings.values['tts_notify']=='yes' || comment.createUserId != Req.uid)
-				TTSSystem.speakMessage(comment)
-		
-		View.title_notification(comment.text, Draw.avatar_url(comment.Author))
-		// todo: also call if the current comment being shown in the title is edited
-	}
+	
 	textarea_resize() {
 		this.$textarea.style.height = ""
 		let height = this.$textarea.scrollHeight
@@ -289,7 +263,7 @@ class PageView extends BaseView {
 			if (data.text) { // input is not blank
 				let old = data
 				Req.send_message({
-					contentId: this.id,
+					contentId: this.page_id,
 					text: data.text,
 					values: data.values,
 				}).do = (resp, err)=>{
@@ -306,12 +280,15 @@ class PageView extends BaseView {
 	read_input(old) {
 		let values = old ? old.values : {}
 		
+		// editing
 		if (old) {
 			if (this.$markup.value)
 				values.m = this.$markup.value
 			else
 				delete values.m
-		} else {
+		}
+		// new message
+		else {
 			if (Req.me)
 				values.a = Req.me.avatar
 			if (Settings.values.nickname)
@@ -326,7 +303,6 @@ class PageView extends BaseView {
 			text: this.$textarea.value,
 		}
 	}
-	
 	write_input(data) {
 		Edit.set(this.$textarea, data.text)
 		this.textarea_resize()
@@ -335,7 +311,6 @@ class PageView extends BaseView {
 			markup = ""
 		this.$markup.value = markup
 	}
-
 	edit_comment(comment) {
 		if (this.editing_comment)
 			this.cancel_edit()
@@ -358,6 +333,16 @@ class PageView extends BaseView {
 			this.Flag('editing', false)
 			this.write_input(this.pre_edit)
 		}
+	}
+
+	// display a list of messages from multiple rooms
+	static handle_messages(comments) {
+		// for each room, display all of the new comments for that room
+		Object.for(this.rooms, room=>{
+			let c = comments.filter(c => c.contentId==room.page_id)
+			if (c.length)
+				room.display_messages(c)
+		})
 	}
 	static scroll_lock(lock) {
 		for (let room of Object.values(this.rooms))
@@ -407,7 +392,6 @@ PageView.template = HTML`
 </view-root>
 `
 PageView.rooms = {__proto__:null}
-PageView.currentRoom = null
 
 View.register('page', PageView)
 View.register('pages', {

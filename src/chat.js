@@ -139,7 +139,7 @@ class MessageList {
 	part_data(elem) {
 		return this.parts.get(+elem.dataset.id).data
 	}
-	
+
 	// elem: <message-part> or null
 	static show_controls(elem) {
 		if (elem == this.controls_message) // shouldn't happen?
@@ -151,7 +151,7 @@ class MessageList {
 		this.controls_message = elem
 	}
 	
-	static onload() {
+	static init() {
 		// draw the message controls
 		this.controls = document.createElement('message-controls')
 		// hack to set height idk..
@@ -177,7 +177,7 @@ class MessageList {
 		}
 		
 		let listen = (ev, fn)=>{
-			document.body.addEventListener(ev, fn, {passive: true})
+			document.addEventListener(ev, fn, {passive: true})
 		}
 		
 		// todo: fix this so focusing shows controls again.
@@ -218,6 +218,7 @@ MessageList.controls = null
 MessageList.controls_message = null
 MessageList.prototype.max_parts = 500
 
+MessageList.init()
 Object.seal(MessageList)
 
 

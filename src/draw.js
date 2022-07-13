@@ -428,3 +428,74 @@ const Draw = Object.seal({
 </a>
 `),
 })
+
+class ResizeBar {
+	constructor(element, tab, horiz, dir, save, callback, def) {
+		this.$elem = element
+		this.$handle = tab
+		this.horiz = horiz
+		this.dir = dir
+		this.save = save
+		this.callback = callback
+		
+		this.start_pos = null
+		this.start_size = null
+		this.size = null
+		
+		let down = ev=>this.start(ev)
+		tab.addEventListener('mousedown', down)
+		tab.addEventListener('touchstart', down)
+		
+		if (this.save) {
+			let s = localStorage.getItem(this.save)
+			if (s)
+				def = +s
+		}
+		if (def!=null)
+			this.update_size(def)
+	}
+	event_pos(ev) {
+		if (ev.touches)
+			return ev.touches[0][this.horiz?'pageX':'pageY']
+		return ev[this.horiz?'clientX':'clientY']
+	}
+	start(ev) {
+		ev.preventDefault()
+		ResizeBar.grab(this)
+		this.$handle.dataset.dragging = ""
+		this.start_pos = this.event_pos(ev)
+		this.start_size = this.$elem[this.horiz?'offsetWidth':'offsetHeight']
+	}
+	move(ev) {
+		let v = (this.event_pos(ev) - this.start_pos) * this.dir
+		this.update_size(this.start_size + v)
+	}
+	finish(ev) {
+		delete this.$handle.dataset.dragging
+		if (this.save && this.size!=null)
+			localStorage.setItem(this.save, this.size)
+	}
+	update_size(px) {
+		this.size = Math.max(px, 0)
+		this.$elem.style.setProperty(this.horiz?'width':'height', this.size+"px")
+		this.callback && this.callback(this.size)
+	}
+	
+	static grab(bar) {
+		this.current && this.current.finish(null)
+		this.current = bar
+	}
+	static move(ev) {
+		this.current && this.current.move(ev)
+	}
+	static init() {
+		this.current = null
+		let up = ev=>this.grab(null)
+		document.addEventListener('mouseup', up, {passive:true})
+		document.addEventListener('touchend', up, {passive:true})
+		let move = ev=>this.move(ev)
+		document.addEventListener('mousemove', move, {passive:true})
+		document.addEventListener('touchmove', move, {passive:true})
+	}
+}
+ResizeBar.init()

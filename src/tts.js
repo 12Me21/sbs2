@@ -304,3 +304,11 @@ Settings.add({
 		}
 	},
 })
+
+document.addEventListener('comment_notify', ev=>{
+	if (Settings.values.tts_notify!='no') {
+		let comment = ev.detail.comment
+		if (Settings.values.tts_notify=='yes' || comment.createUserId != Req.uid)
+			TTSSystem.speakMessage(comment)
+	}
+})

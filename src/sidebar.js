@@ -15,8 +15,8 @@ let Sidebar = Object.seal({
 		$openSidebar.onclick = $closeSidebar.onclick = e=>{
 			this.toggle()
 		}
-		View.attach_resize($sidebar, $horizontalResize, true, -1, "sidebarWidth")
-		View.attach_resize($sidebarTop, $sidebarResize, false, 1, "sidebarPinnedHeight", null, 300)
+		new ResizeBar($sidebar, $horizontalResize, true, -1, "sidebarWidth")
+		new ResizeBar($sidebarTop, $sidebarResize, false, 1, "sidebarPinnedHeight", null, 300)
 		View.flag('sidebar', true)
 		
 		this.scroller = new Scroller($sidebarScroller.parentNode, $sidebarScroller)

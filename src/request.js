@@ -189,7 +189,7 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 		localStorage.removeItem(this.storage_key)
 		this.auth = null
 		Lp.stop()
-		View.login_state(false)
+		delete document.documentElement.dataset.login
 	},
 	
 	// try to load cached auth token from localstorage

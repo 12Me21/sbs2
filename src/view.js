@@ -3,21 +3,34 @@
 // process of loading a View
 // TODO: this was designed before views were changed to classes, so some of it is redundant and needs to be reorganied
 
-// - Early is called immediately, after the constructor. it's basically redundant now.
+// - .Early() is called immediately, after the constructor. it's basically redundant now.
 
-// - Start is called right after Early (this is where you build the api request)
-// if Start returns .quick:true, then:
-//  - Init is called, then Quick is called
-// otherwise:
-//  - data is requested from the server
-//  - Init is called, then Render is called
+// - .Start() is called. the data you return determines the api request
 
-// - Visible is called after the view is inserted into the page (i.e. has been rendered and attached to the document. this exists so that, ex: the resizing textarea's size can be calculated)
+// - then, we wait for the request to finish (unless .quick is true)
+
+// - at this point, the transition can no longer be cancelled
+
+// - .Destroy() is called for the OLD view, if there was one
+
+// - .Init() is called. this is where you should attach event listeners, and do any rendering that you can, before the data is received.
+//   note:
+//    the reason this happens NOW rather than right after .Start() is
+//    because, before this point, the view's loading can be cancelled
+//    so we don't want to commit to it yet. (note: the template html is cloned immediately, which is probably the more expensive operation anyway. so maybe THAT should be deferred as well?.)
+
+// - .Render or .Quick is called (depending on whether .Start().quick was set). this is where you do the main rendering
+
+// - the view is inserted into the document, and becomes visible
+
+// - .Visible is called. here you can run any code that requires the element to be rendered
 
 class BaseView {
 	constructor(location) {
 		this.location = location
 		new.target.template(this)
+		if (!this.$root || this.$root.tagName!='VIEW-ROOT')
+			throw new DOMException("view's root node is not '<view-root>'", 'NotSupportedError')
 	}
 	Flag(name, state) {
 		this.$root.classList.toggle("f-"+name, state)
@@ -101,45 +114,9 @@ const View = NAMESPACE({
 	// current.cleanup should always be correct!
 	current: null,
 	views: {__proto__: null},
-	
 	lost_textarea: null,
-	
 	first: true,
-	
 	lost: null,
-	
-	observer: null,
-	toggle_observer(state) {
-		if (!this.observer == !state)
-			return
-		if (state) {
-			this.observer = new IntersectionObserver(function(data) {
-				// todo: load top to bottom on pages
-				data = data.filter(x=>x.isIntersecting).sort((a, b)=>b.boundingClientRect.bottom-a.boundingClientRect.bottom)
-				for (let {target} of data) {
-					if (!target.src) {
-						target.src = target.dataset.src
-						delete target.dataset.src
-						this.unobserve(target)
-					}
-				}
-			})
-		} else {
-			// todo: we should load all unloaded images here
-			this.observer.disconnect()
-			this.observer = null
-		}
-	},
-	
-	// modifies `location` param, returns true if redirect happened
-	handle_redirects(location) {
-		let view = this.views[location.type]
-		if (view && view.Redirect) {
-			view.Redirect(location)
-			Nav.replace_location(location)
-			return true
-		}
-	},
 	
 	register(name, view_class) {
 		if (view_class.Redirect)
@@ -157,6 +134,16 @@ const View = NAMESPACE({
 		this.views[name] = {Redirect: func}
 	},
 	
+	// modifies `location` param, returns true if redirect happened
+	handle_redirects(location) {
+		let view = this.views[location.type]
+		if (view && view.Redirect) {
+			view.Redirect(location)
+			Nav.replace_location(location)
+			return true
+		}
+	},
+	
 	loading: false,
 	$header: null,
 	loading_state(state, keep_error) {
@@ -166,10 +153,6 @@ const View = NAMESPACE({
 				this.$header.classList.remove('error')
 			this.$header.classList.toggle('loading', state)
 		})
-	},
-	
-	login_state(state) {
-		document.documentElement.toggleAttribute('data-login', state)
 	},
 	
 	flags: {},
@@ -187,9 +170,9 @@ const View = NAMESPACE({
 	},
 	
 	cleanup(new_location) {
-		if (this.current && this.current.Cleanup)
+		if (this.current && this.current.Destroy)
 			try {
-				this.current.Cleanup(new_location)
+				this.current.Destroy(new_location)
 			} catch (e) {
 				// we ignore this error, because it's probably not important
 				// and also cleanup gets called during error handling so we don't want to get into a loop of errors
@@ -199,6 +182,7 @@ const View = NAMESPACE({
 		this.current = null
 	},
 	
+	loading_view: null,
 	cancel() {
 		if (this.loading_view) {
 			this.loading_view.return()
@@ -206,8 +190,6 @@ const View = NAMESPACE({
 			this.loading_state(false)
 		}
 	},
-	
-	loading_view: null,
 	
 	handle_view(location, callback, onerror) {
 		this.cancel()
@@ -306,64 +288,6 @@ const View = NAMESPACE({
 	/// HELPER FUNCTIONS ///
 	// kinda should move these into like, draw.js idk
 	
-	// should be a class (actually nevermind the syntax is gross)
-	attach_resize(element, tab, horiz, dir, save, callback, def) {
-		let start_pos, start_size
-		let held = false
-		let size = null
-		
-		tab.addEventListener('mousedown', down)
-		tab.addEventListener('touchstart', down)
-		document.addEventListener('mouseup', up)
-		document.addEventListener('touchend', up)
-		document.addEventListener('mousemove', move)
-		document.addEventListener('touchmove', move)
-		
-		if (save) {
-			let s = localStorage.getItem(save)
-			if (s) {
-				update_size(+s)
-				return
-			}
-		}
-		if (def!=null)
-			update_size(def)
-		return
-		
-		function event_pos(e) {
-			if (e.touches)
-				return e.touches[0][horiz?'pageX':'pageY']
-			else
-				return e[horiz?'clientX':'clientY']
-		}
-		function down(e) {
-			if (e.target !== tab)
-				return
-			e.preventDefault()
-			tab.dataset.dragging = ""
-			held = true
-			start_pos = event_pos(e)
-			start_size = element[horiz?'offsetWidth':'offsetHeight']
-		}
-		function move(e) {
-			if (!held)
-				return
-			let v = (event_pos(e) - start_pos) * dir
-			update_size(start_size + v)
-		}
-		function up(e) {
-			delete tab.dataset.dragging
-			held = false
-			if (save && size != null)
-				localStorage.setItem(save, size)
-		}
-		function update_size(px) {
-			size = Math.max(px, 0)
-			element.style.setProperty(horiz?'width':'height', size+"px")
-			callback && callback(size)
-		}
-	},
-	
 	// these all set the page's <h1> and <title>, and reset the favicon
 	real_title: null,
 	set_title2(h1, title) {
@@ -383,7 +307,23 @@ const View = NAMESPACE({
 		this.set_title2(Draw.content_label(entity), entity.name)
 	},
 	
-	// temporarily set <title> and favicon, for displaying a chat message
+	comment_notification(comment) {
+		this.title_notification(comment.text, Draw.avatar_url(comment.Author))
+		// todo: why don't we dispatch this event directly from the view?
+		// and then we can listen for it here and call title_notification
+		
+		// honestly i want to just make my own event system
+		// so i can control bubbling,
+		// or rather, the event gets dispatched to the view first, and then
+		// to some global thing
+		let ev = new CustomEvent('comment_notify', {
+			bubbles: false, cancellable: false,
+			detail: {comment, view:this.current},
+		})
+		document.dispatchEvent(ev)
+	},
+	
+	// temporarily set <title> and favicon, for displaying a notification
 	// pass text=`false` to reset them (todo: why do we use false?unused)
 	title_notification(text, icon) {
 		if (!Req.me)
@@ -396,47 +336,98 @@ const View = NAMESPACE({
 		this.change_favicon(icon || null)
 	},
 	
-	favicon_element: null,
+	$favicon: null,
 	// todo: this stopped working in safari lol...
 	change_favicon(src) {
-		if (!this.favicon_element) {
+		if (!this.$favicon) {
 			if (src == null)
 				return
 			// remove the normal favicons
 			for (let e of document.head.querySelectorAll('link[rel~="icon"]'))
 				e.remove()
 			// add our new one
-			this.favicon_element = document.createElement('link')
-			this.favicon_element.rel = "icon"
-			this.favicon_element.href = src
-			document.head.prepend(this.favicon_element)
-		} else if (this.favicon_element.href != src) {
+			this.$favicon = document.createElement('link')
+			this.$favicon.rel = "icon"
+			this.$favicon.href = src
+			document.head.prepend(this.$favicon)
+		} else if (this.$favicon.href != src) {
 			//todo: technically we should add back /all/ the icons here
 			if (src == null)
 				src = "resource/icon16.png"
-			this.favicon_element.href = src
+			this.$favicon.href = src
 		}
 	},
 	
 	// this shouldnt be here i think
 	bind_enter(block, action) {
-		block.addEventListener('keypress', (e)=>{
-			if ('Enter'==e.key && !e.shiftKey) {
-				e.preventDefault()
+		block.addEventListener('keypress', ev=>{
+			if ('Enter'==ev.key && !ev.shiftKey) {
+				ev.preventDefault()
 				action()
 			}
 		})
 	},
+	
+	observer: null,
+	toggle_observer(state) {
+		if (!this.observer == !state)
+			return
+		if (state) {
+			this.observer = new IntersectionObserver(function(data) {
+				// todo: load top to bottom on pages
+				data = data.filter(x=>x.isIntersecting).sort((a, b)=>b.boundingClientRect.bottom-a.boundingClientRect.bottom)
+				for (let {target} of data) {
+					if (!target.src) {
+						target.src = target.dataset.src
+						delete target.dataset.src
+						this.unobserve(target)
+					}
+				}
+			})
+		} else {
+			// todo: we should load all unloaded images here
+			this.observer.disconnect()
+			this.observer = null
+		}
+	},
+	
+	$embiggened: null,
+	set_embiggened(img) {
+		if (this.$embiggened) delete this.$embiggened.dataset.big
+		this.$embiggened = img
+		if (this.$embiggened) this.$embiggened.dataset.big = ""
+	},
+	
+	init() {
+		// clicking an image causes it to toggle between big/small
+		// we use mousedown so it happens sooner (vs waiting for click)
+		document.addEventListener('mousedown', ev=>{
+			let element = ev.target
+			if (ev.button)
+				return
+			if (!element.hasAttribute('data-shrink'))
+				return
+			if (element==this.$embiggened)
+				element = null // already big: make small
+			this.set_embiggened(element)
+		}, {passive: true})
+		
+		// clicking outside an image shrinks it
+		// maybe could block this if the click is on a link/button?
+		document.addEventListener('click', ev=>{
+			let element = ev.target
+			// this happens if an image was clicked to expand it.
+			// (click fires after mousedown)
+			if (element==this.$embiggened)
+				return
+			if (element instanceof HTMLTextAreaElement)
+				return // allow clicking textarea
+			this.set_embiggened(null)
+		}, {passive: true})
+	},
 })
 
-// todo: id can be a string now,
-// so, we need to test if it is valid + in range (positive) in many places
-// and handle invalid ids consistently
-// so now there are 4 error conditions
-// unknown page type
-// connection error
-// resource not found
-// invalid id
+View.init()
 
 Settings.add({
 	name: 'lazy_loading', label: "lazy image loading", type: 'select',
@@ -445,3 +436,12 @@ Settings.add({
 		View.toggle_observer(value=='on')
 	},
 })
+
+// need to have a better idea of what "current" view means wrt the page header etc.
+// like, maybe each view has a separate header element? or do they share
+// separate is nicer but makes page layout awkward: now the titlebar 
+// is redrawn whenever switching views?
+// maybe we have some kind of "slot" object,
+// which can have one view loaded within it
+// when switching pages, the view is replaced while the slot remains
+// and multiple views = multiple slots

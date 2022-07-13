@@ -117,6 +117,9 @@ class SettingProto {
 			this.redraw_options()
 		} else if (type=='textarea') {
 			elem = document.createElement('textarea')
+		} else if (type=='code') {
+			elem = document.createElement('textarea')
+			elem.classList.add('code-textarea')
 		} else if (type=='range') {
 			elem = document.createElement('input')
 			elem.type = 'range'
@@ -175,7 +178,7 @@ Settings.add({
 	order: -10000,
 })
 Settings.add({
-	name: 'sitecss', label: "Custom CSS", type: 'textarea',
+	name: 'sitecss', label: "Custom CSS", type: 'code',
 	autosave: false,
 	order: Infinity-2,
 	update(value, type) {
@@ -184,7 +187,7 @@ Settings.add({
 	},
 })
 Settings.add({
-	name: 'sitejs', label: "Custom Javascript", type: 'textarea',
+	name: 'sitejs', label: "Custom Javascript", type: 'code',
 	autosave: false,
 	order: Infinity-1,
 	//todo: maybe highlight when changed, to notify user that they need to save manually?
@@ -200,6 +203,6 @@ Settings.add({
 	},
 })
 Settings.add({
-	name: 'html_inject', label: 'html to inject', type: 'textarea',
+	name: 'html_inject', label: 'html to inject', type: 'code',
 	order: 100000,
 })

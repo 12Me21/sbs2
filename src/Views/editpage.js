@@ -6,7 +6,8 @@ class EditView extends BaseView {
 		this.show_preview = false
 		this.live_preview = false
 		
-		View.attach_resize(this.$top, this.$resize, false, 1, null, null, 300)
+		new ResizeBar(this.$top, this.$resize, false, 1, null, null, 300)
+		
 		$editorSave.onclick = e=>{
 			if (!this.page)
 				return

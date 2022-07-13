@@ -318,7 +318,7 @@ let Lp = singleton({
 			try {
 				PageView.scroll_lock(true)
 				Sidebar.scroller.lock()
-				PageView.display_messages(comments)
+				PageView.handle_messages(comments)
 			} finally {
 				Sidebar.display_messages(comments, false)
 				Act.handle_messages(comments, listmapmap.message_event)

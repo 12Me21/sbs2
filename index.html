@@ -62,6 +62,9 @@
 	
 	let BASE_URL = new URL("./", window.location).href
 	
+	let run_on_load = []
+	let do_when_ready = func => run_on_load.push(func)
+	
 	// todo: get rid of global vars here
 	var markup_warned = true
 	function check_markup() {
@@ -284,7 +287,7 @@
 			</div>
 			<div class='registerBox'>
 				js eval:
-				<textarea id=$debugInput></textarea>
+				<textarea id=$debugInput class='code-textarea'></textarea>
 			</div>
 		</sidebar-panel>
 	</div>
