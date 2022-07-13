@@ -320,8 +320,10 @@ html[data-socket-state="dead"] .toggle-sidebar {
 	background: var(--bar-bg);
 	padding: 2px 3px;
 }
-.debugMessage > pre {
+pre {
 	font: var(--T-monospace-font);
+}
+.debugMessage > pre {
 	overflow-x: scroll;
 	white-space: pre;
 	border-bottom: 1px solid var(--T-border-color);
@@ -529,7 +531,6 @@ message-part {
 	padding: 0.125rem 0;
 	border-left: calc(var(--chat-gutter) - 0.5rem + 3px) solid transparent;
 	padding-left: calc(0.1875rem + 0.5rem - 3px);
-	/*padding-left: calc(var(--chat-gutter) + 0.1875rem);*/
 	/* the padding overlaps with avatars, so clip bg to content-box */
 	-webkit-background-clip: padding !important;
 	-webkit-background-clip: padding-box !important;

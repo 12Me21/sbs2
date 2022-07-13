@@ -188,6 +188,9 @@ class PageView extends BaseView {
 				Sidebar.select_tab('file')
 			})
 			this.$page_contents.fill([ne, b])
+			let p =document.createElement('pre')
+			p.textContent = JSON.stringify(this.page, null, 1)
+			this.$page_contents.append(p)
 		} else {
 			Markup.convert_lang(page.text, page.values.markupLang, this.$page_contents, {intersection_observer: View.observer})
 		}
