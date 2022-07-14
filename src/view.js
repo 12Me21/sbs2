@@ -365,7 +365,7 @@ const View = NAMESPACE({
 		block.addEventListener('keypress', ev=>{
 			if ('Enter'==ev.key && !ev.shiftKey) {
 				ev.preventDefault()
-				action()
+				action(ev)
 			}
 		})
 	},

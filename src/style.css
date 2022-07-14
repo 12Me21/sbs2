@@ -187,7 +187,7 @@ tab-list > button img.avatar {
 	outline-width: 2px;
 	outline-style: solid;
 	outline-offset: -2px;
-	animation: focus-switch 0.1s linear
+	animation: focus-switch 0.1s linear;
 }
 
 /* markup stuff */
@@ -298,16 +298,16 @@ tab-list > button img.avatar {
 	border: 1px solid gray;
 }
 
-html[data-socket-state="opening"] .toggle-sidebar {
+:root[data-socket-state="opening"] .toggle-sidebar {
 	;--button-bg: linear-gradient(#6fb7c0, #6fb7c0, blue)
 }
-/*html[data-socket-state="open"] #\$openSidebar {
+/*:root[data-socket-state="open"] #\$openSidebar {
 	;--button-bg: linear-gradient(#3f9f5f, #3f9f5f, green)
 }*/
-html[data-socket-pending] .toggle-sidebar {
+:root[data-socket-pending] .toggle-sidebar {
 	;--button-bg: linear-gradient(#e0c87f, #e0c87f, yellow)
 }
-html[data-socket-state="dead"] .toggle-sidebar {
+:root[data-socket-state="dead"] .toggle-sidebar {
 	;--button-bg: linear-gradient(#f86060, #f86060, red)
 }
 

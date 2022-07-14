@@ -1,15 +1,15 @@
 @charset "utf-8";
 
 /* shared */
-html {
+:root {
 	--T-font: 1em roboto, sans-serif;
 	--T-monospace-font: 0.8125em 'cascadia code', consolas, monospace;
 }
 
 /* default theme */
-html,
+:root,
 /* light theme */
-html[data-theme="light"] {
+:root[data-theme="light"] {
 	color-scheme: light;
 	
 	/* text colors (black) */
@@ -65,7 +65,7 @@ html[data-theme="light"] {
 }
 
 /* dark theme */
-html[data-theme="dark"] {
+:root[data-theme="dark"] {
 	color-scheme: dark;
 	caret-color: var(--T-color);
 	--T-color: #FFF;

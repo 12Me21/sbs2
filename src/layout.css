@@ -4,7 +4,7 @@
  ** Everything **
  ****************/
 
-html {
+:root {
 	word-break: break-word; /* required for text wrapping to work */
 	-webkit-text-size-adjust: none; /* this fixes an ios safari bug where some text is "stuck" at larger sizes after rotating the screen */
 }
@@ -55,10 +55,6 @@ html, body {
 .ROW > * { flex: none; min-width: 0; }
 .COL > * { flex: none; min-height: 0; }
 .FILL { flex: 0mm; }
-
-.justify-between {
-	justify-content: space-between;
-}
 
 /*********/
 /* all elements with user content, must be tied up */
@@ -121,15 +117,9 @@ html, body {
 	width: 1.5rem;
 }
 
-.rem1-7 {
-	--bar-height: 1.6875rem;
-}
-.rem1-5 {
-	--bar-height: 1.5rem;
-}
-.rem2-3 {
-	--bar-height: 2.3125rem;
-}
+.rem1-7 { --bar-height: 1.6875rem; }
+.rem1-5 { --bar-height: 1.5rem; }
+.rem2-3 { --bar-height: 2.3125rem; }
 
 .linkBar.rem1-5 {
 	padding: 0;
