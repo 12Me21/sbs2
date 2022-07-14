@@ -162,13 +162,13 @@ class Scroller {
 			return
 		}
 		// at bottom + anim enabled
-		let before = this.$outer.scrollTop//scroll_height()
+		let before = this.scroll_height() // note: stop trying to use scrollheight instead, it wont work when the elem isnt tall enough!
 		try {
 			fn(this.$inner)
 		} finally {
 			this.scroll_instant()
 			// figure out how much was added
-			let after = this.$outer.scrollTop//.scroll_height()
+			let after = this.scroll_height()
 			let dist = after - before
 			if (Math.abs(dist) > 1) {
 				// make sure no existing animation is happening
