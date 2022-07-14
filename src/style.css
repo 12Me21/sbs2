@@ -545,6 +545,7 @@ message-part:focus {
 	background: var(--message-focus-bg);
 	outline: none;
 }
+/* todo: make this nicer. we have all that space in the left margin now, the issue is just containment etc. need to disable all that i guess.. idk probably fine for search results ? ehh */
 message-part.boundary-top {
 	border-top: 2px solid red;
 }
