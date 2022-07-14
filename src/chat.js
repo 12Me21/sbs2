@@ -62,7 +62,6 @@ class MessageList {
 		let [block, contents] = Draw.message_block(comment)
 		let part = Draw.message_part(comment)
 		this.parts.set(comment.id, {elem:part, data:comment})
-		this.total_parts = 1
 		contents.append(part)
 		this.elem.append(block)
 	}
@@ -83,6 +82,10 @@ class MessageList {
 				return contents
 		}
 		return null
+	}
+	display_messages(messages, backwards) {
+		for (let m of messages)
+			this.display_message(m, backwards)
 	}
 	display_message(message, backwards) {
 		if (message.deleted) {
@@ -116,7 +119,7 @@ class MessageList {
 		if (!part)
 			throw new RangeError("Tried to remove nonexistant message-part, id:"+id)
 		
-		// remove edit buttons if they're on this message
+		// remove controls if they're on this message
 		if (part.elem == MessageList.controls_message)
 			MessageList.show_controls(null)
 		let contents = part.elem.parentNode // <message-contents>

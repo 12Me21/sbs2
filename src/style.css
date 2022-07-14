@@ -252,6 +252,8 @@ tab-list > button img.avatar {
 .page-header {
 	background: var(--databarbgcolor);
 	color: var(--databartxtcolor);
+	box-shadow: var(--normal-shadow);
+	z-index: 4;
 }
 .page-header .entity-title {
 	font-weight: normal;
@@ -609,7 +611,7 @@ view-root:not(.f-editing) .showWhenEdit {
 .search-comment {
 	border-bottom: 1px solid var(--T-border-color);
 }
-.comment-search-results > div > .linkBar {
+.search-comment > div {
 	background: var(--bar-bg);
 }
 .nav {

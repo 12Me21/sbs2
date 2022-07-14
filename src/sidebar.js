@@ -85,8 +85,12 @@ const Sidebar = NAMESPACE({
 				$searchResults.fill()
 				let first = true
 				for (let item of resp.content) {
-					let bar = Draw.content_label(item, true)
+					let bar = document.createElement('a')
+					bar.append(Draw.content_label(item))
 					bar.setAttribute('role', 'listitem')
+					bar.classList.add('bar')
+					bar.classList.add('rem1-5')
+					bar.href = Nav.entity_link(item)
 					$searchResults.append(bar)
 					bar.tabIndex = first ? 0 : -1
 					if (first)

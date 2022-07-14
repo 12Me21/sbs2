@@ -84,19 +84,15 @@ class CommentsView extends BaseView {
 			return
 		}
 		this.$status.textContent = "results: "+comments.length
+		// todo: we can also do SOME merging, if the search has multiple pages but meets all other requirements.
 		if (this.merge) {
-			let x = document.createElement('message-list')
-			this.$results.append(x)
-			let list = new MessageList(x, comments[0].contentId) // mmndnhhhgghdhfhdh i sure hope it does (contentId)
-			for (let comment of comments)
-				list.display_message(comment, false)
+			this.$results.append(Draw.search_comment(comments, pages))
 		} else {
-			for (let c of comments) {
-				let parent = pages[~c.contentId]
-				this.$results.append(Draw.search_comment(c, parent))
-				// todo: maybe have them display in a more compact form without controls by default, and then have a button to render a message list 
-				// also, maybe if you load enough comments to reach the adjacent item, it should merge that in,
-			}
+			this.$results.fill(comments.map(msg=>{
+				return Draw.search_comment(msg, pages)
+			}))
+			// todo: maybe have them display in a more compact form without controls by default, and then have a button to render a message list 
+			// also, maybe if you load enough comments to reach the adjacent item, it should merge that in,
 		}
 	}
 	Quick() {
@@ -170,7 +166,7 @@ class CommentsView extends BaseView {
 				values,
 				requests: [
 					{type:'message', fields:'*', query:query.join(" AND "), order, limit, skip},
-					{type:'content', fields:'name,id,createUserId,permissions', query:"id IN @message.contentId"},
+					{type:'content', fields:'name,id,createUserId,permissions,contentType,literalType', query:"id IN @message.contentId"},
 					{type:'user', fields:'*', query:"id IN @message.createUserId OR id IN @content.createUserId"},
 				],
 			},
@@ -213,3 +209,6 @@ View.register('chatlogs', {
 		location.type = 'comments'
 	},
 })
+
+// idea: what if MessageList could handle multiple ranges of comments, separated by dividers
+// and these get merged whenever you load enough comments for them to overlap

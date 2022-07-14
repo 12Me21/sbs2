@@ -5,11 +5,9 @@ const Draw = NAMESPACE({
 	// also, update the icons for the current site's features
 	//📥 content‹Content›
 	//📤 ‹ParentNode›
-	content_label: function(content, block) {
-		let e = this[block?1:0]()
-		if (block)
-			e.href = Nav.entity_link(content)
-		
+	content_label: function(content, link) {
+		let e = this()
+		// choose icon
 		let hidden = !Entity.has_perm(content.permissions, 0, 'R')
 		let bg
 		if (content.contentType!=CODES.page)
@@ -22,22 +20,16 @@ const Draw = NAMESPACE({
 			bg = 'resource/page-resource.png'
 		let icon = e.firstChild
 		icon.style.backgroundImage = `url("${bg}")`
-		
+		// label
 		e.lastChild.textContent = content.name
 		
 		return e
-	}.bind([
-		𐀶`
-<span class='item icon iconBg' role=img alt=""></span>
-<span class='textItem entity-title pre'>...</span>
-`,
-		𐀶`
-<a class='bar rem1-5 linkBar'>
+	}.bind(𐀶`
+<entity-label>
 	<span class='item icon iconBg' role=img alt=""></span>
 	<span class='textItem entity-title pre'>...</span>
-</a>
-`,
-	]),
+</entity-label>
+`),
 	
 	//📥 text‹String›
 	//📤 ‹ParentNode›
@@ -171,21 +163,23 @@ const Draw = NAMESPACE({
 		return date.toLocaleString([], options)
 	},
 	
-	//📥 elem‹ParentNode› - container to insert message blocks into
-	//📥 comment‹Message› - comment to insert
-	//📥 backwards‹Boolean› - whether to insert at beginning
-	//📤 ‹ParentNode› - the newly drawn message-part
-	
-	// this needs to be improved
-	search_comment: function(comment, parent) {
-		let outer = this()
-		let inner = outer.firstChild
+	search_comment: function(comment, pages) {
+		let e = this()
+		let inner = e.lastChild
+		let link = e.firstChild.firstChild
 		
-		let pg = Draw.content_label(parent, !false)
-		outer.prepend(pg)
+		let list
+		if (Array.isArray(comment)) {
+			list = new MessageList(inner, comment[0].contentId) // mmndnhhhgghdhfhdh i sure hope it does (contentId)
+			list.display_messages(comment, false)
+		} else {
+			list = new MessageList(inner, comment.contentId)
+			list.single_message(comment)
+		}
+		let parent = pages[~list.pid]
 		
-		let list = new MessageList(inner, comment.contentId)
-		list.single_message(comment)
+		link.append(Draw.content_label(parent))
+		link.href = Nav.entity_link(parent)
 		
 		// todo: make these buttons part of the message-list class?
 		// actually we should probably like, handle these at a higher level.. okk yeah bubble.. 
@@ -207,9 +201,10 @@ const Draw = NAMESPACE({
 		
 		inner.after(ne)
 		
-		return outer
+		return e
 	}.bind(𐀶`
 <div class='search-comment'>
+	<div class='bar rem1-5'><a></a></div>
 	<message-list></message-list>
 </div>
 `), // todo: it would be nice to put the older/newer buttons to the left of the message so they dont waste vertical space. or maybe have an initial "load surrounding' button next to the page link?
