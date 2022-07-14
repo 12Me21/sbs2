@@ -182,7 +182,7 @@ tab-list > button img.avatar {
 		outline-offset: -5px;
 	}
 }
-:focus {
+:focus, a:focus > img {
 	outline: var(--T-focus-outline);
 	outline-width: 2px;
 	outline-style: solid;
