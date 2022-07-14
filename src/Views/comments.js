@@ -209,7 +209,7 @@ class CommentsView extends BaseView {
 }
 
 CommentsView.template = HTML`
-<view-root>
+<view-root style='overflow-y:scroll;'>
 	<form $=html_form class='nav' method=dialog>
 		<br $=form_placeholder>
 		<button name=search>🔍Search</button>
@@ -256,3 +256,5 @@ View.register('chatlogs', {
 
 // idea: what if MessageList could handle multiple ranges of comments, separated by dividers
 // and these get merged whenever you load enough comments for them to overlap
+
+// todo: add a button to remove all the extra loaded comments

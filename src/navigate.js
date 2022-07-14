@@ -61,7 +61,7 @@ const Nav = NAMESPACE({
 		}
 		// onclick fires like 20ms before hashchange..
 		document.addEventListener('click', event=>{
-			let link = event.target.closest('a')
+			let link = event.target.closest(':any-link')
 			if (link) {
 				let href = link.getAttribute('href')
 				if (href.startsWith("#")) {
