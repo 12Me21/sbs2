@@ -179,29 +179,31 @@ const Draw = Object.seal({
 	// this needs to be improved
 	search_comment: function(comment, parent) {
 		let outer = this()
+		let inner = outer.firstChild
 		
 		let pg = Draw.content_label(parent, !false)
 		outer.prepend(pg)
 		
-		let inner = outer.lastChild
-		
 		let list = new MessageList(inner, comment.contentId)
 		list.single_message(comment)
 		
-		let ne = Draw.button("Load Newer", ev=>{
-			// todo: make these buttons part of the message-list class
+		// todo: make these buttons part of the message-list class?
+		// actually we should probably like, handle these at a higher level.. okk yeah bubble.. 
+		let ne = Draw.button("Load Newer", Draw.event_lock(done=>{
 			list.draw_messages_near(true, 10, (ok)=>{
-				if (!ok)
-					ev.currentTarget.disabled = true
-			})
-		})
-		
-		inner.before(Draw.button("Load Older", ev=>{
-			list.draw_messages_near(false, 10, (ok)=>{
-				if (!ok)
-					ev.currentTarget.disabled = true
+				if (ok)
+					done()
 			})
 		}))
+		
+		let ol = Draw.button("Load Older", Draw.event_lock(done=>{
+			list.draw_messages_near(false, 10, (ok)=>{
+				if (ok)
+					done()
+			})
+		}))
+
+		inner.before(ol)
 		
 		inner.after(ne)
 		
@@ -212,7 +214,6 @@ const Draw = Object.seal({
 </div>
 `), // todo: it would be nice to put the older/newer buttons to the left of the message so they dont waste vertical space. or maybe have an initial "load surrounding' button next to the page link?
 	
-	//todo; like, request_button which disables/enables automatically
 	button: function(label, onclick) {
 		let e = this()
 		e.append(label)
@@ -427,6 +428,15 @@ const Draw = Object.seal({
 	<span class='textItem entity-title pre'></span>
 </a>
 `),
+	
+	event_lock(callback) {
+		return ev=>{
+			let elem = ev.currentTarget
+			if (elem.disabled) return
+			elem.disabled = true
+			callback(()=>{elem.disabled = false})
+		}
+	}
 })
 
 class ResizeBar {

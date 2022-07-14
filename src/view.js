@@ -447,3 +447,5 @@ Settings.add({
 // which can have one view loaded within it
 // when switching pages, the view is replaced while the slot remains
 // and multiple views = multiple slots
+
+/// OOH and then this object stores View.current, handles navigation, thats where the method handle_view2  yyyeahh!

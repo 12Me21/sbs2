@@ -71,9 +71,7 @@ let Sidebar = Object.seal({
 		else
 			this.select_tab('user')
 		
-		$searchButton.onclick = ev=>{
-			$searchButton.disabled = true
-			
+		$searchButton.onclick = Draw.event_lock(done=>{
 			Lp.chain({
 				values: {
 					search: `%${$searchInput.value}%`,
@@ -83,7 +81,7 @@ let Sidebar = Object.seal({
 					{type:'content', fields:'name,id,contentType,permissions,createUserId,lastCommentId', query:"contentType in @pagetype AND name LIKE @search", limit:50, order:'lastCommentId_desc'},
 				],
 			}, resp=>{
-				$searchButton.disabled = false
+				done()
 				$searchResults.fill()
 				let first = true
 				for (let item of resp.content) {
@@ -96,7 +94,7 @@ let Sidebar = Object.seal({
 					first=false
 				}
 			})
-		}
+		})
 		View.bind_enter($searchInput, $searchButton.onclick)
 		
 		$loginForm.onsubmit = ev=>{
@@ -311,9 +309,8 @@ let FileUploader = Object.seal({
 			Sidebar.close_fullscreen()
 			View.current.Insert_Text(url)
 		}
-		$file_upload.onclick = e=>{
-			if (!this.file) return
-			$file_upload.disabled = true
+		$file_upload.onclick = Draw.event_lock(done=>{
+			if (!this.file) return void done()
 			
 			this.file_upload_form.read()
 			let data = this.file_upload_form.get()
@@ -328,6 +325,7 @@ let FileUploader = Object.seal({
 				params.values.bucket = data.bucket || ""
 				priv = true
 			}
+			// ok this is silly. why even bother with the Form thing
 			if (data.quantize)
 				params.quantize = data.quantize
 			if (data.hash)
@@ -337,7 +335,7 @@ let FileUploader = Object.seal({
 			print(`uploading ${priv?"private":"public"} file...`)
 			
 			Req.upload_file(this.file, params).do = (file, err)=>{
-				$file_upload.disabled = false
+				done()
 				if (err) return
 				
 				if (priv && file.permissions[0])
@@ -345,7 +343,7 @@ let FileUploader = Object.seal({
 				
 				this.show_content(file)
 			}
-		}
+		})
 		$file_url.onfocus = e=>{
 			window.setTimeout(()=>{
 				$file_url.select()

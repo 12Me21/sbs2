@@ -13,18 +13,19 @@ Object.freeze(CODES)
 
 // todo: permissions class? idk
 
-let Entity
-
 class Author {
 	constructor(message, user) {
 		let valid = x => x && ('string'==typeof x || 'number'==typeof x)
 		let {a, big, n} = message.values
 		this.username = user.username
 		this.avatar = valid(a) ? String(a) : user.avatar
-		this.nickname = valid(n) ? Entity.filter_nickname(String(n)) : null
+		this.nickname = valid(n) ? Author.filter_nickname(n) : null
 		this.bridge = user.id==5410 && user.username=="sbs_discord_bridge"
 		this.bigAvatar = valid(big) ? String(big) : null
 		this.merge_hash = `${message.contentId},${message.createUserId},${this.avatar},${this.bigAvatar||""},${this.username} ${this.nickname||""}`
+	}
+	static filter_nickname(name) {
+		return String(name).substring(0, 50).replace(/\n/g, "  ")
 	}
 }
 Object.assign(Author.prototype, {
@@ -129,8 +130,7 @@ for (let enm in ABOUT.details.codes) {
 
 // functions for processing recieved entities/
 // DATA PROCESSOR
-Entity = singleton({
-	
+const Entity = NAMESPACE({
 	// official page types
 	CONTENT_TYPES: [
 		'resource', 'chat', 'program', 'tutorial', 'documentation',
@@ -139,10 +139,6 @@ Entity = singleton({
 		if (uid!=0 && perms[0] && perms[0].includes(perm))
 			return true
 		return perms[uid] && perms[uid].includes(perm)
-	},
-	
-	filter_nickname(name) {
-		return String(name).substr(0, 50).replace(/\n/g, "  ")
 	},
 	
 	// should this return null?

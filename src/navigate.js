@@ -14,7 +14,7 @@ Markup.renderer.url_scheme['sbs:'] = (url)=>{
 	return "#"+url.pathname+url.search+url.hash
 }
 
-const Nav = singleton({
+const Nav = NAMESPACE({
 	entity_link(entity) {
 		let type = {
 			user: 'user',

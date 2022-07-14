@@ -204,7 +204,6 @@ RegExp.prototype.rmatch = function(str) {
 //let 𖹭 = x=>{__proto__:null,set 𖹭(f){Object.seal(Object.assign(this,f))}} // golfed..
 
 // why do we have these
-const singleton = (obj) => Object.seal(obj)
 const NAMESPACE = Object.seal
 
 function 𐀶([html]) {

@@ -248,3 +248,8 @@ Settings.add({
 		Scroller.anim_type = +value
 	},
 })
+
+// wait what if instead of animating transforming the scroller we just
+// set the .height of the newly message and animated that from 0px..
+// yeah ! hmm !
+// nn doesnt work because of margins/padding limiting min height

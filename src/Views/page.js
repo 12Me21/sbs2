@@ -34,6 +34,7 @@ class PageView extends BaseView {
 	Init() {
 		if (View.lost)
 			this.$textarea.value = View.lost
+		this.editing = null
 		
 		this.$textarea.enterKeyHint = Settings.values.chat_enter!='newline' ? "send" : "enter" // uh this won't update though... need a settings change watcher
 		this.$textarea_container.onkeydown = e=>{
@@ -54,10 +55,10 @@ class PageView extends BaseView {
 			}
 		}
 		this.$send.onclick = e=>{ this.send_message() }
-		this.$cancel.onclick = e=>{ this.cancel_edit() }
+		this.$cancel.onclick = e=>{ this.edit_comment(null) }
 		this.$root.onkeydown = e=>{
 			if ('Escape'==e.key)
-				this.cancel_edit()
+				this.edit_comment(null)
 		}
 		
 		// todo: make the oninput eventhandler just a shared function since it only acts on e.target?
@@ -74,15 +75,13 @@ class PageView extends BaseView {
 			}
 		})
 		
-		this.$watching.onchange = ev=>{
-			let btn = ev.currentTarget
-			if (btn.disabled)
-				return
-			btn.disabled = true
-			Req.set_watch(this.page_id, btn.checked).do = resp=>{
-				btn.disabled = false
+		
+		this.$watching.onchange = Draw.event_lock(done=>{
+			// todo: check for err
+			Req.set_watch(this.page_id, this.$watching.checked).do = resp=>{
+				done()
 			}
-		}
+		})
 	}
 	Render({message, content:[page], Mpinned:pinned, user, watch}) {
 		this.page_id = page.id
@@ -94,15 +93,12 @@ class PageView extends BaseView {
 		// chat messages
 		this.list = new MessageList(this.$message_list, this.page_id)
 		
-		this.$load_older.onclick = e=>{
-			let btn = e.target
-			if (btn.disabled) return
-			btn.disabled = true
+		this.$load_older.onclick = Draw.event_lock(done=>{
 			// todo: preserve scroll position
 			this.list.draw_messages_near(false, 50, ()=>{
-				btn.disabled = false
+				done()
 			})
-		}
+		})
 		
 		// resize handle
 		let height = null //height = 0
@@ -115,8 +111,7 @@ class PageView extends BaseView {
 		this.userlist.set_status("active")
 		this.userlist.redraw()
 		
-		message.reverse()
-		this.display_messages(message, true)
+		View.set_entity_title(page)
 		
 		if (pinned instanceof Array && pinned.length) {
 			let separator = document.createElement('div')
@@ -133,9 +128,10 @@ class PageView extends BaseView {
 				this.pinned_list.display_message(m, false)
 		}
 		
-		View.set_entity_title(page)
-		//View.set_entity_path(page.parent)
-		let can_edit = /u/i.test(page.permissions[Req.uid]) // unused
+		message.reverse()
+		this.display_messages(message, true)
+		
+		//let can_edit = /u/i.test(page.permissions[Req.uid]) // unused
 		
 		$pageCommentsLink.href = "#comments/"+page.id+"?r" // todo: location
 		$pageEditLink.href = "#editpage/"+page.id
@@ -147,9 +143,6 @@ class PageView extends BaseView {
 	}
 	Visible() {
 		this.textarea_resize()
-		// for some reason this caused major rendering glitches in ios
-		// and doesn't seem to be necessary, so i guess i'll disable it?
-		//this.scroller.scroll_instant()
 	}
 	// 8:10;35
 	Destroy(type) {
@@ -239,103 +232,89 @@ class PageView extends BaseView {
 	}
 	
 	send_message() {
-		let data = this.read_input(this.editing_comment)
-		
-		if (this.editing_comment) { // editing comment
-			let last_edit = this.editing_comment
-			this.cancel_edit()
-			this.$textarea.focus()
-			
-			if (data.text) { // input not blank
-				last_edit.text = data.text
-				last_edit.values = data.values //mmn
-				Req.send_message(last_edit).do = (resp, err)=>{
-					if (err)
-						alert("Editing comment failed")
-				}
-			} else { // input is blank
-				let resp = confirm("Are you sure you want to delete this message?\n"+last_edit.text)
-				if (!resp)
-					return
-				Req.delete('message', last_edit.id).do = (resp, err)=>{
-					if (err)
-						alert("Deleting comment failed")
-				}
+		let old_text = this.editing && this.editing.text
+		let data = this.read_input(this.editing)
+		// empty input
+		if (!data.text) {
+			// delete message, if in edit mode
+			if (!this.editing)
+				return
+			let ok = confirm("Are you sure you want to delete this message?\n"+old_text)
+			if (!ok)
+				return
+			Req.delete('message', data.id).do = (resp, err)=>{
+				if (err)
+					alert("Deleting comment failed")
 			}
-		} else { // posting new comment
-			if (data.text) { // input is not blank
-				let old = data
-				Req.send_message({
-					contentId: this.page_id,
-					text: data.text,
-					values: data.values,
-				}).do = (resp, err)=>{
-					// i remvoed this because you can just undo now
-					//if (err) //error sending message
-						//this.write_input(old)
-				}
-				Edit.clear(this.$textarea)
-				this.textarea_resize()
+		} else { // non-empty
+			// create/edit message
+			Req.send_message(data).do = (resp, err)=>{
+				if (err)
+					alert("Posting failed")
 			}
+		}
+		// reset input
+		if (this.editing)
+			this.edit_comment(null)
+		else {
+			Edit.clear(this.$textarea)
+			this.textarea_resize()
 		}
 	}
 	
-	read_input(old) {
-		let values = old ? old.values : {}
-		
+	read_input(data=null) {
 		// editing
-		if (old) {
+		if (data) {
 			if (this.$markup.value)
-				values.m = this.$markup.value
+				data.values.m = this.$markup.value
 			else
-				delete values.m
+				delete data.values.m
 		}
 		// new message
 		else {
+			data = {values:{}, contentId:this.page_id, text:null}
+			let sv = Settings.values
 			if (Req.me)
-				values.a = Req.me.avatar
-			if (Settings.values.nickname)
-				values.n = Entity.filter_nickname(Settings.values.nickname)
-			if (Settings.values.big_avatar=='on' && Settings.values.big_avatar_id)
-				values.big = Settings.values.big_avatar_id
-			values.m = Settings.values.chat_markup
+				data.values.a = Req.me.avatar
+			if (sv.nickname)
+				data.values.n = Author.filter_nickname(sv.nickname)
+			if (sv.big_avatar=='on' && sv.big_avatar_id)
+				data.values.big = sv.big_avatar_id
+			data.values.m = sv.chat_markup
 		}
+		data.text = this.$textarea.value
 		
-		return {
-			values: values,
-			text: this.$textarea.value,
-		}
+		return data
 	}
 	write_input(data) {
 		Edit.set(this.$textarea, data.text)
 		this.textarea_resize()
-		let markup = data.values.m
-		if ('string'!=typeof markup)
-			markup = ""
-		this.$markup.value = markup
+		if (this.editing) {
+			let markup = data.values.m
+			if ('string'!=typeof markup)
+				markup = ""
+			this.$markup.value = markup
+		}
 	}
-	edit_comment(comment) {
-		if (this.editing_comment)
-			this.cancel_edit()
-		if (!comment)
+	edit_comment(comment=null) {
+		if (!comment) {
+			if (this.editing) {
+				this.editing = null
+				this.write_input(this.pre_edit)
+				this.Flag('editing', false)
+			}
 			return
+		}
 		this.pre_edit = this.read_input()
-		this.editing_comment = comment
+		this.editing = comment
 		this.Flag('editing', true)
 		// do this after the flag, so the width is right
 		this.write_input(comment) 
 		// todo: maybe also save/restore cursor etc.
 		window.setTimeout(x=>{
-			this.$textarea.setSelectionRange(99999, 99999) // move cursor to end
 			this.$textarea.focus()
+			this.$textarea.setSelectionRange(99999, 99999) // move cursor to end
 		})
-	}
-	cancel_edit() {
-		if (this.editing_comment) {
-			this.editing_comment = null
-			this.Flag('editing', false)
-			this.write_input(this.pre_edit)
-		}
 	}
 
 	// display a list of messages from multiple rooms
