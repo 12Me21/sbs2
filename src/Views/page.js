@@ -296,6 +296,7 @@ class PageView extends BaseView {
 			this.$markup.value = markup
 		}
 	}
+	// todo: um why is this one function ... idk.. no shared code anymore
 	edit_comment(comment=null) {
 		if (!comment) {
 			if (this.editing) {
@@ -305,7 +306,9 @@ class PageView extends BaseView {
 			}
 			return
 		}
-		this.pre_edit = this.read_input()
+		// todo: maybe this should be a stack? and then if you edit another post while already in edit mode... sometHing ..
+		if (!this.editing)
+			this.pre_edit = this.read_input()
 		this.editing = comment
 		this.Flag('editing', true)
 		// do this after the flag, so the width is right
