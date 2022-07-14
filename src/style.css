@@ -611,8 +611,17 @@ view-root:not(.f-editing) .showWhenEdit {
 .search-comment {
 	border-bottom: 1px solid var(--T-border-color);
 }
-.search-comment > div {
+.search-comment-page {
 	background: var(--bar-bg);
+}
+.search-comment-buttons {
+	width: 1.5rem;
+	justify-content: space-between;
+}
+.search-comment-buttons > button {
+	max-height: 3rem;
+	flex-grow: 1;
+	padding: 0;
 }
 .nav {
 	background: var(--light-invert-bg);

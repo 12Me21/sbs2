@@ -11,14 +11,14 @@ document.addEventListener('message_control', e=>{
 
 class MessageList {
 	constructor(element, pid, edit) {
-		this.elem = element
-		this.elem.classList.add('message-list') // todo: just create a new elem <message-list> ?
+		this.$list = element
+		this.$list.classList.add('message-list') // todo: just create a new elem <message-list> ?
 		this.pid = pid
 		this.parts = new Map()
 		
 		// this listens for events created by the message edit/info buttons
 		// and modifies the event to add the message data
-		this.elem.addEventListener('message_control', e=>{
+		this.$list.addEventListener('message_control', e=>{
 			let data = this.part_data(e.target)
 			e.detail.data = data // eeehehe
 		}, {capture: true})
@@ -38,7 +38,7 @@ class MessageList {
 	// need to prevent this from loading messages multiple times at once
 	// and inserting out of order...x
 	draw_messages_near(newer, amount, callback) {
-		let block = this.elem[newer?'lastChild':'firstChild']
+		let block = this.$list[newer?'lastChild':'firstChild']
 		if (!block || block.tagName!='MESSAGE-BLOCK')
 			return null
 		let content = block.querySelector('message-contents')
@@ -63,14 +63,14 @@ class MessageList {
 		let part = Draw.message_part(comment)
 		this.parts.set(comment.id, {elem:part, data:comment})
 		contents.append(part)
-		this.elem.append(block)
+		this.$list.append(block)
 	}
 	//optimize: createDate can really just like,
 	// well ok let's put it in Author, and store it as milliseconds
 	// that way we dont keep parsing createDate strings
 	get_merge(message, backwards) {
 		// check if there's a message-block we can merge with
-		let block = this.elem[backwards?'firstChild':'lastChild']
+		let block = this.$list[backwards?'firstChild':'lastChild']
 		if (block && block.nonce==message.Author.merge_hash) {
 			let contents = block.lastChild
 			// see if there's a message-part within 5 minutes of new one
@@ -109,7 +109,7 @@ class MessageList {
 			let block
 			;[block, contents] = Draw.message_block(message)
 			// TODO: the displayed time will be wrong, if we are going backwards!!
-			this.elem[backwards?'prepend':'appendChild'](block)
+			this.$list[backwards?'prepend':'appendChild'](block)
 		}
 		contents[backwards?'prepend':'appendChild'](part)
 		return part

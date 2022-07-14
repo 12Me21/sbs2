@@ -163,52 +163,6 @@ const Draw = NAMESPACE({
 		return date.toLocaleString([], options)
 	},
 	
-	search_comment: function(comment, pages) {
-		let e = this()
-		let inner = e.lastChild
-		let link = e.firstChild.firstChild
-		
-		let list
-		if (Array.isArray(comment)) {
-			list = new MessageList(inner, comment[0].contentId) // mmndnhhhgghdhfhdh i sure hope it does (contentId)
-			list.display_messages(comment, false)
-		} else {
-			list = new MessageList(inner, comment.contentId)
-			list.single_message(comment)
-		}
-		let parent = pages[~list.pid]
-		
-		link.append(Draw.content_label(parent))
-		link.href = Nav.entity_link(parent)
-		
-		// todo: make these buttons part of the message-list class?
-		// actually we should probably like, handle these at a higher level.. okk yeah bubble.. 
-		let ne = Draw.button("Load Newer", Draw.event_lock(done=>{
-			list.draw_messages_near(true, 10, (ok)=>{
-				if (ok)
-					done()
-			})
-		}))
-		
-		let ol = Draw.button("Load Older", Draw.event_lock(done=>{
-			list.draw_messages_near(false, 10, (ok)=>{
-				if (ok)
-					done()
-			})
-		}))
-
-		inner.before(ol)
-		
-		inner.after(ne)
-		
-		return e
-	}.bind(𐀶`
-<div class='search-comment'>
-	<div class='bar rem1-5'><a></a></div>
-	<message-list></message-list>
-</div>
-`), // todo: it would be nice to put the older/newer buttons to the left of the message so they dont waste vertical space. or maybe have an initial "load surrounding' button next to the page link?
-	
 	button: function(label, onclick) {
 		let e = this()
 		e.append(label)
@@ -424,12 +378,14 @@ const Draw = NAMESPACE({
 </a>
 `),
 	
+	// opt: todo: what if instead of passing the func to the callback
+	// we just pass elem and let the user run elem.disabled=false?
 	event_lock(callback) {
 		return ev=>{
 			let elem = ev.currentTarget
 			if (elem.disabled) return
 			elem.disabled = true
-			callback(()=>{elem.disabled = false})
+			callback(()=>{elem.disabled = false}, elem)
 		}
 	}
 })

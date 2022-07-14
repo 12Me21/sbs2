@@ -2,7 +2,7 @@
 // todo: should have some indicator whether the input fields reflect the current search results or have been edited
 
 class CommentsView extends BaseView {
-	Early() {
+	Start({id, query}) {
 		this.form = new Form({
 			fields: [
 				['search', 'text', {label: "Search", param: 's'}],
@@ -18,8 +18,6 @@ class CommentsView extends BaseView {
 				['reverse', 'checkbox', {label: "Newest First", param: 'r'}],
 			],
 		})
-	}
-	Start({id, query}) {
 		this.form.from_query(query)
 		if (id)
 			this.form.inputs.pages.value = [id]
@@ -32,34 +30,7 @@ class CommentsView extends BaseView {
 		
 		return {chain: search}
 	}
-	go(dir) {
-		if (!this.location) return
-		this.form.read()
-		if (dir) {
-			// pages are kinda bad now... like, p=0, that's actually p=1, so you press next and go to p=2.. i need to add range limits on the fields etc.
-			let p = this.form.inputs.page.value || 1 //rrrr
-			if (p+dir<1) {
-				if (dir>=0)
-					p = 1-dir
-				else
-					return
-			}
-			this.form.inputs.page.value = p + dir
-		} else {
-			this.form.inputs.page.value = 1
-		}
-		this.location.query = this.form.to_query()
-		let pages = this.form.inputs.pages.value
-		if (pages && pages.length==1) {
-			this.location.id = pages[0]
-			delete this.location.query.pid
-		} else {
-			this.location.id = null
-		}
-		if (this.location.query.page==0)
-			this.location.query.page = "1"
-		Nav.goto(this.location, true)
-	}
+	
 	Init() {
 		this.$form_placeholder.replaceWith(this.form.elem)
 		this.$html_form.onsubmit = e=>{
@@ -74,6 +45,7 @@ class CommentsView extends BaseView {
 				this.go(null)
 		}
 	}
+	
 	Render({message:comments, content:pages}) {
 		View.set_title("Comments")
 		this.form.write()
@@ -86,31 +58,61 @@ class CommentsView extends BaseView {
 		this.$status.textContent = "results: "+comments.length
 		// todo: we can also do SOME merging, if the search has multiple pages but meets all other requirements.
 		if (this.merge) {
-			this.$results.append(Draw.search_comment(comments, pages))
+			this.$results.append(CommentsView.draw_result(comments, pages))
 		} else {
 			this.$results.fill(comments.map(msg=>{
-				return Draw.search_comment(msg, pages)
+				return CommentsView.draw_result(msg, pages)
 			}))
 			// todo: maybe have them display in a more compact form without controls by default, and then have a button to render a message list 
 			// also, maybe if you load enough comments to reach the adjacent item, it should merge that in,
 		}
 	}
+	
 	Quick() {
 		View.set_title("Comments")
 		this.form.write()
 		this.$results.fill()
 		this.$status.textContent = "(no query)"
 	}
+	
+	// get a page of results. TODO: do this without reloading the page??
+	go(dir) {
+		if (!this.location) return // just incase somehow you click a button after the view unloads? idk. it'sdefinitely a concern but i feel like tehre should be a general solution..
+		this.form.read()
+		// pages are kinda bad now... like, p=0, that's actually p=1, so you press next and go to p=2.. i need to add range limits on the fields etc.
+		let pi = this.form.inputs.page
+		if (dir) {
+			let p = pi.value || 1 //rrrr
+			if (p+dir<1) {
+				if (dir>=0)
+					p = 1-dir
+				else
+					return
+			}
+			pi.value = p + dir
+		} else {
+			pi.value = 1
+		}
+		
+		this.location.query = this.form.to_query()
+		let pages = this.form.inputs.pages.value
+		if (pages && pages.length==1) {
+			this.location.id = pages[0]
+			delete this.location.query.pid
+		} else {
+			this.location.id = null
+		}
+		if (this.location.query.page==0)
+			this.location.query.page = "1"
+		Nav.goto(this.location, true)
+	}
+	
 	build_search(data) {
 		// check if form is empty
-		if (!data.search && !(data.users && data.users.length) && !data.range && !data.start && !data.end && !data.page)
-			return [null, null]
+		if (!(data.search || (data.users && data.users.length) || data.range || data.start || data.end || data.page))
+			return [null, false]
 		
-		let values = {}
-		let query = []
-		let order = 'id'
-		
-		let merge = true
+		let values = {}, query = ["!notdeleted()"], order = 'id', merge = true
 		
 		if (data.reverse) {
 			order = 'id_desc'
@@ -142,7 +144,8 @@ class CommentsView extends BaseView {
 				if (range.min != null) {
 					values.min_id = range.min-1
 					query.push("id > @min_id")
-				} if (range.max != null) {
+				}
+				if (range.max != null) {
 					values.max_id = range.max+1
 					query.push("id < @max_id")
 				}
@@ -173,7 +176,38 @@ class CommentsView extends BaseView {
 			merge,
 		]
 	}
+	
+	static draw_result(comment, pages) {
+		let e = this.result_template()
+		let inner = e.lastChild.lastChild
+		let link = e.firstChild.firstChild
+		
+		let list
+		if (Array.isArray(comment)) {
+			list = new MessageList(inner, comment[0].contentId) // mmndnhhhgghdhfhdh i sure hope it does (contentId)
+			list.display_messages(comment, false)
+		} else {
+			list = new MessageList(inner, comment.contentId)
+			list.single_message(comment)
+		}
+		let parent = pages[~list.pid]
+		
+		link.append(Draw.content_label(parent))
+		
+		let btns = inner.previousSibling.childNodes
+		btns[0].onclick = btns[1].onclick = Draw.event_lock((done,elem)=>{
+			let old = elem.dataset.action=='load_older'
+			list.draw_messages_near(!old, 10, (ok)=>{
+				if (ok)
+					done()
+			})
+		})
+		
+		return e
+	}
+	// todo: it would be nice to put the older/newer buttons to the left of the message so they dont waste vertical space. or maybe have an initial "load surrounding' button next to the page link?
 }
+
 CommentsView.template = HTML`
 <view-root>
 	<form $=html_form class='nav' method=dialog>
@@ -186,6 +220,16 @@ CommentsView.template = HTML`
 	<div $=results class='comment-search-results'></div>
 </view-root>
 `
+CommentsView.result_template = 𐀶`
+<div class='search-comment'>
+	<div class='bar rem1-5 search-comment-page'><a></a></div>
+	<div class='ROW'>
+		<div class='search-comment-buttons COL'><button data-action=load_older>↑</button><button data-action=load_newer>↓</button></div>
+		<message-list class='FILL'></message-list>
+	</div>
+</div>
+`
+
 View.register('comments', CommentsView)
 View.register('chatlogs', {
 	Redirect(location) {
