@@ -15,7 +15,7 @@ class SocketRequestError extends TypeError {
 }
 SocketRequestError.prototype.name = "SocketRequestError"
 
-let Lp = NAMESPACE({
+const Lp = NAMESPACE({
 	handlers: new Map(),
 	handler_id: 1,
 	ready: false,

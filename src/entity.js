@@ -1,7 +1,7 @@
 'use strict'
 const TYPES = {}
 
-let CODES = {__proto__:null}
+const CODES = {__proto__:null}
 for (let enm of Object.values(ABOUT.details.codes)) {
 	for (let [num, name] of Object.entries(enm)) {
 		if (name in CODES && CODES[name]!=+num)
@@ -56,8 +56,7 @@ Object.assign(Author.prototype, {
 // - put the new values back into the original object
 // - 
 
-function BaseEntity() {
-}
+let BaseEntity = function BaseEntity() {}
 BaseEntity.prototype = Object.create(STRICT, {
 	// conversions
 	[Symbol.toPrimitive]: {value: NO_CONVERT},

@@ -1,6 +1,6 @@
 'use strict'
 // HTML RENDERING
-const Draw = Object.seal({
+const Draw = NAMESPACE({
 	// TODO: rewrite the css/layout for these
 	// also, update the icons for the current site's features
 	//📥 content‹Content›

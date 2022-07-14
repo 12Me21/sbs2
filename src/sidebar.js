@@ -1,6 +1,6 @@
 'use strict'
 
-let Sidebar = Object.seal({
+const Sidebar = NAMESPACE({
 	scroller: null,
 	sidebar_tabs: null,
 	$my_avatar: null,
@@ -230,7 +230,7 @@ do_when_ready(x=>Sidebar.onload())
 
 
 
-let FileUploader = Object.seal({
+const FileUploader = NAMESPACE({
 	file: null,
 	last_file: null,
 	file_upload_form: null,

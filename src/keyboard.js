@@ -5,7 +5,7 @@
 // - elem.select()
 // - elem.setSelectionRange(start, end, dir)
 // - document.execCommand(cmd, ?, data)
-let Edit = {
+let Edit = NAMESPACE({
 	clear(elem) {
 		elem.select()
 		document.execCommand('delete')
@@ -21,8 +21,9 @@ let Edit = {
 		elem.focus()
 		document.execCommand('insertText', false, text)
 	},
-}
+})
 
+// todo: namespace?
 function switch_tab(next, no_focus) {
 	if (!next)
 		return
@@ -101,3 +102,8 @@ document.addEventListener('keydown', e=>{
 		return
 	e.preventDefault()
 })
+
+// idea: for things like tab lists etc:
+// set actual focus on the container/list element
+// then arrows set the like, aria-activedescendant
+//  BUT this means we have to set tabindex -1 on all <a>, <button>, etc. elements in the container until the relevant element becomes focused. ugh.

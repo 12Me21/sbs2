@@ -1,6 +1,6 @@
 'use strict'
 
-Settings = Object.seal({
+Settings = NAMESPACE({
 	values: Settings.values,
 	
 	fields: [],
