@@ -34,7 +34,7 @@ const Nav = NAMESPACE({
 	// replace = modify address bar without calling render()
 	replace_location(location, push) {
 		let url = location.toString()
-		window.history[push?"pushState":"replaceState"](null, "", "#"+url)
+		window.history[push?"pushState":"replaceState"](null, "sbs2", "#"+url)
 	},
 	
 	reload: RELOAD,
@@ -78,7 +78,7 @@ const Nav = NAMESPACE({
 			let x = new URL(window.location)
 			x.hash = "#"+x.search.substr(1)
 			x.search = ""
-			window.history.replaceState(null, "", x.href)
+			window.history.replaceState(null, "sbs2", x.href)
 		}
 		
 		Nav.update_from_location()
