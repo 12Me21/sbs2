@@ -306,7 +306,7 @@ Settings.add({
 })
 
 document.addEventListener('got_comments', ev=>{
-	console.log('cgot comnnt')
+	//console.log('cgot comnnt')
 	if (Settings.values.tts_notify=='no')
 		return
 	
