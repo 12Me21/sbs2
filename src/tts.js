@@ -305,10 +305,30 @@ Settings.add({
 	},
 })
 
-document.addEventListener('comment_notify', ev=>{
-	if (Settings.values.tts_notify!='no') {
-		let comment = ev.detail.comment
-		if (Settings.values.tts_notify=='yes' || comment.createUserId != Req.uid)
-			TTSSystem.speakMessage(comment)
+document.addEventListener('got_comments', ev=>{
+	if (Settings.values.tts_notify=='no')
+		return
+	
+	let c = ev.detail.comments
+	if (c.length>3) {
+		c = c.slice(-3)
+		// idk play an explosion sound or something
+	}
+	
+	let pid = View.current instanceof PageView ? View.current.page_id : NaN
+	
+	for (let msg of c) {
+		// filter out
+		if (msg.createUserId==Req.uid && Settings.values.tts_notify!='yes')
+			continue
+		if (!Entity.is_new_comment(msg))
+			continue
+		
+		if (msg.contentId==pid) {
+			// current room
+			TTSSystem.speakMessage(msg)
+		} else {
+			// another room
+		}
 	}
 })

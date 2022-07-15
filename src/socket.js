@@ -315,16 +315,20 @@ const Lp = NAMESPACE({
 		if (comments.length) {
 			// todo: we want the sidebar and chat to use the same
 			// animationframe callback, so they are synced, if possible
-			try {
-				PageView.scroll_lock(true)
-				Sidebar.scroller.lock()
-				PageView.handle_messages(comments)
-			} finally {
-				Sidebar.display_messages(comments, false)
-				Act.handle_messages(comments, listmapmap.message_event)
-				PageView.scroll_lock(false)
-				Sidebar.scroller.unlock()
-			}
+			PageView.scroll_lock(true)
+			Sidebar.scroller.lock()
+			
+			PageView.handle_messages(comments)
+			Sidebar.display_messages(comments, false)
+			Act.handle_messages(comments, listmapmap.message_event)
+			View.comment_notification(comments)
+			let ev = new CustomEvent('got_comments', {
+				detail: {comments},
+			})
+			document.dispatchEvent(ev)
+			
+			PageView.scroll_lock(false)
+			Sidebar.scroller.unlock()
 		}
 	},
 	init() {

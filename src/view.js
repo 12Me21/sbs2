@@ -309,20 +309,21 @@ const View = NAMESPACE({
 		this.set_title2(Draw.content_label(entity), entity.name)
 	},
 	
-	comment_notification(comment) {
-		this.title_notification(comment.text, Draw.avatar_url(comment.Author))
-		// todo: why don't we dispatch this event directly from the view?
-		// and then we can listen for it here and call title_notification
+	comment_notification(comments) {
+		let last = null
+		if (this.current instanceof PageView) {
+			let pid = this.current.page_id
+			last = comments.findLast(msg=>msg.contentId==pid && Entity.is_new_comment(msg))
+		}
 		
-		// honestly i want to just make my own event system
-		// so i can control bubbling,
+		// display comment in title
+		// todo: also call if the current comment being shown in the title is edited
+		if (last)
+			this.title_notification(last.text, Draw.avatar_url(last.Author))
+		
+		// i kinda want to just make my own event system so i can control bubbling,
 		// or rather, the event gets dispatched to the view first, and then
 		// to some global thing
-		let ev = new CustomEvent('comment_notify', {
-			bubbles: false, cancellable: false,
-			detail: {comment, view:this.current},
-		})
-		document.dispatchEvent(ev)
 	},
 	
 	// temporarily set <title> and favicon, for displaying a notification

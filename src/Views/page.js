@@ -216,13 +216,6 @@ class PageView extends BaseView {
 				this.list.limit_messages()
 			})
 		}
-		// display comment in title
-		// todo: also call if the current comment being shown in the title is edited
-		if (View.current==this) {
-			let last = comments.findLast(msg=>Entity.is_new_comment(msg))
-			if (last)
-				View.comment_notification(last)
-		}
 	}
 	
 	textarea_resize() {
