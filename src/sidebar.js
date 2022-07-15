@@ -1,15 +1,50 @@
 'use strict'
 
-const Sidebar = NAMESPACE({
-	scroller: null,
-	sidebar_tabs: null,
-	$my_avatar: null,
-	
-	select_tab(name) {
-		let tab = this.sidebar_tabs.find(tab=>tab.name==name)
+let button_template = 𐀶`<button role=tab aria-selected=false>`
+
+class Tabs {
+	constructor(def, elem=document.createElement('tab-list'), name=Tabs.id++) {
+		
+		this.tabs = def
+		this.elem = elem
+		
+		this.elem.setAttribute('role', 'tablist')
+		for (let tab of this.tabs) {
+			if (!tab.elem.id)
+				tab.elem.id = name+"-panel-"+tab.name
+			
+			let btn = tab.btn = button_template()
+			btn.id = name+"-tab-"+tab.name
+			btn.setAttribute('aria-controls', tab.elem.id)
+			btn.tabIndex = -1
+			btn.dataset.name = tab.name
+			btn.onclick = e=>{
+				switch_tab(btn)
+				if (tab.onswitch)
+					tab.onswitch()
+			}
+			btn.append(tab.label)
+			if (tab.accesskey)
+				btn.setAttribute('accesskey', tab.accesskey)
+			this.elem.append(btn)
+			
+			tab.elem.setAttribute('role', "tabpanel")
+			//tab.elem.tabIndex = -1
+			tab.elem.setAttribute('aria-labelledby', btn.id)
+		}
+	}
+	select(name) {
+		let tab = this.tabs.find(tab=>tab.name==name)
 		if (tab)
 			switch_tab(tab.btn, true)
-	},
+	}
+}
+Tabs.id = 1
+
+const Sidebar = NAMESPACE({
+	scroller: null,
+	tabs: null,
+	$my_avatar: null,
 	
 	onload() {
 		$openSidebar.onclick = $closeSidebar.onclick = e=>{
@@ -30,7 +65,7 @@ const Sidebar = NAMESPACE({
 		} else
 			user_label = "log in"
 		
-		this.sidebar_tabs = [
+		this.tabs = new Tabs([
 			{name: 'activity', label: "✨", elem: $sidebarActivityPanel, accesskey: 'a'},
 			{name: 'watch', label: "W", elem: $sidebarWatchPanel, accesskey: 'w' },
 			//{label: "W", elem: $sidebarWatchPanel},
@@ -41,35 +76,12 @@ const Sidebar = NAMESPACE({
 			}, accesskey: 's'},
 			{name: 'file', label: "📷", elem: $sidebarFilePanel},
 			{name: 'user', label: user_label, elem: $sidebarUserPanel},
-		]
-		
-		let button_template = 𐀶`<button role=tab aria-selected=false>`
-		
-		for (let tab of this.sidebar_tabs) {
-			let btn = tab.btn = button_template()
-			btn.id = "sidebar-tab-"+tab.name
-			btn.setAttribute('aria-controls', tab.elem.id)
-			btn.tabIndex = -1
-			btn.dataset.name = tab.name
-			btn.onclick = e=>{
-				switch_tab(btn)
-				if (tab.onswitch)
-					tab.onswitch()
-			}
-			btn.append(tab.label)
-			if (tab.accesskey)
-				btn.setAttribute('accesskey', tab.accesskey)
-			$sidebar_tabs.append(btn)
-			
-			tab.elem.setAttribute('role', "tabpanel")
-			//tab.elem.tabIndex = -1
-			tab.elem.setAttribute('aria-labelledby', btn.id)
-		}
+		], $sidebar_tabs, "sidebar")
 		
 		if (Req.auth)
-			this.select_tab('activity')
+			this.tabs.select('activity')
 		else
-			this.select_tab('user')
+			this.tabs.select('user')
 		
 		$searchButton.onclick = Draw.event_lock(done=>{
 			Lp.chain({
@@ -125,6 +137,13 @@ const Sidebar = NAMESPACE({
 				Settings.save_all()
 			}
 		}
+		
+		/*let st = new Tabs([
+			{name: 'btns', label: "bn", elem: $settings_1},
+			{name: 'settings', label: "st", elem: $settings_3},
+			{name: 'debug', label: "db", elem: $settings_4},
+		], $settings_tabs, "settings")
+		st.select('btns')*/
 	},
 	
 	printing: false,
@@ -431,7 +450,7 @@ const FileUploader = NAMESPACE({
 			hash: null,
 		})
 		this.file_upload_form.write()
-		Sidebar.select_tab('file')
+		Sidebar.tabs.select('file')
 	},
 })
 

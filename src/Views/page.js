@@ -178,7 +178,7 @@ class PageView extends BaseView {
 			})
 			let b = Draw.button("Show in sidebar", e=>{
 				FileUploader.show_content(this.page)
-				Sidebar.select_tab('file')
+				Sidebar.tabs.select('file')
 			})
 			this.$page_contents.fill([ne, b])
 			let p =document.createElement('pre')

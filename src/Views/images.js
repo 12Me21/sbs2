@@ -63,7 +63,7 @@ class ImagesView extends BaseView {
 			if (!this.current)
 				return
 			FileUploader.show_content(this.current)
-			Sidebar.select_tab('file')
+			Sidebar.tabs.select('file')
 		}
 		
 		this.form = new Form({
