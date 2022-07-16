@@ -309,7 +309,10 @@ ChatView.template = HTML`
 `
 ChatView.rooms = {__proto__:null}
 
-View.register('chat', ChatView)
+View.register('page', ChatView)
+View.register('chat', {
+	Redirect(location) {location.type='page'},
+})
 
 //todo: some unified system for listening to updates relating to the current page/pageid
 // - message create/delete/edit

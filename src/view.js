@@ -282,7 +282,7 @@ const View = NAMESPACE({
 	
 	slot_template: HTML`
 <view-slot>
-	<view-header $=header class='bar resize-handle ellipsis' tabindex=0 accesskey="q">
+	<view-header $=header class='bar ellipsis' tabindex=0 accesskey="q">
 		<h1 $=title class='textItem'></h1>
 		<div class='header-buttons item' $=header_buttons></div>
 	</view-header>

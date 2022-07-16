@@ -67,7 +67,7 @@ const Sidebar = NAMESPACE({
 		
 		this.tabs = new Tabs([
 			{name: 'activity', label: "✨", elem: $sidebarActivityPanel, accesskey: 'a'},
-			{name: 'watch', label: "W", elem: $sidebarWatchPanel, accesskey: 'w' },
+			{name: 'watch', label: "🔖", elem: $sidebarWatchPanel, accesskey: 'w' },
 			//{label: "W", elem: $sidebarWatchPanel},
 			
 			{name: 'search', label: "🔍", elem: $sidebarNavPanel, onswitch: ()=>{

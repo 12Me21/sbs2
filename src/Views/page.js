@@ -112,10 +112,10 @@ PageView.template = HTML`
 `
 PageView.rooms = {__proto__:null}
 
-View.register('page', PageView)
+View.register('content', PageView)
 View.register('pages', {
-	Redirect(location) {location.type='page'},
+	Redirect(location) {location.type='content'},
 })
 View.register('category', {
-	Redirect(location) {location.type='page'},
+	Redirect(location) {location.type='content'},
 })
