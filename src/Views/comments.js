@@ -47,7 +47,7 @@ class CommentsView extends BaseView {
 	}
 	
 	Render({message:comments, content:pages}) {
-		View.set_title("Comments")
+		this.Slot.set_title("Comments")
 		this.form.write()
 		this.$results.fill()
 		
@@ -69,7 +69,7 @@ class CommentsView extends BaseView {
 	}
 	
 	Quick() {
-		View.set_title("Comments")
+		this.Slot.set_title("Comments")
 		this.form.write()
 		this.$results.fill()
 		this.$status.textContent = "(no query)"
@@ -104,7 +104,8 @@ class CommentsView extends BaseView {
 		}
 		if (this.location.query.page==0)
 			this.location.query.page = "1"
-		Nav.goto(this.location, true)
+		
+		Nav.update_slot_location(this.Slot, this.location)
 	}
 	
 	build_search(data) {

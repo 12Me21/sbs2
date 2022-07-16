@@ -56,6 +56,26 @@ html, body {
 .COL > * { flex: none; min-height: 0; }
 .FILL { flex: 0mm; }
 
+
+/* views */
+#\$main_slides > * { flex: 0mm; }
+view-root {
+	display: block;
+	position: absolute;
+	height: 100%;
+	width: 100%;
+}
+view-slot {
+	display: flex;
+	flex-flow: column;
+}
+view-header {
+	flex: none;
+}
+view-container {
+	flex: 0mm;
+}
+
 /*********/
 /* all elements with user content, must be tied up */
 .pre {

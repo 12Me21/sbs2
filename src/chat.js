@@ -278,14 +278,18 @@ class StatusDisplay {
 		if (!this.users[~user.id])
 			return
 		this.users[~user.id] = user
+		
 		this.global.redraw_user(user)
 		Object.for(PageView.rooms, room=>room.userlist.redraw_user(user))
 	}
 }
+// map(contentId -> map(userId -> status))
 StatusDisplay.statuses = {__proto__:null}
 // todo: this is never cleared, so technically it leaks memory.
 // but unless there are thousands of users, it won't matter
+// map(userId -> user)
 StatusDisplay.users = {__proto__:null}
+
 StatusDisplay.global = new StatusDisplay(0, null)
 do_when_ready(()=>{
 	StatusDisplay.global.$elem = $sidebarUserList

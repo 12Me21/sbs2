@@ -51,14 +51,13 @@ function immediate() {
 	
 	Act.pull_recent()
 	
-	Nav.init()
-	
+	Nav.start()
 }
 
 function dom_ready() {
 	console.log("🌄 DOCUMENT READY")
 	
-	View.$header = $titlePane
+	//View.$header = $titlePane
 	
 	print("running "+run_on_load.length+" deferred items")
 	do_when_ready = x=>x()

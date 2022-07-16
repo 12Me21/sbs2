@@ -111,7 +111,7 @@ class PageView extends BaseView {
 		this.userlist.set_status("active")
 		this.userlist.redraw()
 		
-		View.set_entity_title(page)
+		this.Slot.set_entity_title(page)
 		
 		if (pinned instanceof Array && pinned.length) {
 			let separator = document.createElement('div')
@@ -133,8 +133,8 @@ class PageView extends BaseView {
 		
 		//let can_edit = /u/i.test(page.permissions[Req.uid]) // unused
 		
-		$pageCommentsLink.href = "#comments/"+page.id+"?r" // todo: location
-		$pageEditLink.href = "#editpage/"+page.id
+		//$pageCommentsLink.href = "#comments/"+page.id+"?r" // todo: location
+		//$pageEditLink.href = "#editpage/"+page.id
 		
 		let can_talk = page.createUserId==Req.uid || Entity.has_perm(page.permissions, Req.uid, 'C')
 		this.$textarea.disabled = !can_talk

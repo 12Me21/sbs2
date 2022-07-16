@@ -248,22 +248,24 @@ tab-list > button img.avatar {
 .page-header :any-link:hover {
 	color: var(--link-invert-hover-color);
 }
-/* header */
-.page-header {
+
+
+/* header */
+view-header {
 	background: var(--databarbgcolor);
 	color: var(--databartxtcolor);
 	box-shadow: var(--normal-shadow);
 	z-index: 4;
 }
-.page-header .entity-title {
+view-header .entity-title {
 	font-weight: normal;
 	color: var(--link-invert-color);
 }
-.page-header h1 .entity-title {
+view-header h1 .entity-title {
 	color: var(--databartxtcolor);
 	padding-right: 0.5rem;
 }
-.page-header h1 {
+view-header h1 {
 	font-size: 1.625em;
 	font-weight: normal;
 }
@@ -271,19 +273,17 @@ tab-list > button img.avatar {
 	display: none !important;
 }
 /* broken? */
-.errorMode .page-header {
-	color: var(--error-invert-bg);
-	font: var(--T-monospace-font);
-}
-
-#\$titlePane.error {
+view-header.error {
 	background: var(--error-invert-bg);
 }
-#\$titlePane.loading {
+view-header.loading {
 	background: var(--loading-invert-bg);
 }
 .loadBG/*, resize-handle*/ {
 	/*transition: background-color 0.1s ease;*/
+}
+view-header {
+	--bar-height: 2.25rem;
 }
 .header-buttons {
 	display: inline-flex;
@@ -730,6 +730,14 @@ not-sidebar {
 }
 .image-box > img {
 	border: 1px solid black;
+}
+#\$openSidebar {
+	position: absolute;
+	width: 2.25rem;
+	height: 2.25rem;
+	top: 0;
+	right: 0;
+	z-index: 90;
 }
 
 /* sidebar activity */
