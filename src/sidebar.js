@@ -443,7 +443,9 @@ const FileUploader = NAMESPACE({
 		
 		let url = URL.createObjectURL(file)
 		this.show_parts(1, url, file)
-		URL.revokeObjectURL(url)
+		setTimeout(() => {
+			URL.revokeObjectURL(url)
+		}, 0)
 		this.file_upload_form.set_some({
 			size: (file.size/1000)+" kB",
 			name: file.name,
