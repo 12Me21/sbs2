@@ -270,7 +270,7 @@ class StatusDisplay {
 		Object.assign(this.users, objects.user)
 		// TODO: this is a hack .. we need a way to send signals to pages to tell them to redraw userlists.
 		this.global.redraw()
-		Object.for(PageView.rooms, room=>room.userlist.redraw())
+		Object.for(ChatView.rooms, room=>room.userlist.redraw())
 	}
 	// called during `user_event` (i.e. when a user is edited)
 	static update_user(user) {
@@ -280,7 +280,7 @@ class StatusDisplay {
 		this.users[~user.id] = user
 		
 		this.global.redraw_user(user)
-		Object.for(PageView.rooms, room=>room.userlist.redraw_user(user))
+		Object.for(ChatView.rooms, room=>room.userlist.redraw_user(user))
 	}
 }
 // map(contentId -> map(userId -> status))
