@@ -246,10 +246,10 @@ tab-list > button img.avatar {
 	color: var(--T-link-hover-color);
 	text-decoration: underline;
 }
-.page-header :any-link {
+view-header :any-link {
 	color: var(--link-invert-color);
 }
-.page-header :any-link:hover {
+view-header :any-link:hover {
 	color: var(--link-invert-hover-color);
 }
 

@@ -114,8 +114,10 @@ class ChatView extends BaseView {
 		
 		//let can_edit = /u/i.test(page.permissions[Req.uid]) // unused
 		
-		//$pageCommentsLink.href = "#comments/"+page.id+"?r" // todo: location
-		//$pageEditLink.href = "#editpage/"+page.id
+		this.Slot.add_header_links([
+			{label:"logs", href:"#comments/"+page.id+"?r"},
+			{label:"edit", href: "#editpage/"+page.id},
+		])
 		
 		let can_talk = page.createUserId==Req.uid || Entity.has_perm(page.permissions, Req.uid, 'C')
 		this.$textarea.disabled = !can_talk
@@ -128,7 +130,6 @@ class ChatView extends BaseView {
 	// 8:10;35
 	Destroy(type) {
 		View.lost = this.$textarea.value
-		this.dead = true
 		this.userlist.set_status(null)
 		delete ChatView.rooms[this.page_id]
 		this.scroller.destroy()

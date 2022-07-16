@@ -7,7 +7,7 @@
 // kinda redundant? idk (consider: if/when can/should they differ?)
 class ViewSlot {
 	constructor() {
-		View.slot_template(this)
+		ViewSlot.template(this)
 		do_when_ready(x=>{
 			$main_slides.append(this.$root)
 		})
@@ -15,11 +15,45 @@ class ViewSlot {
 		
 		this.loading = null // Generator
 		this.view = null // BaseView
-		this.location = null // Location
+		this.location = null // SbsLocation
 		this.url = null // String
 		this.load_state = false // Boolean
+		Object.seal(this)
+	}
+	unload() {
+		this.cancel()
+		this.cleanup(null)
+		this.$container.fill()
+		this.$root.remove()
 	}
 	
+	// display stuff
+	set_title(text) {
+		let x = document.createElement('span')
+		x.className = "pre" // todo: this is silly ..
+		x.textContent = text
+		this.$title.fill(x)
+	}
+	add_header_links(items) {
+		for (let x of items) {
+			let a = document.createElement('a')
+			a.href = x.href
+			a.textContent = x.label
+			this.$header_buttons.append(a)
+		}
+	}
+	// todo: this should support users etc. too?
+	set_entity_title(entity) {
+		this.$title.fill(Draw.content_label(entity))
+	}
+	loading_state(state, keep_error) {
+		this.load_state = state
+		if (!keep_error)
+			this.$header.classList.remove('error')
+		this.$header.classList.toggle('loading', state)
+	}
+	
+	// functions for loading a view
 	set_url(url) {
 		let old = this.url
 		if (old == url)
@@ -29,56 +63,46 @@ class ViewSlot {
 			return false
 		return true
 	}
-	
 	set_location(location) {
-		let view_cls = View.views[location.type]
-		if (view_cls && view_cls.Redirect)
-			view_cls.Redirect(location)
+		View.handle_redirect(location)
 		this.url = Nav.unparse_url(location)
 		this.location = location
 		return true
 	}
-	
 	load() {
 		this.cancel()
 		this.loading = this.handle_view2(this.location).run(()=>{
-			//	
+			// misc stuff to run after loading:
+			Sidebar.close_fullscreen()
+			Lp.flush_statuses(()=>{})
 		}, (err)=>{
-			// idk
 			console.error(err)
 			alert('unhandled error during view load')
 			print(err)
+			// idk
+			Sidebar.close_fullscreen()
+			Lp.flush_statuses(()=>{})
 		})
 	}
-	
-	unload() {
-		this.cancel()
-		this.cleanup(null)
-		this.$root.fill()
-		this.$root.remove()
+	cleanup(new_location) {
+		if (this.view && this.view.Destroy)
+			try {
+				this.view.Destroy(new_location)
+			} catch (e) {
+				console.error(e, "error in cleanup function")
+				print(e)
+			}
+		this.$container.fill()
+		this.$header_buttons.fill()
+		this.view = null
 	}
-	
-	set_title2(h1, title) {
-		this.$title.fill(h1)
-		//this.change_favicon(null)
+	cancel() {
+		if (this.loading) {
+			this.loading.return()
+			this.loading = null
+			this.loading_state(false)
+		}
 	}
-	set_title(text) {
-		let x = document.createElement('span')
-		x.className = "pre" // todo: this is silly ..
-		x.textContent = text
-		this.set_title2(x, text)
-	}
-	// todo: this should support users etc. too?
-	set_entity_title(entity) {
-		this.set_title2(Draw.content_label(entity), entity.name)
-	}
-	loading_state(state, keep_error) {
-		this.load_state = state
-		if (!keep_error)
-			this.$header.classList.remove('error')
-		this.$header.classList.toggle('loading', state)
-	}
-	
 	* handle_view2(location) {
 		let STEP = yield
 		let phase = "..."
@@ -110,21 +134,16 @@ class ViewSlot {
 			if (View.first)
 				console.log("🌄 Rendering first page")
 			
-			// this used to run after init, idk why.
-			// hopefully that isn't important?
 			phase = "cleanup"
-			this.cleanup(location) // passing the new location
-			this.$container.fill()
+			this.cleanup(location)
 			
+			this.view = view
 			phase = "view.Init"
 			view.Init && view.Init()
 			
 			phase = "rendering"
-			this.view = view
-			if (data.quick)
-				view.Quick()
-			else
-				view.Render(resp)
+			data.quick ? view.Quick() : view.Render(resp)
+			Object.seal(view)
 		} catch (e) {
 			yield do_when_ready(STEP)
 			
@@ -134,7 +153,6 @@ class ViewSlot {
 				this.set_title(`Unknown view: ‘${location.type}’`)
 			} else if (e==='data') {
 				this.set_title("Data not found")
-				//view.$error_message.append(JSON.stringify(data, null, 1))
 			} else {
 				console.error("Error during view handling", e)
 				this.set_title("Error during: "+phase)
@@ -149,39 +167,21 @@ class ViewSlot {
 		if (view.Visible)
 			view.Visible()
 		
-		for (let elem of this.$header.querySelectorAll("[data-view]")) {
-			let list = elem.dataset.view
-			elem.classList.toggle('shown', list.split(",").includes(this.view.Name))
-		}
-		Sidebar.close_fullscreen()
-		
-		Lp.flush_statuses(()=>{})
-		
 		if (View.first) {
 			console.log("☀️ First page rendered!")
 			View.first = false
 		}
 	}
-	cleanup(new_location) {
-		if (this.view && this.view.Destroy)
-			try {
-				this.view.Destroy(new_location)
-			} catch (e) {
-				// we ignore this error, because it's probably not important
-				// and also cleanup gets called during error handling so we don't want to get into a loop of errors
-				console.error(e, "error in cleanup function")
-				print(e)
-			}
-		this.view = null
-	}
-	cancel() {
-		if (this.loading) {
-			this.loading.return()
-			this.loading = null
-			this.loading_state(false)
-		}
-	}
 }
+ViewSlot.template = HTML`
+<view-slot>
+	<view-header $=header class='bar ellipsis' tabindex=0 accesskey="q">
+		<h1 $=title class='textItem'></h1>
+		<div class='header-buttons item' $=header_buttons></div>
+	</view-header>
+	<view-container $=container></view-container>
+</view-slot>
+`
 
 
 
@@ -193,7 +193,6 @@ Markup.renderer.url_scheme['http:'] =
 			url.host = "oboy.smilebasicsource.com"
 		return url.href
 	}
-
 Markup.renderer.url_scheme['sbs:'] = (url)=>{
 	return "#"+url.pathname+url.search+url.hash
 }

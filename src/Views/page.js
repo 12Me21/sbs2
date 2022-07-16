@@ -55,8 +55,10 @@ class PageView extends BaseView {
 		
 		//let can_edit = /u/i.test(page.permissions[Req.uid]) // unused
 		
-		//$pageCommentsLink.href = "#comments/"+page.id+"?r" // todo: location
-		//$pageEditLink.href = "#editpage/"+page.id
+		this.Slot.add_header_links([
+			{label:"logs", href:"#comments/"+page.id+"?r"},
+			{label:"edit", href: "#editpage/"+page.id},
+		])
 	}
 	// 8:10;35
 	Destroy(type) {

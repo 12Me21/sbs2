@@ -240,6 +240,40 @@ const Sidebar = NAMESPACE({
 			})
 	},
 	
+	draw_comment: function(comment) {
+		let d = this()
+		d.dataset.id = comment.id
+		
+		// for bridge messages, display nicknames instead of username
+		let author = comment.Author
+		let name = author.bridge ? author.nickname+"*" : author.username
+		
+		d.title = `${name} in ${comment.contentId}:\n${comment.text}`
+		// todo: page name 🥺  oh︕ emojis render in italic? don't remember adding that...   we should store refs to pages but like intern them so its not a memory leak...
+		
+		/*todo: fix,		if (comment.editDate && comment.editUserId!=comment.createUserId) {
+		  d.append(
+		  entity_title_link(comment.editUser),
+		  " edited ",
+		  )
+		  }*/
+		let link = d.firstChild
+		link.href = "#user/"+comment.createUserId
+		link.firstChild.src = Draw.avatar_url(author)
+		link.lastChild.textContent = name
+		
+		d.append(comment.text.replace(/\n/g, "  "))
+		
+		return d
+	}.bind(𐀶`
+<div class='bar rem1-5 sidebarComment ellipsis'>
+	<a tabindex=-1 class='user-label'>
+		<img class='item icon avatar' width=100 height=100>
+		<span class='textItem entity-title pre'></span>
+	</a>:&#32;
+</div>
+`),
+	
 })
 
 window.print = Sidebar.print.bind(Sidebar)
@@ -248,39 +282,5 @@ Object.defineProperty(window, 'log', {
 	get() { return window.print },
 	set(x) { window.print(x) },
 })
-
-Sidebar.draw_comment = function(comment) {
-	let d = this()
-	d.dataset.id = comment.id
-	
-	// for bridge messages, display nicknames instead of username
-	let author = comment.Author
-	let name = author.bridge ? author.nickname+"*" : author.username
-	
-	d.title = `${name} in ${comment.contentId}:\n${comment.text}`
-	// todo: page name 🥺  oh︕ emojis render in italic? don't remember adding that...   we should store refs to pages but like intern them so its not a memory leak...
-	
-	/*todo: fix,		if (comment.editDate && comment.editUserId!=comment.createUserId) {
-	  d.append(
-	  entity_title_link(comment.editUser),
-	  " edited ",
-	  )
-	  }*/
-	let link = d.firstChild
-	link.href = "#user/"+comment.createUserId
-	link.firstChild.src = Draw.avatar_url(author)
-	link.lastChild.textContent = name
-	
-	d.append(comment.text.replace(/\n/g, "  "))
-	
-	return d
-}.bind(𐀶`
-<div class='bar rem1-5 sidebarComment ellipsis'>
-	<a tabindex=-1 class='user-label'>
-		<img class='item icon avatar' width=100 height=100>
-		<span class='textItem entity-title pre'></span>
-	</a>:&#32;
-</div>
-`)
 
 do_when_ready(x=>Sidebar.onload())

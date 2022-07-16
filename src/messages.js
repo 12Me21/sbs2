@@ -15,6 +15,8 @@ class MessageList {
 			let data = this.part_data(e.target)
 			e.detail.data = data // eeehehe
 		}, {capture: true})
+		
+		Object.seal(this)
 	}
 	get_messages_near(last, newer, amount, callback) {
 		let order = newer ? 'id' : 'id_desc'

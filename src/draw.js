@@ -145,6 +145,7 @@ class StatusDisplay {
 		this.id = id
 		this.$elem = element
 		this.my_status = undefined
+		Object.seal(this)
 	}
 	redraw() {
 		this.$elem.fill()
@@ -244,6 +245,8 @@ class ResizeBar {
 		}
 		if (def!=null)
 			this.update_size(def)
+		
+		Object.seal(this)
 	}
 	event_pos(ev) {
 		if (ev.touches)

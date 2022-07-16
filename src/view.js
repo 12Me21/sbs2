@@ -96,19 +96,7 @@ ErrorView.template = HTML`
 </view-root>
 `
 
-// so this class is kinda a mess,
-// it includes mostly:
-// - things which affect the header or entire page (ex: setting the title/favicon)
-// - control functions for managing the loading of different views
-
-// hmm idk about using `u` instead of `this` here
-// it's nice that we don't rely on `this` binding
-// but also means we can't add new methods at runtime
-// maybe best to just write View.prop ...
 const View = NAMESPACE({
-	// this will always be the currently rendered view
-	// (set before `render` is called, and unset before `cleanup` is called)
-	// current.cleanup should always be correct!
 	views: {__proto__: null},
 	lost_textarea: null,
 	first: true,
@@ -136,6 +124,12 @@ const View = NAMESPACE({
 		this.views[name] = {Redirect: func}
 	},
 	
+	handle_redirect(location) {
+		let view_cls = this.views[location.type]
+		if (view_cls && view_cls.Redirect)
+			view_cls.Redirect(location)
+	},
+	
 	flags: {},
 	flag(flag, state) {
 		this.flags[flag] = state
@@ -152,7 +146,6 @@ const View = NAMESPACE({
 	
 	/// HELPER FUNCTIONS ///
 	// kinda should move these into like, draw.js idk
-	
 	real_title: null,
 	set_title(title) {
 		document.title = title
@@ -278,18 +271,7 @@ const View = NAMESPACE({
 				return // allow clicking textarea
 			this.set_embiggened(null)
 		}, {passive: true})
-	},
-	
-	slot_template: HTML`
-<view-slot>
-	<view-header $=header class='bar ellipsis' tabindex=0 accesskey="q">
-		<h1 $=title class='textItem'></h1>
-		<div class='header-buttons item' $=header_buttons></div>
-	</view-header>
-	<view-container $=container></view-container>
-</view-slot>
-`,
-	
+	},	
 })
 
 View.init()
@@ -301,17 +283,6 @@ Settings.add({
 		View.toggle_observer(value=='on')
 	},
 })
-
-// need to have a better idea of what "current" view means wrt the page header etc.
-// like, maybe each view has a separate header element? or do they share
-// separate is nicer but makes page layout awkward: now the titlebar 
-// is redrawn whenever switching views?
-// maybe we have some kind of "slot" object,
-// which can have one view loaded within it
-// when switching pages, the view is replaced while the slot remains
-// and multiple views = multiple slots
-
-/// OOH and then this object stores View.current, handles navigation, thats where the method handle_view2  yyyeahh!
 
 // we also need an event system, where events are automatically unhooked
 // when a View is unloaded.
