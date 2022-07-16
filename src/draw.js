@@ -137,3 +137,155 @@ const Draw = NAMESPACE({
 		}
 	}
 })
+
+
+
+class StatusDisplay {
+	constructor(id, element) {
+		this.id = id
+		this.$elem = element
+		this.my_status = undefined
+	}
+	redraw() {
+		this.$elem.fill()
+		Object.for(this.statuses(), (status, id)=>{
+			let user = StatusDisplay.get_user(id)
+			this.$elem.append(StatusDisplay.draw_avatar(user, status))
+		})
+	}
+	// set your own status
+	set_status(s) {
+		// todo: maybe there's a better place to filter this
+		if (s==this.my_status)
+			return
+		this.my_status = s
+		Lp.set_status(this.id, s)
+	}
+	// when a user's avatar etc. changes
+	redraw_user(user) {
+		if (this.statuses[user.id])
+			this.redraw()
+	}
+	// get statuses for this room
+	statuses() {
+		return StatusDisplay.statuses[this.id] || {__proto__:null}
+	}
+	
+	// lookup a user from the cache
+	static get_user(id) {
+		let user = this.users[~id]
+		if (!user)
+			throw new TypeError("can't find status user "+id)
+		return user
+	}
+	// called during `userlistupdate`
+	static update(statuses, objects) {
+		Object.assign(this.statuses, statuses)
+		Object.assign(this.users, objects.user)
+		// TODO: this is a hack .. we need a way to send signals to pages to tell them to redraw userlists.
+		this.global.redraw()
+		Object.for(ChatView.rooms, room=>room.userlist.redraw())
+	}
+	// called during `user_event` (i.e. when a user is edited)
+	static update_user(user) {
+		// if we don't need this avatar,
+		if (!this.users[~user.id])
+			return
+		this.users[~user.id] = user
+		
+		this.global.redraw_user(user)
+		Object.for(ChatView.rooms, room=>room.userlist.redraw_user(user))
+	}
+}
+// map(contentId -> map(userId -> status))
+StatusDisplay.statuses = {__proto__:null}
+// todo: this is never cleared, so technically it leaks memory.
+// but unless there are thousands of users, it won't matter
+// map(userId -> user)
+StatusDisplay.users = {__proto__:null}
+
+StatusDisplay.global = new StatusDisplay(0, null)
+do_when_ready(()=>{
+	StatusDisplay.global.$elem = $sidebarUserList
+})
+StatusDisplay.draw_avatar = function(user, status) {
+	let e = this()
+	e.href = Nav.entity_link(user)
+	e.firstChild.src = Draw.avatar_url(user)
+	e.firstChild.title = user.username
+	e.dataset.uid = user.id
+	if (status == "idle")
+		e.classList.add('status-idle')
+	return e
+}.bind(𐀶`<a tabindex=-1><img class='avatar' width=100 height=100 alt="">`)
+
+
+
+class ResizeBar {
+	constructor(element, tab, side, save, def) {
+		this.$elem = element
+		this.$handle = tab
+		this.horiz = side=='left'||side=='right'
+		this.dir = side=='top'||side=='left' ? 1 : -1
+		this.save = save
+		
+		this.start_pos = null
+		this.start_size = null
+		this.size = null
+		
+		let down = ev=>this.start(ev)
+		tab.addEventListener('mousedown', down)
+		tab.addEventListener('touchstart', down)
+		
+		if (this.save) {
+			let s = localStorage.getItem(this.save)
+			if (s)
+				def = +s
+		}
+		if (def!=null)
+			this.update_size(def)
+	}
+	event_pos(ev) {
+		if (ev.touches)
+			return ev.touches[0][this.horiz?'pageX':'pageY']
+		return ev[this.horiz?'clientX':'clientY']
+	}
+	start(ev) {
+		ev.preventDefault()
+		ResizeBar.grab(this)
+		this.$handle.dataset.dragging = ""
+		this.start_pos = this.event_pos(ev)
+		this.start_size = this.$elem[this.horiz?'offsetWidth':'offsetHeight']
+	}
+	move(ev) {
+		let v = (this.event_pos(ev) - this.start_pos) * this.dir
+		this.update_size(this.start_size + v)
+	}
+	finish(ev) {
+		delete this.$handle.dataset.dragging
+		if (this.save && this.size!=null)
+			localStorage.setItem(this.save, this.size)
+	}
+	update_size(px) {
+		this.size = Math.max(px, 0)
+		this.$elem.style.setProperty(this.horiz?'width':'height', this.size+"px")
+	}
+	
+	static grab(bar) {
+		this.current && this.current.finish(null)
+		this.current = bar
+	}
+	static move(ev) {
+		this.current && this.current.move(ev)
+	}
+	static init() {
+		this.current = null
+		let up = ev=>this.grab(null)
+		document.addEventListener('mouseup', up, {passive:true})
+		document.addEventListener('touchend', up, {passive:true})
+		let move = ev=>this.move(ev)
+		document.addEventListener('mousemove', move, {passive:true})
+		document.addEventListener('touchmove', move, {passive:true})
+	}
+}
+ResizeBar.init()
