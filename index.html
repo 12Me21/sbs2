@@ -181,7 +181,7 @@
 <!--END-->
 
 <body class='resize-box ROW'>
-<not-sidebar class='FILL COL' id=$main_slides>
+<not-sidebar class='FILL ROW' id=$main_slides>
 <button id=$openSidebar class='toggle-sidebar'>
 	<span id=$socketPending></span>| | |
 </button>
@@ -213,7 +213,7 @@
 <!--========\
 || SIDEBAR ||
 \=========-->
-<resize-handle id=$horizontalResize class='sidebar-element'></resize-handle>
+<div id=$horizontalResize class='sidebar-element resize-handle'></div>
 
 <sidebar-container id=$sidebar class='sized resize-box sidebar-element COL'>
 	<button class='toggle-sidebar' id=$closeSidebar>Close Sidebar</button>
@@ -292,7 +292,7 @@
 		</sidebar-panel>
 	</div>
 	
-	<resize-handle id=$sidebarResize></resize-handle>
+	<div id=$sidebarResize class='resize-handle'></div>
 	
 	<div class='FILL' id=$sidebarBottom>
 		<scroll-outer>

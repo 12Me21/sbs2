@@ -132,13 +132,13 @@ EditView.template = HTML`
 			<textarea $=data style="resize:none;margin:0.5rem;" class='FILL code-textarea'></textarea>
 		</div>
 	</div>
-	<resize-handle $=resize style=--handle-width:2em;>
+	<div $=resize style=--handle-width:2em; class='resize-handle'>
 		<label>preview:<input type=checkbox $=preview_button></label>
 		<span $=preview_controls>
 			| <label>live:<input type=checkbox $=live_button></label>
 			<button $=render_button>render full</button>
 		</span>
-	</resize-handle>
+	</div>
 	<textarea $=textarea class='FILL editor-textarea' style='margin:3px;'></textarea>
 </view-root>
 `

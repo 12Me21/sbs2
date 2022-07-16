@@ -58,7 +58,16 @@ html, body {
 
 
 /* views */
-#\$main_slides > * { flex: 0mm; }
+view-slot > .resize-handle {
+	cursor: ew-resize;
+}
+#\$main_slides > view-slot:not(:first-of-type) {
+	border-left: 0.5rem solid var(--databarbgcolor);
+}
+#\$main_slides > view-slot:first-of-type {
+	flex: 0mm;
+}
+view-container { flex: 0mm; }
 view-root {
 	display: block;
 	position: absolute;
@@ -68,12 +77,10 @@ view-root {
 view-slot {
 	display: flex;
 	flex-flow: column;
+	min-width: 4rem !important;
 }
 view-header {
 	flex: none;
-}
-view-container {
-	flex: 0mm;
 }
 
 /*********/
@@ -267,7 +274,7 @@ but, then we can't add a border to the image
 	flex-shrink: 1; /* ? */
 }
 
-.resize-box > resize-handle {
+.resize-handle.resize-handle {
 	-webkit-touch-callout: none;
 	
 	-webkit-user-select: none;
@@ -277,22 +284,22 @@ but, then we can't add a border to the image
 	background: var(--databarbgcolor);
 	overflow: hidden;
 }
-.resize-box > resize-handle[data-dragging] {
+.resize-handle[data-dragging] {
 	cursor: grabbing;
 }
-.resize-box.COL > resize-handle {
+.COL > .resize-handle {
 	height: var(--handle-width);
 	line-height: var(--handle-width);
 	cursor: ns-resize;
 }
-.resize-box.ROW > resize-handle {
+.ROW > .resize-handle {
 	width: var(--handle-width);
 	cursor: ew-resize;
 }
-.resize-box.COL > resize-handle::before {
+.COL > .resize-handle::before {
 	content: "↕︎";
 }
-.resize-box.ROW > resize-handle::before {
+.ROW > .resize-handle::before {
 	display: block;
 	content: "↔︎";
 	text-align: center;

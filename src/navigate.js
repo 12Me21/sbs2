@@ -11,6 +11,7 @@ class ViewSlot {
 		do_when_ready(x=>{
 			$main_slides.append(this.$root)
 		})
+		new ResizeBar(this.$root, this.$header, 'right', null)
 		
 		this.loading = null // Generator
 		this.view = null // BaseView
