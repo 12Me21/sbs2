@@ -256,6 +256,7 @@ do_when_ready(x=>Sidebar.onload())
 const FileUploader = NAMESPACE({
 	file: null,
 	last_file: null,
+	previous_is_url_object: false,
 	file_upload_form: null,
 	
 	onload() {
@@ -416,6 +417,11 @@ const FileUploader = NAMESPACE({
 		$file_url.hidden = phase!=2
 		$file_done.hidden = phase!=2
 		$file_upload_page.hidden = phase!=2
+		// TODO: maybe there's a better way to handle this
+		// any professional variable namers here?
+		if ($file_image.src !== "" && this.previous_is_url_object) {
+			URL.revokeObjectURL($file_image.src)
+		}
 		// we set to "" first, so the old image isnt visible whilst the new one is loading
 		$file_image.src = ""
 		if (url) {
@@ -426,6 +432,7 @@ const FileUploader = NAMESPACE({
 			$file_url.value = ""
 		}
 		this.file = file || null
+		this.previous_is_url_object = file !== null
 	},
 	file_cancel() {
 		this.show_parts(0, null, null)
@@ -443,7 +450,6 @@ const FileUploader = NAMESPACE({
 		
 		let url = URL.createObjectURL(file)
 		this.show_parts(1, url, file)
-		URL.revokeObjectURL(url)
 		this.file_upload_form.set_some({
 			size: (file.size/1000)+" kB",
 			name: file.name,
