@@ -57,8 +57,8 @@ class MessageList {
 		})
 	}
 	single_message(comment) {
-		let [block, contents] = Draw.message_block(comment)
-		let part = Draw.message_part(comment)
+		let [block, contents] = MessageList.draw_block(comment)
+		let part = MessageList.draw_part(comment)
 		this.parts.set(comment.id, {elem:part, data:comment})
 		contents.append(part)
 		this.$list.append(block)
@@ -92,7 +92,7 @@ class MessageList {
 			return null
 		}
 		// create new part
-		let part = Draw.message_part(message)
+		let part = MessageList.draw_part(message)
 		let old = this.parts.get(message.id)
 		this.parts.set(message.id, {elem:part, data:message})
 		// edited version of an existing message-part
@@ -105,7 +105,7 @@ class MessageList {
 		let contents = this.get_merge(message, backwards)
 		if (!contents) {
 			let block
-			;[block, contents] = Draw.message_block(message)
+			;[block, contents] = MessageList.draw_block(message)
 			// TODO: the displayed time will be wrong, if we are going backwards!!
 			this.$list[backwards?'prepend':'appendChild'](block)
 		}
@@ -218,6 +218,71 @@ class MessageList {
 MessageList.controls = null
 MessageList.controls_message = null
 MessageList.prototype.max_parts = 500
+MessageList.draw_part = function(comment) {
+	let e = this()
+	
+	if (comment.edited)
+		e.className += " edited"
+	
+	e.dataset.id = comment.id
+	e.nonce = comment.createDate2.getTime()
+	Markup.convert_lang(comment.text, comment.values.m, e, {intersection_observer: View.observer})
+	return e
+}.bind(𐀶`<message-part role=listitem tabindex=-1>`)
+MessageList.draw_block = function(comment) {
+	let e = this.block()
+	
+	let author = comment.Author
+	
+	e.dataset.uid = comment.createUserId
+	e.nonce = comment.Author.merge_hash
+	
+	let avatar
+	if (author.bigAvatar) {
+		avatar = this.big_avatar()
+		let url = Req.file_url(author.bigAvatar, "size=500")
+		avatar.style.backgroundImage = `url("${url}")`
+	} else {
+		avatar = this.avatar()
+		avatar.src = Draw.avatar_url(author)
+	}
+	e.prepend(avatar)
+	
+	let name = e.querySelector('message-username') // todo: is queryselector ok?
+	let username
+	if (author.nickname == null) {
+		username = author.username
+	} else {
+		username = author.nickname
+		if (author.bridge)
+			name.append(this.bridge())
+		else {
+			let nickname = this.nickname()
+			nickname.querySelector('span.pre').textContent = author.username
+			name.append(nickname)
+		}
+	}
+	name.firstChild.textContent = username
+	
+	let time = e.querySelector('time')
+	time.dateTime = comment.createDate
+	time.textContent = Draw.time_string(comment.createDate2)
+	
+	return [e, e.lastChild]
+}.bind({
+	block: 𐀶`
+<message-block>
+	<message-header>
+		<message-username><span class='username pre'></span>:</message-username>
+		<time></time>
+	</message-header>
+	<message-contents></message-contents>
+</message-block>`,
+	nickname: 𐀶` <span class='real-name-label'>(<span class='pre'></span>)</span>`,
+	bridge: 𐀶` <span class='real-name-label'>[discord bridge]</span>`,
+	avatar: 𐀶`<img class='avatar' width=100 height=100 alt="">`,
+	big_avatar: 𐀶`<div class='bigAvatar'></div>`,
+})
 
 MessageList.init()
 Object.seal(MessageList)
@@ -234,7 +299,7 @@ class StatusDisplay {
 		this.$elem.fill()
 		Object.for(this.statuses(), (status, id)=>{
 			let user = StatusDisplay.get_user(id)
-			this.$elem.append(Draw.userlist_avatar(user, status))
+			this.$elem.append(StatusDisplay.draw_avatar(user, status))
 		})
 	}
 	// set your own status
@@ -292,6 +357,16 @@ StatusDisplay.global = new StatusDisplay(0, null)
 do_when_ready(()=>{
 	StatusDisplay.global.$elem = $sidebarUserList
 })
+StatusDisplay.draw_avatar = function(user, status) {
+	let e = this()
+	e.href = Nav.entity_link(user)
+	e.firstChild.src = Draw.avatar_url(user)
+	e.firstChild.title = user.username
+	e.dataset.uid = user.id
+	if (status == "idle")
+		e.classList.add('status-idle')
+	return e
+}.bind(𐀶`<a tabindex=-1><img class='avatar' width=100 height=100 alt="">`)
 
 
 
