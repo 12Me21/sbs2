@@ -340,8 +340,8 @@ class PageView extends BaseView {
 }
 PageView.track_resize_2 = new ResizeTracker('width')
 PageView.template = HTML`
-<view-root class='COL'>
-	<scroll-outer class='page-container' $=page_container>
+<view-root class='COL resize-box'>
+	<scroll-outer class='page-container sized' $=page_container>
 		<div class='pageInfoPane bar rem1-5'>
 			<label>Watching: <input type=checkbox $=watching></label>
 			<span $=author style='margin: 0 0.5rem;'></span>

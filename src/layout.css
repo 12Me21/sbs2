@@ -289,7 +289,7 @@ but, then we can't add a border to the image
 }
 
 .resize-box > .sized {
-	flex-shrink: 1; /* ? */
+	flex-shrink: 1;
 }
 
 .resize-handle {
