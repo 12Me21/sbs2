@@ -261,7 +261,7 @@ const Sidebar = NAMESPACE({
 			this.userlist.redraw()
 		})
 		Events.user_edit.listen(this, user=>{
-			if (user.uid==Req.uid)
+			if (user.id==Req.uid)
 				this.update_my_avatar()
 			this.userlist.redraw_user(user)
 		})
