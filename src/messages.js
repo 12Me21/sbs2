@@ -97,7 +97,7 @@ class MessageList {
 		}
 		// edited message
 		if (message.edited || existing) {
-			if (!Aexisting) {
+			if (!existing) {
 				// this could be a very old message being edited
 				// OR, a message being moved into the current room
 				// the way to check would be:

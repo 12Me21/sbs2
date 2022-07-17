@@ -193,9 +193,11 @@ let Act = {
 	handle_messages(comments, maplist) {
 		for (let msg of comments) {
 			if (!msg.deleted) {
-				this.normal.update(maplist, msg.contentId, msg.Author.date, msg.createUserId)
+				let pid = msg.contentId
+				let date = msg.Author.date
+				this.normal.update(maplist, pid, date, msg.createUserId)
 				if (this.watch.items[pid])
-					this.watch.update(maplist, msg.contentId, msg.Author.date)
+					this.watch.update(maplist, pid, date)
 			}
 		}
 	},
