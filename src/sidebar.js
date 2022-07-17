@@ -254,7 +254,7 @@ const Sidebar = NAMESPACE({
 			this.scroller.lock()
 			this.display_messages(c)
 		})
-		Events.after_messages.listen(this, c=>{
+		Events.after_messages.listen(this, ()=>{
 			this.scroller.unlock()
 		})
 		Events.userlist.listen_id(this, 0, x=>{

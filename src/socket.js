@@ -339,21 +339,8 @@ const Lp = NAMESPACE({
 		//  note: do we ever even get more than one at a time?
 		//  well, after a disconnect, i guess
 		if (comments.length) {
-			let li = Events.messages
-			let called = []
-			for (let id in li.ids) {
-				let com = comments.filter(c=>c.contentId == id)
-				if (com.length) {
-					called.push(id)
-					li.fire_id(id, com)
-				}
-			}
-			li.fire(comments, listmapmap.message_event)
-			
-			let li2 = Events.after_messages
-			for (let id of called)
-				li2.fire_id(id)
-			li2.fire(comments)
+			Events.messages.fire(comments, listmapmap.message_event)
+			Events.after_messages.fire()
 		}
 	},
 	blur_time: 0,

@@ -28,7 +28,6 @@ class PageView extends BaseView {
 	}
 	Render({content:[page], Mpinned:pinned, user, watch}) {
 		this.page_id = page.id
-		PageView.rooms[this.id] = this
 		
 		this.update_page(page, user)
 		this.update_watch(watch[0])
@@ -59,10 +58,6 @@ class PageView extends BaseView {
 			{label:"logs", href:"#comments/"+page.id+"?r"},
 			{label:"edit", href: "#editpage/"+page.id},
 		])
-	}
-	// 8:10;35
-	Destroy(type) {
-		delete PageView.rooms[this.page_id]
 	}
 
 	// render the watch state
@@ -112,7 +107,6 @@ PageView.template = HTML`
 	</scroll-outer>
 </view-root>
 `
-PageView.rooms = {__proto__:null}
 
 View.register('content', PageView)
 View.register('pages', {

@@ -77,13 +77,17 @@ class ChatView extends BaseView {
 	}
 	Render({message, content:[page], Mpinned:pinned, user, watch}) {
 		this.page_id = page.id
-		ChatView.rooms[this.id] = this
 		
-		Events.messages.listen_id(this, this.page_id, c=>{
-			this.scroller.lock()
-			this.display_messages(c)
+		Events.messages.listen(this, (messages)=>{
+			let c = messages.filter(msg=>{
+				return msg.contentId==this.page_id || ((msg.edited||msg.deleted) && this.list.parts.has(msg.id))
+			})
+			if (c.length) {
+				this.scroller.lock()
+				this.display_messages(c)
+			}
 		})
-		Events.after_messages.listen_id(this, this.page_id, c=>{
+		Events.after_messages.listen(this, ()=>{
 			this.scroller.unlock()
 		})
 		
@@ -151,7 +155,6 @@ class ChatView extends BaseView {
 	Destroy(type) {
 		View.lost = this.$textarea.value
 		this.userlist.set_status(null)
-		delete ChatView.rooms[this.page_id]
 		this.scroller.destroy()
 		ChatView.track_resize_2.remove(this.$textarea_container)
 	}
@@ -317,7 +320,6 @@ ChatView.template = HTML`
 	</div>
 </view-root>
 `
-ChatView.rooms = {__proto__:null}
 
 View.register('page', ChatView)
 View.register('chat', {
