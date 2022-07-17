@@ -331,10 +331,18 @@ const Lp = NAMESPACE({
 			li2.fire(comments)
 		}
 	},
+	blur_time: 0,
 	init() {
 		document.addEventListener('visibilitychange', e=>this.maybe_reconnect(e))
 		window.addEventListener('pageshow', e=>this.maybe_reconnect(e))
-		window.addEventListener('focus', e=>this.maybe_reconnect(e))
+		window.addEventListener('blur', e=>{
+			this.blur_time = Date.now()
+		})
+		window.addEventListener('focus', e=>{
+			if (Math.abs(this.blur_time-Date.now()) < 1000)
+				return
+			this.maybe_reconnect(e)
+		})
 		window.addEventListener('online', e=>this.start_websocket(true))
 	},
 })
