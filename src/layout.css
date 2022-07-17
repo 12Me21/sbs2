@@ -58,7 +58,7 @@ html, body {
 
 
 /* views */
-view-slot > .resize-handle {
+view-slot > view-header {
 	cursor: ew-resize;
 }
 #\$main_slides > view-slot:not(:first-of-type) {
@@ -67,20 +67,14 @@ view-slot > .resize-handle {
 #\$main_slides > view-slot:first-of-type {
 	flex: 0mm;
 }
-view-container { flex: 0mm; }
-view-root {
-	display: block;
-	position: absolute;
-	height: 100%;
-	width: 100%;
-}
 view-slot {
 	display: flex;
 	flex-flow: column;
 	min-width: 4rem !important;
+	width: 50%;
 }
-view-header {
-	flex: none;
+view-slot:nth-child(n) > view-root {
+	flex: 0mm;
 }
 
 /*********/

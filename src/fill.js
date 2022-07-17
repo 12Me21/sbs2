@@ -159,18 +159,6 @@ Node.prototype.fill = function(x) {
 	else if (x != undefined)
 		this.appendChild(x)
 }
-// do not use replaceChildren itself, because it's relatively new
-// and was implemented incorrectly on safari at some point
-
-// type - tag name of element to create
-// classes (optional) - assigned to className
-Node.prototype.child = function(type, classes) {
-	let elem = this.ownerDocument.createElement(type)
-	this.append(elem)
-	if (classes)
-		elem.className = classes
-	return elem
-}
 
 // convert obj into a json Blob for xhr
 JSON.to_blob = function(obj) {

@@ -8,9 +8,12 @@
 class ViewSlot {
 	constructor() {
 		ViewSlot.template(this)
+		this.$view = null
 		do_when_ready(x=>{
 			$main_slides.append(this.$root)
 		})
+		// todo: dragging should shrink either the left or right neighbor
+		// depending on which half of the header you dragged
 		new ResizeBar(this.$root, this.$header, 'right', null)
 		
 		this.loading = null // Generator
@@ -23,7 +26,6 @@ class ViewSlot {
 	unload() {
 		this.cancel()
 		this.cleanup(null)
-		this.$container.fill()
 		this.$root.remove()
 	}
 	
@@ -75,6 +77,7 @@ class ViewSlot {
 			// misc stuff to run after loading:
 			Sidebar.close_fullscreen()
 			Lp.flush_statuses(()=>{})
+			// TODO! statuses fail to update sometimes!! on page load maybe
 		}, (err)=>{
 			console.error(err)
 			alert('unhandled error during view load')
@@ -92,7 +95,8 @@ class ViewSlot {
 				console.error(e, "error in cleanup function")
 				print(e)
 			}
-		this.$container.fill()
+		if (this.$view)
+			this.$view.remove()
 		this.$header_buttons.fill()
 		this.view = null
 	}
@@ -163,7 +167,8 @@ class ViewSlot {
 		}
 		this.loading_state(false, true)
 		//throw "heck darn"
-		this.$container.fill(view.$root)
+		this.$view = view.$root
+		this.$root.append(view.$root)
 		if (view.Visible)
 			view.Visible()
 		
@@ -174,12 +179,11 @@ class ViewSlot {
 	}
 }
 ViewSlot.template = HTML`
-<view-slot>
+<view-slot class='COL'>
 	<view-header $=header class='bar ellipsis' tabindex=0 accesskey="q">
 		<h1 $=title class='textItem'></h1>
 		<div class='header-buttons item' $=header_buttons></div>
 	</view-header>
-	<view-container $=container></view-container>
 </view-slot>
 `
 

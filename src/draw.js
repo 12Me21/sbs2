@@ -197,6 +197,16 @@ class StatusDisplay {
 		this.global.redraw_user(user)
 		Object.for(ChatView.rooms, room=>room.userlist.redraw_user(user))
 	}
+	// download userlist for this page if we're not already tracking it
+	static prepare(pid) {
+		if (this.statuses[pid])
+			return
+		Lp.userlist(resp=>{
+			if (this.statuses[pid])
+				return
+			this.update(resp.statuses, resp.objects)
+		})
+	}
 }
 // map(contentId -> map(userId -> status))
 StatusDisplay.statuses = {__proto__:null}
@@ -218,7 +228,7 @@ StatusDisplay.draw_avatar = function(user, status) {
 	if (status == "idle")
 		e.classList.add('status-idle')
 	return e
-}.bind(𐀶`<a tabindex=-1><img class='avatar' width=100 height=100 alt="">`)
+}.bind(𐀶`<a tabindex=-1><img class='avatar' width=100 height=100 alt="[fuck]">`)
 
 
 

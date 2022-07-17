@@ -49,8 +49,11 @@ class Form {
 			this.inputs[name] = input
 			input.draw()
 			
-			let lc = body.child('div', 'label')
-			let label = lc.child('label')
+			let lc = document.createElement('div')
+			lc.className = 'label'
+			body.append(lc)
+			let label = document.createElement('label')
+			lc.append(label)
 			label.htmlFor = input.html_id
 			label.textContent = opt.label+":"
 			input.elem.className += ' field'

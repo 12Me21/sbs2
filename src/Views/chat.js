@@ -12,6 +12,8 @@
 class ChatView extends BaseView {
 	Start({id, query}) {
 		let field = 'number'==typeof id ? 'id' : 'hash'
+		if (field=='id')
+			StatusDisplay.prepare(id)
 		return {
 			chain: {
 				values: {
@@ -32,6 +34,7 @@ class ChatView extends BaseView {
 		if (View.lost)
 			this.$textarea.value = View.lost
 		this.editing = null
+		this.pre_edit = null
 		
 		this.$textarea.enterKeyHint = Settings.values.chat_enter!='newline' ? "send" : "enter" // uh this won't update though... need a settings change watcher
 		this.$textarea_container.onkeydown = e=>{
@@ -76,6 +79,7 @@ class ChatView extends BaseView {
 		this.page_id = page.id
 		ChatView.rooms[this.id] = this
 		
+		Object.assign(StatusDisplay.users, user)
 		this.userlist = new StatusDisplay(this.page_id, this.$userlist)
 		
 		this.scroller = new Scroller(this.$outer, this.$inner)

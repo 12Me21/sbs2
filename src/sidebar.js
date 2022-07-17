@@ -38,6 +38,23 @@ class Tabs {
 		if (tab)
 			switch_tab(tab.btn, true)
 	}
+	
+	static draw_button(name, data, panel) {
+		let btn = button_template()
+		btn.id = name+"-tab-"+data.name
+		btn.setAttribute('aria-controls', panel.id)
+		btn.tabIndex = -1
+		btn.dataset.name = tab.name
+		btn.onclick = ev=>{
+			switch_tab(btn)
+			data.onswitch && data.onswitch() // todo: make this an event listener or something on panel instead
+		}
+		btn.append(data.label)
+		if (data.accesskey)
+			btn.accessKey = tab.accesskey
+		
+		this.elem.append(btn)
+	}
 }
 Tabs.id = 1
 

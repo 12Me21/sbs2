@@ -87,7 +87,8 @@ class SettingProto {
 		let row = document.createElement('div')
 		row.dataset.order = this.order
 		
-		let label = row.child('label')
+		let label = document.createElement('label')
+		row.append(label)
 		label.textContent = this.label+": "
 		
 		let elem
@@ -100,17 +101,19 @@ class SettingProto {
 				let found = false
 				let val = this.get_value()
 				for (let option of this.options) {
-					let opt = this.elem.child('option')
+					let opt = document.createElement('option')
+					this.elem.add(opt)
 					opt.value = option
-					opt.textContent = option
+					opt.text = option
 					if (option === val)
 						found = true
 				}
 				// add placeholder option if value is missing from options list.. might cause problems though..
 				if ('string'==typeof val && !found) {
-					let opt = this.elem.child('option')
+					let opt = document.createElement('option')
+					this.elem.add(opt)
 					opt.value = val
-					opt.textContent = val+" ?"
+					opt.text = val+" ?"
 				}
 				this.write()
 			}
@@ -127,10 +130,12 @@ class SettingProto {
 			elem.max = this.range[1]
 			elem.step = this.step || 'any'
 			if (this.notches) {
-				let notches = row.child('datalist')
+				let notches = document.createElement('datalist')
+				row.append(notches)
 				for (let e of this.notches.concat(this.range)) {
-					let opt = notches.child('option')
+					let opt = document.createElement('option')
 					opt.value = e
+					notches.append(opt)
 				}
 				elem.setAttribute('list', notches.id = `settings_panel__${this.name}_datalist`)
 			}
