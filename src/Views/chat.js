@@ -78,6 +78,28 @@ class ChatView extends BaseView {
 	Render({message, content:[page], Mpinned:pinned, user, watch}) {
 		this.page_id = page.id
 		
+		this.Slot.set_entity_title(page)
+		this.Slot.add_header_links([
+			{label:"logs", href:"#comments/"+page.id+"?r"},
+			{label:"edit", href: "#editpage/"+page.id},
+		])
+		
+		Object.assign(StatusDisplay.users, user)
+		this.userlist = new StatusDisplay(this.page_id, this.$userlist)
+		this.scroller = new Scroller(this.$outer, this.$inner)
+		this.list = new MessageList(this.$message_list, this.page_id)
+		this.pinned_list = null
+		
+		///////////
+		this.userlist.set_status("active")
+		this.userlist.redraw()
+		
+		if (pinned instanceof Array && pinned.length)
+			this.draw_pinned()
+		
+		message.reverse()
+		this.display_messages(message, true)
+		
 		Events.messages.listen(this, (messages)=>{
 			let c = messages.filter(msg=>{
 				return msg.contentId==this.page_id || ((msg.edited||msg.deleted) && this.list.parts.has(msg.id))
@@ -90,21 +112,12 @@ class ChatView extends BaseView {
 		Events.after_messages.listen(this, ()=>{
 			this.scroller.unlock()
 		})
-		
-		Object.assign(StatusDisplay.users, user)
-		this.userlist = new StatusDisplay(this.page_id, this.$userlist)
-		
 		Events.userlist.listen_id(this, this.page_id, c=>{
 			this.userlist.redraw()
 		})
 		Events.user_edit.listen(this, user=>{
 			this.userlist.redraw_user(user)
-		})// todo: what if the event dispatcher used .call(this,...) so we could pass methods directly? 
-		// - except this wouldnt work here since .userlist.redraw_user isn't a method on this...
-		
-		this.scroller = new Scroller(this.$outer, this.$inner)
-		// chat messages
-		this.list = new MessageList(this.$message_list, this.page_id)
+		})
 		
 		this.$load_older.onclick = Draw.event_lock(done=>{
 			// todo: preserve scroll position
@@ -112,41 +125,27 @@ class ChatView extends BaseView {
 				done()
 			})
 		})
-		///////////
-		this.userlist.set_status("active")
-		this.userlist.redraw()
-		
-		this.Slot.set_entity_title(page)
-		
-		if (pinned instanceof Array && pinned.length) {
-			let separator = document.createElement('div')
-			separator.className = "messageGap"
-			this.$extra.prepend(separator)
-			
-			const list = document.createElement('message-list')
-			this.pinned_list = new MessageList(list, this.page_id)
-			this.$extra.prepend(list)
-			
-			Entity.link_comments({message:pinned, user})
-			
-			for (const m of pinned)
-				this.pinned_list.display_message(m, false)
-		}
-		
-		message.reverse()
-		this.display_messages(message, true)
 		
 		//let can_edit = /u/i.test(page.permissions[Req.uid]) // unused
-		
-		this.Slot.add_header_links([
-			{label:"logs", href:"#comments/"+page.id+"?r"},
-			{label:"edit", href: "#editpage/"+page.id},
-		])
 		
 		let can_talk = page.createUserId==Req.uid || Entity.has_perm(page.permissions, Req.uid, 'C')
 		this.$textarea.disabled = !can_talk
 		if (can_talk)
 			this.$textarea.focus()
+	}
+	draw_pinned(pinned) {
+		Entity.link_comments({message:pinned, user})
+		const list = document.createElement('message-list')
+		this.pinned_list = new MessageList(list, this.page_id)
+		
+		let separator = document.createElement('div')
+		separator.className = "messageGap"
+		
+		this.scroller.print_top(()=>{
+			this.$extra.prepend(separator)
+			this.$extra.prepend(list)
+			this.pinned_list.display_messages(pinned)
+		})
 	}
 	Visible() {
 		this.textarea_resize()
