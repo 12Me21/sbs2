@@ -1,6 +1,10 @@
 'use strict'
 //todo: read my old notes (in chat) about how to handle edited messages
 // ex: when a message is moved between rooms,
+// kinda annoying, basically what we need to do is
+// if we get an edited message: check every room to see if it has
+// that message id, since it mightve been moved /from/ that room
+// then, we need to insert that message in the middle of the list, in the current room
 
 class MessageList {
 	constructor(element, pid, edit) {
@@ -8,6 +12,7 @@ class MessageList {
 		this.$list.classList.add('message-list') // todo: just create a new elem <message-list> ?
 		this.pid = pid
 		this.parts = new Map()
+		//this.first_id = Infinity
 		
 		// this listens for events created by the message edit/info buttons
 		// and modifies the event to add the message data
@@ -59,6 +64,7 @@ class MessageList {
 		this.parts.set(comment.id, {elem:part, data:comment})
 		contents.append(part)
 		this.$list.append(block)
+		//this.first_id = comment.id
 	}
 	//optimize: createDate can really just like,
 	// well ok let's put it in Author, and store it as milliseconds
@@ -82,24 +88,33 @@ class MessageList {
 		for (let m of messages)
 			this.display_message(m, backwards)
 	}
+	/*split_block(id) {
+	}*/
 	display_message(message, backwards) {
-		let old = this.parts.get(message.id)
+		let existing = this.parts.get(message.id)
 		// deleted message
 		if (message.deleted) {
-			if (old)
+			if (existing)
 				this.remove_message(message.id)
 			return null
 		}
 		// edited message
-		if (message.edited || old) {
-			if (!old)
+		if (message.edited || existing) {
+			if (existing) {
+				// this could be a very old message being edited
+				// OR, a message being moved into the current room
+				// the way to check would be:
+				// if the message's id is less than the minimum displayed id
 				return null
+			}
 			let part = MessageList.draw_part(message)
 			this.parts.set(message.id, {elem:part, data:message})
-			old.elem.replaceWith(part)
+			existing.elem.replaceWith(part)
 			return part
 		}
 		// new message
+		//if (message.id < this.first_id)
+		//	this.first_id = message.id
 		let part = MessageList.draw_part(message)
 		this.parts.set(message.id, {elem:part, data:message})
 		// new message-part
@@ -118,6 +133,8 @@ class MessageList {
 		let part = this.parts.pop(id)
 		if (!part)
 			throw new RangeError("Tried to remove nonexistant message-part, id:"+id)
+		// ghhhh
+		//this.first_id = this.parts.keys().next().value || Infinity
 		
 		// remove controls if they're on this message
 		if (part.elem == MessageList.controls_message)
