@@ -84,14 +84,14 @@ textarea {
 	border-radius: 0;
 	box-shadow: 0.125rem 0.1875rem 0.3125rem -0.1875rem #0D0D0D80;
 	color: var(--T-color);
-	background: var(--T-bg);
+	background-color: var(--T-bg) !important;
 	white-space: break-spaces; /* optional */
 	tab-width: 3;
 }
 .code-textarea {
 	line-break: anywhere;
 	white-space: break-spaces; !important;
-	font: var(--T-monospace-font);
+	/*font: var(--T-monospace-font);*/
 }
 textarea-container {
 	border: 2px solid var(--T-textarea-border-color);
