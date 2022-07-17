@@ -90,7 +90,7 @@ class MessageList {
 	display_message(message, backwards) {
 		let existing = this.parts.get(message.id)
 		// deleted message
-		if (message.deleted) {
+		if (message.deleted || message.contentId!=this.pid) {
 			if (existing)
 				this.remove_message(message.id)
 			return null
