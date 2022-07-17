@@ -23,7 +23,7 @@ class ActivityItem {
 	}
 	// todo: .top() might make more sense as method on ActivityContainer
 	top() {
-		const con = this.parent.container
+		const con = this.parent.$container
 		let first = con.firstElementChild
 		if (first == this.$root)
 			return
