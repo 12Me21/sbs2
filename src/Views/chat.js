@@ -79,8 +79,24 @@ class ChatView extends BaseView {
 		this.page_id = page.id
 		ChatView.rooms[this.id] = this
 		
+		Events.messages.listen_id(this, this.page_id, c=>{
+			this.scroller.lock()
+			this.display_messages(c)
+		})
+		Events.after_messages.listen_id(this, this.page_id, c=>{
+			this.scroller.unlock()
+		})
+		
 		Object.assign(StatusDisplay.users, user)
 		this.userlist = new StatusDisplay(this.page_id, this.$userlist)
+		
+		Events.userlist.listen_id(this, this.page_id, c=>{
+			this.userlist.redraw()
+		})
+		Events.user_edit.listen(this, user=>{
+			this.userlist.redraw_user(user)
+		})// todo: what if the event dispatcher used .call(this,...) so we could pass methods directly? 
+		// - except this wouldnt work here since .userlist.redraw_user isn't a method on this...
 		
 		this.scroller = new Scroller(this.$outer, this.$inner)
 		// chat messages
@@ -163,7 +179,12 @@ class ChatView extends BaseView {
 		this.scroller.print(inner=>{
 			for (let comment of comments)
 				this.list.display_message(comment, false)
-		}, !initial && View.current==this)
+		}, !initial)
+		if (!initial) {
+			let last = comments.findLast(msg=>Entity.is_new_comment(msg))
+			if (last)
+				View.comment_notification(last)
+		}
 		if (this.list.over_limit() && !this.$limit_checkbox.checked) {
 			this.scroller.print_top(inner=>{
 				this.list.limit_messages()
@@ -264,20 +285,6 @@ class ChatView extends BaseView {
 			this.$textarea.focus()
 			this.$textarea.setSelectionRange(99999, 99999) // move cursor to end
 		})
-	}
-
-	// display a list of messages from multiple rooms
-	static handle_messages(comments) {
-		// for each room, display all of the new comments for that room
-		Object.for(this.rooms, room=>{
-			let c = comments.filter(c => c.contentId==room.page_id)
-			if (c.length)
-				room.display_messages(c)
-		})
-	}
-	static scroll_lock(lock) {
-		for (let room of Object.values(this.rooms))
-			lock ? room.scroller.lock() : room.scroller.unlock()
 	}
 }
 ChatView.track_resize_2 = new ResizeTracker('width')

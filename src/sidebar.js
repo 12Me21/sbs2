@@ -1,67 +1,10 @@
 'use strict'
 
-let button_template = 𐀶`<button role=tab aria-selected=false>`
-
-class Tabs {
-	constructor(def, elem=document.createElement('tab-list'), name=Tabs.id++) {
-		
-		this.tabs = def
-		this.elem = elem
-		
-		this.elem.setAttribute('role', 'tablist')
-		for (let tab of this.tabs) {
-			if (!tab.elem.id)
-				tab.elem.id = name+"-panel-"+tab.name
-			
-			let btn = tab.btn = button_template()
-			btn.id = name+"-tab-"+tab.name
-			btn.setAttribute('aria-controls', tab.elem.id)
-			btn.tabIndex = -1
-			btn.dataset.name = tab.name
-			btn.onclick = e=>{
-				switch_tab(btn)
-				if (tab.onswitch)
-					tab.onswitch()
-			}
-			btn.append(tab.label)
-			if (tab.accesskey)
-				btn.setAttribute('accesskey', tab.accesskey)
-			this.elem.append(btn)
-			
-			tab.elem.setAttribute('role', "tabpanel")
-			//tab.elem.tabIndex = -1
-			tab.elem.setAttribute('aria-labelledby', btn.id)
-		}
-	}
-	select(name) {
-		let tab = this.tabs.find(tab=>tab.name==name)
-		if (tab)
-			switch_tab(tab.btn, true)
-	}
-	
-	static draw_button(name, data, panel) {
-		let btn = button_template()
-		btn.id = name+"-tab-"+data.name
-		btn.setAttribute('aria-controls', panel.id)
-		btn.tabIndex = -1
-		btn.dataset.name = tab.name
-		btn.onclick = ev=>{
-			switch_tab(btn)
-			data.onswitch && data.onswitch() // todo: make this an event listener or something on panel instead
-		}
-		btn.append(data.label)
-		if (data.accesskey)
-			btn.accessKey = tab.accesskey
-		
-		this.elem.append(btn)
-	}
-}
-Tabs.id = 1
-
 const Sidebar = NAMESPACE({
 	scroller: null,
 	tabs: null,
 	$my_avatar: null,
+	userlist: new StatusDisplay(0, null),
 	
 	onload() {
 		$openSidebar.onclick = $closeSidebar.onclick = e=>{
@@ -161,6 +104,8 @@ const Sidebar = NAMESPACE({
 			{name: 'debug', label: "db", elem: $settings_4},
 		], $settings_tabs, "settings")
 		st.select('btns')*/
+		this.userlist.$elem = $sidebarUserList
+		this.userlist.redraw()
 	},
 	
 	printing: false,
@@ -215,7 +160,7 @@ const Sidebar = NAMESPACE({
 	
 	displayed_ids: {},
 	
-	display_messages(comments, initial) {
+	display_messages(comments, initial=false) {
 		// todo: show page titles?
 		this.scroller.print(inner=>{
 			for (let c of comments) {
@@ -291,7 +236,31 @@ const Sidebar = NAMESPACE({
 </div>
 `),
 	
+	redraw_my_avatar() {
+		let icon = Draw.avatar(Req.me)
+		this.$my_avatar.fill(icon)
+	},
+	
+	init() {
+		Events.messages.listen(this, c=>{
+			this.scroller.lock()
+			this.display_messages(c)
+		})
+		Events.after_messages.listen(this, c=>{
+			this.scroller.unlock()
+		})
+		Events.userlist.listen_id(this, 0, x=>{
+			this.userlist.redraw()
+		})
+		Events.user_edit.listen(this, user=>{
+			if (user.uid==Req.uid)
+				this.update_my_avatar()
+			this.userlist.redraw_user(user)
+		})
+	}
 })
+
+Sidebar.init()
 
 window.print = Sidebar.print.bind(Sidebar)
 Object.defineProperty(window, 'log', {

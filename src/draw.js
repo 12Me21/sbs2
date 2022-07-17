@@ -148,6 +148,8 @@ class StatusDisplay {
 		Object.seal(this)
 	}
 	redraw() {
+		if (!this.$elem)
+			return
 		this.$elem.fill()
 		Object.for(this.statuses(), (status, id)=>{
 			let user = StatusDisplay.get_user(id)
@@ -183,19 +185,16 @@ class StatusDisplay {
 	static update(statuses, objects) {
 		Object.assign(this.statuses, statuses)
 		Object.assign(this.users, objects.user)
-		// TODO: this is a hack .. we need a way to send signals to pages to tell them to redraw userlists.
-		this.global.redraw()
-		Object.for(ChatView.rooms, room=>room.userlist.redraw())
+		//
+		let li = Events.userlist
+		Object.for(statuses, (st, pid)=>{
+			li.fire_id(pid, st)
+		})
 	}
 	// called during `user_event` (i.e. when a user is edited)
 	static update_user(user) {
-		// if we don't need this avatar,
-		if (!this.users[~user.id])
-			return
-		this.users[~user.id] = user
-		
-		this.global.redraw_user(user)
-		Object.for(ChatView.rooms, room=>room.userlist.redraw_user(user))
+		if (this.users[~user.id])
+			this.users[~user.id] = user
 	}
 	// download userlist for this page if we're not already tracking it
 	static prepare(pid) {
@@ -215,10 +214,6 @@ StatusDisplay.statuses = {__proto__:null}
 // map(userId -> user)
 StatusDisplay.users = {__proto__:null}
 
-StatusDisplay.global = new StatusDisplay(0, null)
-do_when_ready(()=>{
-	StatusDisplay.global.$elem = $sidebarUserList
-})
 StatusDisplay.draw_avatar = function(user, status) {
 	let e = this()
 	e.href = Nav.entity_link(user)
@@ -302,3 +297,63 @@ class ResizeBar {
 	}
 }
 ResizeBar.init()
+
+
+
+let button_template = 𐀶`<button role=tab aria-selected=false>`
+
+class Tabs {
+	constructor(def, elem=document.createElement('tab-list'), name=Tabs.id++) {
+		
+		this.tabs = def
+		this.elem = elem
+		
+		this.elem.setAttribute('role', 'tablist')
+		for (let tab of this.tabs) {
+			if (!tab.elem.id)
+				tab.elem.id = name+"-panel-"+tab.name
+			
+			let btn = tab.btn = button_template()
+			btn.id = name+"-tab-"+tab.name
+			btn.setAttribute('aria-controls', tab.elem.id)
+			btn.tabIndex = -1
+			btn.dataset.name = tab.name
+			btn.onclick = e=>{
+				switch_tab(btn)
+				if (tab.onswitch)
+					tab.onswitch()
+			}
+			btn.append(tab.label)
+			if (tab.accesskey)
+				btn.setAttribute('accesskey', tab.accesskey)
+			this.elem.append(btn)
+			
+			tab.elem.setAttribute('role', "tabpanel")
+			//tab.elem.tabIndex = -1
+			tab.elem.setAttribute('aria-labelledby', btn.id)
+		}
+	}
+	select(name) {
+		let tab = this.tabs.find(tab=>tab.name==name)
+		if (tab)
+			switch_tab(tab.btn, true)
+	}
+	
+	static draw_button(name, data, panel) {
+		let btn = button_template()
+		btn.id = name+"-tab-"+data.name
+		btn.setAttribute('aria-controls', panel.id)
+		btn.tabIndex = -1
+		btn.dataset.name = tab.name
+		btn.onclick = ev=>{
+			switch_tab(btn)
+			data.onswitch && data.onswitch() // todo: make this an event listener or something on panel instead
+		}
+		btn.append(data.label)
+		if (data.accesskey)
+			btn.accessKey = tab.accesskey
+		
+		this.elem.append(btn)
+	}
+}
+Tabs.id = 1

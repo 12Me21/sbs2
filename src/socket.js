@@ -303,9 +303,10 @@ const Lp = NAMESPACE({
 			} break; case 'user_event': {
 				let user = maplist.user[~ref_id]
 				if (user) {
-					StatusDisplay.update_user(user) // messy...
 					if (ref_id==Req.uid)
-						View.update_my_user(user)
+						Req.me = user
+					StatusDisplay.update_user(user)
+					Events.user_edit.fire(user)
 				}
 			} }
 		}
@@ -313,22 +314,21 @@ const Lp = NAMESPACE({
 		//  note: do we ever even get more than one at a time?
 		//  well, after a disconnect, i guess
 		if (comments.length) {
-			// todo: we want the sidebar and chat to use the same
-			// animationframe callback, so they are synced, if possible
-			ChatView.scroll_lock(true)
-			Sidebar.scroller.lock()
+			let li = Events.messages
+			let called = []
+			for (let id in li.ids) {
+				let com = comments.filter(c=>c.contentId == id)
+				if (com.length) {
+					called.push(id)
+					li.fire_id(id, com)
+				}
+			}
+			li.fire(comments, listmapmap.message_event)
 			
-			ChatView.handle_messages(comments)
-			Sidebar.display_messages(comments, false)
-			Act.handle_messages(comments, listmapmap.message_event)
-			View.comment_notification(comments)
-			let ev = new CustomEvent('got_comments', {
-				detail: {comments},
-			})
-			document.dispatchEvent(ev)
-			
-			ChatView.scroll_lock(false)
-			Sidebar.scroller.unlock()
+			let li2 = Events.after_messages
+			for (let id of called)
+				li2.fire_id(id)
+			li2.fire(comments)
 		}
 	},
 	init() {

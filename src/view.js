@@ -130,22 +130,14 @@ const View = NAMESPACE({
 			view_cls.Redirect(location)
 	},
 	
+	/// HELPER FUNCTIONS ///
+	// kinda should move these into like, draw.js idk
 	flags: {},
 	flag(flag, state) {
 		this.flags[flag] = state
 		document.documentElement.classList.toggle("f-"+flag, state)
 	},
 	
-	update_my_user(user) {
-		if (user.id != Req.uid)
-			throw new TypeError("tried to replace yourself with another user! id:"+user.id)
-		Req.me = user
-		let icon = Draw.avatar(Req.me)
-		Sidebar.$my_avatar.fill(icon)
-	},
-	
-	/// HELPER FUNCTIONS ///
-	// kinda should move these into like, draw.js idk
 	real_title: null,
 	set_title(title) {
 		document.title = title
@@ -153,21 +145,8 @@ const View = NAMESPACE({
 		this.change_favicon(null)
 	},
 	
-	comment_notification(comments) {
-		let last = null
-		if (this.current instanceof PageView) {
-			let pid = this.current.page_id
-			last = comments.findLast(msg=>msg.contentId==pid && Entity.is_new_comment(msg))
-		}
-		
-		// display comment in title
-		// todo: also call if the current comment being shown in the title is edited
-		if (last)
-			this.title_notification(last.text, Draw.avatar_url(last.Author))
-		
-		// i kinda want to just make my own event system so i can control bubbling,
-		// or rather, the event gets dispatched to the view first, and then
-		// to some global thing
+	comment_notification(comment) {
+		this.title_notification(comment.text, Draw.avatar_url(comment.Author))
 	},
 	
 	// temporarily set <title> and favicon, for displaying a notification

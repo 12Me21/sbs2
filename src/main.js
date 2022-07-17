@@ -42,10 +42,10 @@ function immediate() {
 		}
 		console.log("🌄 Got own userdata")
 		Req.me = me
-		do_when_ready(()=> View.update_my_user(Req.me))
+		do_when_ready(()=> Sidebar.redraw_my_avatar())
 	})
 	
-	StatusDisplay.global.set_status("active")
+	Lp.set_status(0, 'active')
 	
 	Lp.start_websocket()
 	

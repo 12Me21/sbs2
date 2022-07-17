@@ -208,3 +208,4 @@ let Act = {
 }
 do_when_ready(()=>{Act.init()})
 
+Events.messages.listen(Act, Act.handle_messages)
