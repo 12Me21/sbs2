@@ -77,6 +77,30 @@ view-slot:nth-child(n) > view-root {
 	flex: 0mm;
 }
 
+
+/* use solid backgrounds on elements
+ to improve rendering performance + subpixel text usage */
+
+/*
+from what i've noticed, the most important thing is having a solid BG on
+the inner scrolling element (the one which moves when you scroll)
+*/
+/* sized containers */
+.resize-box,
+.SLIDES, .SLIDES > *,
+scroll-outer,
+sidebar-panel {
+	contain: strict;
+	background: var(--T-bg);
+}
+/* their scrolling contents */
+.resize-box > *,
+sidebar-panel > *,
+scroll-outer > *,
+scroll-middle, scroll-inner, message-list {
+	background-color: inherit;
+}
+
 /*********/
 /* all elements with user content, must be tied up */
 .pre {
@@ -268,7 +292,7 @@ but, then we can't add a border to the image
 	flex-shrink: 1; /* ? */
 }
 
-.resize-handle.resize-handle {
+.resize-handle {
 	-webkit-touch-callout: none;
 	
 	-webkit-user-select: none;
@@ -362,28 +386,3 @@ ul, ol, li, /* bullets render outside */
 td, th {  /* border renders outside */
 	contain: none;
 }
-
-/* use solid backgrounds on elements
- to improve rendering performance + subpixel text usage */
-
-/* sized containers */
-.resize-box,
-.SLIDES, .SLIDES > *,
-scroll-outer,
-sidebar-panel {
-	contain: strict;
-	background: var(--T-bg);
-}
-
-/* their scrolling contents */
-.resize-box > *,
-sidebar-panel > *,
-scroll-outer > *,
-scroll-middle, scroll-inner, message-list {
-	background-color: inherit;
-}
-
-/*
-from what i've noticed, the most important thing is having a solid BG on
-the inner scrolling element (the one which moves when you scroll)
-*/

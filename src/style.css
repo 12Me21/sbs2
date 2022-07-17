@@ -357,7 +357,7 @@ pre {
 }
 .userlist2 {
 	display: flex;
-	background: var(--bar-bg);
+	background: linear-gradient(var(--databarbgcolor) 0 var(--handle-width), var(--bar-bg) var(--handle-width));
 	height: unset !important;
 }
 .userlist2 > .userlist {
