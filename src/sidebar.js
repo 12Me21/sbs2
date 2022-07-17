@@ -171,9 +171,17 @@ const Sidebar = NAMESPACE({
 						delete this.displayed_ids[c.id]
 						this.message_count--
 					}
+				} else if (c.edited) {
+					if (old) {
+						let nw = Sidebar.draw_comment(c)
+						old.replaceWith(nw)
+						this.displayed_ids[c.id] = nw
+					} else {
+					}
 				} else {
 					let nw = Sidebar.draw_comment(c)
 					if (old) {
+						// shouldn't happen
 						old.replaceWith(nw)
 					} else {
 						inner.append(nw)

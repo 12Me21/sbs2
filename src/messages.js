@@ -83,20 +83,25 @@ class MessageList {
 			this.display_message(m, backwards)
 	}
 	display_message(message, backwards) {
+		let old = this.parts.get(message.id)
+		// deleted message
 		if (message.deleted) {
-			if (this.parts.has(message.id))
+			if (old)
 				this.remove_message(message.id)
 			return null
 		}
-		// create new part
-		let part = MessageList.draw_part(message)
-		let old = this.parts.get(message.id)
-		this.parts.set(message.id, {elem:part, data:message})
-		// edited version of an existing message-part
-		if (old) {
+		// edited message
+		if (message.edited || old) {
+			if (!old)
+				return null
+			let part = MessageList.draw_part(message)
+			this.parts.set(message.id, {elem:part, data:message})
 			old.elem.replaceWith(part)
 			return part
 		}
+		// new message
+		let part = MessageList.draw_part(message)
+		this.parts.set(message.id, {elem:part, data:message})
 		// new message-part
 		// try to find a message-block to merge with
 		let contents = this.get_merge(message, backwards)

@@ -60,7 +60,7 @@ function dom_ready() {
 	//View.$header = $titlePane
 	
 	print("running "+run_on_load.length+" deferred items")
-	do_when_ready = x=>x()
+	do_when_ready = x=>{x()}
 	do_when_ready.then = null
 	run_on_load.forEach(x=>x())
 	run_on_load = null
