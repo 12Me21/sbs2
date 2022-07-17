@@ -166,7 +166,6 @@ class Scroller {
 		try {
 			fn(this.$inner)
 		} finally {
-			this.scroll_instant()
 			// figure out how much was added
 			let after = this.scroll_height()
 			let dist = after - before
@@ -186,6 +185,7 @@ class Scroller {
 				} else
 					this.start_anim(dist)
 			}
+			this.scroll_instant()
 		}
 	}
 	lock() {
