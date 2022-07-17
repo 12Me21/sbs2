@@ -3,8 +3,6 @@
 // process of loading a View
 // TODO: this was designed before views were changed to classes, so some of it is redundant and needs to be reorganied
 
-// - .Early() is called immediately, after the constructor. it's basically redundant now.
-
 // - .Start() is called. the data you return determines the api request
 
 // - then, we wait for the request to finish (unless .quick is true)
@@ -26,8 +24,9 @@
 // - .Visible is called. here you can run any code that requires the element to be rendered
 
 class BaseView {
-	constructor(location) {
+	constructor(location, slot) {
 		this.location = location
+		this.Slot = slot
 		new.target.template(this)
 		if (!this.$root || this.$root.tagName!='VIEW-ROOT')
 			throw new DOMException("view's root node is not '<view-root>'", 'NotSupportedError')
@@ -97,24 +96,17 @@ ErrorView.template = HTML`
 </view-root>
 `
 
-// so this class is kinda a mess,
-// it includes mostly:
-// - things which affect the header or entire page (ex: setting the title/favicon)
-// - control functions for managing the loading of different views
-
-// hmm idk about using `u` instead of `this` here
-// it's nice that we don't rely on `this` binding
-// but also means we can't add new methods at runtime
-// maybe best to just write View.prop ...
 const View = NAMESPACE({
-	// this will always be the currently rendered view
-	// (set before `render` is called, and unset before `cleanup` is called)
-	// current.cleanup should always be correct!
-	current: null,
 	views: {__proto__: null},
 	lost_textarea: null,
 	first: true,
-	lost: null,
+	lost: null,	
+	
+	// temp
+	get current() {
+		if (Nav.slots[0])
+			return Nav.slots[0].view
+	},
 	
 	register(name, view_class) {
 		if (view_class.Redirect)
@@ -132,198 +124,29 @@ const View = NAMESPACE({
 		this.views[name] = {Redirect: func}
 	},
 	
-	// modifies `location` param, returns true if redirect happened
-	handle_redirects(location) {
-		let view = this.views[location.type]
-		if (view && view.Redirect) {
-			view.Redirect(location)
-			Nav.replace_location(location)
-			return true
-		}
+	handle_redirect(location) {
+		let view_cls = this.views[location.type]
+		if (view_cls && view_cls.Redirect)
+			view_cls.Redirect(location)
 	},
 	
-	loading: false,
-	$header: null,
-	loading_state(state, keep_error) {
-		this.loading = state
-		do_when_ready(()=>{
-			if (!keep_error)
-				this.$header.classList.remove('error')
-			this.$header.classList.toggle('loading', state)
-		})
-	},
-	
+	/// HELPER FUNCTIONS ///
+	// kinda should move these into like, draw.js idk
 	flags: {},
 	flag(flag, state) {
 		this.flags[flag] = state
 		document.documentElement.classList.toggle("f-"+flag, state)
 	},
 	
-	update_my_user(user) {
-		if (user.id != Req.uid)
-			throw new TypeError("tried to replace yourself with another user! id:"+user.id)
-		Req.me = user
-		let icon = Draw.avatar(Req.me)
-		Sidebar.$my_avatar.fill(icon)
-	},
-	
-	cleanup(new_location) {
-		if (this.current && this.current.Destroy)
-			try {
-				this.current.Destroy(new_location)
-			} catch (e) {
-				// we ignore this error, because it's probably not important
-				// and also cleanup gets called during error handling so we don't want to get into a loop of errors
-				console.error(e, "error in cleanup function")
-				print(e)
-			}
-		this.current = null
-	},
-	
-	loading_view: null,
-	cancel() {
-		if (this.loading_view) {
-			this.loading_view.return()
-			this.loading_view = null
-			this.loading_state(false)
-		}
-	},
-	
-	handle_view(location, callback, onerror) {
-		this.cancel()
-		this.loading_view = this.handle_view2(location).run(callback, onerror)
-	},
-	
-	// technically STEP could be a global etc. but hhhh ....
-	* handle_view2(location) {
-		let STEP=yield
-		let phase = "..."
-		let view
-		let data
-		
-		try {
-			this.loading_state(true)
-			//yield window.setTimeout(STEP, 1000)
-			
-			phase = "view lookup"
-			this.handle_redirects(location)
-			
-			let view_class = this.views[location.type]
-			if (!view_class)
-				throw 'type'
-			view = new view_class(location)
-			
-			phase = "view.Early"
-			view.Early && view.Early()
-			
-			phase = "view.Start"
-			data = view.Start(location)
-			
-			let resp
-			if (!data.quick) {
-				phase = "starting request"
-				resp = yield Lp.chain(data.chain, STEP)
-				
-				phase = "view.Check"
-				if (data.check && !data.check(resp))
-					throw 'data'
-			}
-			yield do_when_ready(STEP)
-			
-			if (this.first)
-				console.log("🌄 Rendering first page")
-			
-			// this used to run after init, idk why.
-			// hopefully that isn't important?
-			phase = "cleanup"
-			this.cleanup(location) // passing the new location
-			$main_slides.fill()
-			
-			phase = "view.Init"
-			view.Init && view.Init()
-			
-			phase = "rendering"
-			this.current = view
-			if (data.quick)
-				view.Quick()
-			else
-				view.Render(resp)
-		} catch (e) {
-			yield do_when_ready(STEP)
-			
-			this.cleanup(location)
-			this.current = view = new ErrorView(location)
-			if (e==='type') {
-				this.set_title(`Unknown view: ‘${location.type}’`)
-			} else if (e==='data') {
-				this.set_title("Data not found")
-				//view.$error_message.append(JSON.stringify(data, null, 1))
-			} else {
-				console.error("Error during view handling", e)
-				this.set_title("Error during: "+phase)
-				view.$error_message.fill(Debug.sidebar_debug(e))
-			}
-			view.$error_location.append("location: "+JSON.stringify(location, null, 1))
-			this.$header.classList.add('error')
-		}
-		this.loading_state(false, true)
-		//throw "heck darn"
-		view.$root.classList.add('shown')
-		$main_slides.fill(view.$root)
-		if (view.Visible)
-			view.Visible()
-		
-		for (let elem of $titlePane.querySelectorAll("[data-view]")) {
-			let list = elem.dataset.view
-			elem.classList.toggle('shown', list.split(",").includes(this.current.Name))
-		}
-		Sidebar.close_fullscreen()
-		
-		Lp.flush_statuses(()=>{})
-		
-		if (this.first) {
-			console.log("☀️ First page rendered!")
-			this.first = false
-		}
-	},
-	
-	/// HELPER FUNCTIONS ///
-	// kinda should move these into like, draw.js idk
-	
-	// these all set the page's <h1> and <title>, and reset the favicon
 	real_title: null,
-	set_title2(h1, title) {
-		$pageTitle.fill(h1)
+	set_title(title) {
 		document.title = title
 		this.real_title = title
 		this.change_favicon(null)
 	},
-	set_title(text) {
-		let x = document.createElement('span')
-		x.className = "pre" // todo: this is silly ..
-		x.textContent = text
-		this.set_title2(x, text)
-	},
-	// todo: this should support users etc. too?
-	set_entity_title(entity) {
-		this.set_title2(Draw.content_label(entity), entity.name)
-	},
 	
-	comment_notification(comments) {
-		let last = null
-		if (this.current instanceof PageView) {
-			let pid = this.current.page_id
-			last = comments.findLast(msg=>msg.contentId==pid && Entity.is_new_comment(msg))
-		}
-		
-		// display comment in title
-		// todo: also call if the current comment being shown in the title is edited
-		if (last)
-			this.title_notification(last.text, Draw.avatar_url(last.Author))
-		
-		// i kinda want to just make my own event system so i can control bubbling,
-		// or rather, the event gets dispatched to the view first, and then
-		// to some global thing
+	comment_notification(comment) {
+		this.title_notification(comment.text, Draw.avatar_url(comment.Author))
 	},
 	
 	// temporarily set <title> and favicon, for displaying a notification
@@ -427,7 +250,7 @@ const View = NAMESPACE({
 				return // allow clicking textarea
 			this.set_embiggened(null)
 		}, {passive: true})
-	},
+	},	
 })
 
 View.init()
@@ -440,13 +263,5 @@ Settings.add({
 	},
 })
 
-// need to have a better idea of what "current" view means wrt the page header etc.
-// like, maybe each view has a separate header element? or do they share
-// separate is nicer but makes page layout awkward: now the titlebar 
-// is redrawn whenever switching views?
-// maybe we have some kind of "slot" object,
-// which can have one view loaded within it
-// when switching pages, the view is replaced while the slot remains
-// and multiple views = multiple slots
-
-/// OOH and then this object stores View.current, handles navigation, thats where the method handle_view2  yyyeahh!
+// we also need an event system, where events are automatically unhooked
+// when a View is unloaded.

@@ -49,8 +49,11 @@ class Form {
 			this.inputs[name] = input
 			input.draw()
 			
-			let lc = body.child('div', 'label')
-			let label = lc.child('label')
+			let lc = document.createElement('div')
+			lc.className = 'label'
+			body.append(lc)
+			let label = document.createElement('label')
+			lc.append(label)
 			label.htmlFor = input.html_id
 			label.textContent = opt.label+":"
 			input.elem.className += ' field'
@@ -449,61 +452,6 @@ const INPUTS = {
 		}
 		write() {
 			this.input.value = this.value==null ? "" : this.value.join(" ")
-		}
-	},
-	// type:  BROKEN
-	permissions: class extends GenericInput {
-		constructor(p) {
-			super(p)
-			this.elem = elem('div')
-			this.elem.id = this.html_id //todo: put a hidden <input> element or something?
-			this.input = Draw.user_selector()
-			let table = elem('table')
-			table.className += " permission-table"
-			let header = table.child('thead').child('tr')
-			header.child('th')
-			header.child('th')
-			header.child('th').textContent = "View"
-			header.child('th').textContent = "Reply"
-			header.child('th').textContent = "Edit"
-			header.child('th').textContent = "Delete"
-			this.body = table.child('tbody', 'permission-users')
-			
-			this.elem.append(table)
-			this.elem.append(this.input.elem)
-			
-			this.input.onchange = (user)=>{
-				this._add_row(user, "rc")
-			}
-			// todo: fire the input onchange event
-		}
-		_add_row(user, perm) {
-			this.body.append(Draw.permission_row(user, perm))
-		}
-		// TODO:
-		set([perms, users]) {
-			this.body.fill()
-			let d = false
-			Object.for(perms, (perm, uid) => {
-				uid = +uid
-				this._add_row(users[uid], perm)
-				if (uid==0)
-					d = true
-			})
-			if (!d)
-				this._add_row({Type:'user', id:0}, "")
-		}
-		get() {
-			let ret = {}
-			for (let row of this.body.childNodes) {
-				let perm = ''
-				for (let check of row.querySelectorAll('input')) {
-					if (check.checked)
-						perm += check.value
-				}
-				ret[row.dataset.id] = perm
-			}
-			return ret
 		}
 	},
 	// type: Date/null

@@ -42,26 +42,25 @@ function immediate() {
 		}
 		console.log("🌄 Got own userdata")
 		Req.me = me
-		do_when_ready(()=> View.update_my_user(Req.me))
+		do_when_ready(()=> Sidebar.redraw_my_avatar())
 	})
 	
-	StatusDisplay.global.set_status("active")
+	Lp.set_status(0, 'active')
 	
 	Lp.start_websocket()
 	
 	Act.pull_recent()
 	
-	Nav.init()
-	
+	Nav.start()
 }
 
 function dom_ready() {
 	console.log("🌄 DOCUMENT READY")
 	
-	View.$header = $titlePane
+	//View.$header = $titlePane
 	
 	print("running "+run_on_load.length+" deferred items")
-	do_when_ready = x=>x()
+	do_when_ready = x=>{x()}
 	do_when_ready.then = null
 	run_on_load.forEach(x=>x())
 	run_on_load = null

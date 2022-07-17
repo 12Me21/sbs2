@@ -65,90 +65,6 @@ const Draw = NAMESPACE({
 		return a
 	}.bind(𐀶`<a tabindex=-1 role=gridcell>`),
 	
-	//📥 user‹User›
-	//📤 ‹ParentNode›
-	userlist_avatar: function(user, status) {
-		let e = this()
-		e.href = Nav.entity_link(user)
-		e.firstChild.src = Draw.avatar_url(user)
-		e.firstChild.title = user.username
-		e.dataset.uid = user.id
-		if (status == "idle")
-			e.classList.add('status-idle')
-		return e
-	}.bind(𐀶`<a tabindex=-1><img class='avatar' width=100 height=100 alt="">`),
-	
-	//📥 comment‹Message›
-	//📤 ‹ParentNode›
-	message_block: function(comment) {
-		let e = this.block()
-		
-		let author = comment.Author
-		
-		e.dataset.uid = comment.createUserId
-		e.nonce = comment.Author.merge_hash
-		
-		let avatar
-		if (author.bigAvatar) {
-			avatar = this.big_avatar()
-			let url = Req.file_url(author.bigAvatar, "size=500")
-			avatar.style.backgroundImage = `url("${url}")`
-		} else {
-			avatar = this.avatar()
-			avatar.src = Draw.avatar_url(author)
-		}
-		e.prepend(avatar)
-		
-		let name = e.querySelector('message-username') // todo: is queryselector ok?
-		let username
-		if (author.nickname == null) {
-			username = author.username
-		} else {
-			username = author.nickname
-			if (author.bridge)
-				name.append(this.bridge())
-			else {
-				let nickname = this.nickname()
-				nickname.querySelector('span.pre').textContent = author.username
-				name.append(nickname)
-			}
-		}
-		name.firstChild.textContent = username
-		
-		let time = e.querySelector('time')
-		time.dateTime = comment.createDate
-		time.textContent = Draw.time_string(comment.createDate2)
-		
-		return [e, e.lastChild]
-	}.bind({
-		block: 𐀶`
-<message-block>
-	<message-header>
-		<message-username><span class='username pre'></span>:</message-username>
-		<time></time>
-	</message-header>
-	<message-contents></message-contents>
-</message-block>`,
-		nickname: 𐀶` <span class='real-name-label'>(<span class='pre'></span>)</span>`,
-		bridge: 𐀶` <span class='real-name-label'>[discord bridge]</span>`,
-		avatar: 𐀶`<img class='avatar' width=100 height=100 alt="">`,
-		big_avatar: 𐀶`<div class='bigAvatar'></div>`,
-	}),
-	
-	//📥 comment‹Message›
-	//📤 ‹ParentNode›
-	message_part: function(comment) {
-		let e = this()
-		
-		if (comment.edited)
-			e.className += " edited"
-		
-		e.dataset.id = comment.id
-		e.nonce = comment.createDate2.getTime()
-		Markup.convert_lang(comment.text, comment.values.m, e, {intersection_observer: View.observer})
-		return e
-	}.bind(𐀶`<message-part role=listitem tabindex=-1>`),
-	
 	//📥 date‹Date›
 	//📤 ‹String›
 	time_string(date) {
@@ -197,174 +113,6 @@ const Draw = NAMESPACE({
 		  return Math.round(seconds) + " seconds ago"*/
 	},
 	
-	// todo: switch to grid layout here?
-	// <tr data-id=...>
-	//   <td>...</td>
-	//   <th>
-	//     ? Default
-	//     ? [entity title link]
-	//   </th>
-	//   <td><input type=checkbox checked=... value=r></td>
-	//   <td><input type=checkbox checked=... value=c></td>
-	//   <td><input type=checkbox checked=... value=u></td>
-	//   <td><input type=checkbox checked=... value=d></td>
-	// </tr>
-	permission_row(user, perms) {
-		let id = user.id
-		let row = document.createElement('tr')
-		row.dataset.id = id
-		// remove button
-		if (id) {
-			//let b = Draw.button()
-			b[1].textContent = "remove"
-			b[1].onclick = ()=>{ row.remove() }
-			row.child('td').append(b[0])
-		} else
-			row.child('td')
-		// name label
-		let name
-		if (!id)
-			name = Draw.text_item("Default")
-		else
-			name = entity_title_link(user, true)
-		name.className += " bar rem1-5"
-		row.child('th').append(name)
-		// checkboxes
-		for (let p of ['r', 'c', 'u', 'd']) {
-			let inp = row.child('td').child('input')
-			inp.type = 'checkbox'
-			inp.checked = perms.indexOf(p)>=0
-			inp.value = p
-		}
-		//
-		return row
-	},
-	
-	//
-	user_selector() {
-		let elem = document.createElement('user-select')
-		elem.className = 'bar rem1-5'
-		let input = elem.child('input', 'item')
-		input.placeholder = "Search Username"
-		let dropdown = elem.child('select', 'item')
-		let placeholder = document.createElement('option')
-		placeholder.textContent = "select user..."
-		placeholder.disabled = true
-		placeholder.hidden = true
-		
-		let placeholder2 = document.createElement('option')
-		placeholder2.textContent = "loading..."
-		placeholder2.disabled = true
-		placeholder2.hidden = true
-		
-		let submit = elem.child('button', 'item')
-		submit.textContent = "select"
-		submit.disabled = true
-		
-		let results = null
-		
-		let x = {
-			elem: elem,
-			searchText: null,
-		}
-		input.oninput = ()=>{
-			reset()
-		}
-		View.bind_enter(input, ()=>{
-			dropdown.focus()
-		})
-		View.bind_enter(dropdown, ()=>{
-			if (dropdown.value)
-				submit.click()
-		})
-		dropdown.onfocus = ()=>{
-			if (input.value == x.searchText)
-				return
-			x.searchText = input.value
-			dropdown.fill(placeholder2)
-			placeholder2.selected = true
-			results = true
-			Req.searchUsers(x.searchText).then(({user_map})=>{
-				dropdown.fill()
-				results = user_map
-				submit.disabled = false
-				let found = false
-				for (let [id, user] of user_map) {
-					let option = dropdown.child('option')
-					option.value = user.id
-					option.textContent = user.name
-					found = true
-				}
-				if (!found) {
-					let option = dropdown.child('option')
-					option.value = "0"
-					option.textContent = "(no results)"
-					option.disabled = true
-					dropdown.value = "0"
-					input.focus()
-				}
-			}, (e, resp)=>{
-				dropdown.fill()
-				x.searchText = null //error
-			})
-		}
-		let reset = ()=>{
-			if (results) {
-				submit.disabled = true
-				dropdown.fill(placeholder)
-				placeholder.selected = true
-				results = null
-				x.searchText = null
-			}
-		}
-		submit.onclick = ()=>{
-			let uid = +dropdown.value
-			if (uid) {
-				x.onchange(results[uid])
-				input.focus()
-				input.value = ""
-				reset()
-			}
-		}
-		results = true
-		reset()
-		return x
-	},
-	
-	sidebar_comment: function(comment) {
-		let d = this()
-		d.dataset.id = comment.id
-		
-		// for bridge messages, display nicknames instead of username
-		let author = comment.Author
-		let name = author.bridge ? author.nickname+"*" : author.username
-		
-		d.title = `${name} in ${comment.contentId}:\n${comment.text}`
-		// todo: page name 🥺  oh︕ emojis render in italic? don't remember adding that...   we should store refs to pages but like intern them so its not a memory leak...
-		
-/*todo: fix,		if (comment.editDate && comment.editUserId!=comment.createUserId) {
-			d.append(
-				entity_title_link(comment.editUser),
-				" edited ",
-			)
-			}*/
-		let link = d.firstChild
-		link.href = "#user/"+comment.createUserId
-		link.firstChild.src = Draw.avatar_url(author)
-		link.lastChild.textContent = name
-		
-		d.append(comment.text.replace(/\n/g, "  "))
-		
-		return d
-	}.bind(𐀶`
-<div class='bar rem1-5 sidebarComment ellipsis'>
-	<a tabindex=-1 class='user-label'>
-		<img class='item icon avatar' width=100 height=100>
-		<span class='textItem entity-title pre'></span>
-	</a>:&#32;
-</div>
-`),
-	
 	user_label: function(user) {
 		let e = this()
 		e.href = "#user/"+user.id
@@ -390,6 +138,95 @@ const Draw = NAMESPACE({
 	}
 })
 
+
+
+class StatusDisplay {
+	constructor(id, element) {
+		this.id = id
+		this.$elem = element
+		this.my_status = undefined
+		Object.seal(this)
+	}
+	redraw() {
+		if (!this.$elem)
+			return
+		this.$elem.fill()
+		Object.for(this.statuses(), (status, id)=>{
+			let user = StatusDisplay.get_user(id)
+			this.$elem.append(StatusDisplay.draw_avatar(user, status))
+		})
+	}
+	// set your own status
+	set_status(s) {
+		// todo: maybe there's a better place to filter this
+		if (s==this.my_status)
+			return
+		this.my_status = s
+		Lp.set_status(this.id, s)
+	}
+	// when a user's avatar etc. changes
+	redraw_user(user) {
+		if (this.statuses[user.id])
+			this.redraw()
+	}
+	// get statuses for this room
+	statuses() {
+		return StatusDisplay.statuses[this.id] || {__proto__:null}
+	}
+	
+	// lookup a user from the cache
+	static get_user(id) {
+		let user = this.users[~id]
+		if (!user)
+			throw new TypeError("can't find status user "+id)
+		return user
+	}
+	// called during `userlistupdate`
+	static update(statuses, objects) {
+		Object.assign(this.statuses, statuses)
+		Object.assign(this.users, objects.user)
+		//
+		let li = Events.userlist
+		Object.for(statuses, (st, pid)=>{
+			li.fire_id(pid, st)
+		})
+	}
+	// called during `user_event` (i.e. when a user is edited)
+	static update_user(user) {
+		if (this.users[~user.id])
+			this.users[~user.id] = user
+	}
+	// download userlist for this page if we're not already tracking it
+	static prepare(pid) {
+		if (this.statuses[pid])
+			return
+		Lp.userlist(resp=>{
+			if (this.statuses[pid])
+				return
+			this.update(resp.statuses, resp.objects)
+		})
+	}
+}
+// map(contentId -> map(userId -> status))
+StatusDisplay.statuses = {__proto__:null}
+// todo: this is never cleared, so technically it leaks memory.
+// but unless there are thousands of users, it won't matter
+// map(userId -> user)
+StatusDisplay.users = {__proto__:null}
+
+StatusDisplay.draw_avatar = function(user, status) {
+	let e = this()
+	e.href = Nav.entity_link(user)
+	e.firstChild.src = Draw.avatar_url(user)
+	e.firstChild.title = user.username
+	e.dataset.uid = user.id
+	if (status == "idle")
+		e.classList.add('status-idle')
+	return e
+}.bind(𐀶`<a tabindex=-1><img class='avatar' width=100 height=100 alt="[fuck]">`)
+
+
+
 class ResizeBar {
 	constructor(element, tab, side, save, def) {
 		this.$elem = element
@@ -413,6 +250,8 @@ class ResizeBar {
 		}
 		if (def!=null)
 			this.update_size(def)
+		
+		Object.seal(this)
 	}
 	event_pos(ev) {
 		if (ev.touches)
@@ -458,3 +297,63 @@ class ResizeBar {
 	}
 }
 ResizeBar.init()
+
+
+
+let button_template = 𐀶`<button role=tab aria-selected=false>`
+
+class Tabs {
+	constructor(def, elem=document.createElement('tab-list'), name=Tabs.id++) {
+		
+		this.tabs = def
+		this.elem = elem
+		
+		this.elem.setAttribute('role', 'tablist')
+		for (let tab of this.tabs) {
+			if (!tab.elem.id)
+				tab.elem.id = name+"-panel-"+tab.name
+			
+			let btn = tab.btn = button_template()
+			btn.id = name+"-tab-"+tab.name
+			btn.setAttribute('aria-controls', tab.elem.id)
+			btn.tabIndex = -1
+			btn.dataset.name = tab.name
+			btn.onclick = e=>{
+				switch_tab(btn)
+				if (tab.onswitch)
+					tab.onswitch()
+			}
+			btn.append(tab.label)
+			if (tab.accesskey)
+				btn.setAttribute('accesskey', tab.accesskey)
+			this.elem.append(btn)
+			
+			tab.elem.setAttribute('role', "tabpanel")
+			//tab.elem.tabIndex = -1
+			tab.elem.setAttribute('aria-labelledby', btn.id)
+		}
+	}
+	select(name) {
+		let tab = this.tabs.find(tab=>tab.name==name)
+		if (tab)
+			switch_tab(tab.btn, true)
+	}
+	
+	static draw_button(name, data, panel) {
+		let btn = button_template()
+		btn.id = name+"-tab-"+data.name
+		btn.setAttribute('aria-controls', panel.id)
+		btn.tabIndex = -1
+		btn.dataset.name = tab.name
+		btn.onclick = ev=>{
+			switch_tab(btn)
+			data.onswitch && data.onswitch() // todo: make this an event listener or something on panel instead
+		}
+		btn.append(data.label)
+		if (data.accesskey)
+			btn.accessKey = tab.accesskey
+		
+		this.elem.append(btn)
+	}
+}
+Tabs.id = 1

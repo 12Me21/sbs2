@@ -141,7 +141,6 @@
 <link rel=stylesheet href=src/style.css>
 <link rel=stylesheet href=markup2/markup.css>
 <link rel=stylesheet href=src/theme.css>
-<link rel=stylesheet href=src/code.css>
 <style id=$customCSS></style>
 
 <script src=markup2/langs.js></script>
@@ -151,10 +150,9 @@
 <script src=markup2/runtime.js></script>
 <script src=markup2/helpers.js></script>
 
-<script src=markup2/url.js></script>
-
 <script src=src/fill.js></script>
 
+<script src=src/event.js></script>
 <script src=src/settings.js></script>
 <script src=src/ABOUT.js></script>
 <script src=src/entity.js></script>
@@ -165,37 +163,34 @@
 
 <script src=src/keyboard.js></script>
 <script src=src/draw.js></script>
+<script src=src/messages.js></script>
 <script src=src/input.js></script>
-
-<script src=src/debug.js></script>
 <script src=src/scroller.js></script>
-<script src=src/sidebar.js></script>
-<script src=src/chat.js></script>
+<script src=src/debug.js></script>
+<script src=src/upload.js></script>
 
+<script src=src/sidebar.js></script>
 <script src=src/Views/page.js></script>
 <script src=src/Views/user.js></script>
 <script src=src/Views/comments.js></script>
 <script src=src/Views/editpage.js></script>
 <script src=src/Views/images.js></script>
-<script src=src/tts.js></script>
 
 <script src=src/navigate.js></script>
-
 <script src=src/main.js></script>
 <!--END-->
 
 <body class='resize-box ROW'>
-
-<not-sidebar class='FILL COL'>
+<not-sidebar class='FILL ROW' id=$main_slides>
+<button id=$openSidebar class='toggle-sidebar'>
+	<span id=$socketPending></span>| | |
+</button>
 
 	<!--=======\
 	|| HEADER ||
 	\========-->
-	<header class='page-header bar loadBG' style="--bar-height:2.25rem" id=$titlePane tabindex=-1 accesskey="q">
+	<!--<header class='page-header bar loadBG' style="--bar-height:2.25rem" id=$titlePane tabindex=-1 accesskey="q">
 		<div class='textItem' style="float:right">
-			<button id=$openSidebar class='item toggle-sidebar'>
-				<span id=$socketPending></span>| | |
-			</button>
 		</div>
 		<noscript>if you're reading this, your html parser is broken, or js was disabled after the page loaded (probably by a browser extension)</noscript>
 		<span data-view=editpage>
@@ -206,19 +201,19 @@
 			<a data-view=page id=$pageCommentsLink>logs</a>
 			<a data-view=page id=$pageEditLink>edit</a>
 			<a data-view=editpage id=$editPageLink>back</a>
-			<!-- todo: tab navigation order is kinda bad here, ideally shift+tab from the editor should take you to the save button. maybe make the header a LIST, and use arrows to select item -->
+			!-- todo: tab navigation order is kinda bad here, ideally shift+tab from the editor should take you to the save button. maybe make the header a LIST, and use arrows to select item --
 			<a data-view=user id=$userPageLink>page</a>
 		</div>
-	</header>
+	</header>-->
 
-	<main class='FILL SLIDES' id=$main_slides></main>
+	<!--<main class='FILL ROW' id=$main_slides></main>-->
 </not-sidebar>
 
 
 <!--========\
 || SIDEBAR ||
 \=========-->
-<resize-handle id=$horizontalResize class='sidebar-element'></resize-handle>
+<div id=$horizontalResize class='sidebar-element resize-handle'></div>
 
 <sidebar-container id=$sidebar class='sized resize-box sidebar-element COL'>
 	<button class='toggle-sidebar' id=$closeSidebar>Close Sidebar</button>
@@ -273,7 +268,6 @@
 				<button onclick='RELOAD()'>Reload</button>
 				<button onclick='Lp.start_websocket(true)'>Reset Socket</button>
 				<button onclick='for(let sheet of document.styleSheets)if(sheet.href)sheet.ownerNode.href+="#"'>reload css</button>
-				<button onclick='TTSSystem.cancel()' onmouseover='this.title = `${TTSSystem.queue.length} messages in TTS queue`'>Stop TTS</button>
 				
 				<button id=$logOut style="float:right">Log out</button>
 			</div>
@@ -297,7 +291,7 @@
 		</sidebar-panel>
 	</div>
 	
-	<resize-handle id=$sidebarResize></resize-handle>
+	<div id=$sidebarResize class='resize-handle'></div>
 	
 	<div class='FILL' id=$sidebarBottom>
 		<scroll-outer>

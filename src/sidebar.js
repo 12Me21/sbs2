@@ -1,50 +1,10 @@
 'use strict'
 
-let button_template = 𐀶`<button role=tab aria-selected=false>`
-
-class Tabs {
-	constructor(def, elem=document.createElement('tab-list'), name=Tabs.id++) {
-		
-		this.tabs = def
-		this.elem = elem
-		
-		this.elem.setAttribute('role', 'tablist')
-		for (let tab of this.tabs) {
-			if (!tab.elem.id)
-				tab.elem.id = name+"-panel-"+tab.name
-			
-			let btn = tab.btn = button_template()
-			btn.id = name+"-tab-"+tab.name
-			btn.setAttribute('aria-controls', tab.elem.id)
-			btn.tabIndex = -1
-			btn.dataset.name = tab.name
-			btn.onclick = e=>{
-				switch_tab(btn)
-				if (tab.onswitch)
-					tab.onswitch()
-			}
-			btn.append(tab.label)
-			if (tab.accesskey)
-				btn.setAttribute('accesskey', tab.accesskey)
-			this.elem.append(btn)
-			
-			tab.elem.setAttribute('role', "tabpanel")
-			//tab.elem.tabIndex = -1
-			tab.elem.setAttribute('aria-labelledby', btn.id)
-		}
-	}
-	select(name) {
-		let tab = this.tabs.find(tab=>tab.name==name)
-		if (tab)
-			switch_tab(tab.btn, true)
-	}
-}
-Tabs.id = 1
-
 const Sidebar = NAMESPACE({
 	scroller: null,
 	tabs: null,
 	$my_avatar: null,
+	userlist: new StatusDisplay(0, null),
 	
 	onload() {
 		$openSidebar.onclick = $closeSidebar.onclick = e=>{
@@ -67,7 +27,7 @@ const Sidebar = NAMESPACE({
 		
 		this.tabs = new Tabs([
 			{name: 'activity', label: "✨", elem: $sidebarActivityPanel, accesskey: 'a'},
-			{name: 'watch', label: "W", elem: $sidebarWatchPanel, accesskey: 'w' },
+			{name: 'watch', label: "🔖", elem: $sidebarWatchPanel, accesskey: 'w' },
 			//{label: "W", elem: $sidebarWatchPanel},
 			
 			{name: 'search', label: "🔍", elem: $sidebarNavPanel, onswitch: ()=>{
@@ -144,6 +104,8 @@ const Sidebar = NAMESPACE({
 			{name: 'debug', label: "db", elem: $settings_4},
 		], $settings_tabs, "settings")
 		st.select('btns')*/
+		this.userlist.$elem = $sidebarUserList
+		this.userlist.redraw()
 	},
 	
 	printing: false,
@@ -198,7 +160,7 @@ const Sidebar = NAMESPACE({
 	
 	displayed_ids: {},
 	
-	display_messages(comments, initial) {
+	display_messages(comments, initial=false) {
 		// todo: show page titles?
 		this.scroller.print(inner=>{
 			for (let c of comments) {
@@ -209,9 +171,17 @@ const Sidebar = NAMESPACE({
 						delete this.displayed_ids[c.id]
 						this.message_count--
 					}
-				} else {
-					let nw = Draw.sidebar_comment(c)
+				} else if (c.edited) {
 					if (old) {
+						let nw = Sidebar.draw_comment(c)
+						old.replaceWith(nw)
+						this.displayed_ids[c.id] = nw
+					} else {
+					}
+				} else {
+					let nw = Sidebar.draw_comment(c)
+					if (old) {
+						// shouldn't happen
 						old.replaceWith(nw)
 					} else {
 						inner.append(nw)
@@ -240,7 +210,65 @@ const Sidebar = NAMESPACE({
 			})
 	},
 	
+	draw_comment: function(comment) {
+		let d = this()
+		d.dataset.id = comment.id
+		
+		// for bridge messages, display nicknames instead of username
+		let author = comment.Author
+		let name = author.bridge ? author.nickname+"*" : author.username
+		
+		d.title = `${name} in ${comment.contentId}:\n${comment.text}`
+		// todo: page name 🥺  oh︕ emojis render in italic? don't remember adding that...   we should store refs to pages but like intern them so its not a memory leak...
+		
+		/*todo: fix,		if (comment.editDate && comment.editUserId!=comment.createUserId) {
+		  d.append(
+		  entity_title_link(comment.editUser),
+		  " edited ",
+		  )
+		  }*/
+		let link = d.firstChild
+		link.href = "#user/"+comment.createUserId
+		link.firstChild.src = Draw.avatar_url(author)
+		link.lastChild.textContent = name
+		
+		d.append(comment.text.replace(/\n/g, "  "))
+		
+		return d
+	}.bind(𐀶`
+<div class='bar rem1-5 sidebarComment ellipsis'>
+	<a tabindex=-1 class='user-label'>
+		<img class='item icon avatar' width=100 height=100>
+		<span class='textItem entity-title pre'></span>
+	</a>:&#32;
+</div>
+`),
+	
+	redraw_my_avatar() {
+		let icon = Draw.avatar(Req.me)
+		this.$my_avatar.fill(icon)
+	},
+	
+	init() {
+		Events.messages.listen(this, c=>{
+			this.scroller.lock()
+			this.display_messages(c)
+		})
+		Events.after_messages.listen(this, ()=>{
+			this.scroller.unlock()
+		})
+		Events.userlist.listen_id(this, 0, x=>{
+			this.userlist.redraw()
+		})
+		Events.user_edit.listen(this, user=>{
+			if (user.uid==Req.uid)
+				this.update_my_avatar()
+			this.userlist.redraw_user(user)
+		})
+	}
 })
+
+Sidebar.init()
 
 window.print = Sidebar.print.bind(Sidebar)
 Object.defineProperty(window, 'log', {
@@ -250,208 +278,3 @@ Object.defineProperty(window, 'log', {
 })
 
 do_when_ready(x=>Sidebar.onload())
-
-
-
-const FileUploader = NAMESPACE({
-	file: null,
-	last_file: null,
-	file_upload_form: null,
-	
-	onload() {
-		this.file_upload_form = new Form({
-			fields: [
-				['size', 'output', {label: "Size"}], //todo: separate set of output fields?
-				['name', 'text', {label: "File Name"}],
-				['hash', 'text', {label: "Hash"}],
-				['bucket', 'text', {label: "Bucket"}],
-				['quantize', 'select', {
-					options: [null, 2, 4, 8, 16, 32, 64, 256],
-					label: "Quantize",
-					option_labels: ["no", "2", "4", "8", "16", "32", "64", "256"],
-				}],
-			],
-		})
-		$file_upload_form.replaceWith(this.file_upload_form.elem)
-		this.file_cancel()
-		
-		document.addEventListener('paste', e=>{
-			let data = e.clipboardData
-			if (data && data.files) {
-				let file = data.files[0]
-				if (file && (/^image\//).test(file.type))
-					this.got_file(file)
-			}
-		})
-		document.addEventListener('dragover', e=>{
-			if (e.dataTransfer.types.includes("Files"))
-				e.preventDefault()
-		})
-		document.addEventListener('drop', e=>{
-			if (e.target instanceof HTMLTextAreaElement)
-				return
-			let file = e.dataTransfer.files[0]
-			if (file) {
-				e.preventDefault()
-				if (/^image\//.test(file.type))
-					this.got_file(file)
-			}
-		})
-		
-		//todo: write decoder for xpm :)
-		$file_browse.onchange = e=>{
-			let file = $file_browse.files[0]
-			try {
-				file && this.got_file(file)
-			} finally {
-				$file_browse.value = ""
-			}
-		}
-		$file_cancel.onclick = $file_done.onclick = e=>{
-			this.file_cancel()
-		}
-		$file_url_insert.onclick = e=>{
-			let file = this.last_file
-			if (!file) return
-			if (!View.current.Insert_Text) return
-			
-			let url = Req.file_url(file.hash)
-			
-			let meta = JSON.parse(file.meta)
-			let markup = Settings.values.chat_markup
-			if (markup=='12y') {
-				url = "!"+url
-				if (meta.width && meta.height)
-					url += "#"+meta.width+"x"+meta.height
-			} else if (markup=='12y2') {
-				url = "!"+url
-				if (meta.width && meta.height)
-					url += "["+meta.width+"x"+meta.height+"]"
-			}
-			
-			Sidebar.close_fullscreen()
-			View.current.Insert_Text(url)
-		}
-		$file_upload.onclick = Draw.event_lock(done=>{
-			if (!this.file) return void done()
-			
-			this.file_upload_form.read()
-			let data = this.file_upload_form.get()
-			
-			let params = {
-				tryresize: true,
-				name: data.name || "",
-				values: {},
-			}
-			let priv = false
-			if (data.bucket!=null) {
-				params.values.bucket = data.bucket || ""
-				priv = true
-			}
-			// ok this is silly. why even bother with the Form thing
-			if (data.quantize)
-				params.quantize = data.quantize
-			if (data.hash)
-				params.hash = data.hash
-			if (priv)
-				params.globalPerms = ""
-			print(`uploading ${priv?"private":"public"} file...`)
-			
-			Req.upload_file(this.file, params).do = (file, err)=>{
-				done()
-				if (err) return
-				
-				if (priv && file.permissions[0])
-					alert("file permissions not set correctly!\nid:"+file.id)
-				
-				this.show_content(file)
-			}
-		})
-		$file_url.onfocus = e=>{
-			window.setTimeout(()=>{
-				$file_url.select()
-			})
-		}
-	},
-	
-	show_content(content) {
-		let url = Req.file_url(content.hash)
-		this.show_parts(2, url, null)
-		$file_upload_page.href = "#page/"+content.hash
-		this.last_file = content
-	},
-	
-	convert_image(file, quality, callback) {
-		let img = new Image()
-		img.onload = e=>{
-			let canvas = document.createElement('canvas')
-			canvas.width = img.width
-			canvas.height = img.height
-			let c2d = canvas.getContext('2d')
-			c2d.drawImage(img, 0, 0)
-			URL.revokeObjectURL(img.src)
-			let name = file.name
-			file = null
-			let format = quality!=null ? 'jpeg' : 'png'
-			canvas.toBlob(x=>{
-				if (x)
-					x.name = name+"."+format
-				callback(x)
-			}, "image/"+format, quality)
-		}
-		img.onerror = e=>{
-			URL.revokeObjectURL(img.src)
-			callback(null)
-		}
-		img.src = URL.createObjectURL(file)
-	},
-	
-	// file is only set if we're uploading a file
-	show_parts(phase, url, file) {
-		$file_browse.hidden = phase!=0
-		$file_cancel.hidden = phase!=1
-		$file_upload.hidden = phase!=1
-		this.file_upload_form.elem.hidden = phase!=1
-		$file_url_insert.hidden = phase!=2
-		$file_url.hidden = phase!=2
-		$file_done.hidden = phase!=2
-		$file_upload_page.hidden = phase!=2
-		// we set to "" first, so the old image isnt visible whilst the new one is loading
-		$file_image.src = ""
-		if (url) {
-			$file_image.src = url
-			$file_url.value = url
-			$file_url.scrollLeft = 999
-		} else {
-			$file_url.value = ""
-		}
-		this.file = file || null
-	},
-	file_cancel() {
-		this.show_parts(0, null, null)
-	},
-	
-	got_file(file) {
-		if (file.type=='image/webp')
-			return this.convert_image(file, 0.7, x=>{
-				if (!x) {
-					print('image conversion failed!')
-					return
-				}
-				this.got_file(x)
-			})
-		
-		let url = URL.createObjectURL(file)
-		this.show_parts(1, url, file)
-		URL.revokeObjectURL(url)
-		this.file_upload_form.set_some({
-			size: (file.size/1000)+" kB",
-			name: file.name,
-			hash: null,
-		})
-		this.file_upload_form.write()
-		Sidebar.tabs.select('file')
-	},
-})
-
-do_when_ready(x=>FileUploader.onload())

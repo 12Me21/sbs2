@@ -9,12 +9,11 @@
 //;['wheel','keydown','mousedown','mousemove','touchstart'].forEach(event => document.addEventListener(event, registerActivity))
 //window.addEventListener('focus', registerActivity)
 
-//todo: views should be classes that extend a base class
-// then, most of the query is static and etc.
-
 class PageView extends BaseView {
 	Start({id, query}) {
 		let field = 'number'==typeof id ? 'id' : 'hash'
+		if (field=='id')
+			StatusDisplay.prepare(id)
 		return {
 			chain: {
 				values: {
@@ -35,6 +34,7 @@ class PageView extends BaseView {
 		if (View.lost)
 			this.$textarea.value = View.lost
 		this.editing = null
+		this.pre_edit = null
 		
 		this.$textarea.enterKeyHint = Settings.values.chat_enter!='newline' ? "send" : "enter" // uh this won't update though... need a settings change watcher
 		this.$textarea_container.onkeydown = e=>{
@@ -61,6 +61,12 @@ class PageView extends BaseView {
 				this.edit_comment(null)
 		}
 		
+		this.$watching.onchange = Draw.event_lock(done=>{
+			// todo: check for err
+			Req.set_watch(this.page_id, this.$watching.checked).do = resp=>{
+				done()
+			}
+		})
 		// todo: make the oninput eventhandler just a shared function since it only acts on e.target?
 		let r = this.textarea_resize.bind(this)
 		this.$textarea_container.addEventListener('input', r, {passive: true})
@@ -74,25 +80,58 @@ class PageView extends BaseView {
 				this.edit_comment(e.detail.data)
 			}
 		})
-		
-		
-		this.$watching.onchange = Draw.event_lock(done=>{
-			// todo: check for err
-			Req.set_watch(this.page_id, this.$watching.checked).do = resp=>{
-				done()
-			}
-		})
 	}
 	Render({message, content:[page], Mpinned:pinned, user, watch}) {
 		this.page_id = page.id
-		PageView.rooms[this.id] = this
 		
+		// header //
+		this.Slot.set_entity_title(page)
+		this.Slot.add_header_links([
+			{label:"logs", href:"#comments/"+page.id+"?r"},
+			{label:"edit", href: "#editpage/"+page.id},
+		])
+		
+		// init components //
+		Object.assign(StatusDisplay.users, user)
 		this.userlist = new StatusDisplay(this.page_id, this.$userlist)
-		
 		this.scroller = new Scroller(this.$outer, this.$inner)
-		// chat messages
 		this.list = new MessageList(this.$message_list, this.page_id)
+		this.pinned_list = null
 		
+		// draw stuff //
+		this.update_page(page, user)
+		this.update_watch(watch[0])
+		
+		this.userlist.set_status("active")
+		this.userlist.redraw()
+		
+		if (pinned instanceof Array && pinned.length)
+			this.update_pinned(pinned, user)
+		
+		message.reverse()
+		this.display_messages(message, true)
+		
+		// add event listeners //
+		Events.messages.listen(this, (messages)=>{
+			let c = messages.filter(msg=>{
+				return msg.contentId==this.page_id || ((msg.edited||msg.deleted) && this.list.parts.has(msg.id))
+			})
+			if (c.length) {
+				this.scroller.lock()
+				this.display_messages(c)
+			}
+		})
+		Events.after_messages.listen(this, ()=>{
+			this.scroller.unlock()
+		})
+		Events.userlist.listen_id(this, this.page_id, c=>{
+			this.userlist.redraw()
+		})
+		Events.user_edit.listen(this, user=>{
+			this.userlist.redraw_user(user)
+		})
+		
+		// etc
 		this.$load_older.onclick = Draw.event_lock(done=>{
 			// todo: preserve scroll position
 			this.list.draw_messages_near(false, 50, ()=>{
@@ -100,64 +139,30 @@ class PageView extends BaseView {
 			})
 		})
 		
-		// resize handle
 		let height = null //height = 0
 		new ResizeBar(this.$page_container, this.$resize_handle, 'top', 'setting--divider-pos-'+this.page_id, height)
-		///////////
-		
-		this.update_page(page, user)
-		this.update_watch(watch[0])
-		
-		this.userlist.set_status("active")
-		this.userlist.redraw()
-		
-		View.set_entity_title(page)
-		
-		if (pinned instanceof Array && pinned.length) {
-			let separator = document.createElement('div')
-			separator.className = "messageGap"
-			this.$extra.prepend(separator)
-			
-			const list = document.createElement('message-list')
-			this.pinned_list = new MessageList(list, this.page_id)
-			this.$extra.prepend(list)
-			
-			Entity.link_comments({message:pinned, user})
-			
-			for (const m of pinned)
-				this.pinned_list.display_message(m, false)
-		}
-		
-		message.reverse()
-		this.display_messages(message, true)
 		
 		//let can_edit = /u/i.test(page.permissions[Req.uid]) // unused
-		
-		$pageCommentsLink.href = "#comments/"+page.id+"?r" // todo: location
-		$pageEditLink.href = "#editpage/"+page.id
 		
 		let can_talk = page.createUserId==Req.uid || Entity.has_perm(page.permissions, Req.uid, 'C')
 		this.$textarea.disabled = !can_talk
 		if (can_talk)
 			this.$textarea.focus()
 	}
-	Visible() {
-		this.textarea_resize()
+	update_pinned(pinned, user) {
+		Entity.link_comments({message:pinned, user})
+		const list = document.createElement('message-list')
+		this.pinned_list = new MessageList(list, this.page_id)
+		
+		let separator = document.createElement('div')
+		separator.className = "messageGap"
+		
+		this.scroller.print_top(()=>{
+			this.$extra.prepend(separator)
+			this.$extra.prepend(list)
+			this.pinned_list.display_messages(pinned)
+		})
 	}
-	// 8:10;35
-	Destroy(type) {
-		View.lost = this.$textarea.value
-		this.dead = true
-		this.userlist.set_status(null)
-		delete PageView.rooms[this.page_id]
-		this.scroller.destroy()
-		PageView.track_resize_2.remove(this.$textarea_container)
-	}
-	Insert_Text(text) {
-		Edit.insert(this.$textarea, text)
-	}
-
-	// render the watch state
 	update_watch(watch) {
 		this.watch = watch
 		this.$watching.checked = !!this.watch
@@ -191,6 +196,21 @@ class PageView extends BaseView {
 		this.$author.fill(Draw.user_label(this.author))
 		//this.$edit_date
 	}
+	Visible() {
+		this.textarea_resize()
+	}
+	// 8:10;35
+	Destroy(type) {
+		View.lost = this.$textarea.value
+		this.userlist.set_status(null)
+		this.scroller.destroy()
+		PageView.track_resize_2.remove(this.$textarea_container)
+	}
+	Insert_Text(text) {
+		Edit.insert(this.$textarea, text)
+	}
+
+	// render the watch state
 	my_last_message() {
 		// this is kinda bad, we scan in the wrong direction and choose the last match.
 		// but it's the best we can do, with Map or object, since there's no way to iterate backwards
@@ -210,7 +230,12 @@ class PageView extends BaseView {
 		this.scroller.print(inner=>{
 			for (let comment of comments)
 				this.list.display_message(comment, false)
-		}, !initial && View.current==this)
+		}, !initial)
+		if (!initial) {
+			let last = comments.findLast(msg=>Entity.is_new_comment(msg))
+			if (last)
+				View.comment_notification(last)
+		}
 		if (this.list.over_limit() && !this.$limit_checkbox.checked) {
 			this.scroller.print_top(inner=>{
 				this.list.limit_messages()
@@ -312,47 +337,29 @@ class PageView extends BaseView {
 			this.$textarea.setSelectionRange(99999, 99999) // move cursor to end
 		})
 	}
-
-	// display a list of messages from multiple rooms
-	static handle_messages(comments) {
-		// for each room, display all of the new comments for that room
-		Object.for(this.rooms, room=>{
-			let c = comments.filter(c => c.contentId==room.page_id)
-			if (c.length)
-				room.display_messages(c)
-		})
-	}
-	static scroll_lock(lock) {
-		for (let room of Object.values(this.rooms))
-			lock ? room.scroller.lock() : room.scroller.unlock()
-	}
 }
 PageView.track_resize_2 = new ResizeTracker('width')
 PageView.template = HTML`
-<view-root class='COL'>
-	<div class='FILL SLIDES' $=panes>
-		<chat-pane class='resize-box shown COL'>
-			<scroll-outer class='sized page-container' $=page_container>
-				<div class='pageInfoPane bar rem1-5'>
-					<label>Watching: <input type=checkbox $=watching></label>
-					<span $=author style='margin: 0 0.5rem;'></span>
-					<span $=create_date>Created: <time></time></span>
-				</div>
-				<div class='pageContents' $=page_contents></div>
-			</scroll-outer>
-			<resize-handle $=resize_handle class='userlist2' style='--bar-height:2.4375rem'><div $=userlist class='userlist'></div></resize-handle>
-			<scroll-outer class='FILL' $=outer>
-				<scroll-inner $=inner>
-					<div $=extra>
-						<button $=load_older>load older messages</button>
-						<label><input type=checkbox $=limit_checkbox>disable limit</label>
-					</div>
-					<message-list $=message_list></message-list>
-					<div class='chat-bottom' tabindex=0></div>
-				</scroll-inner>
-			</scroll-outer>
-		</chat-pane>
-	</div>
+<view-root class='COL resize-box'>
+	<scroll-outer class='page-container sized' $=page_container>
+		<div class='pageInfoPane bar rem1-5'>
+			<label>Watching: <input type=checkbox $=watching></label>
+			<span $=author style='margin: 0 0.5rem;'></span>
+			<span $=create_date>Created: <time></time></span>
+		</div>
+		<div class='pageContents' $=page_contents></div>
+	</scroll-outer>
+	<div $=resize_handle class='userlist2 resize-handle' style='--bar-height:2.4375rem'><div $=userlist class='userlist'></div></div>
+	<scroll-outer class='FILL' $=outer>
+		<scroll-inner $=inner>
+			<div $=extra>
+				<button $=load_older>load older messages</button>
+				<label><input type=checkbox $=limit_checkbox>disable limit</label>
+			</div>
+			<message-list $=message_list></message-list>
+			<div class='chat-bottom' tabindex=0></div>
+		</scroll-inner>
+	</scroll-outer>
 	<div class='inputPane ROW'>
 		<div class='showWhenEdit COL'>
 			<input $=markup placeholder="markup" style="width:50px;">
@@ -369,21 +376,14 @@ PageView.template = HTML`
 	</div>
 </view-root>
 `
-PageView.rooms = {__proto__:null}
 
 View.register('page', PageView)
 View.register('pages', {
-	Redirect(location) {location.type='page'},
+	Redirect(location) {location.type='content'},
 })
 View.register('category', {
-	Redirect(location) {location.type='page'},
+	Redirect(location) {location.type='content'},
 })
-
-//todo: some unified system for listening to updates relating to the current page/pageid
-// - message create/delete/edit
-// - watch create/delete/edit
-// - content edit/delete
-// - user status changes
 
 Settings.add({
 	name: 'nickname', label: "Chat Nickname", type: 'text',

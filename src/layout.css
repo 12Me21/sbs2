@@ -56,6 +56,51 @@ html, body {
 .COL > * { flex: none; min-height: 0; }
 .FILL { flex: 0mm; }
 
+
+/* views */
+view-slot > view-header {
+	cursor: ew-resize;
+}
+#\$main_slides > view-slot:not(:first-of-type) {
+	border-left: 0.5rem solid var(--databarbgcolor);
+}
+#\$main_slides > view-slot:first-of-type {
+	flex: 0mm;
+}
+view-slot {
+	display: flex;
+	flex-flow: column;
+	min-width: 4rem !important;
+	width: 50%;
+}
+view-slot:nth-child(n) > view-root {
+	flex: 0mm;
+}
+
+
+/* use solid backgrounds on elements
+ to improve rendering performance + subpixel text usage */
+
+/*
+from what i've noticed, the most important thing is having a solid BG on
+the inner scrolling element (the one which moves when you scroll)
+*/
+/* sized containers */
+.resize-box,
+.SLIDES, .SLIDES > *,
+scroll-outer,
+sidebar-panel {
+	contain: strict;
+	background: var(--T-bg);
+}
+/* their scrolling contents */
+.resize-box > *,
+sidebar-panel > *,
+scroll-outer > *,
+scroll-middle, scroll-inner, message-list {
+	background-color: inherit;
+}
+
 /*********/
 /* all elements with user content, must be tied up */
 .pre {
@@ -244,10 +289,10 @@ but, then we can't add a border to the image
 }
 
 .resize-box > .sized {
-	flex-shrink: 1; /* ? */
+	flex-shrink: 1;
 }
 
-.resize-box > resize-handle {
+.resize-handle {
 	-webkit-touch-callout: none;
 	
 	-webkit-user-select: none;
@@ -257,22 +302,22 @@ but, then we can't add a border to the image
 	background: var(--databarbgcolor);
 	overflow: hidden;
 }
-.resize-box > resize-handle[data-dragging] {
+.resize-handle[data-dragging] {
 	cursor: grabbing;
 }
-.resize-box.COL > resize-handle {
+.COL > .resize-handle {
 	height: var(--handle-width);
 	line-height: var(--handle-width);
 	cursor: ns-resize;
 }
-.resize-box.ROW > resize-handle {
+.ROW > .resize-handle {
 	width: var(--handle-width);
 	cursor: ew-resize;
 }
-.resize-box.COL > resize-handle::before {
+.COL > .resize-handle::before {
 	content: "↕︎";
 }
-.resize-box.ROW > resize-handle::before {
+.ROW > .resize-handle::before {
 	display: block;
 	content: "↔︎";
 	text-align: center;
@@ -341,28 +386,3 @@ ul, ol, li, /* bullets render outside */
 td, th {  /* border renders outside */
 	contain: none;
 }
-
-/* use solid backgrounds on elements
- to improve rendering performance + subpixel text usage */
-
-/* sized containers */
-.resize-box,
-.SLIDES, .SLIDES > *,
-scroll-outer,
-sidebar-panel {
-	contain: strict;
-	background: var(--T-bg);
-}
-
-/* their scrolling contents */
-.resize-box > *,
-sidebar-panel > *,
-scroll-outer > *,
-scroll-middle, scroll-inner, message-list {
-	background-color: inherit;
-}
-
-/*
-from what i've noticed, the most important thing is having a solid BG on
-the inner scrolling element (the one which moves when you scroll)
-*/

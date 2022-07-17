@@ -6,7 +6,8 @@
 // so, we need to be careful about sorting etc. bc of this discontinuity
 
 class SocketRequestError extends TypeError {
-	constructor(resp, extra) {
+	// 📥 resp: api websocket response object
+	constructor(resp) {
 		super()
 		this.trim_stack(1)
 		this.resp = resp
@@ -16,177 +17,17 @@ class SocketRequestError extends TypeError {
 SocketRequestError.prototype.name = "SocketRequestError"
 
 const Lp = NAMESPACE({
-	handlers: new Map(),
-	handler_id: 1,
-	ready: false,
-	last_id: "",
-	no_restart: false,
-	websocket: null,
-	state_change(state, ping) {
-		// TODO: also use yellow state for when a request has been sent but not recieved yet.
-		// (maybe use a less annoying color)
-		// and maybe combine this all with the header color instead of the button. (also, display in mobile sidebar somehow?)
-		document.documentElement.dataset.socketState = state
+	set_status(id, value) {
+		this.statuses[id] = value
+		this.status_queue[id] = value
 	},
-	statuses: {},
-	status_queue: {},
-	set_status(id, s) {
-		this.statuses[id] = s
-		this.status_queue[id] = s
-	},
-	handler_count() {
-		// todo: only count 'important' handlers
-		// not, ex: user status
-		let num = this.handlers.size
-		if (num)
-			document.documentElement.dataset.socketPending = num
-		else
-			delete document.documentElement.dataset.socketPending
-		//do_when_ready(x=>$socketPending.textContent = [...this.handlers.keys()].join(" "), 'socket-pending')
-	},
-	flush_statuses(callback) {
-		this.request({type:'setuserstatus', data:this.status_queue}, ({x})=>{
+	flush_statuses(callback=null) {
+		this.request({type:'setuserstatus', data:this.status_queue}, ({x})=>{ // messy..
 			this.status_queue = {}
-			callback()
+			callback && callback()
 		})
 	},
-	stop() {
-		if (this.websocket)
-			this.websocket.close()
-	},
-	on_ready() {
-		Object.assign(this.status_queue, this.statuses)
-		this.flush_statuses(()=>{})
-		for (let {request} of this.handlers.values())
-			this.send(request)
-		this.ready = true
-	},
-	kill_websocket() {
-		if (this.websocket) {
-			this.state_change('dead')
-			this.ready = false
-			this.websocket.onerror = null
-			this.websocket.onopen = null
-			this.websocket.onclose = null
-			this.websocket.onmessage = null
-			this.websocket.close()
-			this.websocket = null
-		}
-	},
-	is_alive() {
-		return this.websocket && this.websocket.readyState <= WebSocket.OPEN
-	},
-	fails: 0,
-	last_reconnect: 0,
-	last_message: Date.now(),
-	pending_retry: null,
-	cancel_retry() {
-		if (this.pending_retry) {
-			window.clearTimeout(this.pending_retry)
-			this.pending_retry = null
-		}
-	},
-	schedule_retry(time, force) {
-		this.cancel_retry()
-		this.pending_retry = window.setTimeout(()=>{
-			this.pending_retry = null
-			this.start_websocket(force)
-		}, time)
-	},
-	maybe_reconnect(e) {
-		if (Settings.values.socket_debug=='yes')
-			print('maybe reconnect '+(e?e.type:""))
-		if (this.no_restart)
-			return
-		let last = this.last_reconnect
-		this.last_reconnect = Date.now()
-		if ('visible'==document.visibilityState && navigator.onLine) {
-			if (this.is_alive()) {
-				if (this.last_reconnect-last < 1000)
-					return
-				let time = 2000
-				if (Date.now()-this.last_message > 30*1000 && (e&&e.type!='focus'))
-					time = 1000
-				this.schedule_retry(time, true)
-				this.ping(()=>{})
-			} else {
-				if (this.fails > 5) {
-					print('too many ')
-					return
-				}
-				if (this.last_reconnect-last < 1000) {
-					this.schedule_retry(1000)
-				} else
-					this.start_websocket()
-			}
-		}
-	},
-	start_websocket(force) {
-		this.cancel_retry()
-		if (this.no_restart)
-			return
-		if (!force && this.is_alive())
-			throw new Error("Tried to open multiple websockets")
-		this.kill_websocket()
-		print('starting websocket...')
-		this.last_reconnect = Date.now()
-		this.fails++
-		this.websocket = new WebSocket(`wss://${Req.server}/live/ws?lastId=${this.last_id}&token=${encodeURIComponent(Req.auth)}`)
-		this.state_change('opening')
-		
-		this.websocket.onopen = e=>{
-			console.log("🌄 websocket open")
-			this.cancel_retry()
-			this.state_change('open')
-			this.on_ready()
-		}
-		
-		this.websocket.onerror = ({target})=>{
-			console.warn("websocket error")
-			this.fails++
-			target.got_error = true
-		}
-		
-		this.websocket.onclose = ({code, reason, wasClean, target})=>{
-			console.log("ws closed", code, reason, wasClean)
-			let desc
-			if (target.got_error)
-				desc = "websocket closed 📶 (connection error)."
-			else if (wasClean)
-				desc = "websocket closed (clean)."
-			else
-				desc = "websocket closed."
-			print(desc+"\n "+code+" "+reason)
-			
-			this.ready = false
-			this.state_change('dead')
-			// use timeout to avoid recursion and leaking stack traces
-			window.setTimeout(()=>this.maybe_reconnect())
-		}
-		
-		this.websocket.onmessage = ({origin, data, target})=>{
-			if (target !== this.websocket) {
-				alert("websocket wrong event target? multiple sockets still open?")
-				return
-			}
-			this.cancel_retry()
-			this.last_message = Date.now()
-			this.fails = 0
-			this.handle_response(JSON.parse(data))
-		}
-	},
-	/*************************
-	 ** Requests (internal) **
-	 *************************/
-	send(data) {
-		this.websocket.send(JSON.stringify(data))
-	},
-	next_id() {
-		return "🧦"+this.handler_id++
-	},
-	/***************************
-	 ** Requests (high level) **
-	 ***************************/
+	
 	request(request, callback=console.info) {
 		request.id = this.next_id()
 		this.handlers.set(request.id, {request, callback})
@@ -207,6 +48,190 @@ const Lp = NAMESPACE({
 	
 	cancel({id}) {
 		this.pop_handler(id)
+	},
+
+	
+	// requests waiting for responses
+	handlers: new Map(), // map of id -> {request, callback}
+	handler_id: 1,
+	
+	ready: false,
+	last_id: "",
+	no_restart: false,
+	websocket: null,
+	
+	// visual stuff
+	state_change(state, ping) {
+		// todo: maybe combine this all with the header color instead of the button. (also, display in mobile sidebar somehow?)
+		document.documentElement.dataset.socketState = state
+	},
+	handler_count() {
+		// todo: only count 'important' handlers
+		// not, ex: user status
+		let num = this.handlers.size
+		if (num)
+			document.documentElement.dataset.socketPending = num
+		else
+			delete document.documentElement.dataset.socketPending
+		//do_when_ready(x=>$socketPending.textContent = [...this.handlers.keys()].join(" "), 'socket-pending')
+	},
+	
+	// statuses
+	statuses: {}, // all of your statuses (map of contentId -> string)
+	status_queue: {}, // status changes which haven't been sent yet
+	
+	stop() {
+		if (this.websocket)
+			this.websocket.close()
+	},
+	on_ready() {
+		// all statuses need to be resent
+		Object.assign(this.status_queue, this.statuses)
+		this.flush_statuses()
+		// resend all previously pending requests
+		// TODO: this will send duplicate requests, if any were recvd by
+		// the server right before the socket closed
+		// this MUST be fixed before any write requests are added
+		for (let {request} of this.handlers.values())
+			this.send(request)
+		this.ready = true
+	},
+	is_alive() {
+		return this.websocket && this.websocket.readyState <= WebSocket.OPEN
+	},
+	kill_websocket() {
+		if (this.websocket) {
+			this.state_change('dead')
+			this.ready = false
+			this.websocket.onerror = null
+			this.websocket.onopen = null
+			this.websocket.onclose = null
+			this.websocket.onmessage = null
+			this.websocket.close()
+			this.websocket = null
+		}
+	},
+	
+	// reconnect system
+	fails: 0,
+	last_reconnect: 0,
+	pending_retry: null,
+	cancel_retry() {
+		if (this.pending_retry) {
+			window.clearTimeout(this.pending_retry)
+			this.pending_retry = null
+		}
+	},
+	schedule_retry(time, force) {
+		this.cancel_retry()
+		this.pending_retry = window.setTimeout(()=>{
+			this.pending_retry = null
+			this.start_websocket(force)
+		}, time)
+	},
+	online_and_visible() {
+		return 'visible'==document.visibilityState && navigator.onLine
+	},
+	maybe_reconnect(ev) {
+		if (this.no_restart)
+			return
+		if (!this.online_and_visible())
+			return
+		if (Settings.values.socket_debug=='yes')
+			print('maybe reconnect '+(ev?ev.type:""))
+		
+		let last = this.last_reconnect
+		this.last_reconnect = Date.now()
+		let since = this.last_reconnect-last
+		
+		if (this.is_alive()) {
+			if (since < 1000)
+				return
+			let time = 2000
+			if (Date.now()-this.last_life > 30*1000 && (ev&&ev.type!='focus'))
+				time = 1000
+			this.schedule_retry(time, true)
+			this.ping(()=>{})
+		} else {
+			if (this.fails > 5) {
+				print('too many ')
+				return
+			}
+			if (since < 1000) {
+				this.schedule_retry(1000)
+			} else
+				this.start_websocket()
+		}
+	},
+	last_life: Date.now(),
+	got_life() {
+		this.last_life = Date.now()
+		this.cancel_retry()
+	},
+	
+	// main
+	start_websocket(force) {
+		this.cancel_retry()
+		if (this.no_restart)
+			return
+		if (!force && this.is_alive())
+			throw new Error("Tried to open multiple websockets")
+		this.kill_websocket()
+		print('starting websocket...')
+		this.last_reconnect = Date.now()
+		this.fails++
+		
+		this.websocket = new WebSocket(`wss://${Req.server}/live/ws?lastId=${this.last_id}&token=${encodeURIComponent(Req.auth)}`)
+		this.state_change('opening')
+		
+		this.websocket.onopen = e=>{
+			console.log("🌄 websocket open")
+			this.got_life()
+			this.state_change('open')
+			this.on_ready()
+		}
+		
+		this.websocket.onerror = ({target})=>{
+			console.warn("websocket error")
+			this.fails++
+			target.got_error = true //hack
+		}
+		
+		this.websocket.onclose = ({code, reason, wasClean, target})=>{
+			console.log("ws closed", code, reason, wasClean)
+			let desc
+			if (target.got_error)
+				desc = "websocket closed 📶 (connection error)."
+			else if (wasClean)
+				desc = "websocket closed (clean)."
+			else
+				desc = "websocket closed."
+			print(desc+"\n "+code+" "+reason)
+			
+			this.ready = false
+			this.state_change('dead')
+			// use timeout to avoid recursion and leaking stack traces
+			window.setTimeout(()=>this.maybe_reconnect())
+		}
+		
+		this.websocket.onmessage = ({data, target})=>{
+			if (target !== this.websocket) {
+				alert("websocket wrong event target? multiple sockets still open?")
+				return
+			}
+			this.got_life()
+			this.fails = 0
+			this.handle_response(JSON.parse(data))
+		}
+	},
+	/*************************
+	 ** Requests (internal) **
+	 *************************/
+	send(data) {
+		this.websocket.send(JSON.stringify(data))
+	},
+	next_id() {
+		return "🧦"+this.handler_id++
 	},
 	/***********************
 	 ** Response Handling **
@@ -303,9 +328,10 @@ const Lp = NAMESPACE({
 			} break; case 'user_event': {
 				let user = maplist.user[~ref_id]
 				if (user) {
-					StatusDisplay.update_user(user) // messy...
 					if (ref_id==Req.uid)
-						View.update_my_user(user)
+						Req.me = user
+					StatusDisplay.update_user(user)
+					Events.user_edit.fire(user)
 				}
 			} }
 		}
@@ -313,29 +339,23 @@ const Lp = NAMESPACE({
 		//  note: do we ever even get more than one at a time?
 		//  well, after a disconnect, i guess
 		if (comments.length) {
-			// todo: we want the sidebar and chat to use the same
-			// animationframe callback, so they are synced, if possible
-			PageView.scroll_lock(true)
-			Sidebar.scroller.lock()
-			
-			PageView.handle_messages(comments)
-			Sidebar.display_messages(comments, false)
-			Act.handle_messages(comments, listmapmap.message_event)
-			View.comment_notification(comments)
-			let ev = new CustomEvent('got_comments', {
-				detail: {comments},
-			})
-			document.dispatchEvent(ev)
-			
-			PageView.scroll_lock(false)
-			Sidebar.scroller.unlock()
+			Events.messages.fire(comments, listmapmap.message_event)
+			Events.after_messages.fire()
 		}
 	},
+	blur_time: 0,
 	init() {
 		document.addEventListener('visibilitychange', e=>this.maybe_reconnect(e))
 		window.addEventListener('pageshow', e=>this.maybe_reconnect(e))
-		window.addEventListener('focus', e=>this.maybe_reconnect(e))
 		window.addEventListener('online', e=>this.start_websocket(true))
+		window.addEventListener('blur', e=>{
+			this.blur_time = Date.now()
+		})
+		window.addEventListener('focus', e=>{
+			if (Math.abs(this.blur_time-Date.now()) < 1000)
+				return
+			this.maybe_reconnect(e)
+		})
 	},
 })
 

@@ -8,14 +8,14 @@ class EditView extends BaseView {
 		
 		new ResizeBar(this.$top, this.$resize, 'top')
 		
-		$editorSave.onclick = e=>{
+		/*$editorSave.onclick = e=>{
 			if (!this.page)
 				return
 			let data = JSON.parse(this.$data.value)
 			data.text = this.$textarea.value
 			Object.assign(this.page, data)
 			this.save()
-		}
+		}*/
 		let batch = (cb,w=0)=>e=>w++||requestAnimationFrame(_=>cb(e,w=0))
 		this.$preview_button.onchange = e=>{
 			this.toggle_preview(e.target.checked)
@@ -72,10 +72,12 @@ class EditView extends BaseView {
 		Edit.insert(this.$textarea, text)
 	}
 	got_page(page, creating) {
-		View.set_entity_title(page)
+		this.Slot.set_entity_title(page)
 		this.page = page
-		$editorSave.textContent = creating ? "Create" : "Save"
-		$editPageLink.href = "#page/"+page.id
+		//$editorSave.textContent = creating ? "Create" : "Save"
+		this.Slot.add_header_links([
+			{label:"back", href:"#page/"+page.id},
+		])
 		this.$textarea.value = page.text //todo: preserve undo?
 		// only show writable fields
 		let writable = {}
@@ -132,13 +134,13 @@ EditView.template = HTML`
 			<textarea $=data style="resize:none;margin:0.5rem;" class='FILL code-textarea'></textarea>
 		</div>
 	</div>
-	<resize-handle $=resize style=--handle-width:2em;>
+	<div $=resize style=--handle-width:2em; class='resize-handle'>
 		<label>preview:<input type=checkbox $=preview_button></label>
 		<span $=preview_controls>
 			| <label>live:<input type=checkbox $=live_button></label>
 			<button $=render_button>render full</button>
 		</span>
-	</resize-handle>
+	</div>
 	<textarea $=textarea class='FILL editor-textarea' style='margin:3px;'></textarea>
 </view-root>
 `

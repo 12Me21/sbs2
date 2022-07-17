@@ -13,6 +13,8 @@ Object.freeze(CODES)
 
 // todo: permissions class? idk
 
+// this isn't really just "author", so much as um,
+// extra data to use when rendering a comment
 class Author {
 	constructor(message, user) {
 		let valid = x => x && ('string'==typeof x || 'number'==typeof x)
@@ -23,6 +25,7 @@ class Author {
 		this.bridge = user.id==5410 && user.username=="sbs_discord_bridge"
 		this.bigAvatar = valid(big) ? String(big) : null
 		this.merge_hash = `${message.contentId},${message.createUserId},${this.avatar},${this.bigAvatar||""},${this.username} ${this.nickname||""}`
+		this.date = new Date(message.createDate)
 	}
 	static filter_nickname(name) {
 		return String(name).substring(0, 50).replace(/\n/g, "  ")
@@ -35,9 +38,8 @@ Object.assign(Author.prototype, {
 	bridge: false,
 	bigAvatar: null,
 	merge_hash: "0,0,0,,missingno. ",
+	date: new Date(NaN),
 	//			content_name: "", todo, store page title, for listing in sidebar?
-	// this isn't really just "author", so much as um,
-	// extra data to use when rendering a comment
 })
 
 // TODO: improve class structure:
@@ -179,12 +181,11 @@ const Entity = NAMESPACE({
 	link_comments({message, user}) {
 		for (let m of message) {
 			let u = user[~m.createUserId]
-			if (!u)
-				continue
-			m.Author = new Author(m, u)
+			if (u)
+				m.Author = new Author(m, u)
 		}
 	},
-
+	
 	link_watch({message, watch, content}) {
 		for (let w of watch) {
 			let c = content[~w.contentId]

@@ -1,13 +1,10 @@
 'use strict'
 //todo: read my old notes (in chat) about how to handle edited messages
 // ex: when a message is moved between rooms,
-
-document.addEventListener('message_control', e=>{
-	if (e.detail.action=='info')
-		alert(JSON.stringify(e.detail.data, null, 1)) // <small heart>
-	if (e.detail.action=='speak')
-		TTSSystem.speakMessage(e.detail.data)
-})
+// kinda annoying, basically what we need to do is
+// if we get an edited message: check every room to see if it has
+// that message id, since it mightve been moved /from/ that room
+// then, we need to insert that message in the middle of the list, in the current room
 
 class MessageList {
 	constructor(element, pid, edit) {
@@ -15,6 +12,7 @@ class MessageList {
 		this.$list.classList.add('message-list') // todo: just create a new elem <message-list> ?
 		this.pid = pid
 		this.parts = new Map()
+		//this.first_id = Infinity
 		
 		// this listens for events created by the message edit/info buttons
 		// and modifies the event to add the message data
@@ -22,6 +20,8 @@ class MessageList {
 			let data = this.part_data(e.target)
 			e.detail.data = data // eeehehe
 		}, {capture: true})
+		
+		Object.seal(this)
 	}
 	get_messages_near(last, newer, amount, callback) {
 		let order = newer ? 'id' : 'id_desc'
@@ -59,15 +59,13 @@ class MessageList {
 		})
 	}
 	single_message(comment) {
-		let [block, contents] = Draw.message_block(comment)
-		let part = Draw.message_part(comment)
+		let [block, contents] = MessageList.draw_block(comment)
+		let part = MessageList.draw_part(comment)
 		this.parts.set(comment.id, {elem:part, data:comment})
 		contents.append(part)
 		this.$list.append(block)
+		//this.first_id = comment.id
 	}
-	//optimize: createDate can really just like,
-	// well ok let's put it in Author, and store it as milliseconds
-	// that way we dont keep parsing createDate strings
 	get_merge(message, backwards) {
 		// check if there's a message-block we can merge with
 		let block = this.$list[backwards?'firstChild':'lastChild']
@@ -78,7 +76,7 @@ class MessageList {
 			// <message-controls> might be before the <message-part>
 			if (backwards && last==MessageList.controls)
 				last = last.nextElementSibling
-			if (last && Math.abs(message.createDate2-last.nonce)<=1e3*60*5)
+			if (last && Math.abs(message.Author.date.getTime() - last.nonce)<=1e3*60*5)
 				return contents
 		}
 		return null
@@ -87,27 +85,41 @@ class MessageList {
 		for (let m of messages)
 			this.display_message(m, backwards)
 	}
+	/*split_block(id) {
+	}*/
 	display_message(message, backwards) {
-		if (message.deleted) {
-			if (this.parts.has(message.id))
+		let existing = this.parts.get(message.id)
+		// deleted message
+		if (message.deleted || message.contentId!=this.pid) {
+			if (existing)
 				this.remove_message(message.id)
 			return null
 		}
-		// create new part
-		let part = Draw.message_part(message)
-		let old = this.parts.get(message.id)
-		this.parts.set(message.id, {elem:part, data:message})
-		// edited version of an existing message-part
-		if (old) {
-			old.elem.replaceWith(part)
+		// edited message
+		if (message.edited || existing) {
+			if (!existing) {
+				// this could be a very old message being edited
+				// OR, a message being moved into the current room
+				// the way to check would be:
+				// if the message's id is less than the minimum displayed id
+				return null
+			}
+			let part = MessageList.draw_part(message)
+			this.parts.set(message.id, {elem:part, data:message})
+			existing.elem.replaceWith(part)
 			return part
 		}
+		// new message
+		//if (message.id < this.first_id)
+		//	this.first_id = message.id
+		let part = MessageList.draw_part(message)
+		this.parts.set(message.id, {elem:part, data:message})
 		// new message-part
 		// try to find a message-block to merge with
 		let contents = this.get_merge(message, backwards)
 		if (!contents) {
 			let block
-			;[block, contents] = Draw.message_block(message)
+			;[block, contents] = MessageList.draw_block(message)
 			// TODO: the displayed time will be wrong, if we are going backwards!!
 			this.$list[backwards?'prepend':'appendChild'](block)
 		}
@@ -118,6 +130,8 @@ class MessageList {
 		let part = this.parts.pop(id)
 		if (!part)
 			throw new RangeError("Tried to remove nonexistant message-part, id:"+id)
+		// ghhhh
+		//this.first_id = this.parts.keys().next().value || Infinity
 		
 		// remove controls if they're on this message
 		if (part.elem == MessageList.controls_message)
@@ -220,73 +234,76 @@ class MessageList {
 MessageList.controls = null
 MessageList.controls_message = null
 MessageList.prototype.max_parts = 500
+MessageList.draw_part = function(comment) {
+	let e = this()
+	
+	if (comment.edited)
+		e.className += " edited"
+	
+	e.dataset.id = comment.id
+	e.nonce = comment.Author.date.getTime()
+	Markup.convert_lang(comment.text, comment.values.m, e, {intersection_observer: View.observer})
+	return e
+}.bind(𐀶`<message-part role=listitem tabindex=-1>`)
+MessageList.draw_block = function(comment) {
+	let e = this.block()
+	
+	let author = comment.Author
+	
+	e.dataset.uid = comment.createUserId
+	e.nonce = comment.Author.merge_hash
+	
+	let avatar
+	if (author.bigAvatar) {
+		avatar = this.big_avatar()
+		let url = Req.file_url(author.bigAvatar, "size=500")
+		avatar.style.backgroundImage = `url("${url}")`
+	} else {
+		avatar = this.avatar()
+		avatar.src = Draw.avatar_url(author)
+	}
+	e.prepend(avatar)
+	
+	let name = e.querySelector('message-username') // todo: is queryselector ok?
+	let username
+	if (author.nickname == null) {
+		username = author.username
+	} else {
+		username = author.nickname
+		if (author.bridge)
+			name.append(this.bridge())
+		else {
+			let nickname = this.nickname()
+			nickname.querySelector('span.pre').textContent = author.username
+			name.append(nickname)
+		}
+	}
+	name.firstChild.textContent = username
+	
+	let time = e.querySelector('time')
+	time.dateTime = comment.createDate
+	time.textContent = Draw.time_string(comment.Author.date)
+	
+	return [e, e.lastChild]
+}.bind({
+	block: 𐀶`
+<message-block>
+	<message-header>
+		<message-username><span class='username pre'></span>:</message-username>
+		<time></time>
+	</message-header>
+	<message-contents></message-contents>
+</message-block>`,
+	nickname: 𐀶` <span class='real-name-label'>(<span class='pre'></span>)</span>`,
+	bridge: 𐀶` <span class='real-name-label'>[discord bridge]</span>`,
+	avatar: 𐀶`<img class='avatar' width=100 height=100 alt="">`,
+	big_avatar: 𐀶`<div class='bigAvatar'></div>`,
+})
 
 MessageList.init()
 Object.seal(MessageList)
 
-
-
-class StatusDisplay {
-	constructor(id, element) {
-		this.id = id
-		this.$elem = element
-		this.my_status = undefined
-	}
-	redraw() {
-		this.$elem.fill()
-		Object.for(this.statuses(), (status, id)=>{
-			let user = StatusDisplay.get_user(id)
-			this.$elem.append(Draw.userlist_avatar(user, status))
-		})
-	}
-	// set your own status
-	set_status(s) {
-		// todo: maybe there's a better place to filter this
-		if (s==this.my_status)
-			return
-		this.my_status = s
-		Lp.set_status(this.id, s)
-	}
-	// when a user's avatar etc. changes
-	redraw_user(user) {
-		if (this.statuses[user.id])
-			this.redraw()
-	}
-	// get statuses for this room
-	statuses() {
-		return StatusDisplay.statuses[this.id] || {__proto__:null}
-	}
-	
-	// lookup a user from the cache
-	static get_user(id) {
-		let user = this.users[~id]
-		if (!user)
-			throw new TypeError("can't find status user "+id)
-		return user
-	}
-	// called during `userlistupdate`
-	static update(statuses, objects) {
-		Object.assign(this.statuses, statuses)
-		Object.assign(this.users, objects.user)
-		// TODO: this is a hack .. we need a way to send signals to pages to tell them to redraw userlists.
-		this.global.redraw()
-		Object.for(PageView.rooms, room=>room.userlist.redraw())
-	}
-	// called during `user_event` (i.e. when a user is edited)
-	static update_user(user) {
-		// if we don't need this avatar,
-		if (!this.users[~user.id])
-			return
-		this.users[~user.id] = user
-		this.global.redraw_user(user)
-		Object.for(PageView.rooms, room=>room.userlist.redraw_user(user))
-	}
-}
-StatusDisplay.statuses = {__proto__:null}
-// todo: this is never cleared, so technically it leaks memory.
-// but unless there are thousands of users, it won't matter
-StatusDisplay.users = {__proto__:null}
-StatusDisplay.global = new StatusDisplay(0, null)
-do_when_ready(()=>{
-	StatusDisplay.global.$elem = $sidebarUserList
+document.addEventListener('message_control', e=>{
+	if (e.detail.action=='info')
+		alert(JSON.stringify(e.detail.data, null, 1)) // <small heart>
 })
