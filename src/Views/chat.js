@@ -291,18 +291,16 @@ ChatView.track_resize_2 = new ResizeTracker('width')
 ChatView.template = HTML`
 <view-root class='COL'>
 	<div $=resize_handle class='userlist2' style='--bar-height:2.4375rem'><div $=userlist class='userlist'></div></div>
-	<div class='FILL SLIDES'>
-		<scroll-outer class='shown' $=outer>
-			<scroll-inner $=inner>
-				<div $=extra>
-					<button $=load_older>load older messages</button>
-					<label><input type=checkbox $=limit_checkbox>disable limit</label>
-				</div>
-				<message-list $=message_list></message-list>
-				<div class='chat-bottom' tabindex=0></div>
-			</scroll-inner>
-		</scroll-outer>
-	</div>
+	<scroll-outer class='FILL' $=outer>
+		<scroll-inner $=inner>
+			<div $=extra>
+				<button $=load_older>load older messages</button>
+				<label><input type=checkbox $=limit_checkbox>disable limit</label>
+			</div>
+			<message-list $=message_list></message-list>
+			<div class='chat-bottom' tabindex=0></div>
+		</scroll-inner>
+	</scroll-outer>
 	<div class='inputPane ROW'>
 		<div class='showWhenEdit COL'>
 			<input $=markup placeholder="markup" style="width:50px;">

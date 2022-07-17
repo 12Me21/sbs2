@@ -86,18 +86,18 @@ ActivityItem.template_simple = HTML`
 
 class ActivityContainer {
 	constructor(hide_user=false) {
-		this.container = document.createElement('scroll-inner')
+		this.$container = document.createElement('scroll-inner')
 		this.interval = null
-		this.container.setAttribute('role', 'treegrid')
-		this.elem = null
-		this.items = {}
+		this.$container.setAttribute('role', 'treegrid')
+		this.$elem = null
+		this.items = {__proto__:null}
 		this.hide_user = hide_user
 	}
 	
 	init(element) {
 		// this should probably be handled by um  sidebar instead
-		this.elem = element
-		this.elem.fill(this.container)
+		this.$elem = element
+		this.$elem.fill(this.$container)
 		this.refresh_time_interval()
 	}
 	
@@ -121,35 +121,27 @@ class ActivityContainer {
 		return item
 	}
 	// update page, date, and user info, for a given page
-	update({content, user}, pid, uid, date) {
+	update({content, user}, pid, date, uid=null) {
 		let item = this.update_content(pid, content[~pid], date)
 		if (uid)
 			item.update_user(uid, user[~uid], date)
 	}
 	
-	watch(
-		watch,
-		objects
-	) {
+	watch(watch, objects) {
 		const pid = watch.contentId
 		const msg = watch.Message // in case page has 0 messages:
-		const date = msg.id ? msg.createDate2 : -Infinity
-		this.update(objects, pid, null, date)
+		const date = msg.id ? msg.Author.date : -Infinity
+		this.update(objects, pid, date)
 	}
 	
-	message_aggregate(
-		{contentId:pid, createUserId:uid, maxCreateDate2:date},
-		objects
-	) {
-		this.update(objects, pid, uid, date)
+	message_aggregate(agg, objects) {
+		this.update(objects, agg.contentId, agg.maxCreateDate2, agg.createUserId)
 	}
 	
-	message(
-		{contentId:pid, createUserId:uid, createDate2:date, deleted},
-		objects
-	) {
-		if (deleted) return // mmnn
-		this.update(objects, pid, uid, date)
+	message(msg, objects) {
+		if (msg.deleted)
+			return
+		this.update(objects, msg.contentId, msg.Author.date, msg.createUserId)
 	}
 }
 
@@ -169,12 +161,12 @@ let Act = {
 			},
 			requests: [
 				// recent messages
-				{type:'message_aggregate', fields:'contentId, createUserId, maxCreateDate, maxId', query:"createDate > @yesterday"},
+				{type:'message_aggregate', fields:'contentId,createUserId,maxCreateDate,maxId', query:"createDate > @yesterday"},
 				{type:'message', fields:'*', query:"!notdeleted()", order:'id_desc', limit:50},
-				{type:'content', fields:'name, id, permissions, contentType, lastRevisionId', query:"id IN @message_aggregate.contentId OR id IN @message.contentId"},
+				{type:'content', fields:'name,id,permissions,contentType,lastRevisionId', query:"id IN @message_aggregate.contentId OR id IN @message.contentId"},
 				// watches
 				{type:'watch', fields:'*'},
-				{name:'Cwatch', type:'content', fields:'name, id, permissions, contentType, lastRevisionId,lastCommentId', query: "!notdeleted() AND id IN @watch.contentId", order:'lastCommentId_desc'},
+				{name:'Cwatch', type:'content', fields:'name,id,permissions,contentType,lastRevisionId,lastCommentId', query: "!notdeleted() AND id IN @watch.contentId", order:'lastCommentId_desc'},
 				{name:'Mwatch', type:'message', fields: '*', query: 'id in @Cwatch.lastCommentId', order: 'id_desc'},
 				// shared
 				{type:'user', fields:'*', query:"id IN @message_aggregate.createUserId OR id IN @message.createUserId OR id IN @watch.userId"},
@@ -182,26 +174,28 @@ let Act = {
 			],
 		}, (objects)=>{
 			console.log('🌄 got initial activity')
+			// message
 			Entity.link_comments({message:objects.Mwatch, user:objects.user})
 			Entity.ascending(objects.message, 'id')
 			// TODO: ensure that these are displayed BEFORE any websocket new messages
 			Sidebar.display_messages(objects.message, true)
-			objects.message_aggregate.sort((a, b)=>a.maxId-b.maxId)
+			// message_aggregate
+			objects.message_aggregate.sort((a,b)=>a.maxId-b.maxId)
 			for (let x of objects.message_aggregate)
 				this.normal.message_aggregate(x, objects)
-			// watches
+			// watch
 			Entity.link_watch({message:objects.Mwatch, watch:objects.watch, content:objects.Cwatch})
-			objects.watch.sort((x, y)=>x.Message.id-y.Message.id)
+			objects.watch.sort((x,y)=>x.Message.id-y.Message.id)
 			for (let x of objects.watch)
 				this.watch.watch(x, {content:objects.Cwatch})
 		})
 	},
 	handle_messages(comments, maplist) {
-		for (let {contentId:pid, createUserId:uid, createDate2:date, deleted} of comments) {
-			if (!deleted) {
-				this.normal.update(maplist, pid, uid, date)
+		for (let msg of comments) {
+			if (!msg.deleted) {
+				this.normal.update(maplist, msg.contentId, msg.Author.date, msg.createUserId)
 				if (this.watch.items[pid])
-					this.watch.update(maplist, pid, null, date)
+					this.watch.update(maplist, msg.contentId, msg.Author.date)
 			}
 		}
 	},

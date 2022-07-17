@@ -66,9 +66,6 @@ class MessageList {
 		this.$list.append(block)
 		//this.first_id = comment.id
 	}
-	//optimize: createDate can really just like,
-	// well ok let's put it in Author, and store it as milliseconds
-	// that way we dont keep parsing createDate strings
 	get_merge(message, backwards) {
 		// check if there's a message-block we can merge with
 		let block = this.$list[backwards?'firstChild':'lastChild']
@@ -79,7 +76,7 @@ class MessageList {
 			// <message-controls> might be before the <message-part>
 			if (backwards && last==MessageList.controls)
 				last = last.nextElementSibling
-			if (last && Math.abs(message.createDate2-last.nonce)<=1e3*60*5)
+			if (last && Math.abs(message.Author.date.getTime() - last.nonce)<=1e3*60*5)
 				return contents
 		}
 		return null
@@ -100,7 +97,7 @@ class MessageList {
 		}
 		// edited message
 		if (message.edited || existing) {
-			if (existing) {
+			if (!Aexisting) {
 				// this could be a very old message being edited
 				// OR, a message being moved into the current room
 				// the way to check would be:
@@ -244,7 +241,7 @@ MessageList.draw_part = function(comment) {
 		e.className += " edited"
 	
 	e.dataset.id = comment.id
-	e.nonce = comment.createDate2.getTime()
+	e.nonce = comment.Author.date.getTime()
 	Markup.convert_lang(comment.text, comment.values.m, e, {intersection_observer: View.observer})
 	return e
 }.bind(𐀶`<message-part role=listitem tabindex=-1>`)
@@ -285,7 +282,7 @@ MessageList.draw_block = function(comment) {
 	
 	let time = e.querySelector('time')
 	time.dateTime = comment.createDate
-	time.textContent = Draw.time_string(comment.createDate2)
+	time.textContent = Draw.time_string(comment.Author.date)
 	
 	return [e, e.lastChild]
 }.bind({
