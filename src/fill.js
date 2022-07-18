@@ -34,13 +34,6 @@ METHOD(Error, 'trim_stack', function(levels=1) {
 		this.stack = this.stack.replace(/^(?!Error:).*\n/, "")
 })
 
-class ParamError extends Error {
-	constructor(name) {
-		super(`Undefined Argument: “${name}”`)
-		this.trim_stack(2)
-	}
-}
-ParamError.prototype.name = "ParamError"
 class FieldError extends Error {
 	constructor(message, ...args) {
 		super(message)
@@ -48,9 +41,6 @@ class FieldError extends Error {
 		FieldError.last = args
 		//console.error(...args)
 	}
-}
-function Unhandled_Callback(err, ...x) {
-	console.error("Unhandled Callback\n", err, ...x)
 }
 
 // ⚡ STRICT prototype - throws when accessing nonexistant fields
@@ -121,13 +111,6 @@ METHOD(Map, 'pop', function(key) {
 	return v
 })
 
-for (let c of "pn")
-	Object.defineProperty(window, c, {
-		get(){throw new SyntaxError('eek')},
-		set(n){delete window[c]; window[c]=n},
-		configurable: true,
-	})
-
 
 // (end of scary part)
 
@@ -135,13 +118,14 @@ for (let c of "pn")
 
 // polyfill: Array.prototype.findLast()
 if (!Array.prototype.findLast)
-	Array.prototype.findLast = function(filter) {
+	METHOD(Array, 'findLast', function(filter) {
 		for (let i=this.length-1; i>=0; i--) {
 			if (filter(this[i], i, this))
 				return this[i]
 		}
 		return undefined
-	}
+	})
+
 // polyfill: document.timeline.currentTime
 if (!document.timeline)
 	document.timeline = {get currentTime() { return performance.now() }}
@@ -152,13 +136,13 @@ if (!document.timeline)
 //  - accepts an array of items to insert
 //  - doesn't allow strings
 //  * ISN't like, 20 characters longest method name ever
-Node.prototype.fill = function(x) {
+METHOD(Node, 'fill', function(x) {
 	this.textContent = ""
 	if (Array.isArray(x))
 		this.append(...x)
 	else if (x != undefined)
 		this.appendChild(x)
-}
+})
 
 // convert obj into a json Blob for xhr
 JSON.to_blob = function(obj) {
@@ -169,14 +153,6 @@ JSON.to_blob = function(obj) {
 Object.for = (obj, callback)=>{
 	for (let [key, value] of Object.entries(obj))
 		callback(value, key, obj)
-}
-
-// are we using this?
-Object.map = (obj, callback)=>{
-	let ret = {}
-	for (let [key, value] of Object.entries(obj))
-		ret[key] = callback(value, key, obj)
-	return ret
 }
 
 // this is just exec but safer i guess...
