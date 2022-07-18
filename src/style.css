@@ -660,6 +660,11 @@ view-root:not(.f-editing) .showWhenEdit {
 	overflow-x: auto;
 	padding: 1.5rem;
 }
+.editPageContents {
+	padding: 0 1.5rem;
+	border: 1.5rem #F882;
+	border-style: solid none;
+}
 .pageInfoPane {
 	display: flex;
 	padding: 0 0.3125rem;

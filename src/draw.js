@@ -259,6 +259,8 @@ class ResizeBar {
 		return ev[this.horiz?'clientX':'clientY']
 	}
 	start(ev) {
+		if (ev.target instanceof HTMLSelectElement)
+			return
 		ev.preventDefault()
 		ResizeBar.grab(this)
 		this.$handle.dataset.dragging = ""

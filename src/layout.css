@@ -60,7 +60,7 @@ html, body {
 
 /* views */
 view-slot > view-header {
-	cursor: ew-resize;
+	/*cursor: ew-resize;*/
 }
 #\$main_slides > view-slot:not(:first-of-type) {
 	border-left: 0.5rem solid var(--databarbgcolor);

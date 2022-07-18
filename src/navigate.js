@@ -100,6 +100,7 @@ class ViewSlot {
 		if (this.$view)
 			this.$view.remove()
 		this.$header_buttons.fill()
+		this.$header_extra.fill()
 		this.view = null
 	}
 	cancel() {
@@ -183,8 +184,9 @@ class ViewSlot {
 ViewSlot.template = HTML`
 <view-slot class='COL'>
 	<view-header $=header class='bar ellipsis' tabindex=0 accesskey="q">
+		<span $=header_extra></span>
 		<h1 $=title class='textItem'></h1>
-		<div class='header-buttons item' $=header_buttons></div>
+		<span class='header-buttons item' $=header_buttons></span>
 	</view-header>
 </view-slot>
 `
