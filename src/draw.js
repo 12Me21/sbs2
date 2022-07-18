@@ -228,7 +228,7 @@ StatusDisplay.draw_avatar = function(user, status) {
 
 
 class ResizeBar {
-	constructor(element, tab, side, save, def) {
+	constructor(element, tab, side, save=null, def=null) {
 		this.$elem = element
 		this.$handle = tab
 		this.horiz = side=='left'||side=='right'
@@ -263,7 +263,7 @@ class ResizeBar {
 		ResizeBar.grab(this)
 		this.$handle.dataset.dragging = ""
 		this.start_pos = this.event_pos(ev)
-		this.start_size = this.$elem[this.horiz?'offsetWidth':'offsetHeight']
+		this.start_size = this.$elem.getBoundingClientRect()[this.horiz?'width':'height']
 	}
 	move(ev) {
 		let v = (this.event_pos(ev) - this.start_pos) * this.dir
@@ -276,7 +276,7 @@ class ResizeBar {
 	}
 	update_size(px) {
 		this.size = Math.max(px, 0)
-		this.$elem.style.setProperty(this.horiz?'width':'height', this.size+"px")
+		this.$elem.style.flexBasis = this.size+"px"
 	}
 	
 	static grab(bar) {
