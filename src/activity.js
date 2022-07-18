@@ -23,28 +23,10 @@ class ActivityItem {
 			this.$root.href = Nav.entity_link(this.content)
 			this.redraw_page()
 		}
-		// every item is assumed to be the newest, when created
-		// make sure you create activityitems in the right order
-		this.top()
+		this.parent.$container.append(this.$root)
 	}
 	redraw_page() {
 		this.$page.fill(Draw.content_label(this.content))
-	}
-	// todo: .top() might make more sense as method on ActivityContainer
-	top() {
-		const con = this.parent.$container
-		con.append(this.$root)
-		/*const con = this.parent.$container
-		let first = con.firstElementChild
-		if (first == this.$root)
-			return
-		con.prepend(this.$root)
-		if (con.contains(document.activeElement))
-			return
-		let hole = con.querySelector(`:scope > [tabindex="0"]`)
-		if (hole)
-			hole.tabIndex = -1
-		this.$root.tabIndex = 0*/
 	}
 	redraw_time() {
 		if (this.date!=-Infinity)
@@ -56,10 +38,7 @@ class ActivityItem {
 			this.$time.title = this.date.toString()
 			this.$time.setAttribute('datetime', this.date.toISOString())
 			this.redraw_time()
-			//this.top()
 			this.$root.style.order = date_order(this.date)
-			if (date > this.min_order)
-				;
 		}
 	}
 	update_content(content) {
@@ -86,8 +65,6 @@ class ActivityItem {
 		}
 		// todo: show user dates on hover?
 		if (date > u.date) {
-			//if (u.date==-Infinity || u.elem.previousSibling) // hack
-			//	this.$user.prepend(u.elem)
 			u.date = date
 			u.elem.style.order = date_order(u.date)
 		}
@@ -117,9 +94,6 @@ class ActivityContainer {
 		this.interval = null
 		this.items = {__proto__:null}
 		this.hide_user = hide_user
-		
-		this.$hole = null
-		this.min_order = null
 	}
 	
 	init(element) {
@@ -227,23 +201,8 @@ let Act = {
 			for (let agg of objects.message_aggregate)
 				this.normal.message_aggregate(agg, objects)
 			
-			/*let combined = objects.message_aggregate.concat(objects.activity)
-			function get_id(a) {
-				if (a.Type == 'message_aggregate')
-					return a.maxCreateDate2.getTime()
-				return a.date2.getTime()
-			}
-			combined.sort((a,b)=>get_id(a)-get_id(b))
-			for (let x of combined) {
-				if (x.Type=='message_aggregate')
-					this.normal.message_aggregate(x, objects)
-				else
-					this.normal.activity(x, objects)
-			}*/
-			
 			// watch
 			Entity.link_watch({message:objects.Mwatch, watch:objects.watch, content:objects.Cwatch})
-			//objects.watch.sort((x,y)=>x.Message.id-y.Message.id)
 			for (let x of objects.watch)
 				this.watch.watch(x, {content:objects.Cwatch})
 		})
