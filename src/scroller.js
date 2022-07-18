@@ -190,7 +190,7 @@ class Scroller {
 				this.anim = 0n
 				this.dist = dist
 			} else
-				this.start_anim(dist)
+				this.anim_step(dist)
 		}
 	}
 	lock() {
@@ -199,18 +199,7 @@ class Scroller {
 	unlock() {
 		this.locked = false
 		if (this.anim === 0n)
-			this.start_anim(this.dist)
-	}
-	start_anim(dist) {
-		let prev = this.anim_type==1 && document.timeline.currentTime
-		this.anim = requestAnimationFrame(time=>{
-			this.anim = null
-			if (this.anim_type==2) {
-				this.set_offset()
-			} else if (this.anim_type==1) {
-				this.anim_step(dist, time, prev)
-			}
-		})
+			this.anim_step(this.dist)
 	}
 	cancel_animation() {
 		if (this.anim)
@@ -221,17 +210,21 @@ class Scroller {
 		this.set_offset()
 	}
 	// mode 1 only
-	anim_step(dist, time, prev_time) {
-		let dt = Math.min((time-prev_time) / (1000/60), 2)
-		dist *= Math.pow(0.75, dt)
-		if (Math.abs(dist) <= 1) {
-			this.set_offset()
-			return
-		}
-		this.set_offset(dist)
-		this.anim = window.requestAnimationFrame(ntime=>{
+	anim_step(dist, prev_time=document.timeline.currentTime) {
+		this.anim = window.requestAnimationFrame(time=>{
 			this.anim = null
-			this.anim_step(dist, ntime, time)
+			if (this.anim_type==2) {
+				this.set_offset()
+				return
+			}
+			let dt = (time-prev_time) / (1000/60)
+			dist *= Math.pow(0.75, Math.min(dt, 2))
+			if (Math.abs(dist) <= 1) {
+				this.set_offset()
+			} else {
+				this.set_offset(dist)
+				this.anim_step(dist, time)
+			}
 		})
 	}
 	destroy() {
