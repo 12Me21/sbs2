@@ -202,12 +202,13 @@ class Scroller {
 			this.start_anim(this.dist)
 	}
 	start_anim(dist) {
+		let prev = this.anim_type==1 && document.timeline.currentTime
 		this.anim = requestAnimationFrame(time=>{
 			this.anim = null
 			if (this.anim_type==2) {
 				this.set_offset()
 			} else if (this.anim_type==1) {
-				this.anim_step(dist, time)
+				this.anim_step(dist, time, prev)
 			}
 		})
 	}
@@ -220,16 +221,17 @@ class Scroller {
 		this.set_offset()
 	}
 	// mode 1 only
-	anim_step(dist, prev_time) {
+	anim_step(dist, time, prev_time) {
+		let dt = Math.min((time-prev_time) / (1000/60), 2)
+		dist *= Math.pow(0.75, dt)
+		if (Math.abs(dist) <= 1) {
+			this.set_offset()
+			return
+		}
 		this.set_offset(dist)
-		this.anim = window.requestAnimationFrame(time=>{
+		this.anim = window.requestAnimationFrame(ntime=>{
 			this.anim = null
-			let dt = Math.min((time-prev_time) / (1000/60), 2)
-			dist *= Math.pow(0.75, dt)
-			if (Math.abs(dist) <= 1) {
-				this.set_offset()
-			} else
-				this.anim_step(dist, time)
+			this.anim_step(dist, ntime, time)
 		})
 	}
 	destroy() {

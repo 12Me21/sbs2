@@ -5,19 +5,21 @@ Settings = NAMESPACE({
 	
 	fields: [],
 	// .add() can be called at any time
-	add(field, priority) {
+	add(field) {
 		this.fields.push(field)
 	},
 	// .init() will run after all the scripts are loaded, but before the DOM is ready
 	init() {
-		this.add = function(field) {
+		this.add = function(field, push=true) {
 			Object.setPrototypeOf(field, SettingProto.prototype)
 			field.init()
 			if (this.$elem)
 				this.insert(field)
+			if (push)
+				this.fields.push(field)
 		}
 		for (let field of this.fields)
-			this.add(field)
+			this.add(field, false)
 	},
 	// render
 	$elem: null,
@@ -36,7 +38,7 @@ Settings = NAMESPACE({
 			}
 		}
 		let row = field.draw()
-		this.$elem.insertBefore(row, after);
+		this.$elem.insertBefore(row, after)
 	},
 	
 	save_all() {

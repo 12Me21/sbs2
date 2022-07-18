@@ -179,11 +179,15 @@ function 𐀶([html]) {
 	return document.importNode.bind(document, node, true)
 }
 
-// shouldn't really be here but this needs to be defined pretty early..
-do_when_ready.then = do_when_ready
-let DEFER = func => run_on_load.push(func)
-//console.log("deferring render", go)
-// idea: do_when_ready takes a 2nd argument, which creates a "pool" of events,
-// and only the most recently added one is run
+//let DEFER = func => run_on_load.push(func)
+/*Object.defineProperty(window, 'DEFER', {
+	configurable: true, set(fn){run_on_load.push(fn)},
+})
+Object.defineProperty(window, 'DEFER', {
+	configurable: true, set(fn){fn()},
+})
+DEFER = () => document.body.className = 'ack'
+*/
+
 
 //talking excitedly about javasscript getters and setters for an hour and then crying

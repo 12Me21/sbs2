@@ -64,8 +64,9 @@ function dom_ready() {
 	do_when_ready.then = null
 	run_on_load.forEach(x=>x())
 	run_on_load = null
-	DEFER = x=>void x()
 	//Object.defineProperty(ready, 'do', {set: fn=>fn()})
+	// idea: do_when_ready takes a 2nd argument, which creates a "pool" of events,
+	// and only the most recently added one is run
 	
 	//danger: View.onload() can potentially run after view.start() (but before view.render())  TODO
 	window.onerror = function(message, source, line, col, error) {
