@@ -169,23 +169,28 @@ class Scroller {
 			// figure out how much was added
 			let after = this.scroll_height()
 			let dist = after - before
-			if (Math.abs(dist) > 1) {
-				// make sure no existing animation is happening
-				// todo: somehow continue the current animation rather than
-				if (this.anim)
-					cancelAnimationFrame(this.anim)
-				// shift upwards to counteract scroll_instant()
-				if (this.anim_type==2)
-					this.$inner.style.transition = "none"
-				this.set_offset(dist)
-				// do the animation
-				if (this.locked) {
-					this.anim = 0n
-					this.dist = dist
-				} else
-					this.start_anim(dist)
+			if (Math.abs(dist) <= 1) {
+				this.scroll_instant()
+				return
 			}
+			// make sure no existing animation is happening
+			// todo: somehow continue the current animation rather than
+			if (this.anim)
+				cancelAnimationFrame(this.anim)
+			
+			if (this.anim_type==2)
+				this.$inner.style.transitionProperty = "none"
+			this.set_offset(dist)
+			
 			this.scroll_instant()
+			if (this.anim_type==2)
+				this.$inner.style.transitionProperty = ""
+			
+			if (this.locked) {
+				this.anim = 0n
+				this.dist = dist
+			} else
+				this.start_anim(dist)
 		}
 	}
 	lock() {
@@ -200,7 +205,6 @@ class Scroller {
 		this.anim = requestAnimationFrame(time=>{
 			this.anim = null
 			if (this.anim_type==2) {
-				this.$inner.style.transition = ""
 				this.set_offset()
 			} else if (this.anim_type==1) {
 				this.anim_step(dist, time)
@@ -212,7 +216,7 @@ class Scroller {
 			cancelAnimationFrame(this.anim)
 		this.anim = null
 		if (this.anim_type==2)
-			this.$inner.style.transition = "none"
+			this.$inner.style.transitionProperty = "none"
 		this.set_offset()
 	}
 	// mode 1 only
