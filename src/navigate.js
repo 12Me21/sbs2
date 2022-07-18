@@ -88,9 +88,8 @@ class ViewSlot {
 		})
 	}
 	cleanup(new_location) {
-		if (this.view) {
-			Object.for(Events, lm=>lm.on_destroy(this.view))
-		}
+		if (this.view)
+			Events.destroy(this.view)
 		if (this.view && this.view.Destroy)
 			try {
 				this.view.Destroy(new_location)

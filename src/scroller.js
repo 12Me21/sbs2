@@ -151,7 +151,7 @@ class Scroller {
 			return
 		}
 		// anim disabled
-		if (!smooth || this.anim_type==0) {
+		if (!smooth || this.anim_type==0 || 'visible'!=document.visibilityState) {
 			try {
 				fn(this.$inner)
 			} finally {

@@ -67,7 +67,26 @@ class IdListeners extends Listeners {
 
 //todo:  we need a cooler codename for this
 let Events = {
-	__proto__: null,
+	__proto__: {
+		__proto__: null,
+		destroy(self) {
+			Object.for(this, lm=>lm.on_destroy(self))
+		},
+		/*on(type, self, callback) {
+			let lm = this[type] || (this[type] = new IdListeners())
+			lm.listen(self, callback)
+		},
+// i think .on is better, since it means you won't get an error,
+// if you try to register a handler before the category is defined
+// which might happen late, for custom events
+// also, its probably better anyway, to not have a class for each event type
+// and instead just like, .. gosh idk.. maybe  nnnnnnnnn the classes might be good though..hhhhhhhh
+		fire(type, ...data) {
+			let lm = this[type]
+			if (lm)
+				lm.fire(...data)
+		}*/
+	},
 	// map of {eventname,pid} -> array
 	// array consists of
 	// {view, callback}
