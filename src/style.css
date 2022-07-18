@@ -681,17 +681,18 @@ view-root:not(.f-editing) .showWhenEdit {
 .userPageAvatar {
 	display: inline-block;
 	position: relative;
-	width: 10rem;
-	height: 10rem;
+	/*width: 10rem;*/
+	/*height: 10rem;*/
 	flex-shrink: 1;
-	margin-bottom: 5px;
+	margin: 5px;
 	
 	z-index: 2;
 	box-shadow: 2px 2px 5px gray;
 }
 .userPageAvatar > img {
-	width: 100%;
-	height: 100%;
+	display: block;
+	/*width: 100%;*/
+	/*height: 100%;*/
 }
 
 .userPageContents {

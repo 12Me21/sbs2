@@ -38,13 +38,15 @@ class UserView extends BaseView {
 		//let activity = resp.activity
 		//let ca = resp.commentaggregate
 		//let content = resp.content
-		View.set_title(" "+user.username+" ") // todo: this is unsafe because of text direction. get set_entity_title working again
-		this.$avatar.src = Draw.avatar_url(user, 200)
-		$userPageLink.hidden = !userpage
-		if (userpage)
-			$userPageLink.href = "#page/"+userpage.id
-		if (userpage)
+		this.Slot.set_title(" "+user.username+" ") // todo: this is unsafe because of text direction. get set_entity_title working again
+		
+		this.$avatar.src = Draw.avatar_url(user, 300)
+		if (userpage) {
 			Markup.convert_lang(userpage.text, userpage.values.markupLang, this.$contents)
+			this.Slot.add_header_links([
+				{label:"page", href:"#page/"+userpage.id},
+			])
+		}
 	}
 	Quick() {
 		View.set_title("todo")
@@ -54,7 +56,7 @@ class UserView extends BaseView {
 UserView.template = HTML`
 <view-root class='userPageBox'>
 	<a $=avatar_link class='userPageAvatar'>
-		<img $=avatar width=200 height=200>
+		<img $=avatar width=300 height=300>
 	</a>
 	<div $=contents class='userPageContents pageContents Markup'></div>
 </view-root>
