@@ -320,8 +320,13 @@ const Lp = NAMESPACE({
 				let message = maplist.message[~ref_id]
 				if (message)
 					comments.push(message)
-			/*} break; case 'activity_event': {
-				let act = maplist.activity[~ref_id]*/
+			} break; case 'activity_event': {
+				let act = maplist.activity[~ref_id]
+				Act.normal.activity(act, maplist)
+				// todo: when we add support for this: remember
+				// we need to interleave this data with message events
+				// to pass it to activity in ORDER
+				
 			} break; case 'watch_event': {
 				let watch = maplist.watch[~ref_id]
 				console.log('watch event', watch, event)

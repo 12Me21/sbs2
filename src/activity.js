@@ -10,10 +10,13 @@ class ActivityItem {
 		this.parent = parent
 		this.content = content
 		this.users = {}
+		this.action_users = {}
 		this.date = -Infinity
 		
-		this.$root.href = Nav.entity_link(this.content)
-		this.redraw_page()
+		if (this.content) {
+			this.$root.href = Nav.entity_link(this.content)
+			this.redraw_page()
+		}
 		// every item is assumed to be the newest, when created
 		// make sure you create activityitems in the right order
 		this.top()
@@ -49,19 +52,26 @@ class ActivityItem {
 		}
 	}
 	update_content(content) {
-		if (content.lastRevisionId > this.content.lastRevisionId) {
+		if (!this.content || content.lastRevisionId > this.content.lastRevisionId) {
 			this.content = content
 			this.redraw_page()
 		}
 	}
-	update_user(uid, user, date) {
+	update_user(uid, user, date, action=null) {
 		// hmm user is almost identical to ActivityItem. could reuse class for both?
 		if (!user || this.parent.hide_user) {
 			//console.warn('update user uid?', uid)
 			return
 		}
 		// todo: update user object for avatar changes etc? why don't users have editDate...
-		let u = this.users[uid] || (this.users[uid] = {user, date: -Infinity, elem: Draw.link_avatar(user)})
+		let umap = action ? this.action_users : this.users
+		let u = umap[uid]
+		if (!u) {
+			let elem = Draw.link_avatar(user)
+			if (action)
+				elem.classList.add('action-user')
+			u = umap[uid] = {user, date: -Infinity, elem}
+		}
 		// todo: show user dates on hover?
 		if (date > u.date) {
 			if (u.date==-Infinity || u.elem.previousSibling) // hack
@@ -121,10 +131,15 @@ class ActivityContainer {
 		return item
 	}
 	// update page, date, and user info, for a given page
-	update({content, user}, pid, date, uid=null) {
-		let item = this.update_content(pid, content[~pid], date)
+	update({content, user}, pid, date, uid=null, action=null) {
+		let page = content[~pid]
+		if (!page)
+			page = TYPES.content({id: pid||0})
+		if (page.contentType==CODES.file || action==CODES.delete)
+			return
+		let item = this.update_content(pid, page, date)
 		if (uid)
-			item.update_user(uid, user[~uid], date)
+			item.update_user(uid, user[~uid], date, action)
 	}
 	
 	watch(watch, objects) {
@@ -143,6 +158,10 @@ class ActivityContainer {
 			return
 		this.update(objects, msg.contentId, msg.Author.date, msg.createUserId)
 	}
+	
+	activity(act, objects) {
+		this.update(objects, act.contentId, act.date2, act.userId, act.action)
+	}
 }
 
 let Act = {
@@ -160,29 +179,45 @@ let Act = {
 				yesterday: start,
 			},
 			requests: [
-				// recent messages
-				{type:'message_aggregate', fields:'contentId,createUserId,maxCreateDate,maxId', query:"createDate > @yesterday"},
+				// recent messages to show in sidebar
 				{type:'message', fields:'*', query:"!notdeleted()", order:'id_desc', limit:50},
-				{type:'content', fields:'name,id,permissions,contentType,lastRevisionId', query:"id IN @message_aggregate.contentId OR id IN @message.contentId"},
+				// message aggregate
+				{type:'message_aggregate', fields:'contentId,createUserId,maxCreateDate,maxId', query:"createDate > @yesterday"},
+				// activity
+				{type:'activity', fields:'id,contentId,userId,action,date', query:"date > @yesterday AND !basichistory()", order:'id'},
 				// watches
 				{type:'watch', fields:'*'},
 				{name:'Cwatch', type:'content', fields:'name,id,permissions,contentType,lastRevisionId,lastCommentId', query: "!notdeleted() AND id IN @watch.contentId", order:'lastCommentId_desc'},
 				{name:'Mwatch', type:'message', fields: '*', query: 'id in @Cwatch.lastCommentId', order: 'id_desc'},
 				// shared
-				{type:'user', fields:'*', query:"id IN @message_aggregate.createUserId OR id IN @message.createUserId OR id IN @watch.userId"},
-				// todo: activity_aggregate
+				{type:'user', fields:'*', query:"id IN @message_aggregate.createUserId OR id IN @message.createUserId OR id IN @watch.userId OR id IN @activity.userId"},
+				{type:'content', fields:'name,id,permissions,contentType,lastRevisionId,hash', query:"id IN @message_aggregate.contentId OR id IN @message.contentId OR id IN @activity.contentId"},
 			],
 		}, (objects)=>{
 			console.log('🌄 got initial activity')
-			// message
+			/// process data ///
 			Entity.link_comments({message:objects.Mwatch, user:objects.user})
 			Entity.ascending(objects.message, 'id')
+			
+			/// sidebar messages ///
 			// TODO: ensure that these are displayed BEFORE any websocket new messages
 			Sidebar.display_messages(objects.message, true)
-			// message_aggregate
-			objects.message_aggregate.sort((a,b)=>a.maxId-b.maxId)
-			for (let x of objects.message_aggregate)
-				this.normal.message_aggregate(x, objects)
+			
+			/// activity tab ///
+			let combined = objects.message_aggregate.concat(objects.activity)
+			function get_id(a) {
+				if (a.Type == 'message_aggregate')
+					return a.maxCreateDate2.getTime()
+				return a.date2.getTime()
+			}
+			combined.sort((a,b)=>get_id(a)-get_id(b))
+			for (let x of combined) {
+				if (x.Type=='message_aggregate')
+					this.normal.message_aggregate(x, objects)
+				else
+					this.normal.activity(x, objects)
+			}
+			
 			// watch
 			Entity.link_watch({message:objects.Mwatch, watch:objects.watch, content:objects.Cwatch})
 			objects.watch.sort((x,y)=>x.Message.id-y.Message.id)

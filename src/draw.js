@@ -10,7 +10,9 @@ const Draw = NAMESPACE({
 		// choose icon
 		let hidden = !Entity.has_perm(content.permissions, 0, 'R')
 		let bg
-		if (content.contentType!=CODES.page)
+		if (content.contentType==CODES.file) {
+			bg = Req.file_url(content.hash, "size=100&crop=true")
+		} else if (content.contentType!=CODES.page)
 			bg = 'resource/unknownpage.png'
 		else if (content.literalType=='category')
 			bg = 'resource/category.png'

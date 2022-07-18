@@ -815,6 +815,24 @@ activity-users {
 	overflow-y: scroll;
 	width: 100%;
 }
+
+.action-user .avatar {
+	border: 1px solid gray;
+}
+.action-user {
+	position: relative;
+}
+.action-user::after {
+	content: '✏️';
+	display: block;
+	position: absolute;
+	left: 0;
+	right: 0;
+	text-align: center;
+	text-shadow:
+		-.5px -.5px 1px black,
+		1px 1px 0px black;
+}
 
 /* contain */
 #\$sidebarBottom,
