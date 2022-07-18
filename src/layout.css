@@ -55,6 +55,7 @@ html, body {
 .ROW > * { flex: none; min-width: 0; }
 .COL > * { flex: none; min-height: 0; }
 .FILL { flex: 0mm; }
+.sized { flex-shrink: 1; }
 
 
 /* views */

@@ -276,7 +276,7 @@ class ResizeBar {
 	}
 	update_size(px) {
 		this.size = Math.max(px, 0)
-		this.$elem.style.flexBasis = this.size+"px"
+		this.$elem.style[this.horiz?'width':'height'] = this.size+"px"
 	}
 	
 	static grab(bar) {
