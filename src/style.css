@@ -761,12 +761,40 @@ not-sidebar {
 	display: flex;
 	height: 1.5rem;
 }
+
 activity-users {
-	text-align: right;
+	/*text-align: right;*/
 	white-space: pre;
 	overflow-x: visible;
 	padding: 0 3px;
+	display: flex;
+	justify-content: flex-end;
 }
+
+.activity-scroller > scroll-inner {
+	display: flex;
+	flex-flow: column;
+}
+
+.action-user .avatar {
+	border: 1px solid gray;
+}
+.action-user {
+	position: relative;
+}
+.action-user::after {
+	content: '✏️';
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	text-align: center;
+	text-shadow:
+		-.5px -.5px 1px black,
+		1px 1px 0px black;
+}
+
 /* todo: the css/html for watch activity items is mostly a hack */
 .activity-watch {
 	display: flex;
@@ -814,25 +842,6 @@ activity-users {
 	resize: vertical;
 	overflow-y: scroll;
 	width: 100%;
-}
-
-.action-user .avatar {
-	border: 1px solid gray;
-}
-.action-user {
-	position: relative;
-}
-.action-user::after {
-	content: '✏️';
-	display: block;
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	text-align: center;
-	text-shadow:
-		-.5px -.5px 1px black,
-		1px 1px 0px black;
 }
 
 /* contain */

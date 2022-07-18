@@ -43,25 +43,75 @@ function switch_tab(next, no_focus) {
 document.addEventListener('focusout', e=>{
 	let focused = e.target
 	let new_focus = e.relatedTarget
-	if (!focused) return
-	let role = focused.getAttribute('role')
-	if ('tab'==role || 'row'==role || 'gridcell'==role || 'listitem'==role) {
-		if (new_focus && new_focus.parentNode == focused.parentNode) {
-			new_focus.tabIndex = 0
-			focused.tabIndex = -1
-		} else if ('gridcell'==role)
-			focused.tabIndex = -1
+	if (focused) {
+		let role = focused.getAttribute('role')
+		if ('tab'==role || 'row'==role || 'gridcell'==role || 'listitem'==role) {
+			if (new_focus && new_focus.parentNode == focused.parentNode) {
+				new_focus.tabIndex = 0
+				focused.tabIndex = -1
+			} else if ('gridcell'==role)
+				focused.tabIndex = -1
+		}
+		let parent = focused.parentNode
+		if (parent.dataset.ordered!=null) {
+			if (!parent.contains(new_focus)) {
+				// focus moving OUT of an ordered element
+				parent.tabIndex = 0 // make it focusable again
+				focused.tabIndex = -1
+			}
+		}
+	}
+	// focus moving into an ordered element
+	if (new_focus && new_focus.dataset.ordered!=null) {
+		// transfer focus to the first item instead
+		new_focus.tabIndex=-1
+		try_focus(order_first(new_focus))
+		e.preventDefault() // is this right?
 	}
 })
 
 function try_focus(elem) {
 	elem && elem.focus()
 }
+
+function order_first(elem, dir=1) {
+	let best = null
+	let best_or = NaN
+	for (let c of elem.children) {
+		let or = +c.style.order*dir
+		if (!(or > best_or)) {
+			best = c
+			best_or = or
+		}
+	}
+	return best
+}
+
+function order_neighbor(elem, dir) {
+	let order = +elem.style.order*dir
+	let best = null
+	let best_or = NaN
+	for (let c of elem.parentNode.children) {
+		let or = +c.style.order*dir
+		if (or > order && !(or > best_or)) {
+			best = c
+			best_or = or
+		}
+	}
+	if (best)
+		return best
+}
+function get_neighbor(elem, dir) {
+	if (elem.parentNode.dataset.ordered!=null)
+		return order_neighbor(elem, dir)
+	return dir<0 ? elem.previousElementSibling : elem.nextElementSibling
+}
+
 function focus_prev(elem) {
-	try_focus(elem.previousElementSibling)
+	try_focus(get_neighbor(elem, -1))
 }
 function focus_next(elem) { // function ({next: nextElementSibling}) {
-	try_focus(elem.nextElementSibling)
+	try_focus(get_neighbor(elem, 1))
 }
 
 document.addEventListener('keydown', e=>{
@@ -84,7 +134,9 @@ document.addEventListener('keydown', e=>{
 			return
 	} else if ('row'==role) {
 		if ('ArrowRight'==e.key) {
-			try_focus(focused.querySelector(`[role="gridcell"]`))
+			return
+			// todo: pick the right ordered cell
+			//try_focus(focused.querySelector(`[role="gridcell"]`))
 		} else if ('ArrowUp'==e.key)
 			focus_prev(focused)
 		else if ('ArrowDown'==e.key)
@@ -106,4 +158,3 @@ document.addEventListener('keydown', e=>{
 // idea: for things like tab lists etc:
 // set actual focus on the container/list element
 // then arrows set the like, aria-activedescendant
-//  BUT this means we have to set tabindex -1 on all <a>, <button>, etc. elements in the container until the relevant element becomes focused. ugh.

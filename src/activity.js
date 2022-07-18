@@ -1,5 +1,11 @@
 'use strict'
 
+function date_order(date) {
+	if (date instanceof Date)
+		return (1420070400000-date.getTime()) / 1000 |0
+	return 100
+}
+
 class ActivityItem {
 	constructor(content, parent) {
 		if (parent.hide_user)
@@ -27,6 +33,8 @@ class ActivityItem {
 	// todo: .top() might make more sense as method on ActivityContainer
 	top() {
 		const con = this.parent.$container
+		con.append(this.$root)
+		/*const con = this.parent.$container
 		let first = con.firstElementChild
 		if (first == this.$root)
 			return
@@ -36,7 +44,7 @@ class ActivityItem {
 		let hole = con.querySelector(`:scope > [tabindex="0"]`)
 		if (hole)
 			hole.tabIndex = -1
-		this.$root.tabIndex = 0
+		this.$root.tabIndex = 0*/
 	}
 	redraw_time() {
 		if (this.date!=-Infinity)
@@ -48,7 +56,10 @@ class ActivityItem {
 			this.$time.title = this.date.toString()
 			this.$time.setAttribute('datetime', this.date.toISOString())
 			this.redraw_time()
-			this.top()
+			//this.top()
+			this.$root.style.order = date_order(this.date)
+			if (date > this.min_order)
+				;
 		}
 	}
 	update_content(content) {
@@ -71,12 +82,14 @@ class ActivityItem {
 			if (action)
 				elem.classList.add('action-user')
 			u = umap[uid] = {user, date: -Infinity, elem}
+			this.$user.append(u.elem)
 		}
 		// todo: show user dates on hover?
 		if (date > u.date) {
-			if (u.date==-Infinity || u.elem.previousSibling) // hack
-				this.$user.prepend(u.elem)
+			//if (u.date==-Infinity || u.elem.previousSibling) // hack
+			//	this.$user.prepend(u.elem)
 			u.date = date
+			u.elem.style.order = date_order(u.date)
 		}
 	}
 }
@@ -85,7 +98,7 @@ ActivityItem.template = HTML`
 	<div $=page class='bar rem1-5 ellipsis'></div>
 	<div class='bar rem1-5 activity-page-bottom ROW'>
 		<time $=time class='time-ago ellipsis'></time>
-		<activity-users $=user aria-orientation=horizontal class='FILL'>
+		<activity-users $=user aria-orientation=horizontal data-ordered class='FILL'>
 `
 ActivityItem.template_simple = HTML`
 <a class='activity-page activity-watch' role=row tabindex=-1>
@@ -97,11 +110,16 @@ ActivityItem.template_simple = HTML`
 class ActivityContainer {
 	constructor(hide_user=false) {
 		this.$container = document.createElement('scroll-inner')
-		this.interval = null
-		this.$container.setAttribute('role', 'treegrid')
+		this.$container.dataset.ordered = ""
+		this.$container.tabIndex = 0
+		//this.$container.setAttribute('role', 'treegrid')
 		this.$elem = null
+		this.interval = null
 		this.items = {__proto__:null}
 		this.hide_user = hide_user
+		
+		this.$hole = null
+		this.min_order = null
 	}
 	
 	init(element) {
@@ -204,7 +222,12 @@ let Act = {
 			Sidebar.display_messages(objects.message, true)
 			
 			/// activity tab ///
-			let combined = objects.message_aggregate.concat(objects.activity)
+			for (let act of objects.activity)
+				this.normal.activity(act, objects)
+			for (let agg of objects.message_aggregate)
+				this.normal.message_aggregate(agg, objects)
+			
+			/*let combined = objects.message_aggregate.concat(objects.activity)
 			function get_id(a) {
 				if (a.Type == 'message_aggregate')
 					return a.maxCreateDate2.getTime()
@@ -216,11 +239,11 @@ let Act = {
 					this.normal.message_aggregate(x, objects)
 				else
 					this.normal.activity(x, objects)
-			}
+			}*/
 			
 			// watch
 			Entity.link_watch({message:objects.Mwatch, watch:objects.watch, content:objects.Cwatch})
-			objects.watch.sort((x,y)=>x.Message.id-y.Message.id)
+			//objects.watch.sort((x,y)=>x.Message.id-y.Message.id)
 			for (let x of objects.watch)
 				this.watch.watch(x, {content:objects.Cwatch})
 		})
