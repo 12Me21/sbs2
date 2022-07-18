@@ -27,7 +27,7 @@ class EditView extends BaseView {
 			}
 			let change = text.length - data.text.length
 			let percent = change/data.text.length*100
-			if (percent < -50)
+			if (percent < -25)
 				if (!confirm("are you sure you want to save?\ntext length changed by "+percent.toFixed(1)+"% ("+change+" chars)"))
 					return void done()
 			data.text = text
@@ -203,7 +203,7 @@ class EditView extends BaseView {
 			this.$preview_outer.scrollTop = 9e9
 	}
 	save(callback) {
-		/*Req.write(this.page).do = (resp, err)=>{
+		Req.write(this.page).do = (resp, err)=>{
 			if (err) {
 				alert('❌ page edit failed')
 				print('❌ page edit failed!')
@@ -213,8 +213,8 @@ class EditView extends BaseView {
 				//this.got_page(resp, false)
 			}
 			callback && callback(!err)
-		}*/
-		print('saving page...')
+		}
+		print('💾 saving page')
 	}
 }
 
