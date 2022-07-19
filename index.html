@@ -232,13 +232,14 @@
 			<scroll-outer id=$sidebarWatch class='activity-scroller' tabindex=-1></scroll-outer>
 		</sidebar-panel>
 		
-		<sidebar-panel id=$sidebarNavPanel tabindex=-1>
+		<sidebar-panel id=$sidebarNavPanel tabindex=-1 style='overflow-y:scroll;'>
 			<div class='bar rem1-5 ROW'>
 				<input class='FILL item' id=$searchInput>
 				<button id=$searchButton class='item'>Search</button>
 			</div>
 			<div id=$searchResults role='list'></div>
-			<div id=$sidebarCategories></div>
+			<div class='ROW' style='justify-content:space-around;'><span>🐈︎</span><span>🐈︎</span><span>🐈︎</span><span>🐈︎</span><span>🐈︎</span></div>
+			<div id=$sidebarCategories role='list'></div>
 		</sidebar-panel>
 		
 		<sidebar-panel id=$sidebarFilePanel class='COL'>

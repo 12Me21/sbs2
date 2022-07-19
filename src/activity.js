@@ -184,6 +184,8 @@ let Act = {
 				// shared
 				{type:'user', fields:'*', query:"id IN @message_aggregate.createUserId OR id IN @message.createUserId OR id IN @watch.userId OR id IN @activity.userId"},
 				{type:'content', fields:'name,id,permissions,contentType,lastRevisionId,hash', query:"id IN @message_aggregate.contentId OR id IN @message.contentId OR id IN @activity.contentId"},
+				// category
+				{name:'Ccat', type:'content', fields:'name,id,permissions,contentType,literalType', query:"!onlyparents() OR literalType={{category}}"},
 			],
 		}, (objects)=>{
 			console.log('🌄 got initial activity')
@@ -205,6 +207,19 @@ let Act = {
 			Entity.link_watch({message:objects.Mwatch, watch:objects.watch, content:objects.Cwatch})
 			for (let x of objects.watch)
 				this.watch.watch(x, {content:objects.Cwatch})
+			
+			// cats
+			do_when_ready(()=>{
+				$sidebarCategories.fill(objects.Ccat.map(cat=>{
+					let bar = document.createElement('a')
+					bar.append(Draw.content_label(cat))
+					bar.setAttribute('role', 'listitem')
+					bar.classList.add('bar')
+					bar.classList.add('rem1-5')
+					bar.href = Nav.entity_link(cat)
+					return bar
+				}))
+			})
 		})
 	},
 	handle_messages(comments, maplist) {
