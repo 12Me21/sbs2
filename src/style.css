@@ -476,6 +476,19 @@ message-block {
 	background: var(--avatar-url, none) no-repeat 0.5rem top / var(--chat-avatar-size);
 	background-origin: content-box;
 }
+
+/*message-block > img.avatar {
+	display: inline-block;
+	position: absolute;
+	z-index: -1;
+	width: var(--chat-avatar-size);
+	height: var(--chat-avatar-size);
+	border: none; /*1px solid #777/
+	margin-left: 0.5rem;
+	/*background-color: transparent/
+	/*background-color: #AAB/
+}*/
+
 /*message-block > .bigAvatar {
 	position: absolute;
 	width: calc(var(--chat-gutter));
