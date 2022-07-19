@@ -152,11 +152,6 @@ td, th {  /* border renders outside */
 	height: var(--bar-height);
 	line-height: var(--bar-height);
 }
-.item, .textItem {
-	/*max-width: -webkit-fill-available;
-	max-width: -moz-available;
-	max-width: stretch;*/
-}
 .bar .avatar {
 	width: var(--bar-height);
 }
@@ -286,10 +281,6 @@ but, then we can't add a border to the image
  ****************/
 .resize-box {
 	--handle-width: 1.1875em;
-}
-
-.resize-box > .sized {
-	flex-shrink: 1;
 }
 
 .resize-handle {

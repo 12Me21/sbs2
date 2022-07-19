@@ -84,7 +84,7 @@ textarea {
 	border-radius: 0;
 	box-shadow: 0.125rem 0.1875rem 0.3125rem -0.1875rem #0D0D0D80;
 	color: var(--T-color);
-	background-color: var(--T-bg) !important;
+	background-color: var(--T-bg);
 	white-space: break-spaces; /* optional */
 	tab-width: 3;
 }
@@ -464,8 +464,8 @@ message-block {
 	box-sizing: content-box;
 	font-size: 1em; /* ? */
 	/* border-left: 0.5em solid rgb(255,153,153) */
+	/* #F99 or #F006 */
 	
-	--chat-gutter: 4.5rem;
 	--chat-avatar-size: calc(var(--chat-gutter) - 0.5rem - 0.5rem);
 	--chat-message-gap: 0.625rem;
 	padding-right: 0.5rem;

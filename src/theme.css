@@ -4,6 +4,8 @@
 :root {
 	--T-font: 1em roboto, sans-serif;
 	--T-monospace-font: 0.8125em 'cascadia code', consolas, monospace;
+	/* chat left margin (determines size of avatars on messages) */
+	--chat-gutter: 4.5rem;
 }
 
 /* default theme */
