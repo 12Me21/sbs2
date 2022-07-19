@@ -811,6 +811,14 @@ activity-users {
 	padding-left: 0.125em;
 	text-overflow: clip;
 }
+
+.search-page:first-child {
+	border-top-style: solid;
+}
+.search-page {
+	border: 1px var(--T-border-color);
+	border-bottom-style: solid;
+}
 
 /* sidebar settings list */
 #\$localSettings > div {

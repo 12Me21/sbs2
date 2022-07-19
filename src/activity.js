@@ -185,7 +185,7 @@ let Act = {
 				{type:'user', fields:'*', query:"id IN @message_aggregate.createUserId OR id IN @message.createUserId OR id IN @watch.userId OR id IN @activity.userId"},
 				{type:'content', fields:'name,id,permissions,contentType,lastRevisionId,hash', query:"id IN @message_aggregate.contentId OR id IN @message.contentId OR id IN @activity.contentId"},
 				// category
-				{name:'Ccat', type:'content', fields:'name,id,permissions,contentType,literalType', query:"!onlyparents() OR literalType={{category}}"},
+				{name:'Ccat', type:'content', fields:'name,id,permissions,contentType,literalType,parentId', query:"!onlyparents() OR literalType={{category}}"},
 			],
 		}, (objects)=>{
 			console.log('🌄 got initial activity')
@@ -209,17 +209,33 @@ let Act = {
 				this.watch.watch(x, {content:objects.Cwatch})
 			
 			// cats
-			do_when_ready(()=>{
-				$sidebarCategories.fill(objects.Ccat.map(cat=>{
+			let tree = {content:null, branches:[]}
+			let map = {'0':tree}
+			for (let cat of objects.Ccat) {
+				map[cat.id] = {content:cat, branches:[]}
+			}
+			for (let cat of objects.Ccat) {
+				let parent = map[cat.parentId]
+				if (parent)
+					parent.branches.push(map[cat.id])
+			}
+			console.log(tree)
+			function draw_tree(root, depth=0, last=false) {
+				let cat = root.content
+				if (cat) {
+					if (cat.id==23)
+						return //sowwy
 					let bar = document.createElement('a')
 					bar.append(Draw.content_label(cat))
 					bar.setAttribute('role', 'listitem')
-					bar.classList.add('bar')
-					bar.classList.add('rem1-5')
+					bar.className += " bar rem1-5 search-page ellipsis"
 					bar.href = Nav.entity_link(cat)
-					return bar
-				}))
-			})
+					bar.prepend("│ ".repeat(depth-1)+"├└"[last?1:0])
+					$sidebarCategories.append(bar)
+				}
+				root.branches.forEach((x,i,a)=>draw_tree(x,depth+1,i==a.length-1))
+			}
+			draw_tree(tree)
 		})
 	},
 	handle_messages(comments, maplist) {

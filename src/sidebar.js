@@ -60,8 +60,7 @@ const Sidebar = NAMESPACE({
 					let bar = document.createElement('a')
 					bar.append(Draw.content_label(item))
 					bar.setAttribute('role', 'listitem')
-					bar.classList.add('bar')
-					bar.classList.add('rem1-5')
+					bar.className += " bar rem1-5 search-page ellipsis"
 					bar.href = Nav.entity_link(item)
 					$searchResults.append(bar)
 					bar.tabIndex = first ? 0 : -1
