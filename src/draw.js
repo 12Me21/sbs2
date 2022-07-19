@@ -261,7 +261,10 @@ class ResizeBar {
 		return ev[this.horiz?'clientX':'clientY']
 	}
 	start(ev) {
-		if (ev.target instanceof HTMLSelectElement)
+		let target = ev.target
+		if (target instanceof Text)
+			target = target.parentNode
+		if (target!==this.$handle)
 			return
 		ev.preventDefault()
 		ResizeBar.grab(this)
