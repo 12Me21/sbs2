@@ -151,14 +151,19 @@ button:hover {
 
 
 /* tabs */
+tab-list#\$sidebar_tabs {
+	height: 2.125rem;
+}
+
 tab-list {
 	display: flex;
 	flex-flow: row;
 	width: 100%;
-	border-bottom: 1px solid gray;
-	border-top: 1px solid var(--T-border-color);
-	background-color: var(--bar-bg) !important;
-	height: 2.125rem;
+	/*border-bottom: 1px solid gray;*/
+	/*border-top: 1px solid var(--T-border-color);*/
+	background-color: var(--databarbgcolor) !important;
+	height: 1.5rem;
+	border-top: 2px solid var(--databarbgcolor);
 }
 tab-list > button {
 	flex: 0mm;
@@ -166,13 +171,29 @@ tab-list > button {
 	padding: 0;
 	font-size: 1em;
 	border-bottom: none;
-   text-shadow:
+	background: var(--bar-bg);
+	/*border: 1px solid var(--databarbgcolor);*/
+	border: none;
+	border-radius: 5px 5px 0 0;
+	border-bottom: none;
+	margin-left: 2px;
+}
+tab-list > button:first-child {
+	margin-left: 0;
+}
+tab-list > button:not([aria-selected="true"]) {
+	/*box-shadow: 0 -5px 5px -6px black inset;*/
+	background: gray;
+	color: white;
+}
+tab-list > button.text-shadow {
+	text-shadow:
 		-.5px -.5px 1px var(--T-color),
 		1px 1px 0px var(--T-color);
 }
-
 tab-list > button[aria-selected="true"] {
-	border-bottom-color: var(--bar-bg);
+	background: var(--T-bg);
+	box-shadow: none;
 }
 tab-list > button img.avatar {
 	width: auto;
@@ -821,30 +842,34 @@ activity-users {
 }
 
 /* sidebar settings list */
-#\$localSettings > div {
+.local-settings {
+	padding: 0.3125rem 0.5rem;
+}
+
+.local-settings > div {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
 }
-#\$localSettings > div > * {
+.local-settings > div > * {
 	flex-grow: 1;
 	flex-shrink: 0;
 	width: 49%;
 	min-width: 6.5em;
 }
-#\$localSettings > div > :last-child {
+.local-settings > div > :last-child {
 	flex-grow: 1;
 }
-#\$localSettings > div > textarea {
+.local-settings > div > textarea {
 	width: 100%;
 	height: 5.1875em;
 }
-#\$localSettings > div > label {
+.local-settings > div > label {
 	font-weight: 500;
 	line-height: 1em;
 	padding-bottom: .1875em;
 }
-#\$localSettings > div {
+.local-settings > div {
 	column-gap: 0.1875rem; /* todo: we can't use this heck! */
 	margin-bottom: 0.3125rem;
 }

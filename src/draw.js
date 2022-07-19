@@ -311,56 +311,45 @@ let button_template = 𐀶`<button role=tab aria-selected=false>`
 
 class Tabs {
 	constructor(def, elem=document.createElement('tab-list'), name=Tabs.id++) {
+		this.tabs = []
+		this.$elem = elem
+		this.name = name
 		
-		this.tabs = def
-		this.elem = elem
-		
-		this.elem.setAttribute('role', 'tablist')
-		for (let tab of this.tabs) {
-			if (!tab.elem.id)
-				tab.elem.id = name+"-panel-"+tab.name
-			
-			let btn = tab.btn = button_template()
-			btn.id = name+"-tab-"+tab.name
-			btn.setAttribute('aria-controls', tab.elem.id)
-			btn.tabIndex = -1
-			btn.dataset.name = tab.name
-			btn.onclick = e=>{
-				switch_tab(btn)
-				if (tab.onswitch)
-					tab.onswitch()
-			}
-			btn.append(tab.label)
-			if (tab.accesskey)
-				btn.setAttribute('accesskey', tab.accesskey)
-			this.elem.append(btn)
-			
-			tab.elem.setAttribute('role', "tabpanel")
-			//tab.elem.tabIndex = -1
-			tab.elem.setAttribute('aria-labelledby', btn.id)
-		}
+		this.$elem.setAttribute('role', 'tablist')
+		for (let data of def)
+			this.add(data)
 	}
 	select(name) {
 		let tab = this.tabs.find(tab=>tab.name==name)
 		if (tab)
 			switch_tab(tab.btn, true)
 	}
-	
-	static draw_button(name, data, panel) {
-		let btn = button_template()
-		btn.id = name+"-tab-"+data.name
+	add(data) {
+		this.tabs.push(data)
+		
+		let panel = data.panel
+		if (!panel.id)
+			panel.id = this.name+"-panel-"+data.name
+		
+		let btn = data.btn = button_template()
+		this.$elem.append(btn)
+		
+		btn.id = this.name+"-tab-"+data.name
 		btn.setAttribute('aria-controls', panel.id)
 		btn.tabIndex = -1
-		btn.dataset.name = tab.name
+		btn.dataset.name = data.name
 		btn.onclick = ev=>{
 			switch_tab(btn)
 			data.onswitch && data.onswitch() // todo: make this an event listener or something on panel instead
 		}
+		if (data.shadow)
+			btn.classList.add('text-shadow')
 		btn.append(data.label)
 		if (data.accesskey)
-			btn.accessKey = tab.accesskey
+			btn.accessKey = data.accesskey
 		
-		this.elem.append(btn)
+		panel.setAttribute('role', "tabpanel")
+		panel.setAttribute('aria-labelledby', btn.id)
 	}
 }
 Tabs.id = 1

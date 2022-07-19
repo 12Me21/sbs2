@@ -2,6 +2,8 @@
 
 Settings = NAMESPACE({
 	values: Settings.values,
+	groups: {__proto__:null},
+	tabs: null,
 	
 	fields: [],
 	// .add() can be called at any time
@@ -24,13 +26,28 @@ Settings = NAMESPACE({
 	// render
 	$elem: null,
 	draw(elem) {
+		this.tabs = new Tabs([
+			{name:'default', label:'s', panel:$localSettings},
+			{name:'debug', label:'d', panel:$debugTab},
+		], $settings_tabs, 'settings')
 		this.$elem = elem
 		for (let field of this.fields)
 			this.insert(field)
 	},
 	insert(field) {
+		let group = field.group
+		let panel = this.$elem
+		if (group) {
+			panel = this.groups[group]
+			if (!panel) {
+				panel = document.createElement('div')
+				panel.className += 'local-settings'
+				$settings_panels.appendChild(panel)
+				this.tabs.add({name:group, label:group, panel})
+			}
+		}
 		let after = null
-		for (let x of this.$elem.children) {
+		for (let x of panel.children) {
 			let weight = +x.dataset.order
 			if (weight > field.order) {
 				after = x
@@ -38,7 +55,7 @@ Settings = NAMESPACE({
 			}
 		}
 		let row = field.draw()
-		this.$elem.insertBefore(row, after)
+		panel.insertBefore(row, after)
 	},
 	
 	save_all() {
@@ -79,8 +96,11 @@ class SettingProto {
 	// - 'save' - when "save" button clicked 
 	change(event, value=this.read()) {
 		Settings.values[this.name] = value
-		if ('init'!=event)
+		if ('init'!=event && 'update'!=event) {
 			localStorage.setItem("setting-"+this.name, JSON.stringify(value))
+			if (this.autosave==false)
+				return
+		}
 		this.update && this.update(value, event)
 	}
 	// draw html input element
@@ -147,14 +167,26 @@ class SettingProto {
 			console.warn('unknown settings type: '+type)
 			elem = document.createElement('input')
 		}
+		
 		// connect label to element (feels nice)   (does not fele nice :(
 		//label.htmlFor = elem.id = `settings_panel__${this.name}`
 		this.elem = elem
 		// set the initial value
 		this.write()
 		
-		if (this.autosave != false)
-			elem.onchange = ev=>{ this.change('change') }
+		//if (this.autosave != false)
+		elem.onchange = ev=>{ this.change('change') }
+		if (this.autosave == false) {
+			let btn = document.createElement('button')
+			btn.textContent = "update"
+			btn.onclick = ev=>{
+				this.change('update')
+			}
+			row.append(btn)
+		}
+		
+		if (this.render)
+			this.render(row, elem, label)
 		
 		row.append(elem)
 		return row
@@ -187,7 +219,18 @@ Settings.add({
 Settings.add({
 	name: 'sitecss', label: "Custom CSS", type: 'code',
 	autosave: false,
+	group: 'css',
 	order: Infinity-2,
+	render(row, elem, label) {
+		let btn = document.createElement('button')
+		btn.textContent = 'reload css'
+		btn.onclick = ev=>{
+			for(let sheet of document.styleSheets)
+				if(sheet.href)
+					sheet.ownerNode.href+="#"
+		}
+		label.replaceWith(btn)
+	},
 	update(value, type) {
 		if ('init'!=type)
 			$customCSS.textContent = value
@@ -196,6 +239,7 @@ Settings.add({
 Settings.add({
 	name: 'sitejs', label: "Custom Javascript", type: 'code',
 	autosave: false,
+	group: 'js',
 	order: Infinity-1,
 	//todo: maybe highlight when changed, to notify user that they need to save manually?
 	// todo: js console tab thing

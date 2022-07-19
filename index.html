@@ -263,13 +263,11 @@
 			<a href=#images>View Images</a>
 		</sidebar-panel>
 		
-		<sidebar-panel id=$sidebarUserPanel>
+		<sidebar-panel id=$sidebarUserPanel class='COL'>
 			<!--<tab-list id=$settings_tabs aria-label="settings tabs"></tab-list>-->
 			<div class='registerBox'>
 				<button onclick='RELOAD()'>Reload</button>
-				<button onclick='Lp.start_websocket(true)'>Reset Socket</button>
-				<button onclick='for(let sheet of document.styleSheets)if(sheet.href)sheet.ownerNode.href+="#"'>reload css</button>
-				
+				<button onclick='Lp.start_websocket(true)'>Reset Socket</button>			
 				<button id=$logOut style="float:right">Log out</button>
 			</div>
 			<div class='loggedOut registerBox'>
@@ -281,13 +279,15 @@
 				</form>
 				<div id=$loginError></div>
 			</div>
-			<div class='loggedIn registerBox'>
-				<div id=$localSettings></div>
-				<button id=$localSettingsSave>Update sitejs/sitecss</button>
-			</div>
-			<div class='registerBox'>
-				js eval:
-				<textarea id=$debugInput class='code-textarea'></textarea>
+			<tab-list id=$settings_tabs></tab-list>
+			<div id=$settings_panels class='FILL SLIDES'>
+				<div class='local-settings' id=$localSettings></div>	
+				<div class='local-settings' id=$debugTab>
+					<div>
+						js eval:
+						<textarea id=$debugInput class='code-textarea'></textarea>
+					</div>
+				</div>	
 			</div>
 		</sidebar-panel>
 	</div>

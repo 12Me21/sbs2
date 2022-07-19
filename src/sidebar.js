@@ -26,16 +26,16 @@ const Sidebar = NAMESPACE({
 			user_label = "log in"
 		
 		this.tabs = new Tabs([
-			{name: 'activity', label: "✨", elem: $sidebarActivityPanel, accesskey: 'a'},
-			{name: 'watch', label: "🔖", elem: $sidebarWatchPanel},
+			{name: 'activity', label: "✨", panel: $sidebarActivityPanel, accesskey: 'a', shadow:true},
+			{name: 'watch', label: "🔖", panel: $sidebarWatchPanel, shadow:true},
 			//{label: "W", elem: $sidebarWatchPanel},
 			
-			{name: 'search', label: "🔍", elem: $sidebarNavPanel, onswitch: ()=>{
+			{name: 'search', label: "🔍", panel: $sidebarNavPanel, onswitch: ()=>{
 				$searchInput.value = ""
 				$searchInput.focus()
-			}, accesskey: 's'},
-			{name: 'file', label: "📷", elem: $sidebarFilePanel},
-			{name: 'user', label: user_label, elem: $sidebarUserPanel},
+			}, accesskey: 's', shadow:true},
+			{name: 'file', label: "📷", panel: $sidebarFilePanel, shadow:true},
+			{name: 'user', label: user_label, panel: $sidebarUserPanel},
 		], $sidebar_tabs, "sidebar")
 		
 		if (Req.auth)
@@ -91,10 +91,6 @@ const Sidebar = NAMESPACE({
 			// need to check if logged in, since settings.init() is only called in that case.
 			
 			Settings.draw($localSettings)
-			
-			$localSettingsSave.onclick = ev=>{
-				Settings.save_all()
-			}
 		}
 		
 		/*let st = new Tabs([
@@ -235,9 +231,9 @@ const Sidebar = NAMESPACE({
 		
 		return d
 	}.bind(𐀶`
-<div class='bar rem1-5 sidebarComment ellipsis'>
+<div class='bar rem1-5 ellipsis'>
 	<a tabindex=-1 class='user-label'>
-		<img class='item icon avatar' width=100 height=100>
+		<img class='item avatar' width=100 height=100>
 		<span class='textItem entity-title pre'></span>
 	</a>:&#32;
 </div>
@@ -261,7 +257,7 @@ const Sidebar = NAMESPACE({
 		})
 		Events.user_edit.listen(this, user=>{
 			if (user.id==Req.uid)
-				this.update_my_avatar()
+				this.redraw_my_avatar()
 			this.userlist.redraw_user(user)
 		})
 	}
