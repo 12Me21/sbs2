@@ -426,7 +426,7 @@ time {
 <message-block> layout:
 ┌───────────┲━━━━━━━━━━━━━━━━━━━━━┱─┐
 │ ╭───────╮ ┃ <message-header>    ┃ │
-│ │.avatar│ ┗━━━━━━━━━━━━━━━━━━━━━┛ │
+│ │avatar │ ┗━━━━━━━━━━━━━━━━━━━━━┛ │
 │ ┢━━━━━━━┿┯┯━━━━━━━━━━━━━━━━━━━━━┓ │
 │ ┃       ┊╎╎ <message-part>      ┃ │
 │ ┃╌╌╌╌╌╌╌╯╎╎                     ┃ │
@@ -441,22 +441,18 @@ time {
 DRAW ORDER / z-index - side view
  ←---- x axis ----→
 ↑  ━━━             <message-controls> (nearest, can cover avatar)
-│  ╌╌╌╌━━━━━━━━━━  <message-part> (area covering avatar is seethrough)
-Z  ───             .avatar
-↓ ---------------- <message-block> (furthest)
+Z  ╌╌╌╌━━━━━━━━━━  <message-part> (area covering avatar is seethrough)
+↓ ---------------- <message-block> (furthest, contains avatar)
 
 <message-block> contains
-- <img class=avatar>
 - <message-header> (with username/time)
 - <message-contents>
+- avatar is drawn with background-image
 
 within <message-contents> is a list of <message-part>s
 (<message-controls> is also inserted here, immediately after the highlighted <message-part>)
 
 each <message-part> actually extends all the way to the left, and uses left border/padding to shift the content out of this 'gutter'
-(
-the .avatar is set to position: absolute, so it can overlap the left side of the first <message-part>
-)
 
 the reason I don't use padding on the CONTAINER instead, is because i need to display <message-controls>:
 I need the <message-part>s to extend into the gutter, so that i can detect which <message-part> the mouseover/mouseleave events are for, when the cursor is in over gutter
@@ -466,16 +462,19 @@ I need the <message-part>s to extend into the gutter, so that i can detect which
 message-block {
 	display: block;
 	box-sizing: content-box;
+	font-size: 1em; /* ? */
+	/* border-left: 0.5em solid rgb(255,153,153) */
+	
 	--chat-gutter: 4.5rem;
 	--chat-avatar-size: calc(var(--chat-gutter) - 0.5rem - 0.5rem);
 	--chat-message-gap: 0.625rem;
 	padding-right: 0.5rem;
 	padding-top: var(--chat-message-gap);
 	min-height: var(--chat-avatar-size);
-	/* border-left: 0.5em solid rgb(255,153,153) */
-	font-size: 1em; /* ? */
 	
-	background: var(--avatar-url, none) no-repeat content-box 0.5rem top / var(--chat-avatar-size);
+	/* avatar */
+	background: var(--avatar-url, none) no-repeat 0.5rem top / var(--chat-avatar-size);
+	background-origin: content-box;
 }
 /*message-block > .bigAvatar {
 	position: absolute;
@@ -511,7 +510,7 @@ message-contents {
 	display: block;
 	min-height: 1.5rem; /*this is so <message-controls> always has somewhere to be shown*/
 	margin: 0.125rem 0;
-	overflow-y: hidden; /* do we need this */
+	overflow: hidden; /* do we need this */
 }
 /* because of overlapping with avatar: */
 message-contents, message-part {
