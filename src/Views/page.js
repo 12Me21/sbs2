@@ -109,7 +109,7 @@ class PageView extends BaseView {
 			this.update_pinned(pinned, user)
 		
 		message.reverse()
-		this.display_messages(message, false)
+		this.display_messages(message)
 		
 		// add event listeners //
 		Events.messages.listen(this, (messages)=>{
@@ -160,7 +160,7 @@ class PageView extends BaseView {
 		this.scroller.print_top(()=>{
 			this.$extra.prepend(separator)
 			this.$extra.prepend(list)
-			this.pinned_list.display_messages(pinned, false)
+			this.pinned_list.display_messages(pinned)
 		})
 	}
 	update_watch(watch) {
@@ -228,8 +228,7 @@ class PageView extends BaseView {
 	// animate: Boolean - whether to play the scrolling animation
 	display_messages(comments, live) {
 		this.scroller.print(inner=>{
-			for (let comment of comments)
-				this.list.display_message(comment, false, live)
+			this.list.display_messages(comments, live)
 		}, live)
 		if (live) {
 			let last = comments.findLast(msg=>Entity.is_new_comment(msg))
