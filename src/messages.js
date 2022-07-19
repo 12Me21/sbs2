@@ -60,8 +60,7 @@ class MessageList {
 	}
 	single_message(comment) {
 		let [block, contents] = MessageList.draw_block(comment)
-		let part = MessageList.draw_part(comment)
-		this.parts.set(comment.id, {elem:part, data:comment})
+		let part = this.draw_part(comment)
 		contents.append(part)
 		this.$list.append(block)
 		//this.first_id = comment.id
@@ -81,39 +80,50 @@ class MessageList {
 		}
 		return null
 	}
-	display_messages(messages, backwards) {
+	display_messages(messages, backwards, live) {
 		for (let m of messages)
-			this.display_message(m, backwards)
+			this.display_message(m, backwards, live)
 	}
 	/*split_block(id) {
 	}*/
-	display_message(message, backwards) {
+	// TODO:
+	// there are 7 types of messages
+	// - live message_event:
+	//   - 1: normal
+	//   - deleted/edited:
+	//     - 2: corresponds to a displayed message (replace)
+	//     - 3: corresponds to an old message (id < min) (ignore)
+	//     - 4: is a rethread (id > min) (insert, and remove from old room)
+	// - downloaded manually:
+	//   - 5: deleted (ignore)
+	//   - 6: normal (append)
+	//   - 7: edited (append)
+	display_message(message, backwards, live) {
 		let existing = this.parts.get(message.id)
-		// deleted message
-		if (message.deleted || message.contentId!=this.pid) {
-			if (existing)
+		// corresponds to displayed message:
+		if (existing) {
+			// deleted or rethreaded to another room:
+			if (message.deleted || message.contentId!=this.pid) {
 				this.remove_message(message.id)
-			return null
-		}
-		// edited message
-		if (message.edited || existing) {
-			if (!existing) {
-				// this could be a very old message being edited
-				// OR, a message being moved into the current room
-				// the way to check would be:
-				// if the message's id is less than the minimum displayed id
 				return null
 			}
-			let part = MessageList.draw_part(message)
-			this.parts.set(message.id, {elem:part, data:message})
+			// edited (or duplicate):
+			let part = this.draw_part(message)
 			existing.elem.replaceWith(part)
 			return part
 		}
+		// message we don't care about
+		if (message.contentId!=this.pid || message.deleted)
+			return null
+		
+		// old edited message (/probably/)
+		if (live && message.edited)
+			return null
+		
 		// new message
 		//if (message.id < this.first_id)
 		//	this.first_id = message.id
-		let part = MessageList.draw_part(message)
-		this.parts.set(message.id, {elem:part, data:message})
+		let part = this.draw_part(message)
 		// new message-part
 		// try to find a message-block to merge with
 		let contents = this.get_merge(message, backwards)
@@ -147,6 +157,7 @@ class MessageList {
 	}
 	limit_messages() {
 		if (this.over_limit())
+			// what the fuck
 			for (let id of [...this.parts.keys()].sort()) {
 				this.remove_message(id)
 				if (!this.over_limit())
@@ -155,6 +166,18 @@ class MessageList {
 	}
 	part_data(elem) {
 		return this.parts.get(+elem.dataset.id).data
+	}
+	draw_part(comment) {	
+		let e = MessageList.part_template()
+		
+		if (comment.edited)
+			e.className += " edited"
+		
+		e.dataset.id = comment.id
+		e.nonce = comment.Author.date.getTime()
+		Markup.convert_lang(comment.text, comment.values.m, e, {intersection_observer: View.observer})
+		this.parts.set(comment.id, {elem:e, data:comment})
+		return e
 	}
 
 	// elem: <message-part> or null
@@ -231,20 +254,10 @@ class MessageList {
 		})
 	}
 }
+MessageList.part_template = 𐀶`<message-part role=listitem tabindex=-1>`
 MessageList.controls = null
 MessageList.controls_message = null
 MessageList.prototype.max_parts = 500
-MessageList.draw_part = function(comment) {
-	let e = this()
-	
-	if (comment.edited)
-		e.className += " edited"
-	
-	e.dataset.id = comment.id
-	e.nonce = comment.Author.date.getTime()
-	Markup.convert_lang(comment.text, comment.values.m, e, {intersection_observer: View.observer})
-	return e
-}.bind(𐀶`<message-part role=listitem tabindex=-1>`)
 MessageList.draw_block = function(comment) {
 	let e = this.block()
 	
@@ -253,16 +266,13 @@ MessageList.draw_block = function(comment) {
 	e.dataset.uid = comment.createUserId
 	e.nonce = comment.Author.merge_hash
 	
-	let avatar
 	if (author.bigAvatar) {
-		avatar = this.big_avatar()
-		let url = Req.file_url(author.bigAvatar, "size=500")
-		avatar.style.backgroundImage = `url("${url}")`
+		//avatar = this.big_avatar()
+		//let url = Req.file_url(author.bigAvatar, "size=500")
+		//avatar.style.backgroundImage = `url("${url}")`
 	} else {
-		avatar = this.avatar()
-		avatar.src = Draw.avatar_url(author)
+		e.style.setProperty('--avatar-url', `url("${Draw.avatar_url(author)}")`)
 	}
-	e.prepend(avatar)
 	
 	let name = e.querySelector('message-username') // todo: is queryselector ok?
 	let username
@@ -296,8 +306,6 @@ MessageList.draw_block = function(comment) {
 </message-block>`,
 	nickname: 𐀶` <span class='real-name-label'>(<span class='pre'></span>)</span>`,
 	bridge: 𐀶` <span class='real-name-label'>[discord bridge]</span>`,
-	avatar: 𐀶`<img class='avatar' width=100 height=100 alt="">`,
-	big_avatar: 𐀶`<div class='bigAvatar'></div>`,
 })
 
 MessageList.init()

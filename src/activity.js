@@ -146,7 +146,7 @@ class ActivityContainer {
 	}
 	
 	message(msg, objects) {
-		if (msg.deleted)
+		if (msg.deleted || msg.edited) // not sure about edited. maybe use editDate ehhh...
 			return
 		this.update(objects, msg.contentId, msg.Author.date, msg.createUserId)
 	}

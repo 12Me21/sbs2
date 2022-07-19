@@ -465,7 +465,6 @@ I need the <message-part>s to extend into the gutter, so that i can detect which
 */
 message-block {
 	display: block;
-	position: relative;
 	box-sizing: content-box;
 	--chat-gutter: 4.5rem;
 	--chat-avatar-size: calc(var(--chat-gutter) - 0.5rem - 0.5rem);
@@ -475,27 +474,17 @@ message-block {
 	min-height: var(--chat-avatar-size);
 	/* border-left: 0.5em solid rgb(255,153,153) */
 	font-size: 1em; /* ? */
+	
+	background: var(--avatar-url, none) no-repeat content-box 0.5rem top / var(--chat-avatar-size);
 }
-message-block > img.avatar {
-	display: inline-block;
-	position: absolute;
-	z-index: -1;
-	width: var(--chat-avatar-size);
-	height: var(--chat-avatar-size);
-	border: none; /*1px solid #777*/
-	margin-left: 0.5rem;
-	/*background-color: transparent*/
-	/*background-color: #AAB*/
-						
-}
-message-block > .bigAvatar {
+/*message-block > .bigAvatar {
 	position: absolute;
 	width: calc(var(--chat-gutter));
 	height: 100%;
 	left: 0;
 	top: 0;
 	background: no-repeat center top / cover;
-}
+}*/
 message-block > message-header {
 	display: flex;
 	flex-wrap: wrap-reverse;
