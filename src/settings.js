@@ -2,8 +2,6 @@
 
 Settings = NAMESPACE({
 	values: Settings.values,
-	groups: {__proto__:null},
-	tabs: null,
 	
 	fields: [],
 	// .add() can be called at any time
@@ -26,26 +24,12 @@ Settings = NAMESPACE({
 	// render
 	$elem: null,
 	draw(elem) {
-		this.tabs = new Tabs([
-			{name:'default', label:'s', panel:$localSettings},
-			{name:'debug', label:'d', panel:$debugTab},
-		], $settings_tabs, 'settings')
 		this.$elem = elem
 		for (let field of this.fields)
 			this.insert(field)
 	},
 	insert(field) {
-		let group = field.group
 		let panel = this.$elem
-		if (group) {
-			panel = this.groups[group]
-			if (!panel) {
-				panel = document.createElement('div')
-				panel.className += 'local-settings'
-				$settings_panels.appendChild(panel)
-				this.tabs.add({name:group, label:group, panel})
-			}
-		}
 		let after = null
 		for (let x of panel.children) {
 			let weight = +x.dataset.order
@@ -110,7 +94,6 @@ class SettingProto {
 		row.dataset.order = this.order
 		
 		let label = document.createElement('label')
-		row.append(label)
 		label.textContent = this.label+": "
 		
 		let elem
@@ -144,7 +127,26 @@ class SettingProto {
 			elem = document.createElement('textarea')
 		} else if (type=='code') {
 			elem = document.createElement('textarea')
+			elem.setAttribute('spellcheck', 'false')
 			elem.classList.add('code-textarea')
+			let btn = document.createElement('button')
+			btn.textContent = 'expand'
+			btn.onclick = ev=>{
+				if ($sidebarEditor.classList.contains('shown')) {
+					btn.textContent = 'expand'
+					$sidebarEditor.classList.remove('shown')
+					$sidebarUserPanel.classList.add('shown')
+					row.append(...$sidebarEditor.childNodes)
+				} else {
+					if ($sidebarEditor.hasChildNodes())
+						return // uh oh
+					btn.textContent = 'back'
+					$sidebarUserPanel.classList.remove('shown')
+					$sidebarEditor.classList.add('shown')
+					$sidebarEditor.append(...row.childNodes)
+				}
+			}
+			row.append(btn)
 		} else if (type=='range') {
 			elem = document.createElement('input')
 			elem.type = 'range'
@@ -174,6 +176,9 @@ class SettingProto {
 		// set the initial value
 		this.write()
 		
+		row.prepend(elem)
+		row.prepend(label)
+		
 		//if (this.autosave != false)
 		elem.onchange = ev=>{ this.change('change') }
 		if (this.autosave == false) {
@@ -188,7 +193,6 @@ class SettingProto {
 		if (this.render)
 			this.render(row, elem, label)
 		
-		row.append(elem)
 		return row
 	}
 	// read/write html input element
@@ -219,7 +223,6 @@ Settings.add({
 Settings.add({
 	name: 'sitecss', label: "Custom CSS", type: 'code',
 	autosave: false,
-	group: 'css',
 	order: Infinity-2,
 	render(row, elem, label) {
 		let btn = document.createElement('button')
@@ -229,7 +232,7 @@ Settings.add({
 				if(sheet.href)
 					sheet.ownerNode.href+="#"
 		}
-		label.replaceWith(btn)
+		label.after(btn)
 	},
 	update(value, type) {
 		if ('init'!=type)
@@ -239,7 +242,6 @@ Settings.add({
 Settings.add({
 	name: 'sitejs', label: "Custom Javascript", type: 'code',
 	autosave: false,
-	group: 'js',
 	order: Infinity-1,
 	//todo: maybe highlight when changed, to notify user that they need to save manually?
 	// todo: js console tab thing

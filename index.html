@@ -279,16 +279,14 @@
 				</form>
 				<div id=$loginError></div>
 			</div>
-			<tab-list id=$settings_tabs></tab-list>
-			<div id=$settings_panels class='FILL SLIDES'>
-				<div class='local-settings' id=$localSettings></div>	
-				<div class='local-settings' id=$debugTab>
-					<div>
-						js eval:
-						<textarea id=$debugInput class='code-textarea'></textarea>
-					</div>
-				</div>	
+			<div class='local-settings' id=$localSettings></div>
+			<div class='loggedOut registerBox'>
+				js eval:
+				<textarea id=$debugInput class='code-textarea'></textarea>
 			</div>
+		</sidebar-panel>
+		
+		<sidebar-panel id=$sidebarEditor class='COL'>
 		</sidebar-panel>
 	</div>
 	

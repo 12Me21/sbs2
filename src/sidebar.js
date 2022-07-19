@@ -93,12 +93,6 @@ const Sidebar = NAMESPACE({
 			Settings.draw($localSettings)
 		}
 		
-		/*let st = new Tabs([
-			{name: 'btns', label: "bn", elem: $settings_1},
-			{name: 'settings', label: "st", elem: $settings_3},
-			{name: 'debug', label: "db", elem: $settings_4},
-		], $settings_tabs, "settings")
-		st.select('btns')*/
 		this.userlist.$elem = $sidebarUserList
 		this.userlist.redraw()
 	},

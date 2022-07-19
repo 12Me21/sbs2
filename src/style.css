@@ -82,7 +82,7 @@ textarea {
 	max-width: 100%;
 	border: 2px solid var(--T-textarea-border-color);
 	border-radius: 0;
-	box-shadow: 0.125rem 0.1875rem 0.3125rem -0.1875rem #0D0D0D80;
+	box-shadow: none;/*0.125rem 0.1875rem 0.3125rem -0.1875rem #0D0D0D80;*/
 	color: var(--T-color);
 	background-color: var(--T-bg);
 	white-space: break-spaces; /* optional */
@@ -92,6 +92,9 @@ textarea {
 	line-break: anywhere;
 	white-space: break-spaces; !important;
 	/*font: var(--T-monospace-font);*/
+	line-height: 14px;
+	font: 12px monospace, monospace;
+	letter-spacing: -.5px;
 }
 textarea-container {
 	border: 2px solid var(--T-textarea-border-color);
@@ -845,11 +848,18 @@ activity-users {
 .local-settings {
 	padding: 0.3125rem 0.5rem;
 }
-
+#\$sidebarEditor > textarea {
+	flex: 1;
+	resize: none;
+	width: 100%;
+}
 .local-settings > div {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
+}
+.local-settings > div > button, #\$sidebarEditor > button {
+	margin: 1px;
 }
 .local-settings > div > * {
 	flex-grow: 1;
@@ -857,12 +867,23 @@ activity-users {
 	width: 49%;
 	min-width: 6.5em;
 }
+.local-settings > div > button {
+	width: auto;
+	min-width: unset;
+	flex-grow: 0;
+}
+.expanded-setting {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: 5;
+}
 .local-settings > div > :last-child {
 	flex-grow: 1;
 }
 .local-settings > div > textarea {
 	width: 100%;
-	height: 5.1875em;
+	height: 3em;
 }
 .local-settings > div > label {
 	font-weight: 500;
