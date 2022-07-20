@@ -405,7 +405,7 @@ Settings.add({
 	type: 'text',
 })*/
 Settings.add({
-	name: 'chat_enter', label: "chat enter key", type: 'select',
+	name: 'chat_enter', label: "Chat Enter Key", type: 'select',
 	options: ['submit', 'newline'],
 	update(value) {
 		/*			do_when_ready(()=>{

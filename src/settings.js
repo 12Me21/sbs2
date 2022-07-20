@@ -257,6 +257,6 @@ Settings.add({
 	},
 })
 Settings.add({
-	name: 'html_inject', label: 'html to inject', type: 'code',
+	name: 'html_inject', label: 'HTML to Inject', type: 'code',
 	order: 100000,
 })

@@ -241,7 +241,7 @@ Scroller.track_height = new ResizeTracker('height')
 Scroller.anim_type = 2
 
 Settings.add({
-	name: 'scroller_anim_type', label: "scroll animation method", type: 'select',
+	name: 'scroller_anim_type', label: "Scroll Animation Method", type: 'select',
 	options: ['1', '2', '0'],
 	update(value) {
 		Scroller.anim_type = +value
