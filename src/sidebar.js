@@ -6,13 +6,18 @@ const Sidebar = NAMESPACE({
 	$my_avatar: null,
 	userlist: new StatusDisplay(0, null),
 	
+	normal_open: false,
+	fullscreen_open: false,
+	
 	onload() {
 		$openSidebar.onclick = $closeSidebar.onclick = e=>{
 			this.toggle()
 		}
 		new ResizeBar($sidebar, $horizontalResize, 'right', "sidebarWidth")
 		new ResizeBar($sidebarTop, $sidebarResize, 'top', "sidebarPinnedHeight", 300)
-		View.flag('sidebar', true)
+		
+		this.normal_open = localStorage.getItem('sbs-sidebar') !== false
+		document.documentElement.classList.toggle('f-sidebar', this.normal_open)
 		
 		this.scroller = new Scroller($sidebarScroller.parentNode, $sidebarScroller)
 		// todo: maybe a global ESC handler?
@@ -133,21 +138,24 @@ const Sidebar = NAMESPACE({
 	},
 	
 	toggle() {
-		let fullscreen = this.is_fullscreen()
+		let fullscreen = this.is_mobile()
 		if (fullscreen) {
-			View.flag('mobileSidebar', !View.flags.mobileSidebar)
+			this.fullscreen_open = !this.fullscreen_open
+			document.documentElement.classList.toggle('f-mobileSidebar', this.fullscreen_open)
 		} else {
-			View.flag('sidebar', !View.flags.sidebar)
-			localStorage.setItem('sbs-sidebar', !!View.flags.sidebar)
+			this.normal_open = !this.normal_open
+			document.documentElement.classList.toggle('sidebar', this.normal_open)
+			localStorage.setItem('sbs-sidebar', this.normal_open)
 		}
 	},
 	
-	is_fullscreen() {
+	is_mobile() {
 		return window.matchMedia("(max-width: 700px)").matches
 	},
 	
 	close_fullscreen() {
-		View.flag('mobileSidebar', false)
+		this.fullscreen_open = false
+		document.documentElement.classList.remove('f-mobileSidebar')
 	},
 	
 	message_count: 0,

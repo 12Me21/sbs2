@@ -213,6 +213,12 @@ class Scroller {
 	anim_step(dist, prev_time=document.timeline.currentTime) {
 		this.anim = window.requestAnimationFrame(time=>{
 			this.anim = null
+			// ideally we should cancel the animation when the document stops being visible
+			// but there's no easy way to attach the event listener without creating a memory leak, of course
+			if ('visible'!=document.visibilityState) {
+				this.cancel_animation()
+				return
+			}
 			if (this.anim_type==2) {
 				this.set_offset()
 				return
@@ -239,6 +245,8 @@ class Scroller {
 }
 Scroller.track_height = new ResizeTracker('height')
 Scroller.anim_type = 2
+
+//document.addEventListener('visibilitychange', )
 
 Settings.add({
 	name: 'scroller_anim_type', label: "Scroll Animation Method", type: 'select',

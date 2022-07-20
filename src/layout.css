@@ -354,6 +354,8 @@ but, then we can't add a border to the image
 textarea-container {
 	display: block;
 	box-sizing: content-box;
+	overflow: hidden;
+	contain: strict;
 }
 textarea-container > textarea {
 	display: block;
@@ -362,6 +364,7 @@ textarea-container > textarea {
 	
 	resize: none;
 	width: 100%;
+	height: 100%;
 	
 	border: none;
 	padding: 0;

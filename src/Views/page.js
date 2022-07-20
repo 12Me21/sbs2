@@ -243,9 +243,10 @@ class PageView extends BaseView {
 	}
 	
 	textarea_resize() {
-		this.$textarea.style.height = ""
+		this.$textarea.style.height = "10px"
 		let height = this.$textarea.scrollHeight
-		this.$textarea.parentNode.style.height = this.$textarea.style.height = height+1+"px"
+		this.$textarea.parentNode.style.height = height+1+"px"
+		this.$textarea.style.height = "100%"
 	}
 	
 	send_message() {
@@ -365,7 +366,6 @@ PageView.template = HTML`
 			<button class='FILL' $=cancel>Cancel</button>
 		</div>
 		<textarea-container class='FILL' $=textarea_container>
-			<div $=textarea_width></div>
 			<textarea class='chatTextarea' $=textarea accesskey="z"></textarea>
 		</textarea-container>
 		<div class='COL'>

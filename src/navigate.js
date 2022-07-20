@@ -21,6 +21,7 @@ class ViewSlot {
 		this.location = null // SbsLocation
 		this.url = null // String
 		this.load_state = false // Boolean
+		this.title_text = null
 		Object.seal(this)
 	}
 	unload() {
@@ -31,6 +32,9 @@ class ViewSlot {
 	
 	// display stuff
 	set_title(text) {
+		// todo: set this.title_text and then we determine the page title basede on which View/Slot is focused
+		this.title_text = text
+		View.set_title(text)
 		let x = document.createElement('span')
 		x.className = "pre" // todo: this is silly ..
 		x.textContent = text
@@ -46,13 +50,16 @@ class ViewSlot {
 	}
 	// todo: this should support users etc. too?
 	set_entity_title(entity) {
+		this.title_text = entity.name
+		View.set_title(entity.name)
 		this.$title.fill(Draw.content_label(entity))
 	}
 	loading_state(state, keep_error) {
 		this.load_state = state
 		if (!keep_error)
 			this.$header.classList.remove('error')
-		this.$header.classList.toggle('loading', state)
+		this.$header.classList.toggle('rendering', state==2)
+		this.$header.classList.toggle('loading', state==true)
 	}
 	
 	// functions for loading a view
@@ -99,6 +106,7 @@ class ViewSlot {
 			}
 		if (this.$view)
 			this.$view.remove()
+		this.$title.fill()
 		this.$header_buttons.fill()
 		this.$header_extra.fill()
 		this.view = null
@@ -143,6 +151,9 @@ class ViewSlot {
 			
 			phase = "cleanup"
 			this.cleanup(location)
+			
+			this.loading_state(2)
+			yield window.setTimeout(STEP)
 			
 			this.view = view
 			phase = "view.Init"

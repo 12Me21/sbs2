@@ -100,10 +100,11 @@ textarea-container {
 	border: 2px solid var(--T-textarea-border-color);
 	padding: 5px;
 	background: var(--T-bg);
+	/* should be approx. line-height * 2 */
+	min-height: 2.625em;
+	max-height: 25vh;
 }
 textarea-container > textarea {
-	height: 2.625em; /* should be approx. line-height * 2 */
-	min-height: 2.625em;
 	box-shadow: none;
 	border-radius: 0;
 }
@@ -112,9 +113,6 @@ textarea-container > textarea:focus {
 	outline-offset: 3px;
 	border-radius: 0;
 	animation-name: none;
-}
-textarea-container, textarea-container > textarea {
-	max-height: 25vh;
 }
 
 /************
@@ -308,6 +306,9 @@ view-header.error {
 }
 view-header.loading {
 	background: var(--loading-invert-bg);
+}
+view-header.rendering {
+	background: red;
 }
 .loadBG/*, resize-handle*/ {
 	/*transition: background-color 0.1s ease;*/

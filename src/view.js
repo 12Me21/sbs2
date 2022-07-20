@@ -131,12 +131,6 @@ const View = NAMESPACE({
 	},
 	
 	/// HELPER FUNCTIONS ///
-	// kinda should move these into like, draw.js idk
-	flags: {},
-	flag(flag, state) {
-		this.flags[flag] = state
-		document.documentElement.classList.toggle("f-"+flag, state)
-	},
 	
 	real_title: null,
 	set_title(title) {
