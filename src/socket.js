@@ -9,7 +9,7 @@ class SocketRequestError extends TypeError {
 	// 📥 resp: api websocket response object
 	constructor(resp) {
 		super()
-		this.trim_stack(1)
+		this.trim_stack()
 		this.resp = resp
 		this.message = "\n"+resp.error
 	}

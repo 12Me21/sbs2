@@ -30,18 +30,22 @@ function SELF_DESTRUCT(err) {
 
 // ⚡ Custom errors
 METHOD(Error, 'trim_stack', function(levels=1) {
-	while (levels-->0)
-		this.stack = this.stack.replace(/^(?!Error:).*\n/, "")
+	if (Error.captureStackTrace)
+		return
+	while (levels --> -1)
+		this.stack = this.stack.replace(/^.*\n/, "")
 })
 
 class FieldError extends Error {
 	constructor(message, ...args) {
-		super(message)
-		this.trim_stack(2)
+		super()
+		this.trim_stack(1)
+		this.message = message
 		FieldError.last = args
 		//console.error(...args)
 	}
 }
+FieldError.prototype.name = 'FieldError'
 
 // ⚡ STRICT prototype - throws when accessing nonexistant fields
 function field_name(name) {
