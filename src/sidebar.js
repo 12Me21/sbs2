@@ -21,7 +21,12 @@ const Sidebar = NAMESPACE({
 		let user_label
 		if (Req.auth) {
 			user_label = document.createElement('span')
-			this.$my_avatar = user_label
+			let img = document.createElement('img')
+			img.width = img.height = 100
+			img.className = 'item avatar'
+			img.alt = "🔧️"
+			user_label.append(img)
+			this.$my_avatar = img
 		} else
 			user_label = "log in"
 		
@@ -35,7 +40,7 @@ const Sidebar = NAMESPACE({
 				$searchInput.focus()
 			}, accesskey: 's', shadow:true},
 			{name: 'file', label: "📷", panel: $sidebarFilePanel, shadow:true},
-			{name: 'user', label: user_label, panel: $sidebarUserPanel},
+			{name: 'user', label: user_label, panel: $sidebarUserPanel, shadow:true},
 		], $sidebar_tabs, "sidebar")
 		
 		if (Req.auth)
@@ -234,8 +239,7 @@ const Sidebar = NAMESPACE({
 `),
 	
 	redraw_my_avatar() {
-		let icon = Draw.avatar(Req.me)
-		this.$my_avatar.fill(icon)
+		this.$my_avatar.src = Draw.avatar_url(Req.me)
 	},
 	
 	init() {

@@ -130,20 +130,21 @@ class SettingProto {
 			elem.setAttribute('spellcheck', 'false')
 			elem.classList.add('code-textarea')
 			let btn = document.createElement('button')
-			btn.textContent = 'expand'
+			btn.textContent = '🖥️ Editor'
 			btn.onclick = ev=>{
 				if ($sidebarEditor.classList.contains('shown')) {
-					btn.textContent = 'expand'
+					btn.textContent = '🖥️ Editor'
 					$sidebarEditor.classList.remove('shown')
 					$sidebarUserPanel.classList.add('shown')
 					row.append(...$sidebarEditor.childNodes)
 				} else {
 					if ($sidebarEditor.hasChildNodes())
 						return // uh oh
-					btn.textContent = 'back'
+					btn.textContent = '❎ Back'
 					$sidebarUserPanel.classList.remove('shown')
 					$sidebarEditor.classList.add('shown')
 					$sidebarEditor.append(...row.childNodes)
+					elem.focus()
 				}
 			}
 			row.append(btn)
@@ -183,7 +184,7 @@ class SettingProto {
 		elem.onchange = ev=>{ this.change('change') }
 		if (this.autosave == false) {
 			let btn = document.createElement('button')
-			btn.textContent = "update"
+			btn.textContent = "⚠️ Update" //💫
 			btn.onclick = ev=>{
 				this.change('update')
 			}

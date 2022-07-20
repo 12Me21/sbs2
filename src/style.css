@@ -155,7 +155,7 @@ button:hover {
 
 /* tabs */
 tab-list#\$sidebar_tabs {
-	height: 2.125rem;
+	--bar-height: 2.125rem;
 }
 
 tab-list {
@@ -165,7 +165,7 @@ tab-list {
 	/*border-bottom: 1px solid gray;*/
 	/*border-top: 1px solid var(--T-border-color);*/
 	background-color: var(--databarbgcolor) !important;
-	height: 1.5rem;
+	height: var(--bar-height, 1.5rem);
 	border-top: 2px solid var(--databarbgcolor);
 }
 tab-list > button {
@@ -201,6 +201,8 @@ tab-list > button[aria-selected="true"] {
 tab-list > button img.avatar {
 	width: auto;
 	height: 100%;
+	background: transparent;
+	line-height: var(--bar-height, 1.5rem);
 }
 
 /* focus */
@@ -867,11 +869,6 @@ activity-users {
 	width: 49%;
 	min-width: 6.5em;
 }
-.local-settings > div > button {
-	width: auto;
-	min-width: unset;
-	flex-grow: 0;
-}
 .expanded-setting {
 	position: absolute;
 	width: 100%;
@@ -880,6 +877,11 @@ activity-users {
 }
 .local-settings > div > :last-child {
 	flex-grow: 1;
+}
+.local-settings > div > button:nth-child(n) {
+	width: auto;
+	min-width: unset;
+	flex-grow: 0;
 }
 .local-settings > div > textarea {
 	width: 100%;
