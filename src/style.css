@@ -212,6 +212,9 @@ tab-list > button img.avatar {
 	outline-offset: -2px;
 	animation: focus-switch 0.1s linear;
 }
+img:focus {
+	animation: none;
+}
 
 /* markup stuff */
 .Markup {
