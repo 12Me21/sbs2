@@ -22,10 +22,14 @@ const Lp = NAMESPACE({
 		this.status_queue[id] = value
 	},
 	flush_statuses(callback=null) {
-		this.request({type:'setuserstatus', data:this.status_queue}, ({x})=>{ // messy..
-			this.status_queue = {}
-			callback && callback()
-		})
+		// this loop runs ONCE, only if the status_queue is not empty
+		for (let key in this.status_queue) {
+			this.request({type:'setuserstatus', data:this.status_queue}, ({x})=>{ // messy..
+				this.status_queue = {__proto__:null}
+				callback && callback()
+			})
+			break // important
+		}
 	},
 	
 	request(request, callback=console.info) {
@@ -77,8 +81,8 @@ const Lp = NAMESPACE({
 	},
 	
 	// statuses
-	statuses: {}, // all of your statuses (map of contentId -> string)
-	status_queue: {}, // status changes which haven't been sent yet
+	statuses: {__proto__:null}, // all of your statuses (map of contentId -> string)
+	status_queue: {__proto__:null}, // status changes which haven't been sent yet
 	
 	stop() {
 		if (this.websocket)

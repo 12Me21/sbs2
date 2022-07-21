@@ -135,9 +135,10 @@ class EditView extends BaseView {
 		this.page = page
 		this.text = this.page.text
 		//$editorSave.textContent = creating ? "Create" : "Save"
-		this.Slot.add_header_links([
-			{label:"back", href:"#page/"+page.id},
-		])
+		if (!creating)
+			this.Slot.add_header_links([
+				{label:"back", href:"#page/"+page.id},
+			])
 		this.$textarea.value = page.text //todo: preserve undo?
 		// only show writable fields
 		let writable = {}

@@ -102,12 +102,6 @@ const View = NAMESPACE({
 	first: true,
 	lost: null,	
 	
-	// temp
-	get current() {
-		if (Nav.slots[0])
-			return Nav.slots[0].view
-	},
-	
 	register(name, view_class) {
 		if (view_class.Redirect)
 			;

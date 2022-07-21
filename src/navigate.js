@@ -26,7 +26,9 @@ class ViewSlot {
 		
 		// intercept links, and load them in the current slot rather than the default/focused one
 		let lh = Nav.link_handler(url=>{
-			this.load_url(url)
+			if (!this.load_url(url)) {
+				Sidebar.close_fullscreen()
+			}
 		})
 		this.$root.addEventListener('click', ev=>{
 			this.set_focus()
@@ -102,25 +104,25 @@ class ViewSlot {
 		return true
 	}
 	
-	unload() {
+	destroy() {
+		if (Nav.focused==this) {
+			if (Nav.slots[0])
+				Nav.slots[0].set_focus()
+		}
 		this.cancel()
 		this.cleanup(null)
 		this.$root.remove()
 	}
+	
 	load() {
 		this.cancel()
 		this.loading = this.handle_view2(this.location).run(()=>{
 			// misc stuff to run after loading:
-			Sidebar.close_fullscreen()
-			Lp.flush_statuses(()=>{})
-			// TODO! statuses fail to update sometimes!! on page load maybe
 		}, (err)=>{
 			console.error(err)
 			alert('unhandled error during view load')
 			print(err)
 			// idk
-			Sidebar.close_fullscreen()
-			Lp.flush_statuses(()=>{})
 		})
 	}
 	cleanup(new_location) {
@@ -146,6 +148,7 @@ class ViewSlot {
 			this.loading.return()
 			this.loading = null
 			this.loading_state(0)
+			Lp.flush_statuses() // hhh
 		}
 	}
 	* handle_view2(location) {
@@ -216,6 +219,9 @@ class ViewSlot {
 		if (view.Visible)
 			view.Visible()
 		
+		// TODO! statuses fail to update sometimes!! on page load maybe
+		Lp.flush_statuses() // todo: handle this better?
+		
 		if (View.first) {
 			console.log("☀️ First page rendered!")
 			View.first = false
@@ -250,13 +256,17 @@ const Nav = NAMESPACE({
 	slots: [],
 	focused: null,
 	
+	view() {
+		if (this.focused)
+			return this.focused.view
+	},
+	
 	focused_slot() {
 		if (this.focused)
 			return this.focused
 		if (!this.slots[0])
 			this.slots.push(new ViewSlot())
-		this.slots[0].set_focus() // hhhh
-		return this.focused
+		return this.slots[0]
 	},
 	
 	entity_link(entity) {
@@ -351,7 +361,7 @@ const Nav = NAMESPACE({
 		// delete extra slots
 		for (let i=urls.length; i<this.slots.length; i++) {
 			let slot = this.slots[i]
-			slot.unload()
+			slot.destroy()
 		}
 		this.slots.length = urls.length
 		
