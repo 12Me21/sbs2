@@ -51,12 +51,12 @@ class ImagesView extends BaseView {
 			if (page+dir<1)
 				return
 			this.location.query.page = page+dir
-			Nav.update_slot_location(this.Slot, this.location)
+			this.Slot.set_location(this.location)
 		}
 		// should be after enter press or something (wrap in a <form> or whatever, and then the prev/next can be submit buttons?)
 		this.$bucket.onchange = e=>{
 			this.location.query.bucket = this.$bucket.value||null
-			Nav.update_slot_location(this.Slot, this.location)
+			this.Slot.set_location(this.location)
 		}
 		
 		this.$in_sidebar.onclick = e=>{

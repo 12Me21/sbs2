@@ -1,8 +1,5 @@
 'use strict'
 
-// todo: how do we determine the url when multiple slots are open?
-//  maybe have a new form, like  page/937~editpage/44
-
 // todo: also we have BaseView.location and ViewSlot.location,
 // kinda redundant? idk (consider: if/when can/should they differ?)
 class ViewSlot {
@@ -22,17 +19,13 @@ class ViewSlot {
 		this.url = null // String
 		this.load_state = false // Boolean
 		this.title_text = null
+		this.changed = false
 		Object.seal(this)
-	}
-	unload() {
-		this.cancel()
-		this.cleanup(null)
-		this.$root.remove()
 	}
 	
 	// display stuff
 	set_title(text) {
-		// todo: set this.title_text and then we determine the page title basede on which View/Slot is focused
+		// todo: set this.title_text and then we determine the page title based on which View/Slot is focused
 		this.title_text = text
 		View.set_title(text)
 		let x = document.createElement('span')
@@ -60,21 +53,32 @@ class ViewSlot {
 		this.$header.classList.toggle('loading', state==1)
 	}
 	
-	// functions for loading a view
-	set_url(url) {
-		let old = this.url
-		if (old == url)
+	/// functions for loading a view into the slot ///
+	
+	set_url(url, suppress=false) {
+		if (this.url == url)
 			return false
-		this.set_location(Nav.parse_url(url))
-		if (this.url == old)
-			return false
-		return true
+		return this.set_location(Nav.parse_url(url), suppress)
 	}
-	set_location(location) {
+	set_location(location, suppress=false) {
+		let old = this.url
 		View.handle_redirect(location)
 		this.url = Nav.unparse_url(location)
 		this.location = location
+		if (suppress)
+			return this.url != old
+		Nav.set_address()
+		if (this.url == old)
+			// ex: if you try to change page/937 -> page/0937 or something
+			return false
+		this.load()
 		return true
+	}
+	
+	unload() {
+		this.cancel()
+		this.cleanup(null)
+		this.$root.remove()
 	}
 	load() {
 		this.cancel()
@@ -225,19 +229,6 @@ const Nav = NAMESPACE({
 		return this.slots[0]
 	},
 	
-	/*update_location() {
-		let url = this.slots.map(slot=>slot ? this.unparse_url(slot.location) : "").join("~")
-		// todo: how to decide whether to pushstate or replacestate?
-		// we only want to replace if the update is the result of initial lode, or user editing the address bar.
-		// but let's say the page loads, and there are 2 views in the url
-		// they both ask to update the address bar,
-		// and this should be translated into one replacestate
-		// i suppose set a flag when calling .goto or whatever, and then that view uh
-		// actually i wonder if we should maybe move the location update out of ViewSlot and into Nav
-		// then we update the location BEFORE... yeah
-		window.history.pushState(null, "sbs2", "#"+url)
-	}*/
-	
 	entity_link(entity) {
 		let type = {
 			user: 'user',
@@ -304,44 +295,28 @@ const Nav = NAMESPACE({
 		return url
 	},
 	
-	get_location() {
-		// todo: we could use history.state instead of needing to parse the url each time.
-		return this.parse_url(window.location.hash.substring(1))
-	},
-	
-	// replace = modify address bar without calling render()
-	replace_location(location, replace) {
-		let url = this.unparse_url(location)
-		window.history[!replace?"pushState":"replaceState"](null, "sbs2", "#"+url)
-	},
-	
 	reload: RELOAD,
 	
-	update_slot_url(slot, url) {
-		if (slot.set_url(url)) {
-			window.history.pushState(null, "sbs2", "#"+this.make_url())
-			slot.load()
-		}
-	},
-	
-	update_slot_location(slot, location) {
-		if (slot.set_location(location)) {
-			window.history.pushState(null, "sbs2", "#"+this.make_url())
-			slot.load()
-		}
+	set_address(replace=false) {
+		//print('setting address: '+(replace?'replaceState':'pushState'), new Error('get the stack'))
+		window.history[replace?'replaceState':'pushState'](null, "sbs2", this.make_url())
 	},
 	
 	make_url() {
-		return this.slots.map(slot=>slot.url || "").join("~")
+		return "#"+this.slots.map(slot=>slot.url || "").join("~")
 	},
 	
 	update_from_fragment(fragment) {
 		let urls = fragment ? fragment.split("~") : []
 		let changed = []
+		// TODO: try to match even if the order has changed
+		// ex: if url changes from "page/937" to "editpage~page/937"
+		// don't reload page/937, just move it
+		
 		for (let i=0; i<urls.length; i++) {
 			let url = urls[i]
 			let slot = this.slots[i] || (this.slots[i] = new ViewSlot())
-			changed[i] = slot.set_url(url)
+			changed[i] = slot.set_url(url, true)
 		}
 		// delete extra slots
 		for (let i=urls.length; i<this.slots.length; i++) {
@@ -350,11 +325,10 @@ const Nav = NAMESPACE({
 		}
 		this.slots.length = urls.length
 		
-		window.history.replaceState(null, "sbs2", "#"+this.make_url())
-		for (let i=0; i<this.slots.length; i++) {
+		this.set_address(true)
+		for (let i=0; i<this.slots.length; i++)
 			if (changed[i])
 				this.slots[i].load()
-		}
 	},
 	
 	start() {
@@ -383,12 +357,21 @@ window.onhashchange = ()=>{
 // onclick fires like 20ms before hashchange..
 document.addEventListener('click', ev=>{
 	let link = ev.target.closest(':any-link')
-	if (link) {
-		let href = link.getAttribute('href')
-		if (href.startsWith("#")) {
-			ev.preventDefault()
-			Nav.update_slot_url(Nav.focused_slot(), href.substring(1))
-		}
-	}
+	if (!link)
+		return
+	let href = link.getAttribute('href')
+	if (!href.startsWith("#"))
+		return
+	ev.preventDefault()
+	// replace the current slot if possible
+	let slot_elem = link.closest('view-slot')
+	let slot
+	if (slot_elem)
+		slot = Nav.slots.find(s=>s.$root===slot_elem)
+	// otherwise use the first / create a new one
+	if (!slot)
+		slot = Nav.focused_slot()
+	// go
+	slot.set_url(href.substring(1))
 })
 // TODO: what happens if a user clicks a link before Nav.init()?
