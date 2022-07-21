@@ -306,6 +306,13 @@ view-header.loading {
 view-header.rendering {
 	background: var(--header-rendering-bg);
 }
+view-slot.focused > view-header {
+	box-shadow: 0px 1px 0px 4px #CF8 inset;
+	/*background-image: repeating-linear-gradient(-.125turn, transparent, transparent 6px, #888 7px, #888 9px);*/
+}
+view-slot:only-of-type > view-header {
+	box-shadow: 0px 0px 0px 2px #CF8 inset;
+}
 view-header {
 	--bar-height: 2.25rem;
 }

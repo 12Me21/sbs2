@@ -105,7 +105,7 @@ class CommentsView extends BaseView {
 		if (this.location.query.page==0)
 			this.location.query.page = "1"
 		
-		this.Slot.set_location(this.location)
+		this.Slot.load_location(this.location)
 	}
 	
 	build_search(data) {

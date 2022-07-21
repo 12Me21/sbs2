@@ -20,7 +20,34 @@ class ViewSlot {
 		this.load_state = false // Boolean
 		this.title_text = null
 		this.changed = false
+		
+		if (!Nav.focused)
+			this.set_focus()
+		
+		// intercept links, and load them in the current slot rather than the default/focused one
+		let lh = Nav.link_handler(url=>{
+			this.load_url(url)
+		})
+		this.$root.addEventListener('click', ev=>{
+			this.set_focus()
+			lh(ev)
+		}, {useCapture:true})
+		/*this.$root.onmousedown = ev=>{
+			this.set_focus()
+		}*/
+		this.$root.addEventListener('focusin', ev=>{
+			this.set_focus()
+		})
+		
 		Object.seal(this)
+	}
+	set_focus() {
+		if (Nav.focused==this)
+			return
+		if (Nav.focused)
+			Nav.focused.$root.classList.remove('focused')
+		Nav.focused = this
+		Nav.focused.$root.classList.add('focused')
 	}
 	
 	// display stuff
@@ -55,12 +82,12 @@ class ViewSlot {
 	
 	/// functions for loading a view into the slot ///
 	
-	set_url(url, suppress=false) {
+	load_url(url, suppress=false) {
 		if (this.url == url)
 			return false
-		return this.set_location(Nav.parse_url(url), suppress)
+		return this.load_location(Nav.parse_url(url), suppress)
 	}
-	set_location(location, suppress=false) {
+	load_location(location, suppress=false) {
 		let old = this.url
 		View.handle_redirect(location)
 		this.url = Nav.unparse_url(location)
@@ -221,12 +248,15 @@ Markup.renderer.url_scheme['sbs:'] = (url)=>{
 
 const Nav = NAMESPACE({
 	slots: [],
+	focused: null,
 	
 	focused_slot() {
-		if (!this.slots[0]) {
+		if (this.focused)
+			return this.focused
+		if (!this.slots[0])
 			this.slots.push(new ViewSlot())
-		}
-		return this.slots[0]
+		this.slots[0].set_focus() // hhhh
+		return this.focused
 	},
 	
 	entity_link(entity) {
@@ -316,7 +346,7 @@ const Nav = NAMESPACE({
 		for (let i=0; i<urls.length; i++) {
 			let url = urls[i]
 			let slot = this.slots[i] || (this.slots[i] = new ViewSlot())
-			changed[i] = slot.set_url(url, true)
+			changed[i] = slot.load_url(url, true)
 		}
 		// delete extra slots
 		for (let i=urls.length; i<this.slots.length; i++) {
@@ -342,6 +372,20 @@ const Nav = NAMESPACE({
 		
 		this.update_from_fragment(window.location.hash.substr(1))
 	},
+	
+	link_handler(callback) {
+		return ev=>{
+			let link = ev.target.closest(':any-link')
+			if (!link)
+				return
+			let href = link.getAttribute('href') // need to use getattr because link.href is an absolute url, not the actual attribute value
+			if (!href.startsWith("#"))
+				return
+			ev.preventDefault()
+			ev.stopPropagation()
+			callback(href.substring(1), ev)
+		}
+	}
 })
 
 // notes:
@@ -353,25 +397,8 @@ const Nav = NAMESPACE({
 window.onhashchange = ()=>{
 	Nav.update_from_fragment(window.location.hash.substr(1))
 }
-
-// onclick fires like 20ms before hashchange..
-document.addEventListener('click', ev=>{
-	let link = ev.target.closest(':any-link')
-	if (!link)
-		return
-	let href = link.getAttribute('href')
-	if (!href.startsWith("#"))
-		return
-	ev.preventDefault()
-	// replace the current slot if possible
-	let slot_elem = link.closest('view-slot')
-	let slot
-	if (slot_elem)
-		slot = Nav.slots.find(s=>s.$root===slot_elem)
-	// otherwise use the first / create a new one
-	if (!slot)
-		slot = Nav.focused_slot()
-	// go
-	slot.set_url(href.substring(1))
-})
+// only for links that aren't inside a slot (i.e. ones in the sidebar)
+document.addEventListener('click', Nav.link_handler(url=>{
+	Nav.focused_slot().load_url(url)
+}))
 // TODO: what happens if a user clicks a link before Nav.init()?

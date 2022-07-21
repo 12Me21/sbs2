@@ -144,7 +144,7 @@ const Sidebar = NAMESPACE({
 			document.documentElement.classList.toggle('f-mobileSidebar', this.fullscreen_open)
 		} else {
 			this.normal_open = !this.normal_open
-			document.documentElement.classList.toggle('sidebar', this.normal_open)
+			document.documentElement.classList.toggle('f-sidebar', this.normal_open)
 			localStorage.setItem('sbs-sidebar', this.normal_open)
 		}
 	},
