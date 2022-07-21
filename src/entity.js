@@ -184,8 +184,12 @@ const Entity = NAMESPACE({
 	
 	// link user data with comments
 	link_comments({message, user, content}) {
-		for (let m of message)
-			m.Author = new Author(m, user[~m.createUserId], content[~m.contentId])
+		if (content)
+			for (let m of message)
+				m.Author = new Author(m, user[~m.createUserId], content[~m.contentId])
+		else
+			for (let m of message)
+				m.Author = new Author(m, user[~m.createUserId])
 	},
 	
 	link_watch({message, watch, content}) {
