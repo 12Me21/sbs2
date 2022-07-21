@@ -230,7 +230,7 @@ const Sidebar = NAMESPACE({
 		  )
 		  }*/
 		let link = d.firstChild
-		//link.href = "#user/"+comment.createUserId
+		link.href = "#user/"+comment.createUserId
 		link.firstChild.src = Draw.avatar_url(author)
 		link.lastChild.textContent = name
 		
