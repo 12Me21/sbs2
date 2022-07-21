@@ -368,7 +368,7 @@ const Nav = NAMESPACE({
 			window.history.replaceState(null, "sbs2", x.href)
 		}
 		
-		this.update_from_fragment(window.location.hash.substr(1))
+		this.update_from_fragment(window.location.hash.substring(1))
 	},
 	
 	link_handler(callback) {
@@ -393,7 +393,7 @@ const Nav = NAMESPACE({
 
 */
 window.onhashchange = ()=>{
-	Nav.update_from_fragment(window.location.hash.substr(1))
+	Nav.update_from_fragment(window.location.hash.substring(1))
 }
 // only for links that aren't inside a slot (i.e. ones in the sidebar)
 document.addEventListener('click', Nav.link_handler(url=>{
