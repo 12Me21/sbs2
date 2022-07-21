@@ -233,8 +233,9 @@ const Sidebar = NAMESPACE({
 		link.href = "#user/"+comment.createUserId
 		link.firstChild.src = Draw.avatar_url(author)
 		link.lastChild.textContent = name
-		
-		d.append(comment.text.replace(/\n/g, "  "))
+		let content = d.lastChild
+		content.href = "#page/"+comment.contentId
+		content.append(comment.text.replace(/\n/g, "  "))
 		
 		return d
 	}.bind(𐀶`
@@ -243,6 +244,8 @@ const Sidebar = NAMESPACE({
 		<img class='item avatar' width=100 height=100>
 		<span class='textItem entity-title pre'></span>
 	</a>:&#32;
+	<a>
+	</a>
 </div>
 `),
 	
