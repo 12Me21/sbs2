@@ -38,7 +38,7 @@ input[type="number"] {
 input[type="checkbox"] {
 	max-width: 8em;
 }
-input, output, select, textarea {
+input, output, select, textarea, textarea-container {
 	font: inherit;
 	font-size: 0.875em;
 	background-color: var(--T-bg);
@@ -101,12 +101,13 @@ textarea-container {
 	padding: 5px;
 	background: var(--T-bg);
 	/* should be approx. line-height * 2 */
-	min-height: 2.25em;
-	max-height: 25vh;
+	min-height: 2.5em;
+	max-height: 25vh;	
 }
 textarea-container > textarea {
 	box-shadow: none;
 	border-radius: 0;
+	font-size: 1em !important;
 }
 textarea-container > textarea:focus {
 	outline: 5px solid #878;
@@ -910,7 +911,7 @@ activity-users {
 }
 /* mobile stuff */
 @media all and (max-width: 700px) {
-	input, textarea {
+	input, textarea, textarea-container {
 		font-size: 1em;
 	}
 	/* message-block { --chat-gutter: 3rem; } */
