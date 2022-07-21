@@ -378,10 +378,10 @@ PageView.template = HTML`
 
 View.register('page', PageView)
 View.register('pages', {
-	Redirect(location) {location.type='content'},
+	Redirect(location) {location.type='page'},
 })
 View.register('category', {
-	Redirect(location) {location.type='content'},
+	Redirect(location) {location.type='page'},
 })
 
 Settings.add({
