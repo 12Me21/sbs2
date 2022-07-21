@@ -15,8 +15,8 @@ class ActivityItem {
 		
 		this.parent = parent
 		this.content = content
-		this.users = {}
-		this.action_users = {}
+		this.users = {__proto__:null}
+		this.action_users = {__proto__:null}
 		this.date = -Infinity
 		
 		if (this.content) {
@@ -190,7 +190,7 @@ let Act = {
 		}, (objects)=>{
 			console.log('🌄 got initial activity')
 			/// process data ///
-			Entity.link_comments({message:objects.Mwatch, user:objects.user})
+			Entity.link_comments({message:objects.Mwatch, user:objects.user, content:objects.content})
 			Entity.ascending(objects.message, 'id')
 			
 			/// sidebar messages ///

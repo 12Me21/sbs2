@@ -160,7 +160,7 @@ const Sidebar = NAMESPACE({
 	
 	message_count: 0,
 	
-	displayed_ids: {},
+	displayed_ids: {__proto__:null},
 	
 	display_messages(comments, initial=false) {
 		// todo: show page titles?
@@ -215,13 +215,13 @@ const Sidebar = NAMESPACE({
 	draw_comment: function(comment) {
 		let d = this()
 		d.dataset.id = comment.id
+		d.dataset.pid = comment.contentId
 		
 		// for bridge messages, display nicknames instead of username
 		let author = comment.Author
 		let name = author.bridge ? author.nickname+"*" : author.username
 		
-		d.title = `${name} in ${comment.contentId}:\n${comment.text}`
-		// todo: page name 🥺  oh︕ emojis render in italic? don't remember adding that...   we should store refs to pages but like intern them so its not a memory leak...
+		d.title = `${name} in [${author.page_name}]:\n${comment.text}`
 		
 		/*todo: fix,		if (comment.editDate && comment.editUserId!=comment.createUserId) {
 		  d.append(
@@ -230,7 +230,7 @@ const Sidebar = NAMESPACE({
 		  )
 		  }*/
 		let link = d.firstChild
-		link.href = "#user/"+comment.createUserId
+		//link.href = "#user/"+comment.createUserId
 		link.firstChild.src = Draw.avatar_url(author)
 		link.lastChild.textContent = name
 		
