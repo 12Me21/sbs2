@@ -1,5 +1,7 @@
 'use strict'
 
+// todo: add type checking of some kind? since values are json encoded and someone could set a non-number/string value which would throw errors
+
 Settings = NAMESPACE({
 	values: Settings.values,
 	
@@ -105,14 +107,15 @@ class SettingProto {
 				this.elem.fill()
 				let found = false
 				let val = this.get_value()
-				for (let option of this.options) {
+				let labels = this.options_labels || this.options
+				this.options.forEach((option,i)=>{
 					let opt = document.createElement('option')
 					this.elem.add(opt)
 					opt.value = option
-					opt.text = option
+					opt.text = labels[i]
 					if (option === val)
 						found = true
-				}
+				})
 				// add placeholder option if value is missing from options list.. might cause problems though..
 				if ('string'==typeof val && !found) {
 					let opt = document.createElement('option')

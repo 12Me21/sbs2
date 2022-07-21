@@ -244,8 +244,9 @@ const View = NAMESPACE({
 View.init()
 
 Settings.add({
-	name: 'lazy_loading', label: "lazy image loading", type: 'select',
+	name: 'lazy_loading', label: "Image Loading", type: 'select',
 	options: ['on', 'off'],
+	options_labels: ['when visible', 'immediately'],
 	update(value) { // bad
 		View.toggle_observer(value=='on')
 	},

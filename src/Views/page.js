@@ -36,12 +36,12 @@ class PageView extends BaseView {
 		this.editing = null
 		this.pre_edit = null
 		
-		this.$textarea.enterKeyHint = Settings.values.chat_enter!='newline' ? "send" : "enter" // uh this won't update though... need a settings change watcher
+		this.$textarea.enterKeyHint = !['newline', 'newline, strip trailing'].includes(Settings.values.chat_enter) ? "send" : "enter" // uh this won't update though... need a settings change watcher
 		this.$textarea_container.onkeydown = e=>{
 			if (e.isComposing)
 				return
 			// enter - send
-			if ('Enter'==e.key && !e.shiftKey && Settings.values.chat_enter!='newline') {
+			if ('Enter'==e.key && !e.shiftKey && !['newline', 'newline, strip trailing'].includes(Settings.values.chat_enter)) {
 				e.preventDefault()
 				this.send_message()
 			}
@@ -301,11 +301,17 @@ class PageView extends BaseView {
 			data.values.m = sv.chat_markup
 		}
 		data.text = this.$textarea.value
+		if (['submit, strip trailing', 'newline, strip trailing'].includes(Settings.values.chat_enter) && data.text.endsWith("\n"))
+			data.text = data.text.slice(0, -1)
 		
 		return data
 	}
 	write_input(data) {
-		Edit.set(this.$textarea, data.text)
+		let text = data.text
+		if (['submit, strip trailing', 'newline, strip trailing'].includes(Settings.values.chat_enter) && data.text.endsWith("\n"))
+			data.text += "\n"
+		
+		Edit.set(this.$textarea, text)
 		this.textarea_resize()
 		if (this.editing) {
 			let markup = data.values.m
@@ -390,7 +396,7 @@ Settings.add({
 })
 Settings.add({
 	name: 'chat_markup', label: "Chat Markup", type: 'select',
-	options: ['12y', '12y2', 'plaintext'],
+	options: ['12y2', '12y', 'plaintext'],
 	order: -8000,
 })
 /*Settings.add({
@@ -406,10 +412,5 @@ Settings.add({
 })*/
 Settings.add({
 	name: 'chat_enter', label: "Chat Enter Key", type: 'select',
-	options: ['submit', 'newline'],
-	update(value) {
-		/*			do_when_ready(()=>{
-					$chatTextarea.enterKeyHint = value=='newline' ? "enter" : "send"
-					})*/
-	},
+	options: ['submit', 'newline', 'submit, strip trailing', 'newline, strip trailing'],
 })
