@@ -240,18 +240,6 @@ ViewSlot.template = HTML`
 
 
 
-// redirect newdev -> oboy
-Markup.renderer.url_scheme['https:'] =
-Markup.renderer.url_scheme['http:'] =
-	(url, thing)=>{
-		if (thing=='image' && url.host=="newdev.smilebasicsource.com")
-			url.host = "oboy.smilebasicsource.com"
-		return url.href
-	}
-Markup.renderer.url_scheme['sbs:'] = (url)=>{
-	return "#"+url.pathname+url.search+url.hash
-}
-
 const Nav = NAMESPACE({
 	slots: [],
 	focused: null,

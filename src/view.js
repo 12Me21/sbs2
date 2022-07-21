@@ -23,6 +23,22 @@
 
 // - .Visible is called. here you can run any code that requires the element to be rendered
 
+// redirect newdev -> oboy
+Markup.renderer.url_scheme['https:'] =
+Markup.renderer.url_scheme['http:'] =
+	(url, thing)=>{
+		if (thing=='image' && url.host=="newdev.smilebasicsource.com")
+			url.host = "oboy.smilebasicsource.com"
+		return url.href
+	}
+Markup.renderer.url_scheme['sbs:'] = (url, thing)=>{
+	if (thing=='image') {
+		if (url.pathname.startsWith("image/"))
+			return Req.file_url(url.pathname.substring(6)+url.search)
+	}
+	return "#"+url.pathname+url.search+url.hash
+}
+
 class BaseView {
 	constructor(location, slot) {
 		this.location = location
@@ -137,7 +153,7 @@ const View = NAMESPACE({
 	comment_notification(comment) {
 		this.title_notification(comment.text, Draw.avatar_url(comment.Author))
 	},
-	
+	💀
 	// temporarily set <title> and favicon, for displaying a notification
 	// pass text=`false` to reset them (todo: why do we use false?unused)
 	title_notification(text, icon) {
@@ -152,7 +168,7 @@ const View = NAMESPACE({
 		document.title = text
 		this.change_favicon(icon || null)
 	},
-	
+	human
 	$favicon: null,
 	// todo: this stopped working in safari lol...
 	change_favicon(src) {
