@@ -49,9 +49,11 @@
 	/* inverted bg colors (black) */
 	--databarbgcolor: #222;
 	--light-invert-bg: #333;
-	--loading-invert-bg: #009688; /*linear-gradient(#225450, #327070); removed because of flicker ? i think we need to animate to another gradient or? */
 	
-	--error-invert-bg: #800;
+	--header-loading-bg: #089; /*linear-gradient(#225450, #327070);*/
+	--header-rendering-bg: #094;
+	--header-error-bg: #800;
+	--header-error-color: #FDD;
 	
 	/* buttons */
 	
@@ -102,8 +104,12 @@
 	--databarbgcolor: #000;
 	
 	--light-invert-bg: #111;
-	--loading-invert-bg: #327070;
-	--error-invert-bg: #800;
+	
+	--header-loading-bg: #327070;
+	--header-rendering-bg: #327032;
+	--header-error-bg: #800;
+	--header-error-color: #ECC;
+	
 	--message-hover-bg: #444;
 	--message-focus-bg: #253C3F;
 	

@@ -300,22 +300,21 @@ view-header h1 {
 #\$titlePane [data-view]:not(.shown) {
 	display: none !important;
 }
-/* broken? */
+
 view-header.error {
-	background: var(--error-invert-bg);
+	background: var(--header-error-bg);
+	color: var(--header-error-color);
 }
 view-header.loading {
-	background: var(--loading-invert-bg);
+	background: var(--header-loading-bg);
 }
 view-header.rendering {
-	background: red;
-}
-.loadBG/*, resize-handle*/ {
-	/*transition: background-color 0.1s ease;*/
+	background: var(--header-rendering-bg);
 }
 view-header {
 	--bar-height: 2.25rem;
 }
+
 .header-buttons {
 	display: inline-flex;
 	flex-direction: column;

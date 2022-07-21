@@ -54,12 +54,10 @@ class ViewSlot {
 		View.set_title(entity.name)
 		this.$title.fill(Draw.content_label(entity))
 	}
-	loading_state(state, keep_error) {
+	loading_state(state) {
 		this.load_state = state
-		if (!keep_error)
-			this.$header.classList.remove('error')
 		this.$header.classList.toggle('rendering', state==2)
-		this.$header.classList.toggle('loading', state==true)
+		this.$header.classList.toggle('loading', state==1)
 	}
 	
 	// functions for loading a view
@@ -104,6 +102,7 @@ class ViewSlot {
 				console.error(e, "error in cleanup function")
 				print(e)
 			}
+		this.$header.classList.remove('error')
 		if (this.$view)
 			this.$view.remove()
 		this.$title.fill()
@@ -115,7 +114,7 @@ class ViewSlot {
 		if (this.loading) {
 			this.loading.return()
 			this.loading = null
-			this.loading_state(false)
+			this.loading_state(0)
 		}
 	}
 	* handle_view2(location) {
@@ -125,7 +124,7 @@ class ViewSlot {
 		let data
 		
 		try {
-			this.loading_state(true)
+			this.loading_state(1)
 			phase = "view lookup"
 			view_cls = View.views[location.type]
 			if (!view_cls)
@@ -149,13 +148,13 @@ class ViewSlot {
 			if (View.first)
 				console.log("🌄 Rendering first page")
 			
-			phase = "cleanup"
-			this.cleanup(location)
-			
 			this.loading_state(2)
 			yield window.setTimeout(STEP)
 			
+			phase = "cleanup"
+			this.cleanup(location)
 			this.view = view
+			
 			phase = "view.Init"
 			view.Init && view.Init()
 			
@@ -166,20 +165,20 @@ class ViewSlot {
 			yield do_when_ready(STEP)
 			
 			this.cleanup(location)
+			this.$header.classList.add('error')
 			this.view = view = new ErrorView(location)
 			if (e==='type') {
-				this.set_title(`Unknown view: ‘${location.type}’`)
+				this.set_title(`🚧 Unknown view: ‘${location.type}’`)
 			} else if (e==='data') {
-				this.set_title("Data not found")
+				this.set_title("🪹️ Data not found")
 			} else {
 				console.error("Error during view handling", e)
-				this.set_title("Error during: "+phase)
+				this.set_title("💥 Error during: "+phase)
 				view.$error_message.fill(Debug.sidebar_debug(e))
 			}
 			view.$error_location.append("location: "+JSON.stringify(location, null, 1))
-			this.$header.classList.add('error')
 		}
-		this.loading_state(false, true)
+		this.loading_state(0)
 		//throw "heck darn"
 		this.$view = view.$root
 		this.$root.append(view.$root)
