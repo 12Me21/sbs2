@@ -128,6 +128,7 @@ const View = NAMESPACE({
 	
 	real_title: null,
 	set_title(title) {
+		title = title.replace(/ /g, " ").replace(/\n/g, "  ")
 		document.title = title
 		this.real_title = title
 		this.change_favicon(null)
@@ -145,6 +146,8 @@ const View = NAMESPACE({
 		if (text == false) {
 			text = this.real_title
 			icon = null
+		} else {
+			text = text.replace(/ /g, " ").replace(/\n/g, "  ")
 		}
 		document.title = text
 		this.change_favicon(icon || null)

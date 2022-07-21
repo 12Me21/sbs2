@@ -753,6 +753,7 @@ sidebar-container {
 }
 not-sidebar {
 	min-width: 9em !important;
+	position: relative;
 }
 .registerBox {
 	padding: 0.3125rem 0.5rem;
