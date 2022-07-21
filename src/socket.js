@@ -256,6 +256,7 @@ const Lp = NAMESPACE({
 		if (response.type=='badtoken') {
 			this.no_restart = true
 			alert("token expired (must log in again)")
+			Req.log_out()
 			return
 		}
 		
