@@ -179,6 +179,11 @@ const Sidebar = NAMESPACE({
 						old.replaceWith(nw)
 						this.displayed_ids[c.id] = nw
 					} else {
+						// EEEEK
+						let nw = Sidebar.draw_comment(c)
+						inner.append(nw)
+						this.message_count++
+						this.displayed_ids[c.id] = nw
 					}
 				} else {
 					let nw = Sidebar.draw_comment(c)
