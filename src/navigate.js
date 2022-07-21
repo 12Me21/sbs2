@@ -26,9 +26,7 @@ class ViewSlot {
 		
 		// intercept links, and load them in the current slot rather than the default/focused one
 		let lh = Nav.link_handler(url=>{
-			if (!this.load_url(url)) {
-				Sidebar.close_fullscreen()
-			}
+			this.load_url(url)
 		})
 		this.$root.addEventListener('click', ev=>{
 			this.set_focus()
@@ -398,5 +396,6 @@ window.onhashchange = ()=>{
 // only for links that aren't inside a slot (i.e. ones in the sidebar)
 document.addEventListener('click', Nav.link_handler(url=>{
 	Nav.focused_slot().load_url(url)
+	Sidebar.close_fullscreen()
 }))
 // TODO: what happens if a user clicks a link before Nav.init()?
