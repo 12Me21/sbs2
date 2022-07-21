@@ -234,8 +234,9 @@ const Sidebar = NAMESPACE({
 		link.firstChild.src = Draw.avatar_url(author)
 		link.lastChild.textContent = name
 		let content = d.lastChild
-		content.href = "#page/"+comment.contentId
-		content.append(comment.text.replace(/\n/g, "  "))
+		content.firstChild.href = "#page/"+comment.contentId
+		content.childNodes.forEach(n =>
+			n.append(comment.text.replace(/\n/g, "  ")))
 		
 		return d
 	}.bind(𐀶`
@@ -244,8 +245,11 @@ const Sidebar = NAMESPACE({
 		<img class='item avatar' width=100 height=100>
 		<span class='textItem entity-title pre'></span>
 	</a>:&#32;
-	<a>
-	</a>
+	<span class='sidebar-message-content'>
+		<a class='sidebar-message-content'>
+		</a>
+		<span></span>
+	</span>
 </div>
 `),
 	
@@ -282,3 +286,18 @@ Object.defineProperty(window, 'log', {
 })
 
 do_when_ready(x=>Sidebar.onload())
+
+Settings.add({
+	name: 'linkify_sidebar_messages', label: 'Linkify Sidebar Messages',
+	type: 'select',
+	options: ['no', 'yes'],
+	update(value) {
+		do_when_ready(() => {
+			if (value === 'yes') {
+				$sidebarBottom.setAttribute("linkify", "")
+			} else {
+				$sidebarBottom.removeAttribute("linkify")
+			}
+		})
+	},
+})
