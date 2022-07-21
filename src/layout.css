@@ -44,6 +44,7 @@ html, body {
 	left: 0;
 	right: 0;
 	bottom: 0;
+	contain: strict;
 }
 
 /**********
@@ -90,7 +91,9 @@ the inner scrolling element (the one which moves when you scroll)
 .resize-box,
 .SLIDES, .SLIDES > *,
 scroll-outer,
-sidebar-panel {
+view-slot, view-root,
+not-sidebar, sidebar-container,
+tab-list, sidebar-panel {
 	contain: strict;
 	background: var(--T-bg);
 }
@@ -100,6 +103,10 @@ sidebar-panel > *,
 scroll-outer > *,
 scroll-middle, scroll-inner, message-list {
 	background-color: inherit;
+}
+
+view-header {
+	contain: content;
 }
 
 ul, ol, li, /* bullets render outside */
