@@ -153,7 +153,7 @@ const View = NAMESPACE({
 	comment_notification(comment) {
 		this.title_notification(comment.text, Draw.avatar_url(comment.Author))
 	},
-	💀
+	
 	// temporarily set <title> and favicon, for displaying a notification
 	// pass text=`false` to reset them (todo: why do we use false?unused)
 	title_notification(text, icon) {
@@ -168,7 +168,7 @@ const View = NAMESPACE({
 		document.title = text
 		this.change_favicon(icon || null)
 	},
-	human
+	
 	$favicon: null,
 	// todo: this stopped working in safari lol...
 	change_favicon(src) {
