@@ -786,19 +786,23 @@ not-sidebar {
 	padding: 1px 0;
 	padding-left: 0.1875rem;
 	background: var(--T-bg);
+	contain: content;
 }
+
 .activity-page-bottom {
 	display: flex;
 	height: 1.5rem;
+	overflow: hidden;
+	justify-content: space-between;
+	contain: strict;
+}
+.activity-page-bottom > * {
+	flex: none;
 }
 
-activity-users {
-	/*text-align: right;*/
-	white-space: pre;
-	overflow-x: visible;
-	padding: 0 3px;
+.activity-users {
 	display: flex;
-	justify-content: flex-end;
+	padding: 0 3px;
 }
 
 .activity-scroller > scroll-inner {

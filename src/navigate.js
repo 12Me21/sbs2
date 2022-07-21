@@ -11,7 +11,7 @@ class ViewSlot {
 		})
 		// todo: dragging should shrink either the left or right neighbor
 		// depending on which half of the header you dragged
-		new ResizeBar(this.$root, this.$header, 'right', null)
+		//new ResizeBar(this.$root, this.$header, 'right', null)
 		
 		this.loading = null // Generator
 		this.view = null // BaseView

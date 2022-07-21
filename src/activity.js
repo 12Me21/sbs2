@@ -75,7 +75,7 @@ ActivityItem.template = HTML`
 	<div $=page class='bar rem1-5 ellipsis'></div>
 	<div class='bar rem1-5 activity-page-bottom ROW'>
 		<time $=time class='time-ago ellipsis'></time>
-		<activity-users $=user aria-orientation=horizontal data-ordered class='FILL'>
+		<div class='activity-users' $=user aria-orientation=horizontal data-ordered>
 `
 ActivityItem.template_simple = HTML`
 <a class='activity-page activity-watch' role=row tabindex=-1>
