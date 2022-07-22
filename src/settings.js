@@ -101,30 +101,7 @@ class SettingProto {
 		let elem
 		let type = this.type
 		if (type=='select') {
-			elem = document.createElement('select')
-			this.elem = elem
-			this.redraw_options = ()=>{
-				this.elem.fill()
-				let found = false
-				let val = this.get_value()
-				let labels = this.options_labels || this.options
-				this.options.forEach((option,i)=>{
-					let opt = document.createElement('option')
-					this.elem.add(opt)
-					opt.value = option
-					opt.text = labels[i]
-					if (option === val)
-						found = true
-				})
-				// add placeholder option if value is missing from options list.. might cause problems though..
-				if ('string'==typeof val && !found) {
-					let opt = document.createElement('option')
-					this.elem.add(opt)
-					opt.value = val
-					opt.text = val+" ?"
-				}
-				this.write()
-			}
+			this.elem = elem = document.createElement('select')
 			this.redraw_options()
 		} else if (type=='textarea') {
 			elem = document.createElement('textarea')
@@ -132,6 +109,8 @@ class SettingProto {
 			elem = document.createElement('textarea')
 			elem.setAttribute('spellcheck', 'false')
 			elem.classList.add('code-textarea')
+			if (this.placeholder)
+				elem.placeholder = this.placeholder
 			let btn = document.createElement('button')
 			btn.textContent = '🖥️ Editor'
 			btn.onclick = ev=>{
@@ -173,9 +152,6 @@ class SettingProto {
 			console.warn('unknown settings type: '+type)
 			elem = document.createElement('input')
 		}
-		
-		// connect label to element (feels nice)   (does not fele nice :(
-		//label.htmlFor = elem.id = `settings_panel__${this.name}`
 		this.elem = elem
 		// set the initial value
 		this.write()
@@ -183,8 +159,8 @@ class SettingProto {
 		row.prepend(elem)
 		row.prepend(label)
 		
-		//if (this.autosave != false)
 		elem.onchange = ev=>{ this.change('change') }
+		
 		if (this.autosave == false) {
 			let btn = document.createElement('button')
 			btn.textContent = "⚠️ Update" //💫
@@ -199,6 +175,30 @@ class SettingProto {
 		
 		return row
 	}
+	// for type='select' only
+	// why is this a method, anyway?
+	redraw_options() {
+		function draw_opt(parent, value, text) {
+			let opt = document.createElement('option')
+			opt.value = value
+			opt.text = text
+			parent.add(opt)
+		}
+		this.elem.fill()
+		let found = false
+		let val = this.get_value()
+		let labels = this.options_labels || this.options
+		this.options.forEach((value,i)=>{
+			draw_opt(this.elem, value, labels[i])
+			if (value === val)
+				found = true
+		})
+		// add placeholder option if value is missing from options list.. might cause problems though..
+		if ('string'==typeof val && !found)
+			draw_opt(this.elem, val, val+" ?")
+		this.write()
+	}
+	
 	// read/write html input element
 	read() {
 		return this.elem.value
