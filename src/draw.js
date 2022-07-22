@@ -222,6 +222,7 @@ StatusDisplay.draw_avatar = function(user, status) {
 	e.firstChild.src = Draw.avatar_url(user)
 	e.firstChild.title = user.username
 	e.dataset.uid = user.id
+	e.firstChild.setAttribute("alt", user.username + "'s avatar")
 	if (status == "idle")
 		e.classList.add('status-idle')
 	return e
