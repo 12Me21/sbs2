@@ -902,18 +902,8 @@ activity-users {
 	overflow-y: scroll;
 	width: 100%;
 }
-#\$sidebarBottom .sidebar-message-content > a {
-	display: none;
+#\$sidebarBottom .sidebar-message-content {
 	color: var(--T-color);
-}
-#\$sidebarBottom[linkify] .sidebar-message-content > a {
-	display: inline;
-}
-#\$sidebarBottom .sidebar-message-content > span {
-	display: inline;
-}
-#\$sidebarBottom[linkify] .sidebar-message-content > span {
-	display: none;
 }
 
 /* contain */
