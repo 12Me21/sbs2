@@ -309,12 +309,39 @@ view-header.loading {
 view-header.rendering {
 	background: var(--header-rendering-bg);
 }
+view-slot:not(.focused) {
+	/*box-shadow: 0px 1px 0px 4px #CF8 inset;*/
+	/*background-image: linear-gradient(#FFF8 0, #FFF8 100%);*/
+	/*filter: contrast(.5);*/
+	--T-textarea-border-color: gray;
+	/*--databartxtcolor: silver;*/
+}
+view-slot:not(.focused) .slot-overlay {
+	display: block;
+}
+view-slot:not(.focused) {
+	--normal-shadow: none;
+}
 view-slot.focused > view-header {
-	box-shadow: 0px 1px 0px 4px #CF8 inset;
-	/*background-image: repeating-linear-gradient(-.125turn, transparent, transparent 6px, #888 7px, #888 9px);*/
+	/*background-image: url("../resource/dither.png");*/
+}
+view-header {
+	position: relative;
+}
+.slot-overlay {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: 25;
+	/*background: repeating-linear-gradient(transparent 0, black 10);*/
+	background-image: url("data:image/gif;base64,R0lGODdhBAAEAPAAAAAAAP///ywAAAAABAAEAAACBUR8kahRADs=");
+	/*background-color: transparent;*/
+	opacity: 0.25;
+	display: none;
+	pointer-events: none;
 }
 view-slot:only-of-type > view-header {
-	box-shadow: 0px 0px 0px 2px #CF8 inset;
+	/*box-shadow: 0px 0px 0px 2px #CF8 inset;*/
 }
 view-header {
 	--bar-height: 2.25rem;
