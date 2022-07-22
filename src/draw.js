@@ -53,6 +53,7 @@ const Draw = NAMESPACE({
 	avatar: function(user) {
 		let e = this()
 		e.src = Draw.avatar_url(user)
+		e.setAttribute("alt", user.username)
 		return e
 	}.bind(𐀶`<img class='item avatar' width=100 height=100 alt="">`),
 	
@@ -221,11 +222,12 @@ StatusDisplay.draw_avatar = function(user, status) {
 	e.href = Nav.entity_link(user)
 	e.firstChild.src = Draw.avatar_url(user)
 	e.firstChild.title = user.username
+	e.firstChild.setAttribute("alt", user.username)
 	e.dataset.uid = user.id
 	if (status == "idle")
 		e.classList.add('status-idle')
 	return e
-}.bind(𐀶`<a tabindex=-1><img class='avatar' width=100 height=100 alt="">`)
+}.bind(𐀶`<a tabindex=-1><img class='avatar' width=100 height=100>`)
 
 
 
