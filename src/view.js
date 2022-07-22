@@ -149,7 +149,9 @@ const View = NAMESPACE({
 	
 	real_title: null,
 	set_title(title) {
-		title = title.replace(/ /g, " ").replace(/\n/g, "  ")
+		// prevent the browser from collapsing sequences of spaces
+		// replace every other one with a NBSP
+		title = title.replace(/  /g, "  ").replace(/\n/g, "  ")
 		document.title = title
 		this.real_title = title
 		this.change_favicon(null)
