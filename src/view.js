@@ -118,6 +118,11 @@ const View = NAMESPACE({
 	first: true,
 	lost: null,	
 	
+	get current() {
+		if (Nav.focused)
+			return Nav.focused.view
+	},
+	
 	register(name, view_class) {
 		if (view_class.Redirect)
 			;
