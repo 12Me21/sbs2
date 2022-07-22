@@ -225,7 +225,7 @@ StatusDisplay.draw_avatar = function(user, status) {
 	if (status == "idle")
 		e.classList.add('status-idle')
 	return e
-}.bind(𐀶`<a tabindex=-1><img class='avatar' width=100 height=100 alt="[fuck]">`)
+}.bind(𐀶`<a tabindex=-1><img class='avatar' width=100 height=100 alt="">`)
 
 
 
