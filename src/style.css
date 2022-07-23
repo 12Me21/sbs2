@@ -251,7 +251,7 @@ img:focus {
 }
 
 .pageContents section {
-	contain: none;
+	contain: contents;
 }
 
 .M-spoiler-label {
