@@ -524,14 +524,13 @@ message-block {
 	/* border-left: 0.5em solid rgb(255,153,153) */
 	/* #F99 or #F006 */
 	
-	--chat-avatar-size: calc(var(--chat-gutter) - 0.5rem - 0.5rem);
+	--chat-gutter: calc(0.5rem * 2 + var(--chat-avatar-size));
 	--chat-message-gap: 0.625rem;
 	padding-right: 0.5rem;
-	padding-top: var(--chat-message-gap);
-	min-height: var(--chat-avatar-size);
+	min-height: calc(var(--chat-avatar-size) + var(--chat-message-gap));
 	
 	/* avatar */
-	background: var(--avatar-url, none) no-repeat 0.5rem top / var(--chat-avatar-size);
+	background: var(--avatar-url, none) no-repeat 0.5rem var(--chat-message-gap) / var(--chat-avatar-size);
 	background-origin: content-box;
 }
 
@@ -557,12 +556,11 @@ message-block {
 }*/
 message-block > message-header {
 	display: flex;
-	flex-wrap: wrap-reverse;
+	flex-flow: wrap-reverse;
 	margin-left: var(--chat-gutter);
 	/* make the timestamp go into margins if there's not enough space */
 	min-height: calc(var(--chat-message-gap) + 1.1875rem); /* 1.1875 = text line height */
-	margin-top: calc(0rem - var(--chat-message-gap));
-	align-items: flex-start;
+	align-items: flex-start; /* i.e. bottom */
 }
 message-block > message-header > time {
 	flex-grow: 1;
@@ -584,19 +582,19 @@ message-contents {
 	overflow: hidden; /* do we need this */
 }
 /* because of overlapping with avatar: */
-message-contents, message-part {
-	contain: none;
+message-contents {
 }
 /* message parts */
 message-part {
 	display: block;
 	overflow: visible;
 	min-height: 1rem;
-	/* we can't use margin, because it doesn't get mouseover events */
-	padding: 0.125rem 0;
-	border-left: calc(var(--chat-gutter) - 0.5rem + 3px) solid transparent;
-	padding-left: calc(0.1875rem + 0.5rem - 3px);
-	/* the padding overlaps with avatars, so clip bg to content-box */
+	padding: 2px 0;
+	/* total indent here is: <0.5rem> [avatar] <0.5rem> <3px> */
+	/* i.e. 3px more than the username */
+	border-left: calc(0.5rem + var(--chat-avatar-size) + 3px) solid transparent;
+	padding-left: 0.5rem;
+	/* padding/border overlaps with avatars, so clip bg to content-box */
 	-webkit-background-clip: padding !important;
 	-webkit-background-clip: padding-box !important;
 	background-clip: padding-box !important;
