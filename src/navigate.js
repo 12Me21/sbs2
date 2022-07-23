@@ -1,8 +1,5 @@
 'use strict'
 
-// todo: how do we determine the url when multiple slots are open?
-//  maybe have a new form, like  page/937~editpage/44
-
 // todo: also we have BaseView.location and ViewSlot.location,
 // kinda redundant? idk (consider: if/when can/should they differ?)
 class ViewSlot {
@@ -14,7 +11,7 @@ class ViewSlot {
 		})
 		// todo: dragging should shrink either the left or right neighbor
 		// depending on which half of the header you dragged
-		new ResizeBar(this.$root, this.$header, 'right', null)
+		//new ResizeBar(this.$root, this.$header, 'right', null)
 		
 		this.loading = null // Generator
 		this.view = null // BaseView
@@ -22,17 +19,40 @@ class ViewSlot {
 		this.url = null // String
 		this.load_state = false // Boolean
 		this.title_text = null
+		this.changed = false
+		
+		if (!Nav.focused)
+			this.set_focus()
+		
+		// intercept links, and load them in the current slot rather than the default/focused one
+		let lh = Nav.link_handler(url=>{
+			this.load_url(url)
+		})
+		this.$root.addEventListener('click', ev=>{
+			this.set_focus()
+			lh(ev)
+		}, {useCapture:true})
+		/*this.$root.onmousedown = ev=>{
+			this.set_focus()
+		}*/
+		this.$root.addEventListener('focusin', ev=>{
+			this.set_focus()
+		})
+		
 		Object.seal(this)
 	}
-	unload() {
-		this.cancel()
-		this.cleanup(null)
-		this.$root.remove()
+	set_focus() {
+		if (Nav.focused==this)
+			return
+		if (Nav.focused)
+			Nav.focused.$root.classList.remove('focused')
+		Nav.focused = this
+		Nav.focused.$root.classList.add('focused')
 	}
 	
 	// display stuff
 	set_title(text) {
-		// todo: set this.title_text and then we determine the page title basede on which View/Slot is focused
+		// todo: set this.title_text and then we determine the page title based on which View/Slot is focused
 		this.title_text = text
 		View.set_title(text)
 		let x = document.createElement('span')
@@ -50,48 +70,64 @@ class ViewSlot {
 	}
 	// todo: this should support users etc. too?
 	set_entity_title(entity) {
-		this.title_text = entity.name
-		View.set_title(entity.name)
+		this.title_text = entity.name2
+		View.set_title(this.title_text)
 		this.$title.fill(Draw.content_label(entity))
 	}
-	loading_state(state, keep_error) {
+	loading_state(state) {
 		this.load_state = state
-		if (!keep_error)
-			this.$header.classList.remove('error')
 		this.$header.classList.toggle('rendering', state==2)
-		this.$header.classList.toggle('loading', state==true)
+		this.$header.classList.toggle('loading', state==1)
 	}
 	
-	// functions for loading a view
-	set_url(url) {
-		let old = this.url
-		if (old == url)
+	/// functions for loading a view into the slot ///
+	
+	load_url(url, suppress=false) {
+		if (this.url == url)
 			return false
-		this.set_location(Nav.parse_url(url))
-		if (this.url == old)
-			return false
-		return true
+		return this.load_location(Nav.parse_url(url), suppress)
 	}
-	set_location(location) {
+	load_location(location, suppress=false) {
+		let old = this.url
 		View.handle_redirect(location)
 		this.url = Nav.unparse_url(location)
 		this.location = location
+		if (suppress)
+			return this.url != old
+		Nav.set_address()
+		if (this.url == old)
+			// ex: if you try to change page/937 -> page/0937 or something
+			return false
+		this.load()
 		return true
 	}
+	
+	destroy() {
+		if (this.view && View.protected.has(this.view)) {
+			let r = confirm("are you sure you want to leave this view?")
+			if (!r)
+				return false
+		}
+		
+		if (Nav.focused==this) {
+			if (Nav.slots[0])
+				Nav.slots[0].set_focus()
+		}
+		this.cancel()
+		this.cleanup(null)
+		this.$root.remove()
+		return true
+	}
+	
 	load() {
 		this.cancel()
 		this.loading = this.handle_view2(this.location).run(()=>{
 			// misc stuff to run after loading:
-			Sidebar.close_fullscreen()
-			Lp.flush_statuses(()=>{})
-			// TODO! statuses fail to update sometimes!! on page load maybe
 		}, (err)=>{
 			console.error(err)
 			alert('unhandled error during view load')
 			print(err)
 			// idk
-			Sidebar.close_fullscreen()
-			Lp.flush_statuses(()=>{})
 		})
 	}
 	cleanup(new_location) {
@@ -104,6 +140,7 @@ class ViewSlot {
 				console.error(e, "error in cleanup function")
 				print(e)
 			}
+		this.$header.classList.remove('error')
 		if (this.$view)
 			this.$view.remove()
 		this.$title.fill()
@@ -115,7 +152,8 @@ class ViewSlot {
 		if (this.loading) {
 			this.loading.return()
 			this.loading = null
-			this.loading_state(false)
+			this.loading_state(0)
+			Lp.flush_statuses() // hhh
 		}
 	}
 	* handle_view2(location) {
@@ -124,8 +162,14 @@ class ViewSlot {
 		let view, view_cls
 		let data
 		
+		if (this.view && View.protected.has(this.view)) {
+			let r = confirm("are you sure you want to leave this view?")
+			if (!r)
+				return false
+		}
+		
 		try {
-			this.loading_state(true)
+			this.loading_state(1)
 			phase = "view lookup"
 			view_cls = View.views[location.type]
 			if (!view_cls)
@@ -149,13 +193,13 @@ class ViewSlot {
 			if (View.first)
 				console.log("🌄 Rendering first page")
 			
-			phase = "cleanup"
-			this.cleanup(location)
-			
 			this.loading_state(2)
 			yield window.setTimeout(STEP)
 			
+			phase = "cleanup"
+			this.cleanup(location)
 			this.view = view
+			
 			phase = "view.Init"
 			view.Init && view.Init()
 			
@@ -166,25 +210,28 @@ class ViewSlot {
 			yield do_when_ready(STEP)
 			
 			this.cleanup(location)
+			this.$header.classList.add('error')
 			this.view = view = new ErrorView(location)
 			if (e==='type') {
-				this.set_title(`Unknown view: ‘${location.type}’`)
+				this.set_title(`🚧 Unknown view: ‘${location.type}’`)
 			} else if (e==='data') {
-				this.set_title("Data not found")
+				this.set_title("🪹️ Data not found")
 			} else {
 				console.error("Error during view handling", e)
-				this.set_title("Error during: "+phase)
+				this.set_title("💥 Error during: "+phase)
 				view.$error_message.fill(Debug.sidebar_debug(e))
 			}
 			view.$error_location.append("location: "+JSON.stringify(location, null, 1))
-			this.$header.classList.add('error')
 		}
-		this.loading_state(false, true)
+		this.loading_state(0)
 		//throw "heck darn"
 		this.$view = view.$root
 		this.$root.append(view.$root)
 		if (view.Visible)
 			view.Visible()
+		
+		// TODO! statuses fail to update sometimes!! on page load maybe
+		Lp.flush_statuses() // todo: handle this better?
 		
 		if (View.first) {
 			console.log("☀️ First page rendered!")
@@ -194,6 +241,7 @@ class ViewSlot {
 }
 ViewSlot.template = HTML`
 <view-slot class='COL'>
+	<div class=slot-overlay></div>
 	<view-header $=header class='bar ellipsis' tabindex=0 accesskey="q">
 		<span $=header_extra></span>
 		<h1 $=title class='textItem'></h1>
@@ -204,40 +252,22 @@ ViewSlot.template = HTML`
 
 
 
-// redirect newdev -> oboy
-Markup.renderer.url_scheme['https:'] =
-Markup.renderer.url_scheme['http:'] =
-	(url, thing)=>{
-		if (thing=='image' && url.host=="newdev.smilebasicsource.com")
-			url.host = "oboy.smilebasicsource.com"
-		return url.href
-	}
-Markup.renderer.url_scheme['sbs:'] = (url)=>{
-	return "#"+url.pathname+url.search+url.hash
-}
-
 const Nav = NAMESPACE({
 	slots: [],
+	focused: null,
 	
-	focused_slot() {
-		if (!this.slots[0]) {
-			this.slots.push(new ViewSlot())
-		}
-		return this.slots[0]
+	view() {
+		if (this.focused)
+			return this.focused.view
 	},
 	
-	/*update_location() {
-		let url = this.slots.map(slot=>slot ? this.unparse_url(slot.location) : "").join("~")
-		// todo: how to decide whether to pushstate or replacestate?
-		// we only want to replace if the update is the result of initial lode, or user editing the address bar.
-		// but let's say the page loads, and there are 2 views in the url
-		// they both ask to update the address bar,
-		// and this should be translated into one replacestate
-		// i suppose set a flag when calling .goto or whatever, and then that view uh
-		// actually i wonder if we should maybe move the location update out of ViewSlot and into Nav
-		// then we update the location BEFORE... yeah
-		window.history.pushState(null, "sbs2", "#"+url)
-	}*/
+	focused_slot() {
+		if (this.focused)
+			return this.focused
+		if (!this.slots[0])
+			this.slots.push(new ViewSlot())
+		return this.slots[0]
+	},
 	
 	entity_link(entity) {
 		let type = {
@@ -306,57 +336,40 @@ const Nav = NAMESPACE({
 		return url
 	},
 	
-	get_location() {
-		// todo: we could use history.state instead of needing to parse the url each time.
-		return this.parse_url(window.location.hash.substring(1))
-	},
-	
-	// replace = modify address bar without calling render()
-	replace_location(location, replace) {
-		let url = this.unparse_url(location)
-		window.history[!replace?"pushState":"replaceState"](null, "sbs2", "#"+url)
-	},
-	
 	reload: RELOAD,
 	
-	update_slot_url(slot, url) {
-		if (slot.set_url(url)) {
-			window.history.pushState(null, "sbs2", "#"+this.make_url())
-			slot.load()
-		}
-	},
-	
-	update_slot_location(slot, location) {
-		if (slot.set_location(location)) {
-			window.history.pushState(null, "sbs2", "#"+this.make_url())
-			slot.load()
-		}
+	set_address(replace=false) {
+		//print('setting address: '+(replace?'replaceState':'pushState'), new Error('get the stack'))
+		window.history[replace?'replaceState':'pushState'](null, "sbs2", this.make_url())
 	},
 	
 	make_url() {
-		return this.slots.map(slot=>slot.url || "").join("~")
+		return "#"+this.slots.map(slot=>slot.url || "").join("~")
 	},
 	
 	update_from_fragment(fragment) {
 		let urls = fragment ? fragment.split("~") : []
 		let changed = []
+		// TODO: try to match even if the order has changed
+		// ex: if url changes from "page/937" to "editpage~page/937"
+		// don't reload page/937, just move it
+		
 		for (let i=0; i<urls.length; i++) {
 			let url = urls[i]
 			let slot = this.slots[i] || (this.slots[i] = new ViewSlot())
-			changed[i] = slot.set_url(url)
+			changed[i] = slot.load_url(url, true)
 		}
 		// delete extra slots
 		for (let i=urls.length; i<this.slots.length; i++) {
 			let slot = this.slots[i]
-			slot.unload()
+			slot.destroy()
 		}
 		this.slots.length = urls.length
 		
-		window.history.replaceState(null, "sbs2", "#"+this.make_url())
-		for (let i=0; i<this.slots.length; i++) {
+		this.set_address(true)
+		for (let i=0; i<this.slots.length; i++)
 			if (changed[i])
 				this.slots[i].load()
-		}
 	},
 	
 	start() {
@@ -368,8 +381,22 @@ const Nav = NAMESPACE({
 			window.history.replaceState(null, "sbs2", x.href)
 		}
 		
-		this.update_from_fragment(window.location.hash.substr(1))
+		this.update_from_fragment(window.location.hash.substring(1))
 	},
+	
+	link_handler(callback) {
+		return ev=>{
+			let link = ev.target.closest(':any-link')
+			if (!link)
+				return
+			let href = link.getAttribute('href') // need to use getattr because link.href is an absolute url, not the actual attribute value
+			if (!href.startsWith("#"))
+				return
+			ev.preventDefault()
+			ev.stopPropagation()
+			callback(href.substring(1), ev)
+		}
+	}
 })
 
 // notes:
@@ -379,18 +406,11 @@ const Nav = NAMESPACE({
 
 */
 window.onhashchange = ()=>{
-	Nav.update_from_fragment(window.location.hash.substr(1))
+	Nav.update_from_fragment(window.location.hash.substring(1))
 }
-
-// onclick fires like 20ms before hashchange..
-document.addEventListener('click', ev=>{
-	let link = ev.target.closest(':any-link')
-	if (link) {
-		let href = link.getAttribute('href')
-		if (href.startsWith("#")) {
-			ev.preventDefault()
-			Nav.update_slot_url(Nav.focused_slot(), href.substring(1))
-		}
-	}
-})
+// only for links that aren't inside a slot (i.e. ones in the sidebar)
+document.addEventListener('click', Nav.link_handler(url=>{
+	Nav.focused_slot().load_url(url)
+	Sidebar.close_fullscreen()
+}))
 // TODO: what happens if a user clicks a link before Nav.init()?

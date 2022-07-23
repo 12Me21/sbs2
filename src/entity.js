@@ -16,16 +16,20 @@ Object.freeze(CODES)
 // this isn't really just "author", so much as um,
 // extra data to use when rendering a comment
 class Author {
-	constructor(message, user) {
+	constructor(message, user, content) {
 		let valid = x => x && ('string'==typeof x || 'number'==typeof x)
 		let {a, big, n} = message.values
-		this.username = user.username
-		this.avatar = valid(a) ? String(a) : user.avatar
+		if (user) {
+			this.username = user.username
+			this.bridge = user.id==5410 && user.username=="sbs_discord_bridge"
+			this.avatar = valid(a) ? String(a) : user.avatar
+		}
 		this.nickname = valid(n) ? Author.filter_nickname(n) : null
-		this.bridge = user.id==5410 && user.username=="sbs_discord_bridge"
 		this.bigAvatar = valid(big) ? String(big) : null
 		this.merge_hash = `${message.contentId},${message.createUserId},${this.avatar},${this.bigAvatar||""},${this.username} ${this.nickname||""}`
 		this.date = new Date(message.createDate)
+		if (content)
+			this.page_name = content.name2
 	}
 	static filter_nickname(name) {
 		return String(name).substring(0, 50).replace(/\n/g, "  ")
@@ -38,6 +42,7 @@ Object.assign(Author.prototype, {
 	bridge: false,
 	bigAvatar: null,
 	merge_hash: "0,0,0,,missingno. ",
+	page_name: "somewhere?",
 	date: new Date(NaN),
 	//			content_name: "", todo, store page title, for listing in sidebar?
 })
@@ -106,6 +111,26 @@ for (let name in ABOUT.details.types) {
 				return d ? new Date(d) : null
 			}}
 	}
+	// hhhh
+	// TODO: just have one function to get a readable title for
+	// any entity type (particularly: user/content)
+	if (name=='content') {
+		proto_desc.name2 = {get() {
+			let n = this.name
+			if (this.contentType == CODES.file) {
+				// "image.<extension>" - from clipboard
+				// GUID(?) - iOS file upload
+				if (n=="" || /^\w{8}-\w{4}-\w{4}-\w{4}-\w{12}|^image\.[a-z]{3,4}/.test(n))
+					n = "file:"+(this.hash||this.id)
+			}
+			return n
+		}}
+	}
+	/*if (name=='user') {
+		proto_desc.name2 = {get() {
+			return this.username
+		}}
+	}*/
 	let proto
 	let cons = (o)=>{
 		return Object.setPrototypeOf(o, proto)
@@ -178,12 +203,13 @@ const Entity = NAMESPACE({
 	},
 	
 	// link user data with comments
-	link_comments({message, user}) {
-		for (let m of message) {
-			let u = user[~m.createUserId]
-			if (u)
-				m.Author = new Author(m, u)
-		}
+	link_comments({message, user, content}) {
+		if (content)
+			for (let m of message)
+				m.Author = new Author(m, user[~m.createUserId], content[~m.contentId])
+		else
+			for (let m of message)
+				m.Author = new Author(m, user[~m.createUserId])
 	},
 	
 	link_watch({message, watch, content}) {

@@ -15,8 +15,8 @@ class ActivityItem {
 		
 		this.parent = parent
 		this.content = content
-		this.users = {}
-		this.action_users = {}
+		this.users = {__proto__:null}
+		this.action_users = {__proto__:null}
 		this.date = -Infinity
 		
 		if (this.content) {
@@ -75,7 +75,7 @@ ActivityItem.template = HTML`
 	<div $=page class='bar rem1-5 ellipsis'></div>
 	<div class='bar rem1-5 activity-page-bottom ROW'>
 		<time $=time class='time-ago ellipsis'></time>
-		<activity-users $=user aria-orientation=horizontal data-ordered class='FILL'>
+		<div class='activity-users' $=user aria-orientation=horizontal data-ordered>
 `
 ActivityItem.template_simple = HTML`
 <a class='activity-page activity-watch' role=row tabindex=-1>
@@ -127,7 +127,8 @@ class ActivityContainer {
 		let page = content[~pid]
 		if (!page)
 			page = TYPES.content({id: pid||0})
-		if (page.contentType==CODES.file || action==CODES.delete)
+		// ignore activity on files, and deletions
+		if (action && (page.contentType==CODES.file || action==CODES.delete))
 			return
 		let item = this.update_content(pid, page, date)
 		if (uid)
@@ -152,7 +153,10 @@ class ActivityContainer {
 	}
 	
 	activity(act, objects) {
-		this.update(objects, act.contentId, act.date2, act.userId, act.action)
+		let d = act.date2
+		if (d >= 1658491594041 && d <= 1658638103040)
+			return
+		this.update(objects, act.contentId, d, act.userId, act.action)
 	}
 }
 
@@ -179,18 +183,18 @@ let Act = {
 				{type:'activity', fields:'id,contentId,userId,action,date', query:"date > @yesterday AND !basichistory()", order:'id'},
 				// watches
 				{type:'watch', fields:'*'},
-				{name:'Cwatch', type:'content', fields:'name,id,permissions,contentType,lastRevisionId,lastCommentId', query: "!notdeleted() AND id IN @watch.contentId", order:'lastCommentId_desc'},
+				{name:'Cwatch', type:'content', fields:'name,id,permissions,contentType,lastRevisionId,lastCommentId,hash', query: "!notdeleted() AND id IN @watch.contentId", order:'lastCommentId_desc'},
 				{name:'Mwatch', type:'message', fields: '*', query: 'id in @Cwatch.lastCommentId', order: 'id_desc'},
 				// shared
 				{type:'user', fields:'*', query:"id IN @message_aggregate.createUserId OR id IN @message.createUserId OR id IN @watch.userId OR id IN @activity.userId"},
 				{type:'content', fields:'name,id,permissions,contentType,lastRevisionId,hash', query:"id IN @message_aggregate.contentId OR id IN @message.contentId OR id IN @activity.contentId"},
 				// category
-				{name:'Ccat', type:'content', fields:'name,id,permissions,contentType,literalType,parentId', query:"!onlyparents() OR literalType={{category}}"},
+				{name:'Ccat', type:'content', fields:'name,id,permissions,contentType,literalType,parentId,hash', query:"!onlyparents() OR literalType={{category}}"},
 			],
 		}, (objects)=>{
 			console.log('🌄 got initial activity')
 			/// process data ///
-			Entity.link_comments({message:objects.Mwatch, user:objects.user})
+			Entity.link_comments({message:objects.Mwatch, user:objects.user, content:objects.content})
 			Entity.ascending(objects.message, 'id')
 			
 			/// sidebar messages ///

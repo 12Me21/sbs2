@@ -38,7 +38,7 @@ input[type="number"] {
 input[type="checkbox"] {
 	max-width: 8em;
 }
-input, output, select, textarea {
+input, output, select, textarea, textarea-container {
 	font: inherit;
 	font-size: 0.875em;
 	background-color: var(--T-bg);
@@ -101,12 +101,13 @@ textarea-container {
 	padding: 5px;
 	background: var(--T-bg);
 	/* should be approx. line-height * 2 */
-	min-height: 2.25em;
-	max-height: 25vh;
+	min-height: 2.5em;
+	max-height: 25vh;	
 }
 textarea-container > textarea {
 	box-shadow: none;
 	border-radius: 0;
+	font-size: 1em !important;
 }
 textarea-container > textarea:focus {
 	outline: 5px solid #878;
@@ -160,41 +161,35 @@ tab-list {
 	display: flex;
 	flex-flow: row;
 	width: 100%;
-	/*border-bottom: 1px solid gray;*/
-	/*border-top: 1px solid var(--T-border-color);*/
-	background-color: var(--databarbgcolor) !important;
 	height: var(--bar-height, 1.5rem);
-	border-top: 2px solid var(--databarbgcolor);
+	background-color: var(--databarbgcolor) !important;
 }
 tab-list > button {
 	flex: 0mm;
 	min-width: 0;
 	padding: 0;
 	font-size: 1em;
-	border-bottom: none;
 	background: var(--bar-bg);
-	/*border: 1px solid var(--databarbgcolor);*/
 	border: none;
 	border-radius: 5px 5px 0 0;
-	border-bottom: none;
 	margin-left: 2px;
 }
 tab-list > button:first-child {
 	margin-left: 0;
 }
 tab-list > button:not([aria-selected="true"]) {
-	/*box-shadow: 0 -5px 5px -6px black inset;*/
 	background: gray;
 	color: white;
-}
-tab-list > button.text-shadow {
-	text-shadow:
-		-.5px -.5px 1px var(--T-color),
-		1px 1px 0px var(--T-color);
 }
 tab-list > button[aria-selected="true"] {
 	background: var(--T-bg);
 	box-shadow: none;
+}
+
+tab-list > button.text-shadow {
+	text-shadow:
+		-.5px -.5px 1px var(--T-color),
+		1px 1px 0px var(--T-color);
 }
 tab-list > button img.avatar {
 	width: auto;
@@ -216,6 +211,9 @@ tab-list > button img.avatar {
 	outline-style: solid;
 	outline-offset: -2px;
 	animation: focus-switch 0.1s linear;
+}
+img:focus {
+	animation: none;
 }
 
 /* markup stuff */
@@ -300,22 +298,55 @@ view-header h1 {
 #\$titlePane [data-view]:not(.shown) {
 	display: none !important;
 }
-/* broken? */
+
 view-header.error {
-	background: var(--error-invert-bg);
+	background: var(--header-error-bg);
+	color: var(--header-error-color);
 }
 view-header.loading {
-	background: var(--loading-invert-bg);
+	background: var(--header-loading-bg);
 }
 view-header.rendering {
-	background: red;
+	background: var(--header-rendering-bg);
 }
-.loadBG/*, resize-handle*/ {
-	/*transition: background-color 0.1s ease;*/
+view-slot:not(.focused) {
+	/*box-shadow: 0px 1px 0px 4px #CF8 inset;*/
+	/*background-image: linear-gradient(#FFF8 0, #FFF8 100%);*/
+	/*filter: contrast(.5);*/
+	--T-textarea-border-color: gray;
+	/*--databartxtcolor: silver;*/
+}
+view-slot:not(.focused) .slot-overlay {
+	display: block;
+}
+view-slot:not(.focused) {
+	--normal-shadow: none;
+}
+view-slot.focused > view-header {
+	/*background-image: url("../resource/dither.png");*/
+}
+view-header {
+	position: relative;
+}
+.slot-overlay {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: 25;
+	/*background: repeating-linear-gradient(transparent 0, black 10);*/
+	background-image: url("data:image/gif;base64,R0lGODdhBAAEAPAAAAAAAP///ywAAAAABAAEAAACBUR8kahRADs=");
+	/*background-color: transparent;*/
+	opacity: 0.25;
+	display: none;
+	pointer-events: none;
+}
+view-slot:only-of-type > view-header {
+	/*box-shadow: 0px 0px 0px 2px #CF8 inset;*/
 }
 view-header {
 	--bar-height: 2.25rem;
 }
+
 .header-buttons {
 	display: inline-flex;
 	flex-direction: column;
@@ -493,14 +524,13 @@ message-block {
 	/* border-left: 0.5em solid rgb(255,153,153) */
 	/* #F99 or #F006 */
 	
-	--chat-avatar-size: calc(var(--chat-gutter) - 0.5rem - 0.5rem);
+	--chat-gutter: calc(0.5rem * 2 + var(--chat-avatar-size));
 	--chat-message-gap: 0.625rem;
 	padding-right: 0.5rem;
-	padding-top: var(--chat-message-gap);
-	min-height: var(--chat-avatar-size);
+	min-height: calc(var(--chat-avatar-size) + var(--chat-message-gap));
 	
 	/* avatar */
-	background: var(--avatar-url, none) no-repeat 0.5rem top / var(--chat-avatar-size);
+	background: var(--avatar-url, none) no-repeat 0.5rem var(--chat-message-gap) / var(--chat-avatar-size);
 	background-origin: content-box;
 }
 
@@ -526,12 +556,11 @@ message-block {
 }*/
 message-block > message-header {
 	display: flex;
-	flex-wrap: wrap-reverse;
+	flex-flow: wrap-reverse;
 	margin-left: var(--chat-gutter);
 	/* make the timestamp go into margins if there's not enough space */
 	min-height: calc(var(--chat-message-gap) + 1.1875rem); /* 1.1875 = text line height */
-	margin-top: calc(0rem - var(--chat-message-gap));
-	align-items: flex-start;
+	align-items: flex-start; /* i.e. bottom */
 }
 message-block > message-header > time {
 	flex-grow: 1;
@@ -553,19 +582,19 @@ message-contents {
 	overflow: hidden; /* do we need this */
 }
 /* because of overlapping with avatar: */
-message-contents, message-part {
-	contain: none;
+message-contents {
 }
 /* message parts */
 message-part {
 	display: block;
 	overflow: visible;
 	min-height: 1rem;
-	/* we can't use margin, because it doesn't get mouseover events */
-	padding: 0.125rem 0;
-	border-left: calc(var(--chat-gutter) - 0.5rem + 3px) solid transparent;
-	padding-left: calc(0.1875rem + 0.5rem - 3px);
-	/* the padding overlaps with avatars, so clip bg to content-box */
+	padding: 2px 0;
+	/* total indent here is: <0.5rem> [avatar] <0.5rem> <3px> */
+	/* i.e. 3px more than the username */
+	border-left: calc(0.5rem + var(--chat-avatar-size) + 3px) solid transparent;
+	padding-left: 0.5rem;
+	/* padding/border overlaps with avatars, so clip bg to content-box */
 	-webkit-background-clip: padding !important;
 	-webkit-background-clip: padding-box !important;
 	background-clip: padding-box !important;
@@ -665,6 +694,12 @@ view-root:not(.f-editing) .showWhenEdit {
 .nav > span {
 	color: var(--databartxtcolor);
 }
+
+.modified.save-button {
+	background: #B0F;
+	color: white;
+	font-weight: bold;
+}
 
 /* file viewer */
 .images-thumbnails img {
@@ -749,6 +784,7 @@ sidebar-container {
 }
 not-sidebar {
 	min-width: 9em !important;
+	position: relative;
 }
 .registerBox {
 	padding: 0.3125rem 0.5rem;
@@ -785,19 +821,23 @@ not-sidebar {
 	padding: 1px 0;
 	padding-left: 0.1875rem;
 	background: var(--T-bg);
+	contain: content;
 }
+
 .activity-page-bottom {
 	display: flex;
 	height: 1.5rem;
+	overflow: hidden;
+	justify-content: space-between;
+	contain: strict;
+}
+.activity-page-bottom > * {
+	flex: none;
 }
 
-activity-users {
-	/*text-align: right;*/
-	white-space: pre;
-	overflow-x: visible;
-	padding: 0 3px;
+.activity-users {
 	display: flex;
-	justify-content: flex-end;
+	padding: 0 3px;
 }
 
 .activity-scroller > scroll-inner {
@@ -911,7 +951,7 @@ activity-users {
 }
 /* mobile stuff */
 @media all and (max-width: 700px) {
-	input, textarea {
+	input, textarea, textarea-container {
 		font-size: 1em;
 	}
 	/* message-block { --chat-gutter: 3rem; } */

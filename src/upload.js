@@ -58,7 +58,8 @@ const FileUploader = NAMESPACE({
 		$file_url_insert.onclick = e=>{
 			let file = this.last_file
 			if (!file) return
-			if (!View.current.Insert_Text) return
+			let curr = Nav.view()
+			if (!curr || !curr.Insert_Text) return
 			
 			let url = Req.file_url(file.hash)
 			
@@ -75,7 +76,7 @@ const FileUploader = NAMESPACE({
 			}
 			
 			Sidebar.close_fullscreen()
-			View.current.Insert_Text(url)
+			curr.Insert_Text(url)
 		}
 		$file_upload.onclick = Draw.event_lock(done=>{
 			if (!this.file) return void done()

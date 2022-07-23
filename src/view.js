@@ -23,9 +23,26 @@
 
 // - .Visible is called. here you can run any code that requires the element to be rendered
 
+// redirect newdev -> oboy
+Markup.renderer.url_scheme['https:'] =
+Markup.renderer.url_scheme['http:'] =
+	(url, thing)=>{
+		if (thing=='image' && url.host=="newdev.smilebasicsource.com")
+			url.host = "oboy.smilebasicsource.com"
+		return url.href
+	}
+Markup.renderer.url_scheme['sbs:'] = (url, thing)=>{
+	if (thing=='image') {
+		if (url.pathname.startsWith("image/"))
+			return Req.file_url(url.pathname.substring(6)+url.search)
+	}
+	return "#"+url.pathname+url.search+url.hash
+}
+
 class BaseView {
 	constructor(location, slot) {
 		this.location = location
+		this._protected = false
 		this.Slot = slot
 		new.target.template(this)
 		if (!this.$root || this.$root.tagName!='VIEW-ROOT')
@@ -102,10 +119,32 @@ const View = NAMESPACE({
 	first: true,
 	lost: null,	
 	
-	// temp
+	protected: new Set(),
+	protect(view, state) {
+		if (this.protected.has(view)==state)
+			return
+		
+		if (state)
+			this.protected.add(view)
+		else
+			this.protected.delete(view)
+		
+		if (this.protected.size) {
+			if (!window.onbeforeunload)
+				window.onbeforeunload = this.beforeunload
+		} else {
+			if (window.onbeforeunload)
+				window.onbeforeunload = null
+		}
+	},
+	beforeunload: ev=>{
+		if (View.protected.size)
+			ev.preventDefault()
+	},
+	
 	get current() {
-		if (Nav.slots[0])
-			return Nav.slots[0].view
+		if (Nav.focused)
+			return Nav.focused.view
 	},
 	
 	register(name, view_class) {
@@ -134,6 +173,9 @@ const View = NAMESPACE({
 	
 	real_title: null,
 	set_title(title) {
+		// prevent the browser from collapsing sequences of spaces
+		// replace every other one with a NBSP
+		title = title.replace(/  /g, "  ").replace(/\n/g, "  ")
 		document.title = title
 		this.real_title = title
 		this.change_favicon(null)
@@ -151,6 +193,8 @@ const View = NAMESPACE({
 		if (text == false) {
 			text = this.real_title
 			icon = null
+		} else {
+			text = text.replace(/  /g, "  ").replace(/\n/g, "  ")
 		}
 		document.title = text
 		this.change_favicon(icon || null)
@@ -250,8 +294,9 @@ const View = NAMESPACE({
 View.init()
 
 Settings.add({
-	name: 'lazy_loading', label: "lazy image loading", type: 'select',
+	name: 'lazy_loading', label: "Image Loading", type: 'select',
 	options: ['on', 'off'],
+	options_labels: ['when visible', 'immediately'],
 	update(value) { // bad
 		View.toggle_observer(value=='on')
 	},

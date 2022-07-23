@@ -144,7 +144,7 @@ const Sidebar = NAMESPACE({
 			document.documentElement.classList.toggle('f-mobileSidebar', this.fullscreen_open)
 		} else {
 			this.normal_open = !this.normal_open
-			document.documentElement.classList.toggle('sidebar', this.normal_open)
+			document.documentElement.classList.toggle('f-sidebar', this.normal_open)
 			localStorage.setItem('sbs-sidebar', this.normal_open)
 		}
 	},
@@ -160,7 +160,7 @@ const Sidebar = NAMESPACE({
 	
 	message_count: 0,
 	
-	displayed_ids: {},
+	displayed_ids: {__proto__:null},
 	
 	display_messages(comments, initial=false) {
 		// todo: show page titles?
@@ -179,6 +179,11 @@ const Sidebar = NAMESPACE({
 						old.replaceWith(nw)
 						this.displayed_ids[c.id] = nw
 					} else {
+						// EEEEK
+						let nw = Sidebar.draw_comment(c)
+						inner.append(nw)
+						this.message_count++
+						this.displayed_ids[c.id] = nw
 					}
 				} else {
 					let nw = Sidebar.draw_comment(c)
@@ -215,13 +220,13 @@ const Sidebar = NAMESPACE({
 	draw_comment: function(comment) {
 		let d = this()
 		d.dataset.id = comment.id
+		d.dataset.pid = comment.contentId
 		
 		// for bridge messages, display nicknames instead of username
 		let author = comment.Author
 		let name = author.bridge ? author.nickname+"*" : author.username
 		
-		d.title = `${name} in ${comment.contentId}:\n${comment.text}`
-		// todo: page name 🥺  oh︕ emojis render in italic? don't remember adding that...   we should store refs to pages but like intern them so its not a memory leak...
+		d.title = `${name} in [${author.page_name}]:\n${comment.text}`
 		
 		/*todo: fix,		if (comment.editDate && comment.editUserId!=comment.createUserId) {
 		  d.append(

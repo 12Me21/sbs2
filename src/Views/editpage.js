@@ -9,13 +9,21 @@ class EditView extends BaseView {
 		this.current_section = null
 		this.sections_invalid = true
 		this.text = null
+		this.modified = false
 		
 		new ResizeBar(this.$top, this.$resize, 'top')
 		
 		this.$save = Draw.button("Save", Draw.event_lock(done=>{
 			if (!this.page)
 				return
-			let data = JSON.parse(this.$data.value)
+			let data
+			try {
+				data = JSON.parse(this.$data.value)
+			} catch (e) {
+				done()
+				print(e)
+				return
+			}
 			data.text = this.page.text
 			
 			let text
@@ -35,7 +43,7 @@ class EditView extends BaseView {
 			Object.assign(this.page, data)
 			this.save(done)
 		}))
-		this.$save.className = 'item'
+		this.$save.className = 'item save-button'
 		this.Slot.$header_extra.append(this.$save)
 		
 		let batch = (cb,w=0)=>e=>w++||requestAnimationFrame(_=>cb(e,w=0))
@@ -51,7 +59,11 @@ class EditView extends BaseView {
 			if (this.show_preview && this.live_preview)
 				this.update_preview()
 		}), {passive: true})
+		this.$data.onchange = ev=>{
+			this.set_modified(true)
+		}
 		this.$textarea.onchange = ev=>{
+			this.set_modified(true)
 			if (this.current_section==null)
 				this.sections_invalid = true
 		}
@@ -70,6 +82,12 @@ class EditView extends BaseView {
 		this.$section.onchange = ev=>{
 			this.choose_section(ev.target.value)
 		}
+	}
+	set_modified(state) {
+		View.protect(this, state)
+		this.modified = state
+		this.$save.classList.toggle('modified', state)
+		//print('modified')
 	}
 	choose_section(id) {
 		if (this.sections_invalid)
@@ -135,9 +153,10 @@ class EditView extends BaseView {
 		this.page = page
 		this.text = this.page.text
 		//$editorSave.textContent = creating ? "Create" : "Save"
-		this.Slot.add_header_links([
-			{label:"back", href:"#page/"+page.id},
-		])
+		if (!creating)
+			this.Slot.add_header_links([
+				{label:"back", href:"#page/"+page.id},
+			])
 		this.$textarea.value = page.text //todo: preserve undo?
 		// only show writable fields
 		let writable = {}
@@ -209,6 +228,7 @@ class EditView extends BaseView {
 				print('❌ page edit failed!')
 			} else {
 				//alert('✅ saved page')
+				this.set_modified(false)
 				print('✅ saved page')
 				//this.got_page(resp, false)
 			}

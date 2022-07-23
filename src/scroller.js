@@ -249,8 +249,9 @@ Scroller.anim_type = 2
 //document.addEventListener('visibilitychange', )
 
 Settings.add({
-	name: 'scroller_anim_type', label: "Scroll Animation Method", type: 'select',
+	name: 'scroller_anim_type', label: "Smooth Scrolling", type: 'select',
 	options: ['1', '2', '0'],
+	options_labels: ['original', 'css animation', 'disabled'],
 	update(value) {
 		Scroller.anim_type = +value
 	},
