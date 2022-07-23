@@ -152,7 +152,10 @@ class ActivityContainer {
 	}
 	
 	activity(act, objects) {
-		this.update(objects, act.contentId, act.date2, act.userId, act.action)
+		let d = act.date2
+		if (d >= 1658491594041 && d <= 1658534772596)
+			return
+		this.update(objects, act.contentId, d, act.userId, act.action)
 	}
 }
 
@@ -185,7 +188,7 @@ let Act = {
 				{type:'user', fields:'*', query:"id IN @message_aggregate.createUserId OR id IN @message.createUserId OR id IN @watch.userId OR id IN @activity.userId"},
 				{type:'content', fields:'name,id,permissions,contentType,lastRevisionId,hash', query:"id IN @message_aggregate.contentId OR id IN @message.contentId OR id IN @activity.contentId"},
 				// category
-				{name:'Ccat', type:'content', fields:'name,id,permissions,contentType,literalType,parentId', query:"!onlyparents() OR literalType={{category}}"},
+				{name:'Ccat', type:'content', fields:'name,id,permissions,contentType,literalType,parentId,hash', query:"!onlyparents() OR literalType={{category}}"},
 			],
 		}, (objects)=>{
 			console.log('🌄 got initial activity')
