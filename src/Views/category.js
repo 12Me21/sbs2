@@ -70,12 +70,12 @@ class CategoryView extends PageView {
 			if (page+dir<1)
 				return
 			this.location.query.page = page+dir
-			Nav.update_slot_location(this.Slot, this.location)
+			this.Slot.load_location(this.location)
 		}
 		this.$visit_page.onclick = e=>{
 			this.location.type = "page"
 			this.location.query = {}
-			Nav.update_slot_location(this.Slot, this.location)
+			this.Slot.load_location(this.location)
 		}
 	}
 	Render({ content: [page], categories, children, user, watch, parent }) {

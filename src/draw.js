@@ -133,9 +133,13 @@ const Draw = NAMESPACE({
 `),
 	category_item: function(content, isCategory=true) {
 		const e = this()
-		if (content) content.Type = isCategory ? 'category' : 'content'
+		if (content) {
+			content.Type = isCategory ? 'category' : 'content'
+			content.name2 = content.name
+		}
 		e.href = content ? Nav.entity_link(content) : '#category/0'
-		e.append(content ? Draw.content_label(content) : "Root")
+		const label = content ? Draw.content_label(content) : "Root"
+		e.append(label)
 		return e
 	}.bind(𐀶`
 <a class='linkBar bar rem2-3 activity-page'></a>

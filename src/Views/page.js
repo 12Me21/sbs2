@@ -80,6 +80,12 @@ class PageView extends BaseView {
 				this.edit_comment(e.detail.data)
 			}
 		})
+
+		this.$visit_category.onclick = e=>{
+			this.location.type = "category"
+			this.location.query = {}
+			this.Slot.load_location(this.location)
+		}
 	}
 	Render({message, content:[page], Mpinned:pinned, user, watch}) {
 		this.page_id = page.id
@@ -348,10 +354,15 @@ PageView.track_resize_2 = new ResizeTracker('width')
 PageView.template = HTML`
 <view-root class='COL resize-box'>
 	<scroll-outer class='page-container sized' $=page_container>
-		<div class='pageInfoPane bar rem1-5'>
-			<label>Watching: <input type=checkbox $=watching></label>
-			<span $=author style='margin: 0 0.5rem;'></span>
-			<span $=create_date>Created: <time></time></span>
+		<div class='pageInfoPane bar rem1-5' style='justify-content:space-between;'>
+			<div class='ROW'>
+				<label>Watching: <input type=checkbox $=watching></label>
+				<span $=author style='margin: 0 0.5rem;'></span>
+				<span $=create_date>Created: <time></time></span>
+			</div>
+			<div class='ROW'>
+				<button $=visit_category>Visit Category</button>
+			</div>
 		</div>
 		<div class='pageContents' $=page_contents></div>
 	</scroll-outer>
