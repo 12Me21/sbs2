@@ -131,8 +131,11 @@ class ViewSlot {
 		})
 	}
 	cleanup(new_location) {
-		if (this.view)
+		// destruct the view
+		if (this.view) {
+			View.protected.delete(this.view)
 			Events.destroy(this.view)
+		}
 		if (this.view && this.view.Destroy)
 			try {
 				this.view.Destroy(new_location)
@@ -140,13 +143,14 @@ class ViewSlot {
 				console.error(e, "error in cleanup function")
 				print(e)
 			}
+		this.view = null
+		// clean up elements
 		this.$header.classList.remove('error')
 		if (this.$view)
 			this.$view.remove()
 		this.$title.fill()
 		this.$header_buttons.fill()
 		this.$header_extra.fill()
-		this.view = null
 	}
 	cancel() {
 		if (this.loading) {
@@ -162,10 +166,14 @@ class ViewSlot {
 		let view, view_cls
 		let data
 		
+		// TODO: this will only fire /if/ the `change` event has fired.
+		// if, somehow, a page navigation occurs before your cursor leaves
+		// the textarea, it won't know that it's been modified.
 		if (this.view && View.protected.has(this.view)) {
 			let r = confirm("are you sure you want to leave this view?")
-			if (!r)
+			if (!r) {
 				return false
+			}
 		}
 		
 		try {

@@ -282,31 +282,28 @@ MessageList.draw_block = function(comment, part) {
 	
 	e.dataset.uid = comment.createUserId
 	
-	if (author.bigAvatar) {
-		//avatar = this.big_avatar()
-		//let url = Req.file_url(author.bigAvatar, "size=500")
-		//avatar.style.backgroundImage = `url("${url}")`
-	} else {
-		e.style.setProperty('--avatar-url', `url("${Draw.avatar_url(author)}")`)
-	}
+	let avatar = e.firstChild
+	avatar.src = Draw.avatar_url(author)
+	if (author.bigAvatar)
+		avatar.className = "bigAvatar"
 	
-	let name = e.querySelector('message-username') // todo: is queryselector ok?
-	let username
+	let header = avatar.nextSibling
+	
+	let name = header.firstChild
 	if (author.nickname == null) {
-		username = author.username
+		name.firstChild.textContent = author.username
 	} else {
-		username = author.nickname
+		name.firstChild.textContent = author.nickname
 		if (author.bridge)
-			name.append(this.bridge())
+			name.appendChild(this.bridge())
 		else {
 			let nickname = this.nickname()
 			nickname.querySelector('span.pre').textContent = author.username
-			name.append(nickname)
+			name.appendChild(nickname)
 		}
 	}
-	name.firstChild.textContent = username
 	
-	let time = e.querySelector('time')
+	let time = header.lastChild
 	time.dateTime = comment.createDate
 	time.textContent = Draw.time_string(comment.Author.date)
 	
@@ -316,6 +313,7 @@ MessageList.draw_block = function(comment, part) {
 }.bind({
 	block: 𐀶`
 <message-block>
+	<img class='avatar' width=100 height=100 alt="">
 	<message-header>
 		<message-username><span class='username pre'></span>:</message-username>
 		<time></time>

@@ -162,13 +162,6 @@ td, th {  /* border renders outside */
 .bar .avatar {
 	width: var(--bar-height);
 }
-.bar .iconBg {
-	width: 1em;
-	/*margin-right: 0.2rem;*/
-}
-.rem2-3 .iconBg {
-	width: 1.5rem;
-}
 
 .rem1-7 { --bar-height: 1.6875rem; }
 .rem1-5 { --bar-height: 1.5rem; }

@@ -25,13 +25,12 @@ const Draw = NAMESPACE({
 			bg = "url(resource/hiddenpage.png), " + bg
 		icon.style.backgroundImage = bg
 		// label
-		e.lastChild.textContent = content.name2
+		icon.textContent = content.name2
 		
 		return e
 	}.bind(𐀶`
 <entity-label>
-	<span class='item icon iconBg' role=img alt=""></span>
-	<span class='textItem entity-title pre'>...</span>
+	<span class='textItem icon-title entity-title pre'>...</span>
 </entity-label>
 `),
 	
@@ -43,11 +42,9 @@ const Draw = NAMESPACE({
 		return e
 	}.bind(𐀶`<span class='textItem pre'>`),
 	
-	// user: User / Author
+	// user: User or Author
 	avatar_url(user, size=100) {
-		if (!user || !user.avatar)
-			return "resource/avatar.png"
-		if (user.avatar==="0")
+		if (!user || !user.avatar || user.avatar==="0")
 			return "resource/avatar.png"
 		return Req.file_url(user.avatar, "size="+size+"&crop=true")
 	},

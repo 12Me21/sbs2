@@ -295,10 +295,8 @@ view-header h1 {
 	font-size: 1.625em;
 	font-weight: normal;
 }
-#\$titlePane [data-view]:not(.shown) {
-	display: none !important;
-}
 
+/* loading status */
 view-header.error {
 	background: var(--header-error-bg);
 	color: var(--header-error-color);
@@ -309,6 +307,7 @@ view-header.loading {
 view-header.rendering {
 	background: var(--header-rendering-bg);
 }
+
 view-slot:not(.focused) {
 	/*box-shadow: 0px 1px 0px 4px #CF8 inset;*/
 	/*background-image: linear-gradient(#FFF8 0, #FFF8 100%);*/
@@ -322,26 +321,15 @@ view-slot:not(.focused) .slot-overlay {
 view-slot:not(.focused) {
 	--normal-shadow: none;
 }
-view-slot.focused > view-header {
-	/*background-image: url("../resource/dither.png");*/
-}
-view-header {
-	position: relative;
-}
 .slot-overlay {
 	position: absolute;
 	width: 100%;
 	height: 100%;
 	z-index: 25;
-	/*background: repeating-linear-gradient(transparent 0, black 10);*/
 	background-image: url("data:image/gif;base64,R0lGODdhBAAEAPAAAAAAAP///ywAAAAABAAEAAACBUR8kahRADs=");
-	/*background-color: transparent;*/
 	opacity: 0.25;
 	display: none;
 	pointer-events: none;
-}
-view-slot:only-of-type > view-header {
-	/*box-shadow: 0px 0px 0px 2px #CF8 inset;*/
 }
 view-header {
 	--bar-height: 2.25rem;
@@ -397,7 +385,7 @@ pre {
 .userlist > a {
 	width: var(--bar-height);
 	height: var(--bar-height);
-	border: 1px solid goldenrod;
+	/*border: 1px solid goldenrod;*/
 	margin-left: 1px;
 }
 .userlist {
@@ -451,6 +439,10 @@ form-table > .wide.label {
 .entity-title {
 	font-weight: 500;
 }
+.icon-title {
+	padding-left: calc(1em + 2px + 2px);
+	background: none no-repeat 2px center / 1em 1em;
+}
 .avatar {
 	/*border-radius: 3px;*/
 	background: var(--T-avatar-bg);
@@ -470,10 +462,6 @@ time {
 }
 .chat-bottom {
 	height: 0.875rem;
-}
-.iconBg {
-	background: no-repeat center / contain;
-	margin: 0 0.125rem;
 }
 .user-label > .avatar {
 	margin-right: 1px;
@@ -500,12 +488,12 @@ DRAW ORDER / z-index - side view
  ←---- x axis ----→
 ↑  ━━━             <message-controls> (nearest, can cover avatar)
 Z  ╌╌╌╌━━━━━━━━━━  <message-part> (area covering avatar is seethrough)
+|  ━━━             <img> - avatar
 ↓ ---------------- <message-block> (furthest, contains avatar)
 
 <message-block> contains
-- <message-header> (with username/time)
+- <message-header> (with avatar/username/time)
 - <message-contents>
-- avatar is drawn with background-image
 
 within <message-contents> is a list of <message-part>s
 (<message-controls> is also inserted here, immediately after the highlighted <message-part>)
@@ -528,46 +516,41 @@ message-block {
 	--chat-message-gap: 0.625rem;
 	padding-right: 0.5rem;
 	min-height: calc(var(--chat-avatar-size) + var(--chat-message-gap));
-	
-	/* avatar */
-	background: var(--avatar-url, none) no-repeat 0.5rem var(--chat-message-gap) / var(--chat-avatar-size);
-	background-origin: content-box;
 }
 
-/*message-block > img.avatar {
-	display: inline-block;
+message-block > img.avatar {
 	position: absolute;
 	z-index: -1;
 	width: var(--chat-avatar-size);
 	height: var(--chat-avatar-size);
-	border: none; /*1px solid #777/
 	margin-left: 0.5rem;
-	/*background-color: transparent/
-	/*background-color: #AAB/
-}*/
-
-/*message-block > .bigAvatar {
+	margin-top: var(--chat-message-gap);
+	/*background-color: #AAB*/
+	border: 1px solid #777;
+}
+message-block > img.bigAvatar {
 	position: absolute;
-	width: calc(var(--chat-gutter));
+	z-index: -1;
+	width: var(--chat-gutter);
 	height: 100%;
-	left: 0;
-	top: 0;
-	background: no-repeat center top / cover;
-}*/
+	object-fit: cover;
+}
+
 message-block > message-header {
 	display: flex;
 	flex-flow: wrap-reverse;
+	align-items: flex-start; /* vertically align items to bottom */
 	margin-left: var(--chat-gutter);
-	/* make the timestamp go into margins if there's not enough space */
-	min-height: calc(var(--chat-message-gap) + 1.1875rem); /* 1.1875 = text line height */
-	align-items: flex-start; /* i.e. bottom */
+	padding-top: var(--chat-message-gap);
 }
 message-block > message-header > time {
-	flex-grow: 1;
-	text-align: right;
+	margin-left: auto; /* expanding margin, pushes element to the right */
 	font-weight: normal;
 	color: var(--chat-dim-color);
-	/* line-height: 1 ;" this looks better when the time wraps, since it takes up less space, but otherwise, means the time is aligned too low */
+	/* If the username/timestamp line wraps, this negative margin means */
+	/* the <time> can go inside <message-header>'s padding-top region, */
+	/* which reduces the amount of extra vertical space used */
+	margin-top: calc(0px - var(--chat-message-gap));
 }
 message-username {
 	line-height: 1.2;
@@ -578,11 +561,8 @@ message-username {
 message-contents {
 	display: block;
 	min-height: 1.5rem; /*this is so <message-controls> always has somewhere to be shown*/
-	margin: 0.125rem 0;
+	margin: 1px 0;
 	overflow: hidden; /* do we need this */
-}
-/* because of overlapping with avatar: */
-message-contents {
 }
 /* message parts */
 message-part {
@@ -592,7 +572,7 @@ message-part {
 	padding: 2px 0;
 	/* total indent here is: <0.5rem> [avatar] <0.5rem> <3px> */
 	/* i.e. 3px more than the username */
-	border-left: calc(0.5rem + var(--chat-avatar-size) + 3px) solid transparent;
+	border-left: calc(0.5rem + var(--chat-avatar-size) + 4px) solid transparent;
 	padding-left: 0.5rem;
 	/* padding/border overlaps with avatars, so clip bg to content-box */
 	-webkit-background-clip: padding !important;
@@ -619,7 +599,7 @@ message-controls {
 	display: inline-flex;
 	position: absolute;
 	width: var(--chat-gutter);
-	z-index: 9;
+	z-index: 1;
 	-webkit-user-select: none; -moz-user-select: none; user-select: none;
 }
 /* hack, ignore */
@@ -730,10 +710,10 @@ view-root:not(.f-editing) .showWhenEdit {
 }
 .pageInfoPane {
 	display: flex;
-	padding: 0 0.3125rem;
+	padding: 0 5px;
 	border-bottom: 1px solid var(--T-border-color);
 	background: var(--bar-bg);
-	box-shadow: var(--normal-shadow);
+	/*box-shadow: var(--normal-shadow);*/
 }
 /* user page */
 .userPageBox {
@@ -749,7 +729,7 @@ view-root:not(.f-editing) .showWhenEdit {
 	flex-shrink: 1;
 	margin: 5px;
 	
-	z-index: 2;
+	z-index: 1;
 	box-shadow: 2px 2px 5px gray;
 }
 .userPageAvatar > img {
