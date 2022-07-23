@@ -223,16 +223,35 @@ img:focus {
 	font: inherit;
 	overflow-y: hidden;
 	overflow-x: auto;
+	color: var(--T-color);
 }
 
-.pageContents.Markup h2,
-.pageContents.Markup h3,
-.pageContents.Markup h4,
-.pageContents.Markup h5 {
+.pageContents section {
+	padding-left: 1rem;
+	padding-right: 1rem;
+}
+
+.pageContents .M-heading {
+	padding-left: 0.25em;
+	padding-right: 0.25em;
+}
+
+.pageContents > .M-heading,
+.pageContents > section {
 	margin-left: -1.5rem;
 	margin-right: -1.5rem;
 	padding-left: 1rem;
 	padding-right: 1rem;
+}
+.pageContents > h2.M-heading {
+	padding-left: 0.25rem;
+}
+.pageContents > h2.M-heading:not([data-open]) {
+	
+}
+
+.pageContents section {
+	contain: none;
 }
 
 .M-spoiler-label {
