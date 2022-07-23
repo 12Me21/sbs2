@@ -66,10 +66,6 @@ class PageView extends BaseView {
 			if (ev)
 				localStorage.setItem('setting--collapse-sections-'+this.page_id, this.$collapse.checked ? 'yes' : '')
 		}
-		if (localStorage.getItem('setting--collapse-sections-'+this.page_id)) {
-			this.$collapse.checked = true
-			this.$collapse.onchange(null)
-		}
 		
 		this.$watching.onchange = Draw.event_lock(done=>{
 			// todo: check for err
@@ -108,6 +104,10 @@ class PageView extends BaseView {
 		this.list = new MessageList(this.$message_list, this.page_id)
 		this.pinned_list = null
 		
+		if (localStorage.getItem('setting--collapse-sections-'+this.page_id)) {
+			this.$collapse.checked = true
+			this.$collapse.onchange(null)
+		}
 		// draw stuff //
 		this.update_page(page, user)
 		this.update_watch(watch[0])
