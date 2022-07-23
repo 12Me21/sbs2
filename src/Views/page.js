@@ -202,7 +202,14 @@ class PageView extends BaseView {
 	// 8:10;35
 	Destroy(type) {
 		View.lost = this.$textarea.value
-		this.userlist.set_status(null)
+		goto2: {
+			// HACK
+			for (let {view} of Nav.slots)
+				if (view instanceof PageView)
+					if (view.page_id == this.page_id)
+						break goto2
+			this.userlist.set_status(null)
+		}
 		this.scroller.destroy()
 		PageView.track_resize_2.remove(this.$textarea_container)
 	}

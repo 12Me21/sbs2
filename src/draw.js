@@ -143,6 +143,9 @@ const Draw = NAMESPACE({
 
 
 
+// todo: we should probably disconnect uhh
+// - other user's status's display
+// - reporting our own status
 class StatusDisplay {
 	constructor(id, element) {
 		this.id = id

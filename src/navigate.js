@@ -25,21 +25,12 @@ class ViewSlot {
 			this.set_focus()
 		
 		// intercept links, and load them in the current slot rather than the default/focused one
-		let lh = Nav.link_handler(url=>{
-			this.load_url(url)
-		})
 		this.$root.addEventListener('mousedown', ev=>{
 			this.set_focus()
-		}, {passive:true})
-		this.$root.addEventListener('click', ev=>{
-			lh(ev)
-		}, {useCapture:true})
-		/*this.$root.onmousedown = ev=>{
-			this.set_focus()
-		}*/
+		}, {passive:true, useCapture:true})
 		this.$root.addEventListener('focusin', ev=>{
 			this.set_focus()
-		})
+		}, {passive:true, useCapture:true})
 		
 		Object.seal(this)
 	}
@@ -394,20 +385,6 @@ const Nav = NAMESPACE({
 		
 		this.update_from_fragment(window.location.hash.substring(1))
 	},
-	
-	link_handler(callback) {
-		return ev=>{
-			let link = ev.target.closest(':any-link')
-			if (!link)
-				return
-			let href = link.getAttribute('href') // need to use getattr because link.href is an absolute url, not the actual attribute value
-			if (!href.startsWith("#"))
-				return
-			ev.preventDefault()
-			ev.stopPropagation()
-			callback(href.substring(1), ev)
-		}
-	}
 })
 
 // notes:
@@ -419,9 +396,23 @@ const Nav = NAMESPACE({
 window.onhashchange = ()=>{
 	Nav.update_from_fragment(window.location.hash.substring(1))
 }
-// only for links that aren't inside a slot (i.e. ones in the sidebar)
-document.addEventListener('click', Nav.link_handler(url=>{
-	Nav.focused_slot().load_url(url)
-	Sidebar.close_fullscreen()
-}))
 // TODO: what happens if a user clicks a link before Nav.init()?
+
+document.addEventListener('click', ev=>{
+	// if the user clicked a link with a #href url
+	let link = ev.target.closest(':any-link')
+	if (!link)
+		return
+	let href = link.getAttribute('href') // note: can't use `link.href`
+	if (!href.startsWith("#"))
+		return
+	// a
+	ev.preventDefault()
+	ev.stopPropagation()
+	// find nearest slot if we're inside one, otherwise use focused slot
+	let slot = link.closest('view-slot')
+	slot = (slot && Nav.slots.find(s=>s.$root===slot)) || Nav.focused_slot()
+	// load url into slot
+	slot.load_url(href.slice(1))
+	Sidebar.close_fullscreen()
+}, {useCapture:true})
