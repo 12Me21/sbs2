@@ -127,6 +127,15 @@ const Draw = NAMESPACE({
 	<span class='textItem entity-title pre'></span>
 </a>
 `),
+	category_item: function(content, isCategory=true) {
+		const e = this()
+		if (content) content.Type = isCategory ? 'category' : 'content'
+		e.href = content ? Nav.entity_link(content) : '#category/0'
+		e.append(content ? Draw.content_label(content) : "Root")
+		return e
+	}.bind(𐀶`
+<a class='linkBar bar rem2-3 activity-page'></a>
+`),
 	
 	// opt: todo: what if instead of passing the func to the callback
 	// we just pass elem and let the user run elem.disabled=false?

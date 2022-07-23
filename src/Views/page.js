@@ -380,9 +380,9 @@ View.register('page', PageView)
 View.register('pages', {
 	Redirect(location) {location.type='content'},
 })
-View.register('category', {
-	Redirect(location) {location.type='content'},
-})
+// View.register('category', {
+// 	Redirect(location) {location.type='content'},
+// })
 
 Settings.add({
 	name: 'nickname', label: "Chat Nickname", type: 'text',
