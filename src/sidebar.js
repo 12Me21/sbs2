@@ -299,12 +299,12 @@ Settings.add({
 			if (Sidebar.linkify_messages) {
 				contents.forEach(c => {
 					c.setAttribute('href', `#page/${c.getAttribute("page")}`)
-					c.setAttribute('aria-disabled', "true")
+					c.setAttribute('aria-disabled', "false")
 				})
 			} else {
 				contents.forEach(c => {
 					c.removeAttribute('href')
-					c.setAttribute('aria-disabled', "false")
+					c.setAttribute('aria-disabled', "true")
 				})
 			}
 		})
