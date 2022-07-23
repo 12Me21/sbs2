@@ -170,7 +170,7 @@ const View = NAMESPACE({
 			text = this.real_title
 			icon = null
 		} else {
-			text = text.replace(/ /g, " ").replace(/\n/g, "  ")
+			text = text.replace(/  /g, "  ").replace(/\n/g, "  ")
 		}
 		document.title = text
 		this.change_favicon(icon || null)

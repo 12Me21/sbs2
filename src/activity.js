@@ -127,7 +127,8 @@ class ActivityContainer {
 		let page = content[~pid]
 		if (!page)
 			page = TYPES.content({id: pid||0})
-		if (page.contentType==CODES.file || action==CODES.delete)
+		// ignore activity on files, and deletions
+		if (action && (page.contentType==CODES.file || action==CODES.delete))
 			return
 		let item = this.update_content(pid, page, date)
 		if (uid)
@@ -153,7 +154,7 @@ class ActivityContainer {
 	
 	activity(act, objects) {
 		let d = act.date2
-		if (d >= 1658491594041 && d <= 1658534772596)
+		if (d >= 1658491594041 && d <= 1658535772596)
 			return
 		this.update(objects, act.contentId, d, act.userId, act.action)
 	}
