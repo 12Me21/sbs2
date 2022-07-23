@@ -398,10 +398,6 @@ View.register('pages', {
 	Redirect(location) {location.type='page'},
 })
 
-// View.register('category', {
-// 	Redirect(location) {location.type='content'},
-// })
-
 Settings.add({
 	name: 'nickname', label: "Chat Nickname", type: 'text',
 	order: -9000,

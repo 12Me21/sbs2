@@ -150,4 +150,6 @@ CategoryView.template = HTML`
 `
 
 View.register('category', CategoryView)
-
+View.register('categories', {
+	Redirect(location) {location.type='category'},
+})
