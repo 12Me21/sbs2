@@ -28,8 +28,10 @@ class ViewSlot {
 		let lh = Nav.link_handler(url=>{
 			this.load_url(url)
 		})
-		this.$root.addEventListener('click', ev=>{
+		this.$root.addEventListener('mousedown', ev=>{
 			this.set_focus()
+		}, {passive:true})
+		this.$root.addEventListener('click', ev=>{
 			lh(ev)
 		}, {useCapture:true})
 		/*this.$root.onmousedown = ev=>{
@@ -114,7 +116,7 @@ class ViewSlot {
 				Nav.slots[0].set_focus()
 		}
 		this.cancel()
-		this.cleanup(null)
+		this.switch_view(null)
 		this.$root.remove()
 		return true
 	}
@@ -130,20 +132,22 @@ class ViewSlot {
 			// idk
 		})
 	}
-	cleanup(new_location) {
+	// NEVER set this.view directly, always use switch_view()
+	switch_view(view2) {
 		// destruct the view
 		if (this.view) {
 			View.protected.delete(this.view)
 			Events.destroy(this.view)
+			if (this.view.Destroy)
+				try {
+					this.view.Destroy(view2)
+				} catch (e) {
+					console.error(e, "error in cleanup function")
+					print(e)
+				}
+			this.view.Slot = null // just in case
 		}
-		if (this.view && this.view.Destroy)
-			try {
-				this.view.Destroy(new_location)
-			} catch (e) {
-				console.error(e, "error in cleanup function")
-				print(e)
-			}
-		this.view = null
+		this.view = view2
 		// clean up elements
 		this.$header.classList.remove('error')
 		if (this.$view)
@@ -205,8 +209,7 @@ class ViewSlot {
 			yield window.setTimeout(STEP)
 			
 			phase = "cleanup"
-			this.cleanup(location)
-			this.view = view
+			this.switch_view(view)
 			
 			phase = "view.Init"
 			view.Init && view.Init()
@@ -217,9 +220,10 @@ class ViewSlot {
 		} catch (e) {
 			yield do_when_ready(STEP)
 			
-			this.cleanup(location)
+			view = new ErrorView(location)
+			this.switch_view(view)
 			this.$header.classList.add('error')
-			this.view = view = new ErrorView(location)
+			
 			if (e==='type') {
 				this.set_title(`🚧 Unknown view: ‘${location.type}’`)
 			} else if (e==='data') {

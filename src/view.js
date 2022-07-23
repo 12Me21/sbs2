@@ -304,3 +304,36 @@ Settings.add({
 
 // we also need an event system, where events are automatically unhooked
 // when a View is unloaded.
+
+/*class IframeView extends BaseView {
+	Start({query}) {
+		this.src = query.src
+		return { quick: true }
+	}
+	Quick() {
+		this.$root.onmouseenter = ev=>{ IframeView.last = this }
+		this.$root.onmouseleave = ev=>{ this.out() }
+		this.Slot.set_title(this.src)
+		this.$frame.src = this.src
+	}
+	out() {
+		if (IframeView.last===this)
+			IframeView.last = null
+	}
+	Destroy() {
+		this.out()
+	}
+}
+IframeView.template = HTML`
+<view-root>
+	<iframe $=frame style='width:100%;height:100%;'></iframe>
+</view-root>
+`
+IframeView.last = null
+window.addEventListener('blur', ev=>{
+	let view = IframeView.last
+	if (view)
+		view.Slot.set_focus()
+})
+
+View.register('iframe', IframeView)*/
