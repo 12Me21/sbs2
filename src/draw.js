@@ -10,18 +10,20 @@ const Draw = NAMESPACE({
 		// choose icon
 		let hidden = !Entity.has_perm(content.permissions, 0, 'R')
 		let bg
-		if (content.contentType==CODES.file) {
-			bg = Req.file_url(content.hash, "size=100&crop=true")
-		} else if (content.contentType!=CODES.page)
-			bg = 'resource/unknownpage.png'
+		if (content.contentType==CODES.file)
+			bg = "url("+Req.file_url(content.hash, "size=100&crop=true")+")"
+		else if (content.contentType==CODES.userpage)
+			bg = 'url(resource/page-userpage.png)'
+		else if (content.contentType!=CODES.page)
+			bg = 'url(resource/page-unknown.png)'
 		else if (content.literalType=='category')
-			bg = 'resource/category.png'
-		else if (hidden)
-			bg = 'resource/hiddenpage.png'
+			bg = 'url(resource/page-category.png)'
 		else
-			bg = 'resource/page-resource.png'
+			bg = 'url(resource/page-resource.png)'
 		let icon = e.firstChild
-		icon.style.backgroundImage = `url("${bg}")`
+		if (hidden)
+			bg = "url(resource/hiddenpage.png), " + bg
+		icon.style.backgroundImage = bg
 		// label
 		e.lastChild.textContent = content.name2
 		

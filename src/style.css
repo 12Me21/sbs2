@@ -694,6 +694,12 @@ view-root:not(.f-editing) .showWhenEdit {
 .nav > span {
 	color: var(--databartxtcolor);
 }
+
+.modified.save-button {
+	background: #B0F;
+	color: white;
+	font-weight: bold;
+}
 
 /* file viewer */
 .images-thumbnails img {

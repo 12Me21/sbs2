@@ -42,6 +42,7 @@ Markup.renderer.url_scheme['sbs:'] = (url, thing)=>{
 class BaseView {
 	constructor(location, slot) {
 		this.location = location
+		this._protected = false
 		this.Slot = slot
 		new.target.template(this)
 		if (!this.$root || this.$root.tagName!='VIEW-ROOT')
@@ -117,6 +118,29 @@ const View = NAMESPACE({
 	lost_textarea: null,
 	first: true,
 	lost: null,	
+	
+	protected: new Set(),
+	protect(view, state) {
+		if (this.protected.has(view)==state)
+			return
+		
+		if (state)
+			this.protected.add(view)
+		else
+			this.protected.delete(view)
+		
+		if (this.protected.size) {
+			if (!window.onbeforeunload)
+				window.onbeforeunload = this.beforeunload
+		} else {
+			if (window.onbeforeunload)
+				window.onbeforeunload = null
+		}
+	},
+	beforeunload: ev=>{
+		if (View.protected.size)
+			ev.preventDefault()
+	},
 	
 	get current() {
 		if (Nav.focused)

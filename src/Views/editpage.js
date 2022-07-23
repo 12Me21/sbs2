@@ -9,6 +9,7 @@ class EditView extends BaseView {
 		this.current_section = null
 		this.sections_invalid = true
 		this.text = null
+		this.modified = false
 		
 		new ResizeBar(this.$top, this.$resize, 'top')
 		
@@ -42,7 +43,7 @@ class EditView extends BaseView {
 			Object.assign(this.page, data)
 			this.save(done)
 		}))
-		this.$save.className = 'item'
+		this.$save.className = 'item save-button'
 		this.Slot.$header_extra.append(this.$save)
 		
 		let batch = (cb,w=0)=>e=>w++||requestAnimationFrame(_=>cb(e,w=0))
@@ -58,7 +59,11 @@ class EditView extends BaseView {
 			if (this.show_preview && this.live_preview)
 				this.update_preview()
 		}), {passive: true})
+		this.$data.onchange = ev=>{
+			this.set_modified(true)
+		}
 		this.$textarea.onchange = ev=>{
+			this.set_modified(true)
 			if (this.current_section==null)
 				this.sections_invalid = true
 		}
@@ -77,6 +82,12 @@ class EditView extends BaseView {
 		this.$section.onchange = ev=>{
 			this.choose_section(ev.target.value)
 		}
+	}
+	set_modified(state) {
+		View.protect(this, state)
+		this.modified = state
+		this.$save.classList.toggle('modified', state)
+		//print('modified')
 	}
 	choose_section(id) {
 		if (this.sections_invalid)
@@ -217,6 +228,7 @@ class EditView extends BaseView {
 				print('❌ page edit failed!')
 			} else {
 				//alert('✅ saved page')
+				this.set_modified(false)
 				print('✅ saved page')
 				//this.got_page(resp, false)
 			}

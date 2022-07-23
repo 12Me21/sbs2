@@ -103,6 +103,12 @@ class ViewSlot {
 	}
 	
 	destroy() {
+		if (this.view && View.protected.has(this.view)) {
+			let r = confirm("are you sure you want to leave this view?")
+			if (!r)
+				return false
+		}
+		
 		if (Nav.focused==this) {
 			if (Nav.slots[0])
 				Nav.slots[0].set_focus()
@@ -110,6 +116,7 @@ class ViewSlot {
 		this.cancel()
 		this.cleanup(null)
 		this.$root.remove()
+		return true
 	}
 	
 	load() {
@@ -154,6 +161,12 @@ class ViewSlot {
 		let phase = "..."
 		let view, view_cls
 		let data
+		
+		if (this.view && View.protected.has(this.view)) {
+			let r = confirm("are you sure you want to leave this view?")
+			if (!r)
+				return false
+		}
 		
 		try {
 			this.loading_state(1)
