@@ -15,7 +15,14 @@ class EditView extends BaseView {
 		this.$save = Draw.button("Save", Draw.event_lock(done=>{
 			if (!this.page)
 				return
-			let data = JSON.parse(this.$data.value)
+			let data
+			try {
+				data = JSON.parse(this.$data.value)
+			} catch (e) {
+				done()
+				print(e)
+				return
+			}
 			data.text = this.page.text
 			
 			let text
