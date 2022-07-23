@@ -112,6 +112,8 @@ for (let name in ABOUT.details.types) {
 			}}
 	}
 	// hhhh
+	// TODO: just have one function to get a readable title for
+	// any entity type (particularly: user/content)
 	if (name=='content') {
 		proto_desc.name2 = {get() {
 			let n = this.name
