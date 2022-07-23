@@ -154,7 +154,7 @@ class ActivityContainer {
 	
 	activity(act, objects) {
 		let d = act.date2
-		if (d >= 1658491594041 && d <= 1658535772596)
+		if (d >= 1658491594041 && d <= 1658638103040)
 			return
 		this.update(objects, act.contentId, d, act.userId, act.action)
 	}
