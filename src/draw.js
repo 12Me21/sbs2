@@ -47,6 +47,8 @@ const Draw = NAMESPACE({
 	avatar_url(user, size=100) {
 		if (!user || !user.avatar)
 			return "resource/avatar.png"
+		if (user.avatar==="0")
+			return "resource/avatar.png"
 		return Req.file_url(user.avatar, "size="+size+"&crop=true")
 	},
 	
