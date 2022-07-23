@@ -70,8 +70,8 @@ class ViewSlot {
 	}
 	// todo: this should support users etc. too?
 	set_entity_title(entity) {
-		this.title_text = entity.name
-		View.set_title(entity.name)
+		this.title_text = entity.name2
+		View.set_title(this.title_text)
 		this.$title.fill(Draw.content_label(entity))
 	}
 	loading_state(state) {

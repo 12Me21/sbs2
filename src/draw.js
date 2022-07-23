@@ -23,7 +23,7 @@ const Draw = NAMESPACE({
 		let icon = e.firstChild
 		icon.style.backgroundImage = `url("${bg}")`
 		// label
-		e.lastChild.textContent = content.name
+		e.lastChild.textContent = content.name2
 		
 		return e
 	}.bind(𐀶`

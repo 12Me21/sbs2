@@ -29,7 +29,7 @@ class Author {
 		this.merge_hash = `${message.contentId},${message.createUserId},${this.avatar},${this.bigAvatar||""},${this.username} ${this.nickname||""}`
 		this.date = new Date(message.createDate)
 		if (content)
-			this.page_name = content.name
+			this.page_name = content.name2
 	}
 	static filter_nickname(name) {
 		return String(name).substring(0, 50).replace(/\n/g, "  ")
@@ -111,6 +111,24 @@ for (let name in ABOUT.details.types) {
 				return d ? new Date(d) : null
 			}}
 	}
+	// hhhh
+	if (name=='content') {
+		proto_desc.name2 = {get() {
+			let n = this.name
+			if (this.contentType == CODES.file) {
+				// "image.<extension>" - from clipboard
+				// GUID(?) - iOS file upload
+				if (n=="" || /^\w{8}-\w{4}-\w{4}-\w{4}-\w{12}|^image\.[a-z]{3,4}/.test(n))
+					n = "file:"+(this.hash||this.id)
+			}
+			return n
+		}}
+	}
+	/*if (name=='user') {
+		proto_desc.name2 = {get() {
+			return this.username
+		}}
+	}*/
 	let proto
 	let cons = (o)=>{
 		return Object.setPrototypeOf(o, proto)
