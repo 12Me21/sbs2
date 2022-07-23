@@ -61,6 +61,16 @@ class PageView extends BaseView {
 				this.edit_comment(null)
 		}
 		
+		this.$collapse.onchange = ev=>{
+			this.$page_contents.toggleAttribute('data-collapse', this.$collapse.checked)
+			if (ev)
+				localStorage.setItem('setting--collapse-sections-'+this.page_id, this.$collapse.checked ? 'yes' : '')
+		}
+		if (localStorage.getItem('setting--collapse-sections-'+this.page_id)) {
+			this.$collapse.checked = true
+			this.$collapse.onchange(null)
+		}
+		
 		this.$watching.onchange = Draw.event_lock(done=>{
 			// todo: check for err
 			Req.set_watch(this.page_id, this.$watching.checked).do = resp=>{
@@ -352,6 +362,7 @@ PageView.template = HTML`
 			<label>Watching: <input type=checkbox $=watching></label>
 			<span $=author style='margin: 0 0.5rem;'></span>
 			<span $=create_date>Created: <time></time></span>
+			|<label>collapse: <input type=checkbox $=collapse></label>
 		</div>
 		<div class='pageContents' $=page_contents></div>
 	</scroll-outer>
