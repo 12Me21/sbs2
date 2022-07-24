@@ -38,7 +38,7 @@ class CategoryView extends BaseView {
 						limit: CategoryView.psize,
 						skip: CategoryView.psize * (this.pnum - 1),
 					},
-					{name:'count', type:'content', fields:'parentId,deleted,id,specialCount,literalType', query: "("+cquery+") OR id = {{937}}"},
+					{name:'count', type:'content', fields:'parentId,deleted,id,specialCount,literalType', query: cquery},
 					// these will be blank if we're on the root category
 					{type: 'user', fields: "*", query: "id IN @content.createUserId"},
 					//{type: 'watch', fields: "*", query: "contentId IN @content.id"},

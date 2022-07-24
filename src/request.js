@@ -150,8 +150,6 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 	uid: null,
 	me: null,
 	
-	locked: false, // for testing
-	
 	// idk having all brackets bold + dimgray was kinda nice...
 	
 	// request(url, proc) - GET
@@ -220,8 +218,6 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 	},
 	
 	file_url(id, query) {
-		if (id==32) //corrupted file eghhh
-			return "about:blank"
 		if (query)
 			return `https://${this.server}/File/raw/${id}?${query}`
 		return `https://${this.server}/File/raw/${id}`

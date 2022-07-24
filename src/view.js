@@ -23,14 +23,6 @@
 
 // - .Visible is called. here you can run any code that requires the element to be rendered
 
-// redirect newdev -> oboy
-Markup.renderer.url_scheme['https:'] =
-Markup.renderer.url_scheme['http:'] =
-	(url, thing)=>{
-		if (thing=='image' && url.host=="newdev.smilebasicsource.com")
-			url.host = "oboy.smilebasicsource.com"
-		return url.href
-	}
 Markup.renderer.url_scheme['sbs:'] = (url, thing)=>{
 	if (thing=='image') {
 		if (url.pathname.startsWith("image/"))
