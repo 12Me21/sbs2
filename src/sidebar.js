@@ -5,6 +5,7 @@ const Sidebar = NAMESPACE({
 	tabs: null,
 	$my_avatar: null,
 	userlist: new StatusDisplay(0, null),
+	linkify_messages: false,
 	
 	normal_open: false,
 	fullscreen_open: false,
@@ -238,8 +239,13 @@ const Sidebar = NAMESPACE({
 		link.href = "#user/"+comment.createUserId
 		link.firstChild.src = Draw.avatar_url(author)
 		link.lastChild.textContent = name
-		
-		d.append(comment.text.replace(/\n/g, "  "))
+		let content = d.lastChild
+		content.setAttribute("page", comment.contentId)
+		if (Sidebar.linkify_messages) {
+			content.href = "#page/"+comment.contentId
+		}
+		content.setAttribute('aria-disabled', String(!Sidebar.linkify_messages))
+		content.append(comment.text.replace(/\n/g, "  "))
 		
 		return d
 	}.bind(𐀶`
@@ -248,6 +254,8 @@ const Sidebar = NAMESPACE({
 		<img class='item avatar' width=100 height=100>
 		<span class='textItem entity-title pre'></span>
 	</a>:&#32;
+	<a class='sidebar-message-content'>
+	</a>
 </div>
 `),
 	
@@ -284,3 +292,26 @@ Object.defineProperty(window, 'log', {
 })
 
 do_when_ready(x=>Sidebar.onload())
+
+Settings.add({
+	name: 'linkify_sidebar_messages', label: 'Linkify Sidebar Messages',
+	type: 'select',
+	options: ['no', 'yes'],
+	update(value) {
+		do_when_ready(() => {
+			Sidebar.linkify_messages = (value === 'yes')
+			const contents = document.querySelectorAll('#\\$sidebarBottom .sidebar-message-content')
+			if (Sidebar.linkify_messages) {
+				contents.forEach(c => {
+					c.setAttribute('href', `#page/${c.getAttribute("page")}`)
+					c.setAttribute('aria-disabled', "false")
+				})
+			} else {
+				contents.forEach(c => {
+					c.removeAttribute('href')
+					c.setAttribute('aria-disabled', "true")
+				})
+			}
+		})
+	},
+})

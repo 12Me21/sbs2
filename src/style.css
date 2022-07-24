@@ -929,6 +929,9 @@ not-sidebar {
 	overflow-y: scroll;
 	width: 100%;
 }
+#\$sidebarBottom .sidebar-message-content {
+	color: var(--T-color);
+}
 
 /* contain */
 #\$sidebarBottom,
