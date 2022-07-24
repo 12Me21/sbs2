@@ -107,7 +107,7 @@ class ErrorView extends BaseView {
 	}
 }
 ErrorView.template = HTML`
-<view-root>
+<view-root style='overflow-y:auto;'>
 	<div class='errorPage' $=error_message></div>
 	<div class='pre' style='font:var(--T-monospace-font);' $=error_location></div>
 </view-root>
