@@ -230,6 +230,8 @@ class ViewSlot {
 		//throw "heck darn"
 		this.$view = view.$root
 		this.$root.append(view.$root)
+		
+		Sidebar.close_fullscreen()
 		if (view.Visible)
 			view.Visible()
 		
@@ -414,6 +416,6 @@ document.addEventListener('click', ev=>{
 	let slot = link.closest('view-slot')
 	slot = (slot && Nav.slots.find(s=>s.$root===slot)) || Nav.focused_slot()
 	// load url into slot
-	slot.load_url(href.slice(1))
-	Sidebar.close_fullscreen()
+	if (!slot.load_url(href.slice(1)))
+		Sidebar.close_fullscreen()
 }, {useCapture:true})
