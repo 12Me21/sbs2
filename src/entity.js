@@ -212,6 +212,16 @@ const Entity = NAMESPACE({
 				m.Author = new Author(m, user[~m.createUserId])
 	},
 	
+	fake_category(id) {
+		return TYPES.content({
+			name: id===0 ? "Root" : 'category:'+id,
+			contentType: 1,
+			literalType: 'category',
+			id: id,
+			permissions: id===0 ? {'0':'CR'} : {},
+		})
+	},
+	
 	link_watch({message, watch, content}) {
 		for (let w of watch) {
 			let c = content[~w.contentId]

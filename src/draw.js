@@ -5,24 +5,29 @@ const Draw = NAMESPACE({
 	// also, update the icons for the current site's features
 	//📥 content‹Content›
 	//📤 ‹ParentNode›
-	content_label: function(content, link) {
+	content_label: function(content, isCategory) {
 		let e = this()
 		// choose icon
 		let hidden = !Entity.has_perm(content.permissions, 0, 'R')
-		let bg
+		let bg = ""
+		let fcat = isCategory && content.literalType!='category'
+		if (fcat)
+			bg = "url(resource/overlay-categoryfront.png), "
 		if (content.contentType==CODES.file)
-			bg = "url("+Req.file_url(content.hash, "size=100&crop=true")+")"
+			bg += "url("+Req.file_url(content.hash, "size=30&crop=true")+")"
 		else if (content.contentType==CODES.userpage)
-			bg = 'url(resource/page-userpage.png)'
+			bg += 'url(resource/page-userpage.png)'
 		else if (content.contentType!=CODES.page)
-			bg = 'url(resource/page-unknown.png)'
+			bg += 'url(resource/page-unknown.png)'
 		else if (content.literalType=='category')
-			bg = 'url(resource/page-category.png)'
+			bg += 'url(resource/page-category.png)'
 		else
-			bg = 'url(resource/page-resource.png)'
+			bg += 'url(resource/page-resource.png)'
 		let icon = e.firstChild
 		if (hidden)
 			bg = "url(resource/hiddenpage.png), " + bg
+		if (fcat)
+			bg += ", url(resource/overlay-categoryback.png)"
 		icon.style.backgroundImage = bg
 		// label
 		e.lastChild.textContent = content.name2
@@ -133,16 +138,13 @@ const Draw = NAMESPACE({
 `),
 	category_item: function(content, isCategory=true) {
 		const e = this()
-		if (content) {
-			content.Type = isCategory ? 'category' : 'content'
-			content.name2 = content.name
-		}
-		e.href = content ? Nav.entity_link(content) : '#category/0'
-		const label = content ? Draw.content_label(content) : "Root"
+		e.href = "#category/"+content.id
+		const label = Draw.content_label(content, isCategory)
 		e.append(label)
+		e.classList.add(isCategory?'rem2':'rem1-5')
 		return e
 	}.bind(𐀶`
-<a class='linkBar bar rem2-3 activity-page'></a>
+<a class='linkBar bar'></a>
 `),
 	
 	// opt: todo: what if instead of passing the func to the callback

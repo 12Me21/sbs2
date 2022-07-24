@@ -348,13 +348,11 @@ view-header {
 }
 
 .header-buttons {
-	display: inline-flex;
-	flex-direction: column;
-	flex-wrap: wrap;
-	height: var(--bar-height);
+	display: inline-grid;
+	grid-template-rows: 1fr 1fr;
+	grid-auto-flow: column;
 }
 .header-buttons > * {
-	height: 50%;
 	font-weight: bold;
 	line-height: 100%;
 	font-size: 0.875em;
@@ -699,6 +697,15 @@ view-root:not(.f-editing) .showWhenEdit {
 	background: #B0F;
 	color: white;
 	font-weight: bold;
+}
+.blob-list {
+	display: flex;
+	flex-flow: wrap;
+	margin-left: calc(0px - var(--column-gap));
+}
+.blob-list > * {
+	flex: 0 1 auto;
+	margin-left: var(--column-gap);
 }
 
 /* file viewer */

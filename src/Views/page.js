@@ -80,12 +80,6 @@ class PageView extends BaseView {
 				this.edit_comment(e.detail.data)
 			}
 		})
-
-		this.$visit_category.onclick = e=>{
-			this.location.type = "category"
-			this.location.query = {}
-			this.Slot.load_location(this.location)
-		}
 	}
 	Render({message, content:[page], Mpinned:pinned, user, watch}) {
 		this.page_id = page.id
@@ -95,6 +89,7 @@ class PageView extends BaseView {
 		this.Slot.add_header_links([
 			{label:"logs", href:"#comments/"+page.id+"?r"},
 			{label:"edit", href: "#editpage/"+page.id},
+			{label:"category", href: "#category/"+page.id},
 		])
 		
 		// init components //
@@ -206,7 +201,7 @@ class PageView extends BaseView {
 		this.textarea_resize()
 	}
 	// 8:10;35
-	Destroy(type) {
+	Destroy() {
 		View.lost = this.$textarea.value
 		this.userlist.set_status(null)
 		this.scroller.destroy()
@@ -359,9 +354,6 @@ PageView.template = HTML`
 				<label>Watching: <input type=checkbox $=watching></label>
 				<span $=author style='margin: 0 0.5rem;'></span>
 				<span $=create_date>Created: <time></time></span>
-			</div>
-			<div class='ROW'>
-				<button $=visit_category>Visit Category</button>
 			</div>
 		</div>
 		<div class='pageContents' $=page_contents></div>

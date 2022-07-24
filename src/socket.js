@@ -7,11 +7,15 @@
 
 class SocketRequestError extends TypeError {
 	// 📥 resp: api websocket response object
-	constructor(resp) {
+	constructor(resp, req) {
 		super()
 		this.trim_stack()
 		this.resp = resp
+		this.request = req
 		this.message = "\n"+resp.error
+	}
+	toString() {
+		return this.name+": "+this.message+"\n-------\n"+JSON.stringify(this.request)
 	}
 }
 SocketRequestError.prototype.name = "SocketRequestError"
@@ -267,7 +271,7 @@ const Lp = NAMESPACE({
 				console.warn("got response without handler:", response)
 		}
 		if (response.error) {
-			let err = new SocketRequestError(response)
+			let err = new SocketRequestError(response, handler ? handler.request : null)
 			if (handler && handler.request.type == response.type)
 				handler.callback(SELF_DESTRUCT(err), err)
 			throw err
