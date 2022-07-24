@@ -218,6 +218,7 @@ const Entity = NAMESPACE({
 			contentType: 1,
 			literalType: 'category',
 			id: id,
+			hash: 'FAKE',
 			permissions: id===0 ? {'0':'CR'} : {},
 		})
 	},

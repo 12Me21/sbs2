@@ -6,32 +6,33 @@ const Draw = NAMESPACE({
 	//📥 content‹Content›
 	//📤 ‹ParentNode›
 	content_label: function(content, isCategory) {
-		let e = this()
 		// choose icon
-		let hidden = !Entity.has_perm(content.permissions, 0, 'R')
-		let bg = ""
-		let fcat = isCategory && content.literalType!='category'
-		if (fcat)
-			bg = "url(resource/overlay-categoryfront.png), "
+		let bg
 		if (content.contentType==CODES.file)
-			bg += "url("+Req.file_url(content.hash, "size=30&crop=true")+")"
+			bg = "url("+Req.file_url(content.hash, "size=30&crop=true")+")"
 		else if (content.contentType==CODES.userpage)
-			bg += 'url(resource/page-userpage.png)'
+			bg = 'url(resource/page-userpage.png)'
 		else if (content.contentType!=CODES.page)
-			bg += 'url(resource/page-unknown.png)'
-		else if (content.literalType=='category')
-			bg += 'url(resource/page-category.png)'
-		else
-			bg += 'url(resource/page-resource.png)'
-		let icon = e.firstChild
-		if (hidden)
+			bg = 'url(resource/page-unknown.png)'
+		else if (content.literalType=='category') {
+			if (content.hash==='FAKE') // hack
+				bg = 'url(resource/page-fakeparent.png)'
+			else
+				bg = 'url(resource/page-category.png)'
+		} else
+			bg = 'url(resource/page-resource.png)'
+		// fake category
+		if (isCategory && content.literalType!='category')
+			bg = "url(resource/overlay-categoryfront.png), " + bg + ", url(resource/overlay-categoryback.png)"
+		// non-public
+		if (!Entity.has_perm(content.permissions, 0, 'R'))
 			bg = "url(resource/hiddenpage.png), " + bg
-		if (fcat)
-			bg += ", url(resource/overlay-categoryback.png)"
+		// draw
+		let e = this()
+		let icon = e.firstChild
 		icon.style.backgroundImage = bg
 		// label
 		icon.textContent = content.name2
-		
 		return e
 	}.bind(𐀶`
 <entity-label>
