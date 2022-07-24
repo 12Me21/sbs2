@@ -80,12 +80,11 @@ class CategoryView extends PageView {
 	}
 	Render({ content: [page], categories, children, user, watch, parent }) {
 		// header //
-		console.log(children)
 		if (page !== undefined) {
 			this.Slot.set_entity_title(page)
 			this.Slot.add_header_links([
 				// TODO: attach the category id as the parentId
-				{label:"create page", href:"#editpage/0"},
+				{ label:"create page", href:"#editpage?parent=" + page.id },
 				{ label: "edit", href: "#editpage/" + page.id },
 			])
 		}

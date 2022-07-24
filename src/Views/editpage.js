@@ -110,8 +110,10 @@ class EditView extends BaseView {
 		else
 			this.$preview.fill()
 	}
-	Start({id, query}) {
+	Start({id, query: {parent}}) {
+		this.parent_id = null
 		if (id==null) {
+			this.parent_id = +parent || 0
 			return {quick: true}
 		}
 		return {
@@ -138,6 +140,7 @@ class EditView extends BaseView {
 			markupLang: Settings.values.chat_markup,
 		}
 		page.name = "New Page"
+		page.parentId = this.parent_id
 		page.permissions = {"0":"CR"}
 		
 		this.got_page(page, true)
