@@ -142,16 +142,17 @@ class EditView extends BaseView {
 		page.name = "New Page"
 		page.parentId = this.parent_id
 		page.permissions = {"0":"CR"}
-		
+		this.creating = true
 		this.got_page(page, true)
 	}
 	Render({content:[page], user}) {
-		this.got_page(page, false)
+		this.creating = false
+		this.got_page(page)
 	}
 	Insert_Text(text) {
 		Edit.insert(this.$textarea, text)
 	}
-	got_page(page, creating) {
+	got_page(page, creating=false) {
 		this.Slot.set_entity_title(page)
 		this.page = page
 		this.text = this.page.text
@@ -230,9 +231,14 @@ class EditView extends BaseView {
 				alert('❌ page edit failed')
 				print('❌ page edit failed!')
 			} else {
+				
 				//alert('✅ saved page')
 				this.set_modified(false)
 				print('✅ saved page')
+				if (this.creating) {
+					this.creating = false
+					this.got_page(resp)
+				}
 				//this.got_page(resp, false)
 			}
 			callback && callback(!err)
