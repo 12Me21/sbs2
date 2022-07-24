@@ -89,6 +89,7 @@ class PageView extends BaseView {
 		this.Slot.add_header_links([
 			{label:"logs", href:"#comments/"+page.id+"?r"},
 			{label:"edit", href: "#editpage/"+page.id},
+			{label:"category", href: "#category/"+page.id},
 		])
 		
 		// init components //
@@ -200,7 +201,7 @@ class PageView extends BaseView {
 		this.textarea_resize()
 	}
 	// 8:10;35
-	Destroy(type) {
+	Destroy() {
 		View.lost = this.$textarea.value
 		goto2: {
 			// HACK
@@ -355,10 +356,12 @@ PageView.track_resize_2 = new ResizeTracker('width')
 PageView.template = HTML`
 <view-root class='COL resize-box'>
 	<scroll-outer class='page-container sized' $=page_container>
-		<div class='pageInfoPane bar rem1-5'>
-			<label>Watching: <input type=checkbox $=watching></label>
-			<span $=author style='margin: 0 0.5rem;'></span>
-			<span $=create_date>Created: <time></time></span>
+		<div class='pageInfoPane bar rem1-5' style='justify-content:space-between;'>
+			<div class='ROW'>
+				<label>Watching: <input type=checkbox $=watching></label>
+				<span $=author style='margin: 0 0.5rem;'></span>
+				<span $=create_date>Created: <time></time></span>
+			</div>
 		</div>
 		<div class='pageContents' $=page_contents></div>
 	</scroll-outer>
@@ -391,9 +394,6 @@ PageView.template = HTML`
 
 View.register('page', PageView)
 View.register('pages', {
-	Redirect(location) {location.type='page'},
-})
-View.register('category', {
 	Redirect(location) {location.type='page'},
 })
 

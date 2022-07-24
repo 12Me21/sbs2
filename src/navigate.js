@@ -276,6 +276,7 @@ const Nav = NAMESPACE({
 		let type = {
 			user: 'user',
 			content: 'page',
+			category: 'category'
 		}[entity.Type]
 		if (!type)
 			throw new Error('idk entity type')

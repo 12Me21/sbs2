@@ -166,6 +166,7 @@ td, th {  /* border renders outside */
 .rem1-7 { --bar-height: 1.6875rem; }
 .rem1-5 { --bar-height: 1.5rem; }
 .rem2-3 { --bar-height: 2.3125rem; }
+.rem2 { --bar-height: 2rem; }
 
 .linkBar.rem1-5 {
 	padding: 0;

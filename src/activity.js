@@ -233,7 +233,9 @@ let Act = {
 					bar.append(Draw.content_label(cat))
 					bar.setAttribute('role', 'listitem')
 					bar.className += " bar rem1-5 search-page ellipsis"
-					bar.href = Nav.entity_link(cat)
+					// bar.href = Nav.entity_link(cat)
+					// workaround
+					bar.href = "#category/" + cat.id
 					bar.prepend("│ ".repeat(depth-1)+"├└"[last?1:0])
 					$sidebarCategories.append(bar)
 				}
