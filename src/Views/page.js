@@ -89,7 +89,7 @@ class PageView extends BaseView {
 		this.Slot.add_header_links([
 			{icon:"📜️", label:"logs", href:"#comments/"+page.id+"?r"},
 			{icon:"✏️", label:"edit", href:"#editpage/"+page.id},
-			{icon:"🗂️", label:"children", href:"#category/"+page.id},
+			{icon:"🗂️", label:"childs", href:"#category/"+page.id},
 		])
 		
 		// init components //
