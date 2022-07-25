@@ -667,6 +667,7 @@ view-root:not(.f-editing) .chat-edit-controls {
 .category-page > * {
 	padding-left: 0.5rem;
 }
+/* TODO: switch to grid layout */
 .category-list {
 	display: table;
 }
