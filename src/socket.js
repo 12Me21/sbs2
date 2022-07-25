@@ -110,6 +110,7 @@ const Lp = NAMESPACE({
 		if (this.websocket) {
 			this.state_change('dead')
 			this.ready = false
+			// oof ow fuck
 			this.websocket.onerror = null
 			this.websocket.onopen = null
 			this.websocket.onclose = null
@@ -139,6 +140,7 @@ const Lp = NAMESPACE({
 	online_and_visible() {
 		return 'visible'==document.visibilityState && navigator.onLine
 	},
+	// behold, the labyrinth 
 	maybe_reconnect(ev) {
 		if (this.no_restart)
 			return

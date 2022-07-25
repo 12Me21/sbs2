@@ -206,7 +206,7 @@ class PageView extends BaseView {
 		goto2: {
 			// HACK
 			for (let {view} of Nav.slots)
-				if (view instanceof PageView)
+				if (view!==this && view instanceof PageView)
 					if (view.page_id == this.page_id)
 						break goto2
 			this.userlist.set_status(null)
