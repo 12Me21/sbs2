@@ -615,6 +615,8 @@ message-controls > div {
 message-controls > button {
 	flex: 0mm;
 	padding: 0;
+	line-height: 0.5rem;
+	overflow: hidden;
 }
 message-controls:hover + message-part {
 	background: var(--message-hover-bg);
