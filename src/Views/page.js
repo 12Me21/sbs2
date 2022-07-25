@@ -377,7 +377,7 @@ PageView.template = HTML`
 		</scroll-inner>
 	</scroll-outer>
 	<div class='inputPane ROW'>
-		<div class='showWhenEdit COL'>
+		<div class='chat-edit-controls COL'>
 			<input $=markup placeholder="markup" style="width:50px;">
 			<button class='FILL' $=cancel>Cancel</button>
 		</div>

@@ -81,7 +81,6 @@ const Lp = NAMESPACE({
 			document.documentElement.dataset.socketPending = num
 		else
 			delete document.documentElement.dataset.socketPending
-		//do_when_ready(x=>$socketPending.textContent = [...this.handlers.keys()].join(" "), 'socket-pending')
 	},
 	
 	// statuses

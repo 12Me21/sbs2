@@ -255,7 +255,7 @@ EditView.template = HTML`
 			<textarea $=data style="resize:none;margin:0.5rem;" class='FILL code-textarea'></textarea>
 		</div>
 	</div>
-	<div $=resize style=--handle-width:2em; class='resize-handle'>
+	<div $=resize style='--bar-height:2em;' class='resize-handle'>
 		<label>preview:<input type=checkbox $=preview_button></label>
 		<span $=preview_controls>
 			| <label>live:<input type=checkbox $=live_button></label>

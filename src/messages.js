@@ -213,7 +213,7 @@ class MessageList {
 		this.controls = document.createElement('message-controls')
 		// hack to set height idk..
 		let e = document.createElement('div')
-		e.append('a')
+		e.append('') // yea
 		this.controls.append(e)
 		// draw the things
 		let handler = ev=>{
@@ -225,13 +225,16 @@ class MessageList {
 			this.controls_message.dispatchEvent(ev2)
 		}
 		// yeah
-		for (let action of ['info', /*'speak',*/ 'edit',]) {
+		let btn = (action, label)=>{
 			let btn = document.createElement('button')
 			btn.onclick = handler
 			btn.dataset.action = action
 			btn.tabIndex=-1
+			btn.append(label)
 			this.controls.append(btn)
 		}
+		btn('info', "⚙️")
+		btn('edit', "✏️")
 		
 		let listen = (ev, fn)=>{
 			document.addEventListener(ev, fn, {passive: true})

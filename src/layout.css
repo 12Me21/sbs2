@@ -60,25 +60,22 @@ html, body {
 
 
 /* views */
-view-slot > view-header {
-	/*cursor: ew-resize;*/
-}
-#\$main_slides > view-slot:not(:first-of-type) {
+#\$main_slides > view-slot {
 	border-left: 0.5rem solid var(--databarbgcolor);
+	min-width: 4rem !important;
+	width: 50%;
 }
 #\$main_slides > view-slot:first-of-type {
+	border-left: none;
 	flex: 0mm;
 }
 view-slot {
 	display: flex;
 	flex-flow: column;
-	min-width: 4rem !important;
-	width: 50%;
 }
-view-slot:nth-child(n) > view-root {
-	flex: 0mm;
+view-root {
+	flex: 0mm !important;
 }
-
 
 /* use solid backgrounds on elements
  to improve rendering performance + subpixel text usage */
@@ -88,7 +85,7 @@ from what i've noticed, the most important thing is having a solid BG on
 the inner scrolling element (the one which moves when you scroll)
 */
 /* sized containers */
-.resize-box,
+.resize-box, .resize-box > .FILL,
 .SLIDES, .SLIDES > *,
 scroll-outer,
 view-slot, view-root,
@@ -103,10 +100,6 @@ sidebar-panel > *,
 scroll-outer > *,
 scroll-middle, scroll-inner, message-list {
 	background-color: inherit;
-}
-
-view-header {
-	contain: content;
 }
 
 ul, ol, li, /* bullets render outside */
@@ -204,7 +197,7 @@ scroll-outer {
 }
 scroll-middle {
 	display: flex;
-	flex-direction: column;
+	flex-flow: column;
 	overflow: hidden;
 	min-height: 100%;
 	justify-content: flex-end;
@@ -280,11 +273,8 @@ but, then we can't add a border to the image
 /****************
  ** Resize Box **
  ****************/
-.resize-box {
-	--handle-width: 1.1875em;
-}
-
 .resize-handle {
+	--bar-height: 1.1875rem;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none; -moz-user-select: none; user-select: none;
 	color: var(--databartxtcolor);
@@ -295,12 +285,12 @@ but, then we can't add a border to the image
 	cursor: grabbing;
 }
 .COL > .resize-handle {
-	height: var(--handle-width);
-	line-height: var(--handle-width);
+	height: var(--bar-height);
+	line-height: var(--bar-height);
 	cursor: ns-resize;
 }
 .ROW > .resize-handle {
-	width: var(--handle-width);
+	width: var(--bar-height);
 	cursor: ew-resize;
 }
 .COL > .resize-handle::before {

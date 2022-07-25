@@ -38,7 +38,7 @@ class UserView extends BaseView {
 		//let activity = resp.activity
 		//let ca = resp.commentaggregate
 		//let content = resp.content
-		this.Slot.set_title(" "+user.username+" ") // todo: this is unsafe because of text direction. get set_entity_title working again
+		this.Slot.set_title(user.username)
 		
 		this.$avatar.src = Draw.avatar_url(user, 300)
 		if (userpage) {
@@ -58,7 +58,7 @@ UserView.template = HTML`
 	<a $=avatar_link class='userPageAvatar'>
 		<img $=avatar width=300 height=300>
 	</a>
-	<div $=contents class='userPageContents pageContents Markup'></div>
+	<div $=contents class='pageContents Markup'></div>
 </view-root>
 `
 

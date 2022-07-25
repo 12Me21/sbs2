@@ -183,9 +183,7 @@
 
 <body class='resize-box ROW'>
 <not-sidebar class='FILL ROW' id=$main_slides>
-<button id=$openSidebar class='toggle-sidebar'>
-	<span id=$socketPending></span>| | |
-</button>
+<button id=$openSidebar class='toggle-sidebar'>| | |</button>
 
 	<!--=======\
 	|| HEADER ||
@@ -226,7 +224,7 @@
 	<div id=$sidebarTop class='sized SLIDES'>
 		
 		<sidebar-panel id=$sidebarActivityPanel>
-			<scroll-outer id=$sidebarActivity class='activity-scroller' tabindex=-1></scroll-outer>
+			<scroll-outer id=$sidebarActivity class='activity-scroller' tabindex=-1 style='padding-top:3px;'></scroll-outer>
 		</sidebar-panel>
 		
 		<sidebar-panel id=$sidebarWatchPanel>
