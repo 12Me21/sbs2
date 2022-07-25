@@ -5,7 +5,7 @@ class CommentsView extends BaseView {
 	Start({id, query}) {
 		this.form = new Form({
 			fields: [
-				['search', 'text', {label: "Search", param: 's'}],
+				['search', 'text', {label: "Search", param: 's', placeholder: "wildcards: _ %"}],
 				['pages', 'number_list', {label: "Page Ids", param: 'pid'}],
 				['users', 'number_list', {label: "User Ids", param: 'uid'}],
 				['start', 'date', {label: "Start Date", param: 'start'}],
@@ -19,6 +19,7 @@ class CommentsView extends BaseView {
 			],
 		})
 		this.form.from_query(query)
+		this.pid = id ? id : null
 		if (id)
 			this.form.inputs.pages.value = [id]
 		let data = this.form.get()
@@ -44,17 +45,16 @@ class CommentsView extends BaseView {
 			else
 				this.go(null)
 		}
+		this.Slot.set_title("Chat Search")
+		if (this.pid)
+			this.Slot.add_header_links([
+				{icon:"📄️", label:"page", href:"#page/"+this.pid},
+			])
+		this.$results.fill()
+		this.form.write()
 	}
 	
 	Render({message:comments, content:pages}) {
-		this.Slot.set_title("Comments")
-		this.Slot.add_header_links([
-			{icon:"📄️", label:"page", href:"#page/"+page.id},
-		])
-		
-		this.form.write()
-		this.$results.fill()
-		
 		if (!comments.length) {
 			this.$status.textContent = "(no results)"
 			return
@@ -73,9 +73,6 @@ class CommentsView extends BaseView {
 	}
 	
 	Quick() {
-		this.Slot.set_title("Comments")
-		this.form.write()
-		this.$results.fill()
 		this.$status.textContent = "(no query)"
 	}
 	
@@ -114,7 +111,7 @@ class CommentsView extends BaseView {
 	
 	build_search(data) {
 		// check if form is empty
-		if (!(data.search || (data.users && data.users.length) || data.range || data.start || data.end || data.page))
+		if (!(data.search || (data.users && data.users.length) || data.range || data.start || data.end))
 			return [null, false]
 		
 		let values = {}, query = ["!notdeleted()"], order = 'id', merge = true
