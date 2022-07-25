@@ -48,6 +48,10 @@ class CommentsView extends BaseView {
 	
 	Render({message:comments, content:pages}) {
 		this.Slot.set_title("Comments")
+		this.Slot.add_header_links([
+			{icon:"📄️", label:"page", href:"#page/"+page.id},
+		])
+		
 		this.form.write()
 		this.$results.fill()
 		

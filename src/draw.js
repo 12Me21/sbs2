@@ -105,7 +105,10 @@ const Draw = NAMESPACE({
 	}.bind(𐀶`<time class='time-ago'>`),
 	
 	time_ago_string(date) {
-		let seconds = (Date.now() - date.getTime()) / 1000
+		if (!date) return "When?"
+		let t = date.getTime()
+		if (t<0 || isNaN(t)) return "Never?"
+		let seconds = (Date.now() - t) / 1000
 		let desc = [
 			[31536000, 1, "year", "years"],
 			[2592000, 1, "month", "months"],
@@ -123,11 +126,13 @@ const Draw = NAMESPACE({
 		  return Math.round(seconds) + " seconds ago"*/
 	},
 	
-	user_label: function(user) {
+	user_label: function(user, reverse=false) {
 		let e = this()
 		e.href = "#user/"+user.id
 		e.firstChild.src = Draw.avatar_url(user)
 		e.lastChild.textContent = user.username
+		if (reverse)
+			e.prepend(e.lastChild) // w
 		return e
 	}.bind(𐀶`
 <a tabindex=-1 class='bar rem1-5 user-label'>
@@ -135,15 +140,18 @@ const Draw = NAMESPACE({
 	<span class='textItem entity-title pre'></span>
 </a>
 `),
-	category_item: function(content, isCategory=true) {
+	category_item: function(content, user, isCategory=true) {
 		const e = this()
 		e.href = "#category/"+content.id
 		const label = Draw.content_label(content, isCategory)
 		e.append(label)
 		e.classList.add(isCategory?'rem2':'rem1-5')
+		let author = user[~content.createUserId]
+		if (author)
+			e.append(Draw.user_label(author, true))
 		return e
 	}.bind(𐀶`
-<a class='linkBar bar'></a>
+<a class='bar category-page ROW'></a>
 `),
 	
 	// opt: todo: what if instead of passing the func to the callback

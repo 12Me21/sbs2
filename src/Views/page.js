@@ -87,9 +87,9 @@ class PageView extends BaseView {
 		// header //
 		this.Slot.set_entity_title(page)
 		this.Slot.add_header_links([
-			{label:"logs", href:"#comments/"+page.id+"?r"},
-			{label:"edit", href: "#editpage/"+page.id},
-			{label:"category", href: "#category/"+page.id},
+			{icon:"📜️", label:"logs", href:"#comments/"+page.id+"?r"},
+			{icon:"✏️", label:"edit", href:"#editpage/"+page.id},
+			{icon:"🗂️", label:"children", href:"#category/"+page.id},
 		])
 		
 		// init components //
@@ -173,6 +173,18 @@ class PageView extends BaseView {
 		this.author = user[~page.createUserId]
 		if (page.contentType==CODES.file) {
 			// messy code
+			let img = document.createElement('img')
+			img.className = "file-page-image"
+			if (page.meta) {
+				let meta = JSON.parse(page.meta)
+				if (meta.width) {
+					img.width = meta.width
+					img.height = meta.height
+				}
+			}
+			img.alt = page.description
+			img.src = Req.file_url(page.hash)
+			
 			let ne = Draw.button("Set Avatar", e=>{
 				Req.me.avatar = this.page.hash
 				Req.write(Req.me).do = (resp, err)=>{
@@ -186,8 +198,8 @@ class PageView extends BaseView {
 				FileUploader.show_content(this.page)
 				Sidebar.tabs.select('file')
 			})
-			this.$page_contents.fill([ne, b])
-			let p =document.createElement('pre')
+			this.$page_contents.fill([ne, b, img])
+			let p = document.createElement('pre')
 			p.textContent = JSON.stringify(this.page, null, 1)
 			this.$page_contents.append(p)
 		} else {

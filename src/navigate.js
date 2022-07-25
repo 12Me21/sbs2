@@ -57,7 +57,15 @@ class ViewSlot {
 		for (let x of items) {
 			let a = document.createElement('a')
 			a.href = x.href
-			a.textContent = x.label
+			let lb = document.createElement('span')
+			lb.textContent = x.label
+			a.append(lb)
+			if (x.icon) {
+				lb = document.createElement('span')
+				lb.className = 'text-shadow'
+				lb.append(x.icon)
+				a.prepend(lb)
+			}
 			this.$header_buttons.append(a)
 		}
 	}

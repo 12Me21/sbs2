@@ -42,10 +42,10 @@ class UserView extends BaseView {
 		
 		this.$avatar.src = Draw.avatar_url(user, 300)
 		if (userpage) {
-			Markup.convert_lang(userpage.text, userpage.values.markupLang, this.$contents)
 			this.Slot.add_header_links([
-				{label:"page", href:"#page/"+userpage.id},
+				{icon:"📄️", label:"page", href:"#page/"+userpage.id},
 			])
+			Markup.convert_lang(userpage.text, userpage.values.markupLang, this.$contents)
 		}
 	}
 	Quick() {
