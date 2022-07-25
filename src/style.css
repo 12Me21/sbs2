@@ -615,8 +615,8 @@ message-controls::before {
 }
 message-controls > button {
 	flex: 0mm;
-	padding: 0;
-	line-height: 0.5rem;
+	padding: 0 !important;
+	line-height: 0.5rem !important;
 	overflow: hidden;
 }
 message-controls:hover + message-part {
