@@ -655,11 +655,9 @@ view-root:not(.f-editing) .chat-edit-controls {
 }
 .category-page {
 	background: var(--bar-bg);
-	border: solid 1px;
-	border-color: white black black white;
-	max-width: 400px;
+	/*max-width: 400px;
 	width: 100%;
-	align-self: flex-start;
+	align-self: flex-start;*/
 }
 .category-page {
 	margin-left: -0.5rem;
@@ -669,18 +667,43 @@ view-root:not(.f-editing) .chat-edit-controls {
 .category-page > * {
 	padding-left: 0.5rem;
 }
+.category-list {
+	display: table;
+}
+.category-list > * {
+	display: table-row;
+}
+.category-list > * > :first-child {
+	max-width: max-content;
+	width: max-content;
+	border-left: solid 1px white;
+}
+.category-list > * > * {
+	display: table-cell;
+	border-top: solid 1px white;
+	border-bottom: solid 1px black;
+	border-right: solid 1px gray;
+	vertical-align: middle !important;
+}
+.category-list > * > * > * {
+}
 .category-page > entity-label {
-	flex: 0 1 auto;
-	display: flex;
 	min-height: unset; /* hack */
 	align-self: center;
+	
 }
 .category-page > entity-label > span { /* hack */
 	line-height: normal;
 	min-height: unset;
+	display: block;
+}
+.category-page > .user-label .avatar {/* hack */
+	width: 1rem;
+	height: 1rem;
+	margin: 0.25rem;
 }
 .category-page > .user-label {
-	margin-left: auto;
+	margin-left: 2rem;
 }
 .category-page > .user-label > span {
 	font-weight: normal;

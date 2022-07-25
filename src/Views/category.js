@@ -39,10 +39,10 @@ class CategoryView extends BaseView {
 						skip: CategoryView.psize * (this.pnum - 1),
 					},
 					{name:'count', type:'content', fields:'parentId,deleted,id,specialCount,literalType', query: cquery},
-					// these will be blank if we're on the root category
-					{type: 'user', fields: "*", query: "id IN @content.createUserId OR id IN @Ccategories.createUserId OR id IN @Cchildren.createUserId"},
+					// will be blank if we're on the root category
 					//{type: 'watch', fields: "*", query: "contentId IN @content.id"},
 					{name: "Cparent", type: 'content', fields: cfields, query: "id IN @content.parentId AND !notdeleted()"},
+					{type: 'user', fields: "*", query: "id In @content.createUserId OR id In @Ccategories.createUserId OR id In @Cchildren.createUserId OR id In @Cparent.createUserId "},
 				],
 			},
 			check(resp) { return field=='id' || resp.content[0] },
@@ -97,7 +97,6 @@ class CategoryView extends BaseView {
 		this.Slot.set_entity_title(page)
 		this.update_page(page, user)
 		
-		
 		this.$page.textContent = this.pnum+"/"+Math.ceil(specialCount/CategoryView.psize)
 		this.$categories.fill(categories.map(c => Draw.category_item(c, user, true)))
 		this.$children.fill(children.map(c => Draw.category_item(c, user, false)))
@@ -114,15 +113,15 @@ CategoryView.template = HTML`
 		</div>
 	</div>
 	<div class='pageContents' $=page_contents></div>
-	<div $=parent></div>
+	<div $=parent class='category-list'></div>
 	Child categories:
-	<div $=categories class='COL'></div>
+	<div $=categories class='category-list'></div>
 	<div class='ROW bar rem1-5 nav'>
 		<button $=prev class='item'>◀prev</button>
 		<span $=page class='textItem'>0</span>
 		<button $=next class='item'>next▶</button>
 	</div>
-	<div $=children class='COL'></div>
+	<div $=children class='category-list'></div>
 </view-root>
 `
 

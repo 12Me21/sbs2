@@ -148,7 +148,7 @@ const Draw = NAMESPACE({
 		e.classList.add(isCategory?'rem2':'rem1-5')
 		let author = user[~content.createUserId]
 		if (author)
-			e.append(Draw.user_label(author, true))
+			e.append(Draw.user_label(author))
 		return e
 	}.bind(𐀶`
 <a class='bar category-page ROW'></a>
