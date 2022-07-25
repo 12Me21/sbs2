@@ -211,10 +211,6 @@ class MessageList {
 	static init() {
 		// draw the message controls
 		this.controls = document.createElement('message-controls')
-		// hack to set height idk..
-		let e = document.createElement('div')
-		e.append('') // yea
-		this.controls.append(e)
 		// draw the things
 		let handler = ev=>{
 			let action = ev.currentTarget.dataset.action

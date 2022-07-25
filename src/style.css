@@ -606,11 +606,12 @@ message-controls {
 	-webkit-user-select: none; -moz-user-select: none; user-select: none;
 }
 /* hack to set the height */
-message-controls > div {
-	white-space: pre;
-	visibility: hidden;
+message-controls::before {
+	content: "a";
 	padding: 2px 0; /* note: same as message-part */
 	width: 0;
+	overflow: hidden;
+	visibility: hidden;
 }
 message-controls > button {
 	flex: 0mm;
