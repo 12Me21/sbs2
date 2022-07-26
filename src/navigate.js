@@ -255,9 +255,9 @@ class ViewSlot {
 ViewSlot.template = HTML`
 <view-slot class='COL'>
 	<div class=slot-overlay></div>
-	<view-header $=header class='bar ellipsis' tabindex=0 accesskey="q">
+	<view-header $=header class='bar' tabindex=0 accesskey="q">
 		<span $=header_extra></span>
-		<h1 $=title class='textItem'></h1>
+		<h1 $=title class='textItem ellipsis'></h1>
 		<span class='header-buttons item' $=header_buttons></span>
 	</view-header>
 </view-slot>
@@ -427,3 +427,86 @@ document.addEventListener('click', ev=>{
 	if (!slot.load_url(href.slice(1)))
 		Sidebar.close_fullscreen()
 }, {useCapture:true})
+
+// builtin window.Location — gone, reduced to atoms
+class Location {
+	constructor(arg1, id, query, frag) {
+		if (arguments.length==1) {
+			this.parse(arg1)
+		} else {
+			this.type = arg1
+			this.id = id
+			this.query = query
+			this.fragment = frag || null
+		}
+	}
+	parse(source) {
+		let [, type, id, query_str, fragment] = /^(.*?)(?:[/](.*?))?([?&].*?)?(?:[#](.*))?$/.exec(source)
+		this.type = decodeURIComponent(type)
+		if (id==undefined)
+			this.id = null
+		else {
+			id = decodeURIComponent(id)
+			if (/\d+$/y.test(id))
+				this.id = +id
+			else if (id[0]=="@")
+				this.id = id.slice(1)
+			else
+				this.id = id
+		}
+		this.query = {}
+		if (query_str)
+			for (let pair of query_str.match(/[^?&]+/g)) {
+				let [key, value] = pair.match(/[^=]*(?==?([^]*))/)
+				this.query[decodeURIComponent(key)] = decodeURIComponent(value)
+			}
+		this.fragment = fragment ? decodeURIComponent(fragment) : null
+	}
+	toString() {
+		// type
+		let url = this.type
+		// id
+		if ('number'==typeof this.id) {
+			url += "/"+(this.id|0)
+		} else if ('string'==typeof this.id) {
+			// maybe we should just make the "@" mandatory for string id?
+			url += /\d*$|@/y.test(this.id) ? "/@" : "/"
+			url += this.id.replace(/[/]/g, "%2F")
+		}
+		url = url.replace(/[?&#)~(]+/g, escape)
+		// query
+		let query = Object.entries(this.query).map(([k,v])=>{
+			k = k.replace(/=/g, "%3D")
+			return (v ? k+"="+v : k).replace(/[?&#)~(]+/g, escape)
+		}).join("&")
+		if (query)
+			url += "?"+query
+		
+		// fragment
+		if (this.fragment != null)
+			url += "#"+this.fragment.replace(/[)~(]+/g, escape)
+		
+		// make sure url doesn't end with punctuation
+		let last = url.slice(-1)
+		if (last==".")
+			url = url.slice(0,-1)+"%2E"
+		else if (",!;:".includes(last))
+			url = url.slice(0,-1)+escape(last)
+		
+		// encode utf-8 etc.
+		return encodeURI(url)
+	}
+	clone() {
+		return new Location(this.type, this.id, this.query, this.fragment)
+	}
+	// read/write query params
+	get(key) {
+		return this.query[key]
+	}
+	set(key, value=undefined) {
+		if (value==undefined)
+			delete this.query[key]
+		else
+			this.query[key] = value
+	}
+}

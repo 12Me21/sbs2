@@ -329,3 +329,18 @@ window.addEventListener('blur', ev=>{
 })
 
 View.register('iframe', IframeView)*/
+
+class Paginator {
+	constructor() {
+		this.page = 1
+	}
+	read_location(location) {
+		this.page = location.query.p | 0 || 1
+	}
+	write_location(location) {
+		if (this.page)
+			location.query.p = this.page
+		else
+			delete location.query.p
+	}
+}
