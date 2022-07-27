@@ -86,7 +86,7 @@ textarea {
 	color: var(--T-color);
 	background-color: var(--T-bg);
 	white-space: break-spaces; /* optional */
-	tab-width: 3;
+	tab-size: 3; -moz-tab-size: 3;
 }
 .code-textarea {
 	line-break: anywhere;
@@ -1011,6 +1011,10 @@ not-sidebar {
 	resize: vertical;
 	overflow-y: scroll;
 	width: 100%;
+}
+
+[data-disabled] {
+	opacity: 0.5; /* todo */
 }
 /* mobile stuff */
 @media all and (max-width: 700px) {
