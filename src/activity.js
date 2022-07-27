@@ -223,7 +223,6 @@ let Act = {
 				if (parent)
 					parent.branches.push(map[cat.id])
 			}
-			console.log(tree)
 			function draw_tree(root, depth=0, last=false) {
 				let cat = root.content
 				if (cat) {

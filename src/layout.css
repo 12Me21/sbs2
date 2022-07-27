@@ -18,6 +18,7 @@
 	font-family: inherit;
 	font-variant-ligatures: none;
 	contain: paint; /* optional */
+	flex: none;
 }
 
 /* always display images at correct aspect ratio, even if the element is the wrong size */
@@ -53,22 +54,15 @@ html, body {
 .ROW, .COL { display: flex; }
 .COL { flex-flow: column; }
 
-.ROW > * { flex: none; min-width: 0; }
-.COL > * { flex: none; min-height: 0; }
 .FILL { flex: 0mm; }
+.ROW > .FILL { min-width: 0; }
+.COL > .FILL { min-height: 0; }
 .sized { flex-shrink: 1; }
+.ROW > .sized { min-width: 0; }
+.COL > .sized { min-height: 0; }
 
 
 /* views */
-#\$main_slides > view-slot {
-	border-left: 0.5rem solid var(--databarbgcolor);
-	min-width: 4rem !important;
-	width: 50%;
-}
-#\$main_slides > view-slot:first-of-type {
-	border-left: none;
-	flex: 0mm;
-}
 view-slot {
 	display: flex;
 	flex-flow: column;

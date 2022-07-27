@@ -276,6 +276,19 @@ view-header :any-link:hover {
 }*/
 
 
+#\$main_slides > view-slot {
+	border-left: 0.5rem solid var(--databarbgcolor);
+	min-width: 4rem !important;
+	width: 50%;
+}
+#\$main_slides > view-slot:first-of-type {
+	border-left: none;
+	flex: 0mm;
+}
+#\$main_slides > view-slot:last-of-type > view-header {
+	padding-right: 2.25rem;
+}
+
 /* header */
 view-header {
 	--bar-height: 2.25rem;
@@ -285,6 +298,9 @@ view-header {
 	box-shadow: var(--normal-shadow);
 	z-index: 4;
 	contain: content;
+	display: flex;
+	flex-flow: wrap;
+	min-height: var(--bar-height);
 }
 /* loading status */
 view-header.error {
@@ -298,44 +314,6 @@ view-header.rendering {
 	background-color: var(--header-rendering-bg);
 }
 
-view-header h1 {
-	font-size: 1.625em;
-	font-weight: normal;
-	padding-right: 0.25rem;
-}
-view-header h1 .entity-title {
-	font-weight: normal;
-}
-view-header h1 > span {
-	padding-left: 0.25rem;
-}
-
-.header-buttons {
-	display: inline-grid;
-	grid-template-rows: 1fr 1fr;
-	grid-auto-flow: column;
-	background: none;
-	padding-left: 1px;
-	padding-top: 1px;
-}
-view-header .header-buttons > * > :last-child {
-	text-decoration: underline;
-}
-view-header .header-buttons > * > .text-shadow {
-	padding-right: 3px;
-	font-size: 0.75em;
-}
-view-header .header-buttons > * {
-	font-weight: bold;
-	line-height: calc(var(--bar-height) / 2 - 2px) !important;
-	border: 1px solid gray;
-	margin-left: -1px;
-	margin-top: -1px;
-	font-size: 0.875em;
-	padding: 0 0.25em;
-	background: var(--bar-bg);
-	/*color: var(--T-color);*/
-}
 /* slot focus indicator */
 view-slot:not(.focused) {
 	--T-textarea-border-color: gray;
@@ -351,10 +329,46 @@ view-slot:not(.focused) {
 	width: 100%;
 	height: 100%;
 	z-index: 25;
-	background-image: url("data:image/gif;base64,R0lGODdhBAAEAPAAAAAAAP///ywAAAAABAAEAAACBUR8kahRADs=");
+	background-image: url("data:image/gif;base64,R0lGODdhAAAAAAAAMSwAAAAABAAEAMAAAAD///8CBYxhF8hRADs=");
 	opacity: 0.25;
 	display: none;
 	pointer-events: none;
+}
+
+view-header h1 {
+	font-size: 1.625em;
+	font-weight: normal;
+	padding-right: 0.25rem;
+	flex: initial;
+	min-width: 0;
+}
+view-header h1 .entity-title {
+	font-weight: normal;
+}
+view-header h1 > span {
+	padding-left: 0.25rem;
+}
+
+.header-buttons {
+	background: gray;
+	border: 1px solid gray;
+	border-left: none;
+	height: calc(var(--bar-height) / 2);
+}
+.header-buttons > * {
+	font-weight: bold;
+	height: 100%;
+	margin-left: 1px;
+	font-size: 0.875em;
+	padding: 0 0.25em;
+	background: var(--bar-bg);
+}
+.header-buttons > * > :last-child {
+	text-decoration: underline;
+}
+.header-buttons > * > .text-shadow {
+	padding-right: 3px;
+	font-size: 0.75em;
 }
 
 /* sidebar toggle button */
