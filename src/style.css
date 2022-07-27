@@ -543,6 +543,8 @@ message-block {
 	--chat-message-gap: 0.625rem;
 	padding-right: 0.5rem;
 	min-height: calc(var(--chat-avatar-size) + var(--chat-message-gap));
+	position: relative;
+	z-index: 0;
 }
 
 message-block > img.avatar {
