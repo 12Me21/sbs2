@@ -28,10 +28,10 @@ class ViewSlot {
 		// intercept links, and load them in the current slot rather than the default/focused one
 		this.$root.addEventListener('mousedown', ev=>{
 			this.set_focus()
-		}, {passive:true, useCapture:true})
+		}, {passive:true, capture:true})
 		this.$root.addEventListener('focusin', ev=>{
 			this.set_focus()
-		}, {passive:true, useCapture:true})
+		}, {passive:true, capture:true})
 		
 		Object.seal(this)
 	}
@@ -428,7 +428,7 @@ document.addEventListener('click', ev=>{
 	// load url into slot
 	if (!slot.load_url(href.slice(1)))
 		Sidebar.close_fullscreen()
-}, {useCapture:true})
+}, {capture:true})
 
 /*window.addEventListener('blur', ev=>{
 	if (!history.state)
