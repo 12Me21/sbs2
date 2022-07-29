@@ -21,24 +21,26 @@ const FileUploader = NAMESPACE({
 		$file_upload_form.replaceWith(this.file_upload_form.elem)
 		this.file_cancel()
 		
-		document.addEventListener('paste', e=>{
-			let data = e.clipboardData
+		document.addEventListener('paste', ev=>{
+			let data = ev.clipboardData
 			if (data && data.files) {
 				let file = data.files[0]
 				if (file && (/^image\//).test(file.type))
 					this.got_file(file)
 			}
 		})
-		document.addEventListener('dragover', e=>{
-			if (e.dataTransfer.types.includes("Files"))
-				e.preventDefault()
+		document.addEventListener('dragover', ev=>{
+			if (ev.dataTransfer.types.includes("Files")) {
+				ev.preventDefault()
+				ev.dataTransfer.dropEffect = 'copy'
+			}
 		})
-		document.addEventListener('drop', e=>{
-			if (e.target instanceof HTMLTextAreaElement)
+		document.addEventListener('drop', ev=>{
+			if (ev.target instanceof HTMLTextAreaElement)
 				return
-			let file = e.dataTransfer.files[0]
+			let file = ev.dataTransfer.files[0]
 			if (file) {
-				e.preventDefault()
+				ev.preventDefault()
 				if (/^image\//.test(file.type))
 					this.got_file(file)
 			}
