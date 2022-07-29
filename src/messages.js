@@ -45,6 +45,8 @@ class MessageList {
 		prev.next = next
 		next.prev = prev
 		// remove element
+		if (elem == MessageList.controls_message)
+			MessageList.show_controls(null)
 		if (elem.nextSibling || elem.previousSibling) {
 			elem.remove()
 		} else {
@@ -54,9 +56,10 @@ class MessageList {
 			if (next==this || prev==this)
 				return
 			// merge surrounding blocks, if needed
-			if (check_merge(prev.data, next.data)) {
-				prev.parentNode.append(...next.parentNode.childNodes)
-				next.parentNode.parentNode.remove()
+			if (this.check_merge(prev.data, next.data)) {
+				let die = next.elem.parentNode
+				prev.elem.parentNode.append(...die.childNodes)
+				die.parentNode.remove()
 			}
 		}
 	}
