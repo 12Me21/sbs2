@@ -1,10 +1,4 @@
 'use strict'
-//todo: read my old notes (in chat) about how to handle edited messages
-// ex: when a message is moved between rooms,
-// kinda annoying, basically what we need to do is
-// if we get an edited message: check every room to see if it has
-// that message id, since it mightve been moved /from/ that room
-// then, we need to insert that message in the middle of the list, in the current room
 
 class MessageList {
 	constructor(element, pid, edit) {
@@ -64,17 +58,33 @@ class MessageList {
 		}
 	}
 	
+	// draw a message
+	// msg: Message
+	// return: Element
+	draw_part(msg) {	
+		let e = MessageList.part_template()
+		e.dataset.id = msg.id
+		if (msg.edited)
+			e.className += " edited"
+		Markup.convert_lang(msg.text, msg.values.m, e, {intersection_observer: View.observer})
+		return e
+	}
+	// draw a message and insert it into the linked list
+	// msg: Message
+	// prev,next: Part - surrounding list nodes
 	add_part(msg, prev, next) {
 		let elem = this.draw_part(msg)
 		let part = {data:msg, elem, prev, next}
 		this.parts.set(msg.id, next.prev = prev.next = part)
 		return part
 	}
+	// display the first message in the list
 	display_only(msg) {
 		let part = this.add_part(msg, this, this)
 		this.$list.append(MessageList.draw_block(msg, part.elem))
 		return part
 	}
+	// display a new message at the top of the list
 	display_top(msg) {
 		let next = this.next
 		let part = this.add_part(msg, this, next)
@@ -84,6 +94,7 @@ class MessageList {
 			this.$list.prepend(MessageList.draw_block(msg, part.elem))
 		return part
 	}
+	// display a new message at the bottom of the list
 	display_bottom(msg) {
 		let prev = this.prev
 		let part = this.add_part(msg, prev, this)
@@ -94,6 +105,8 @@ class MessageList {
 		return part
 	}
 	
+	// existing: Part - the part to replace
+	// msg: Message - the new message data
 	replace(existing, msg) {
 		if (existing==this)
 			throw new TypeError('tried to replace list terminator')
@@ -122,6 +135,9 @@ class MessageList {
 		return existing
 	}
 	
+	// display a Message at the bottom of the list
+	// ONLY use this for messages from live message_events
+	// if cb is set, it will be called before a message is inserted
 	display_live(msg, cb=null) {
 		let id = msg.id
 		
@@ -165,6 +181,7 @@ class MessageList {
 		//this.rethread(msg)
 	}
 	
+	// display a Message at the top or bottom of the list
 	display_edge(msg) {
 		let id = msg.id
 		
@@ -213,7 +230,7 @@ class MessageList {
 			callback(resp.message.length != 0)
 		})
 	}
-	
+	// limiting number of displayed messages
 	over_limit() {
 		return this.parts.length > this.max_parts
 	}
@@ -221,16 +238,6 @@ class MessageList {
 		let over = this.parts.length - this.max_parts
 		for (let i=0; i<over; i++)
 			this.remove(this.next)
-	}
-	draw_part(msg) {	
-		let e = MessageList.part_template()
-		
-		if (msg.edited)
-			e.className += " edited"
-		
-		e.dataset.id = msg.id
-		Markup.convert_lang(msg.text, msg.values.m, e, {intersection_observer: View.observer})
-		return e
 	}
 
 	// elem: <message-part> or null
@@ -293,17 +300,17 @@ class MessageList {
 		// This works on mobile, because touches trigger mouseover.
 		// the touch creates a virtual cursor which stays there,
 		// until you touch somewhere else (which then triggers mouseleave)
-		listen('mouseover', e=>{
-			let elem = e.target.closest("message-part, message-controls, .message-list")
+		listen('mouseover', ev=>{
+			let elem = ev.target.closest("message-part, message-controls, .message-list")
 			if (!elem || elem.classList.contains('message-list'))
 				this.show_controls(null)
 			else if (elem.tagName=='MESSAGE-PART')
 				this.show_controls(elem)
 			// otherwise, the element is <message-controls> so we do nothing
-		})
-		listen('mouseleave', e=>{
+		}, {passive:true})
+		listen('mouseleave', ev=>{
 			this.show_controls(null)
-		})
+		}, {passive:true})
 	}
 }
 MessageList.part_template = 𐀶`<message-part role=listitem tabindex=-1>`
@@ -333,7 +340,8 @@ MessageList.draw_block = function(comment, part) {
 			name.appendChild(this.bridge())
 		else {
 			let nickname = this.nickname()
-			nickname.querySelector('span.pre').textContent = author.username
+			let realname = nickname.lastChild.lastElementChild
+			realname.textContent = author.username
 			name.appendChild(nickname)
 		}
 	}
@@ -362,7 +370,7 @@ MessageList.draw_block = function(comment, part) {
 MessageList.init()
 Object.seal(MessageList)
 
-document.addEventListener('message_control', e=>{
-	if (e.detail.action=='info')
-		alert(JSON.stringify(e.detail.data, null, 1)) // <small heart>
+document.addEventListener('message_control', ev=>{
+	if (ev.detail.action=='info')
+		alert(JSON.stringify(ev.detail.data, null, 1)) // <small heart>
 })
