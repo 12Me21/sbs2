@@ -228,7 +228,7 @@ class PageView extends BaseView {
 
 	my_last_message() {
 		let cnt = 0
-		for (let node=this.list.last; node; node=node.prev) {
+		for (let node=this.list.prev; node!=this.list; node=node.prev) {
 			if (cnt++ > 100) // just in case
 				break
 			if (node.data.createUserId == Req.uid)

@@ -135,6 +135,14 @@ class MessageList {
 		let prev = this.prev
 		if (prev==this) {
 			cb && cb()
+			// note: if message is edited, this isn't really safe
+			// because it could be an old edited message
+			// but, in practice, this only happens if the page
+			// has no messages at all, because otherwise
+			// we would've loaded initial messages
+			/// but technically, we should check against the page's
+			// lastmessageid, if we /aren't/ loading initial messages
+			// to make sure the edited message is new message.
 			return this.display_only(msg)
 		}
 		if (id>prev.data.id) {
@@ -154,7 +162,7 @@ class MessageList {
 		//this.rethread(msg)
 	}
 	
-	display_edge(msg, top=false) {
+	display_edge(msg) {
 		let id = msg.id
 		
 		let existing = this.parts.get(id)
@@ -163,15 +171,12 @@ class MessageList {
 			return this.replace(existing, msg)
 		}
 		
-		let next = top ? this.next : this.prev
-		if (next==this)
+		if (this.next==this)
 			return this.display_only(msg)
-		if (top) {
-			if (id<next.data.id)
-				return this.display_top(msg)
-		} else // owo
-			if (id>next.data.id)
-				return this.display_bottom(msg)
+		if (id>this.prev.data.id)
+			return this.display_bottom(msg)
+		if (id<this.next.data.id)
+			return this.display_top(msg)
 		
 		throw new Error("messages out of order?")
 	}
@@ -196,7 +201,7 @@ class MessageList {
 		}, resp=>{
 			let first = true
 			for (let c of resp.message) {
-				let part = this.display_edge(c, top)
+				let part = this.display_edge(c)
 				if (part && first) {
 					part.elem.classList.add("boundary-"+(top?"bottom":"top"))
 					first = false
