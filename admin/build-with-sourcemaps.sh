@@ -46,7 +46,9 @@ merge_files () {
 
 # nocache filename -> filename?1234567 (uses current date)
 nocache () {
-	printf "$1?" ; date +%s
+	printf "$1?"
+	# yea;
+	printf "%X" `date +%s` | basenc -d --base16 | basenc --base64url | tail -c +2 | tr -d =
 }
 
 merge_files resource/_build.js '<script .*\bsrc=\K[\w/.-]+(?=>)' '"use strict"' "//# sourceMappingURL=$(nocache _build.js.map)"
