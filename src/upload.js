@@ -6,10 +6,11 @@ const FileUploader = NAMESPACE({
 	onload() {
 		this.file_upload_form = new Form({
 			fields: [
-				['size', 'output', {label: "Size"}], //todo: separate set of output fields?
+				['size', 'output', {label: "Info"}], //todo: separate set of output fields?
 				['name', 'text', {label: "File Name"}],
 				['hash', 'text', {label: "Hash"}],
 				['bucket', 'text', {label: "Bucket"}],
+				['keywords', 'word_list', {label: "Keywords"}],
 				['quantize', 'select', {
 					options: [null, 2, 4, 8, 16, 32, 64, 256],
 					label: "Quantize",
@@ -29,12 +30,16 @@ const FileUploader = NAMESPACE({
 			}
 		})
 		document.addEventListener('dragover', e=>{
-			if (e.dataTransfer.types.includes("Files"))
-				e.preventDefault()
+//			console.log('dragover', ...e.dataTransfer.items)
+//			if (e.dataTransfer.types.includes("Files"))
+			e.preventDefault()
 		})
 		document.addEventListener('drop', e=>{
 			if (e.target instanceof HTMLTextAreaElement)
 				return
+			e.preventDefault()
+			console.log(e.dataTransfer.getData(window.gd), ...e.dataTransfer.items)
+			return
 			let file = e.dataTransfer.files[0]
 			if (file) {
 				e.preventDefault()
@@ -52,6 +57,27 @@ const FileUploader = NAMESPACE({
 				$file_browse.value = ""
 			}
 		}
+		// todo: just cancel the download instead of disabling the form idk
+		$file_url_form.onsubmit = async (ev)=>{
+			ev.preventDefault()
+			if ($file_url_form.hasAttribute('data-disabled'))
+				return
+			try {
+				$file_url_form.setAttribute('data-disabled', "")
+				let url = $file_url_input.value
+				if (!url)
+					return
+				print('requesting image (might fail)...')
+				let resp = await fetch(new Request(url))
+				let blob = await resp.blob()
+				blob.name = url
+				this.got_file(blob)
+				$file_url_input.value = ""
+			} finally {
+				$file_url_form.removeAttribute('data-disabled')
+			}
+		}
+		
 		$file_cancel.onclick = $file_done.onclick = e=>{
 			this.file_cancel()
 		}
@@ -99,6 +125,8 @@ const FileUploader = NAMESPACE({
 				params.quantize = data.quantize
 			if (data.hash)
 				params.hash = data.hash
+			if (data.keywords && data.keywords.length)
+				params.keywords = data.keywords
 			if (priv)
 				params.globalPerms = ""
 			print(`uploading ${priv?"private":"public"} file...`)
@@ -154,7 +182,7 @@ const FileUploader = NAMESPACE({
 	
 	// file is only set if we're uploading a file
 	show_parts(phase, url, file) {
-		$file_browse.hidden = phase!=0
+		$file_inputs.hidden = phase!=0
 		$file_cancel.hidden = phase!=1
 		$file_upload.hidden = phase!=1
 		this.file_upload_form.elem.hidden = phase!=1
@@ -191,9 +219,10 @@ const FileUploader = NAMESPACE({
 		this.show_parts(1, url, file)
 		window.setTimeout(()=>URL.revokeObjectURL(url))
 		this.file_upload_form.set_some({
-			size: (file.size/1000)+" kB",
+			size: file.type+" "+(file.size/1000)+" kB",
 			name: file.name,
 			hash: null,
+			keywords: null,
 		})
 		this.file_upload_form.write()
 		Sidebar.tabs.select('file')

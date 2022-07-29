@@ -187,10 +187,11 @@ class CommentsView extends BaseView {
 		let list
 		if (Array.isArray(comment)) {
 			list = new MessageList(inner, comment[0].contentId) // mmndnhhhgghdhfhdh i sure hope it does (contentId)
-			list.display_messages(comment)
+			for (let c of comment)
+				list.display_edge(c)
 		} else {
 			list = new MessageList(inner, comment.contentId)
-			list.single_message(comment)
+			list.display_only(comment)
 		}
 		let parent = pages[~list.pid]
 		

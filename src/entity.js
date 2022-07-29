@@ -194,6 +194,13 @@ const Entity = NAMESPACE({
 		// todo: better system for mapping types
 		let type = list.Type || this.key_type(name)
 		let cons = TYPES[type] || (x=>x) // fallback (bad)
+		
+		// todo: this is probably unnessesary most of the time
+		// and might be slow etc. (esp for lots of messages)
+		// maybe we should only create these maps when needed?
+		// like, when getting data for a page, for example
+		// there's like, 10 users total,
+		// definitely faster to just search the list than create this map
 		for (let entity of list)
 			list[~entity.id] = cons(entity)
 		// using ~ on the id will map 0 → -1, 1 → -2, 2 → -3 etc.

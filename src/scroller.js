@@ -96,6 +96,7 @@ class Scroller {
 		this.anim_type = Scroller.anim_type
 		this.anim = null
 		this.locked = false
+		this.before = null
 		if (this.anim_type==2)
 			this.$inner.classList.add('scroll-anim3')
 		
@@ -144,62 +145,71 @@ class Scroller {
 		// i think we're saved by scroll anchoring here, or something
 		fn(this.$inner)
 	}
-	print(fn, smooth) {
+	before_print(smooth) {
 		// not scrolled to bottom, don't do anything
-		if (!this.at_bottom()) {
-			fn(this.$inner)
-			return
-		}
+		if (!this.at_bottom())
+			return 'none'
 		// anim disabled
-		if (!smooth || this.anim_type==0 || 'visible'!=document.visibilityState) {
-			try {
-				fn(this.$inner)
-			} finally {
-				this.scroll_instant()
-				if (this.anim_type!=0)
-					this.cancel_animation()
-			}
+		if (!smooth || this.anim_type==0 || 'visible'!=document.visibilityState)
+			return 'instant'
+		// at bottom + anim enabled
+		// note: stop trying to use scrollheight instead, it wont work when the elem isnt tall enough!
+		return this.scroll_height()
+	}
+	after_print(before) {
+		if (this.locked) {
+			this.before = before
 			return
 		}
-		// at bottom + anim enabled
-		let before = this.scroll_height() // note: stop trying to use scrollheight instead, it wont work when the elem isnt tall enough!
+		if (before==='none')
+			return
+		if (before==='instant') {
+			this.scroll_instant()
+			if (this.anim_type!=0)
+				this.cancel_animation()
+			return
+		}
+		let after = this.scroll_height()
+		let dist = after - before
+		if (Math.abs(dist) <= 1) {
+			this.scroll_instant()
+			return
+		}
+		// make sure no existing animation is happening
+		// todo: somehow continue the current animation rather than
+		if (this.anim)
+			cancelAnimationFrame(this.anim)
+		
+		if (this.anim_type==2)
+			this.$inner.style.transitionProperty = "none"
+		this.set_offset(dist)
+		
+		this.scroll_instant()
+		if (this.anim_type==2)
+			this.$inner.style.transitionProperty = ""
+		
+		this.anim_step(dist)
+	}
+	print(fn, smooth) {
+		let x = this.before_print(smooth)
 		try {
 			fn(this.$inner)
 		} finally {
-			// figure out how much was added
-			let after = this.scroll_height()
-			let dist = after - before
-			if (Math.abs(dist) <= 1) {
-				this.scroll_instant()
-				return
-			}
-			// make sure no existing animation is happening
-			// todo: somehow continue the current animation rather than
-			if (this.anim)
-				cancelAnimationFrame(this.anim)
-			
-			if (this.anim_type==2)
-				this.$inner.style.transitionProperty = "none"
-			this.set_offset(dist)
-			
-			this.scroll_instant()
-			if (this.anim_type==2)
-				this.$inner.style.transitionProperty = ""
-			
-			if (this.locked) {
-				this.anim = 0n
-				this.dist = dist
-			} else
-				this.anim_step(dist)
+			this.after_print(x)
 		}
 	}
 	lock() {
-		this.locked = true
+		if (!this.locked) {
+			this.locked = true
+			this.before = null
+		}
 	}
 	unlock() {
-		this.locked = false
-		if (this.anim === 0n)
-			this.anim_step(this.dist)
+		if (this.locked) {
+			this.locked = false
+			if (this.before!=null)
+				this.after_print(this.before)
+		}
 	}
 	cancel_animation() {
 		if (this.anim)

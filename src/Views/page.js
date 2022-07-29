@@ -109,18 +109,12 @@ class PageView extends BaseView {
 		if (pinned instanceof Array && pinned.length)
 			this.update_pinned(pinned, user)
 		
-		message.reverse()
-		this.display_messages(message)
+		for (let i=message.length-1; i>=0; i--)
+			this.list.display_edge(message[i])
 		
 		// add event listeners //
 		Events.messages.listen(this, (messages)=>{
-			let c = messages.filter(msg=>{
-				return msg.contentId==this.page_id || ((msg.edited||msg.deleted) && this.list.parts.has(msg.id))
-			})
-			if (c.length) {
-				this.scroller.lock()
-				this.display_messages(c, true)
-			}
+			this.display_live(messages)
 		})
 		Events.after_messages.listen(this, ()=>{
 			this.scroller.unlock()
@@ -161,7 +155,8 @@ class PageView extends BaseView {
 		this.scroller.print_top(()=>{
 			this.$extra.prepend(separator)
 			this.$extra.prepend(list)
-			this.pinned_list.display_messages(pinned)
+			for (let msg of pinned)
+				this.pinned_list.display_edge(msg)
 		})
 	}
 	update_watch(watch) {
@@ -211,6 +206,7 @@ class PageView extends BaseView {
 	}
 	Visible() {
 		this.textarea_resize()
+		this.scroller.scroll_instant()
 	}
 	// 8:10;35
 	Destroy() {
@@ -231,28 +227,43 @@ class PageView extends BaseView {
 	}
 
 	my_last_message() {
-		let last = this.list.part_list.findLast(part=>
-			part.data.createUserId==Req.uid)
-		return last ? last.data : null
+		let cnt = 0
+		for (let node=this.list.last; node; node=node.prev) {
+			if (cnt++ > 100) // just in case
+				break
+			if (node.data.createUserId == Req.uid)
+				return node.data
+		}
+		return null
 	}
 	// display a list of messages
 	// DON'T call this unless you know what you're doing
 	// comments: [Comment]
 	// animate: Boolean - whether to play the scrolling animation
-	display_messages(comments, live) {
-		this.scroller.print(inner=>{
-			this.list.display_messages(comments, live)
-		}, live)
-		if (live) {
-			let last = comments.findLast(msg=>Entity.is_new_comment(msg))
-			if (last)
-				View.comment_notification(last)
+	display_live(comments) {
+		let last_new = null
+		let x = null
+		let cb = ()=>{
+			cb = null
+			x = this.scroller.before_print(true)
 		}
+		for (let msg of comments) {
+			if (this.list.display_live(msg, cb))
+				if (!msg.deleted && !msg.edited)
+					last_new = msg
+		}
+		if (x==null) // nothing printed
+			return
+		
+		this.scroller.after_print(x)
+		
 		if (this.list.over_limit() && !this.$limit_checkbox.checked) {
 			this.scroller.print_top(inner=>{
 				this.list.limit_messages()
 			})
 		}
+		if (last_new)
+			View.comment_notification(last_new)
 	}
 	
 	textarea_resize() {

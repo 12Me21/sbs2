@@ -243,7 +243,13 @@
 		
 		<sidebar-panel id=$sidebarFilePanel class='COL'>
 			<div class='rem1-5 ROW' style='justify-content:space-between;'>
-				<input type=file accept="image/png,image/jpeg,image/gif,image/bmp,image/webp,.png,.jpg,.jpeg,.gif,.bmp" id=$file_browse class='FILL item'>
+				<div class='FILL COL' id=$file_inputs>
+					<input type=file accept="image/png,image/jpeg,image/gif,image/bmp,image/webp,.png,.jpg,.jpeg,.gif,.bmp" id=$file_browse class='item'>
+					<form class='ROW' id=$file_url_form method=dialog>
+						<input type=text id=$file_url_input class='FILL item' placeholder='url (CORS only)'>
+						<button class='item'>GET</button>
+					</form>
+				</div>
 				<button id=$file_cancel class='item'>Cancel</button>
 				<button id=$file_upload class='item'>Upload Image</button>
 				

@@ -75,6 +75,36 @@ const Draw = NAMESPACE({
 		return a
 	}.bind(𐀶`<a tabindex=-1 role=gridcell>`),
 	
+	option(value, label=value) {
+		let opt = document.createElement('option')
+		opt.value = value
+		opt.text = label
+		return opt
+	},
+	
+	options(opts, def) {
+		let sel = document.createElement('select')
+		let found = false
+		for (let [val, label=val] of opts) {
+			let opt = document.createElement('option')
+			if (val == def)
+				found = true
+			opt.value = val
+			opt.text = label
+			sel.add(opt)
+		}
+		if (def!=undefined){ 
+			if (!found) {
+				let opt = document.createElement('option')
+				opt.value = def
+				opt.text = def+" ?"
+				sel.add(opt)
+			}
+			sel.value = def
+		}
+		return sel
+	},
+	
 	//📥 date‹Date›
 	//📤 ‹String›
 	time_string(date) {

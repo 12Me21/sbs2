@@ -2,8 +2,10 @@
 
 // it would be nice to inject this earlier but 
 let ls = Settings.values.html_inject
-if ('string'==typeof ls)
+if ('string'==typeof ls) {
 	document.write(ls)
+	//note: see https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#document-write-steps
+}
 
 document.addEventListener('DOMContentLoaded', dom_ready)
 immediate()

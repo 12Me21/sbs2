@@ -13,7 +13,7 @@ class MessageList {
 		this.pid = pid
 		
 		this.parts = new Map()
-		this.part_list = []
+		this.first = this.last = null
 		
 		// this listens for events created by the message edit/info buttons
 		// and modifies the event to add the message data
@@ -24,167 +24,186 @@ class MessageList {
 		
 		Object.seal(this)
 	}
-	get_messages_near(last, newer, amount, callback) {
-		let order = newer ? 'id' : 'id_desc'
+	
+	check_merge(message, before) {
+		if (before.Author.merge_hash==message.Author.merge_hash)
+			if (Math.abs(message.Author.date.getTime() - before.Author.date.getTime())<=1e3*60*5)
+				return true
+		return false
+	}
+	
+	remove(id, part=this.parts.get(id)) {
+		// remove from map
+		this.parts.set(id, null)
+		// update linked list
+		if (part.prev)
+			part.prev.next = part.next
+		else if (part==this.first)
+			this.first = part.next // hm what if we renamed this.prev to this.next, then just `(part.prev||this).next = part.next` lol.. hm actually that would make this a kind of   circular linked list? where the MessageList fills in the gap...
+		else
+			throw new TypeError("broken linked list!")
+		if (part.next)
+			part.next.prev = part.prev
+		else if (part==this.last)
+			this.last = part.prev
+		else
+			throw new TypeError("broken linked list!")
+		// remove element
+		let elem = part.elem
+		if (elem.nextSibling || elem.previousSibling)
+			elem.remove()
+		else // remove the message block
+			elem.parentNode.parentNode.remove()
+	}
+	
+	display_only(msg) {
+		let elem = this.draw_part(msg)
+		let node = {data:msg, elem, prev:null, next:null}
+		this.parts.set(msg.id, this.first = this.last = node)
+		this.$list.append(MessageList.draw_block(msg, elem))
+		return node
+	}
+	display_first(msg, next=this.first) {
+		let elem = this.draw_part(msg)
+		let node = {data:msg, elem, prev:null, next}
+		this.parts.set(msg.id, this.first = next.prev = node)
+		if (this.check_merge(next.data, msg))
+			next.elem.before(elem) // todo: timestamp
+		else
+			this.$list.prepend(MessageList.draw_block(msg, elem))
+		return node
+	}
+	display_last(msg, prev=this.last) {
+		let elem = this.draw_part(msg)
+		let node = {data:msg, elem, prev, next:null}
+		this.parts.set(msg.id, this.last = prev.next = node)
+		if (this.check_merge(msg, prev.data))
+			prev.elem.after(elem)
+		else
+			this.$list.append(MessageList.draw_block(msg, elem))
+		return node
+	}
+	
+	replace_existing(msg, existing=this.parts.get(msg.id)) {
+		let id = msg.id
+		// deleted from this room
+		if (msg.deleted) {
+			this.remove(id, existing)
+			return null
+		}
+		// moved to other room
+		if (msg.contentId!=this.pid) { 
+			if (!msg.edited)
+				print("warning: impossible? ", id)
+			this.remove(id, existing)
+			return null
+		}
+		// normal edited message?
+		if (!msg.edited)
+			print("warning: duplicate message ", id)
+		if (msg.Author.merge_hash != existing.data.Author.merge_hash)
+			print("unimplemented: merge hash changed: ", id)
+		let elem = this.draw_part(msg)
+		existing.elem.replaceWith(elem)
+		existing.elem = elem
+		existing.data = msg
+		return existing
+	}
+	
+	display_live(msg, cb=null) {
+		let id = msg.id
+		
+		let existing = this.parts.get(id)
+		if (existing) {
+			cb && cb()
+			return this.replace_existing(msg, existing)
+		}
+		
+		// deleted, or for another room
+		if (msg.deleted || msg.contentId!=this.pid)
+			return null
+		
+		let prev = this.last
+		if (!prev) {
+			cb && cb()
+			return this.display_only(msg)
+		}
+		if (id>prev.data.id) {
+			cb && cb()
+			return this.display_last(msg, prev)
+		}
+		
+		if (!msg.edited)
+			print("warning: out of order: ", id)
+		
+		// old message
+		if (id < first.data.id)
+			return null
+		
+		// rethreaded from another room
+		print("unimplemented: rethread ", id)
+		//this.rethread(msg)
+	}
+	
+	display_edge(msg, top=false) {
+		let id = msg.id
+		
+		let existing = this.parts.get(id)
+		if (existing) {
+			print('warning: duplicate message? '+id)
+			return this.replace_existing(msg, existing)
+		}
+		
+		let next = top ? this.first : this.last
+		if (!next)
+			return this.display_only(msg)
+		if (top) {
+			if (id<next.data.id)
+				return this.display_first(msg, next)
+		} else // owo
+			if (id>next.data.id)
+				return this.display_last(msg, next)
+		
+		throw new Error("messages out of order?")
+	}
+	
+	// todo
+	// need to prevent this from loading messages multiple times at once
+	// and inserting out of order...x
+	load_messages_near(id, top, amount, callback) {
+		let node = top ? this.first : this.last
+		if (!node)
+			return
+		let id = node.data.id
+		//
+		let order = top ? 'id_desc' : 'id'
 		let query = `contentId = @pid AND id ${newer?">":"<"} @last AND !notdeleted()`
 		Lp.chain({
-			values: {last: last, pid: this.pid},
+			values: {last: id, pid: this.pid},
 			requests: [
 				{type:'message', fields:'*', query, order, limit:amount},
 				{type:'user', fields:'*', query:"id in @message.createUserId"},
 			],
-		}, callback)
-	}
-	// todo
-	// need to prevent this from loading messages multiple times at once
-	// and inserting out of order...x
-	draw_messages_near(newer, amount, callback) {
-		let block = this.$list[newer?'lastChild':'firstChild']
-		if (!block || block.tagName!='MESSAGE-BLOCK')
-			return null
-		let content = block.querySelector('message-contents')
-		let part = content[newer?'lastChild':'firstChild']
-		if (!part)
-			return null
-		let id = +part.dataset.id
-		return this.get_messages_near(id, newer, amount, resp=>{
+		}, resp=>{
 			let first = true
 			for (let c of resp.message) {
-				let part = this.display_message(c)
+				let part = this.display_edge(c, !newer)
 				if (part && first) {
-					part.className += " boundary-"+(newer?"top":"bottom")
+					part.elem.classList.add("boundary-"+(newer?"top":"bottom"))
 					first = false
 				}
 			}
 			callback(resp.message.length != 0)
 		})
 	}
-	single_message(comment) {
-		let part = this.draw_part(comment)
-		let p = {elem:part, data:comment}
-		this.parts.set(comment.id, p)
-		this.part_list.push(p)
-		
-		this.$list.append(MessageList.draw_block(comment, part))
-		return part
-	}
-	display_messages(messages, live) {
-		for (let m of messages)
-			this.display_message(m, live)
-	}
-	/*split_block(id) {
-	}*/
-	// TODO:
-	// there are 7 types of messages
-	// - live message_event:
-	//   - 1: normal
-	//   - deleted/edited:
-	//     - 2: corresponds to a displayed message (replace)
-	//     - 3: corresponds to an old message (id < min) (ignore)
-	//     - 4: is a rethread (id > min) (insert, and remove from old room)
-	// - downloaded manually:
-	//   - 5: deleted (ignore)
-	//   - 6: normal (append)
-	//   - 7: edited (append)
-	check_merge(message, last) {
-		if (last.Author.merge_hash==message.Author.merge_hash)
-			if (Math.abs(message.Author.date.getTime() - last.Author.date.getTime())<=1e3*60*5)
-				return true
-		return false
-	}
-	display_message(message, live) {
-		let existing = this.parts.get(message.id)
-		// deleted or in another room:
-		if (message.deleted || message.contentId!=this.pid) {
-			// deleted or rethreaded
-			if (existing) {
-				this.parts.delete(message.id)
-				let index = this.part_list.indexOf(existing)
-				if (index<0) // >:(
-					return null
-				this.part_list.splice(index, 1)
-				this.remove_elem(existing.elem)
-			}
-			return null
-		}
-		// edited (or duplicate):
-		if (existing) {
-			let part = this.draw_part(message)
-			existing.elem.replaceWith(part)
-			existing.elem = part
-			existing.data = message
-			return part
-		}
-		if (live && message.edited) {
-			return null
-			/*let first = this.part_list[0]
-			if (!first || message.id < first.data.id) {
-				// old edited message
-				return null
-			}
-			// rethreaded message:
-			// TODO:
-			return null*/
-		}
-		
-		// first message
-		if (!this.part_list.length)
-			return this.single_message(message)
-		
-		// to end of list
-		let last = this.part_list[this.part_list.length-1]
-		if (message.id > last.data.id) {
-			let part = this.draw_part(message)
-			let merge = this.check_merge(message, last.data)
-			if (merge)
-				last.elem.parentNode.appendChild(part)
-			else
-				this.$list.appendChild(MessageList.draw_block(message, part))
-			let p = {elem:part, data:message}
-			this.parts.set(message.id, p)
-			this.part_list.push(p)
-			return part
-		}
-		
-		// start of list
-		last = this.part_list[0]
-		if (message.id < last.data.id) {
-			let part = this.draw_part(message)
-			let merge = this.check_merge(message, last.data)
-			// TODO: the displayed time will be wrong, if we are going backwards!!
-			if (merge)
-				last.elem.parentNode.prepend(part)
-			else
-				this.$list.prepend(MessageList.draw_block(message, part))
-			let p = {elem:part, data:message}
-			this.parts.set(message.id, p)
-			this.part_list.unshift(p)
-			return part
-		}
-		// oh fuck oh shit
-		
-		throw new Error('oh fuck oh shit')
-	}
-	remove_elem(elem) {
-		// remove controls if they're on this message
-		if (elem == MessageList.controls_message)
-			MessageList.show_controls(null)
-		let contents = elem.parentNode // <message-contents>
-		elem.remove()
-		
-		if (!contents.hasChildNodes())
-			contents.parentNode.remove() // remove <message-block> if empty
-	}
+	
 	over_limit() {
 		return this.parts.length > this.max_parts
 	}
 	limit_messages() {
 		let over = this.parts.length - this.max_parts
-		if (over>0)
-			for (let {elem, data} of this.part_list.splice(0, over)) {
-				this.parts.delete(data.id)
-				this.remove_elem(elem)
-			}
+		for (let i=0; i<over; i++)
+			this.remove(this.last.data.id, this.last)
 	}
 	draw_part(comment) {	
 		let e = MessageList.part_template()

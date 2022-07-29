@@ -4,6 +4,7 @@
 // kinda redundant? idk (consider: if/when can/should they differ?)
 class ViewSlot {
 	constructor() {
+		//ViewSlot.all.add(this)
 		ViewSlot.template(this)
 		this.$view = null
 		do_when_ready(x=>{
@@ -117,6 +118,7 @@ class ViewSlot {
 		this.cancel()
 		this.switch_view(null)
 		this.$root.remove()
+		//ViewSlot.all.delete(this)
 		return true
 	}
 	
@@ -266,7 +268,7 @@ ViewSlot.template = HTML`
 
 
 const Nav = NAMESPACE({
-	slots: [],
+	slots: [], // visible onscreen
 	focused: null,
 	
 	view() {
@@ -427,6 +429,15 @@ document.addEventListener('click', ev=>{
 	if (!slot.load_url(href.slice(1)))
 		Sidebar.close_fullscreen()
 }, {useCapture:true})
+
+/*window.addEventListener('blur', ev=>{
+	if (!history.state)
+		history.replaceState(1, "")
+})
+window.addEventListener('focus', ev=>{
+	if (!history.state)
+		console.log('state reset!')
+})*/
 
 // builtin window.Location — gone, reduced to atoms
 class Location {

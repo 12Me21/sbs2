@@ -255,15 +255,20 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 		// formdata is totally fucked
 		for (let name in params) {
 			let value = params[name]
-			if (name=='values')
+			if (name=='values') {
 				for (let name in value)
 					set(`values[${name}]`, value[name])
-			else {
+			} else if (name=='keywords') {
+				for (let item of value)
+					form.append('keywords', item)
+			} else {
 				if (name=='globalPerms' && value==="")
 					value="."
 				set(name, value)
 			}
 		}
+		console.log(form)
+		//return
 		return new ApiRequest('File', 'POST', form, x=>TYPES.content(x))
 	},
 }
