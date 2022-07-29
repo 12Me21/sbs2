@@ -129,7 +129,7 @@ class PageView extends BaseView {
 		// etc
 		this.$load_older.onclick = Draw.event_lock(done=>{
 			// todo: preserve scroll position
-			this.list.draw_messages_near(false, 50, ()=>{
+			this.list.load_messages_near(true, 50, ()=>{
 				done()
 			})
 		})

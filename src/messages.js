@@ -170,7 +170,7 @@ class MessageList {
 	// todo
 	// need to prevent this from loading messages multiple times at once
 	// and inserting out of order...x
-	load_messages_near(id, top, amount, callback) {
+	load_messages_near(top, amount, callback) {
 		let node = top ? this.first : this.last
 		if (!node)
 			return

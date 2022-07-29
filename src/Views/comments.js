@@ -200,7 +200,7 @@ class CommentsView extends BaseView {
 		let btns = inner.previousSibling.childNodes
 		btns[0].onclick = btns[1].onclick = Draw.event_lock((done,elem)=>{
 			let old = elem.dataset.action=='load_older'
-			list.draw_messages_near(!old, 10, (ok)=>{
+			list.load_messages_near(old, 10, (ok)=>{
 				if (ok)
 					done()
 			})
