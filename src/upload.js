@@ -30,16 +30,12 @@ const FileUploader = NAMESPACE({
 			}
 		})
 		document.addEventListener('dragover', e=>{
-//			console.log('dragover', ...e.dataTransfer.items)
-//			if (e.dataTransfer.types.includes("Files"))
-			e.preventDefault()
+			if (e.dataTransfer.types.includes("Files"))
+				e.preventDefault()
 		})
 		document.addEventListener('drop', e=>{
 			if (e.target instanceof HTMLTextAreaElement)
 				return
-			e.preventDefault()
-			console.log(e.dataTransfer.getData(window.gd), ...e.dataTransfer.items)
-			return
 			let file = e.dataTransfer.files[0]
 			if (file) {
 				e.preventDefault()
