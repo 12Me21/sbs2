@@ -44,11 +44,12 @@ merge_files () {
 	echo "===================" >&2
 }
 
-# nocache filename -> filename?1234567 (uses current date)
+printf "w" >>admin/.unique.unary
 nocache () {
 	printf "$1?"
 	# yea;
-	printf "%X" `date +%s`
+	cat admin/.unique.unary | wc -c | tr '0123456789' 'zowruvxsen'
+	#printf "%o" `date +%s` | tr 
 	 #| basenc -d --base16 | basenc --base64url | tail -c +2 | tr -d =
 }
 
