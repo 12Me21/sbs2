@@ -105,6 +105,7 @@ class ImagesView extends BaseView {
 		this.$image.src = Req.file_url(content.hash)
 		this.$image_link.href = `#page/${content.id}`
 		this.$image_link.textContent = content.hash
+		this.$image_link.textContent += " "+Draw.time_string(content.createDate2)
 		this.form.set({
 			user: this.user[~content.createUserId],
 			filename: content.name,

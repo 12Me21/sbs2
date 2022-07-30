@@ -103,7 +103,7 @@ class PageView extends BaseView {
 		this.update_page(page, user)
 		this.update_watch(watch[0])
 		
-		this.userlist.set_status("active")
+		this.userlist.set_status("viewing")
 		this.userlist.redraw()
 		
 		if (pinned instanceof Array && pinned.length)
@@ -243,6 +243,7 @@ class PageView extends BaseView {
 	display_live(comments) {
 		let last_new = null
 		let x = null
+		// todo: we should only smooth scroll if message is modifed at the END of the list
 		let cb = ()=>{
 			cb = null
 			x = this.scroller.before_print(true)

@@ -51,6 +51,8 @@ function immediate() {
 	
 	Lp.start_websocket()
 	
+	StatusDisplay.prepare(-1)
+	
 	Act.pull_recent()
 	
 	Nav.start()
