@@ -10,7 +10,6 @@ const FileUploader = NAMESPACE({
 				['name', 'text', {label: "File Name"}],
 				['hash', 'text', {label: "Hash"}],
 				['bucket', 'text', {label: "Bucket"}],
-				['keywords', 'word_list', {label: "Keywords"}],
 				['quantize', 'select', {
 					options: [null, 2, 4, 8, 16, 32, 64, 256],
 					label: "Quantize",
@@ -123,8 +122,6 @@ const FileUploader = NAMESPACE({
 				params.quantize = data.quantize
 			if (data.hash)
 				params.hash = data.hash
-			if (data.keywords && data.keywords.length)
-				params.keywords = data.keywords
 			if (priv)
 				params.globalPerms = ""
 			print(`uploading ${priv?"private":"public"} file...`)
@@ -220,7 +217,6 @@ const FileUploader = NAMESPACE({
 			size: file.type+" "+(file.size/1000)+" kB",
 			name: file.name,
 			hash: null,
-			keywords: null,
 		})
 		this.file_upload_form.write()
 		Sidebar.tabs.select('file')
