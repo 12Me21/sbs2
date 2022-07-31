@@ -278,6 +278,14 @@ class StatusDisplay {
 			if (online[uid] != old)
 				this.online[uid] = online_change[uid] = online[uid]
 		}
+		for (let uid in online) {
+			if (!online[uid])
+				delete online[uid]
+		}
+		for (let uid in this.online) {
+			if (!this.online[uid])
+				delete this.online[uid]
+		}
 		//console.log('online change:', online_change)
 		let li = Events.userlist
 		for (let huh in online_change) {
