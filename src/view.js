@@ -261,8 +261,13 @@ const View = NAMESPACE({
 			let element = ev.target
 			if (ev.button)
 				return
-			if (!element.hasAttribute('data-shrink'))
+			let shrink = element.getAttribute('data-shrink')
+			if (shrink==null)
 				return
+			if (shrink=='video') {
+				element.parentNode.toggleAttribute('data-big')
+				return
+			}
 			if (element==this.$embiggened)
 				element = null // already big: make small
 			this.set_embiggened(element)

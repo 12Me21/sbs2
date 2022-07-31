@@ -247,13 +247,25 @@ tab-list > button img.avatar {
 .M-spoiler-label:focus {
 	border-color: var(--T-box-bg);
 }
-.Markup img:focus, .Markup video:focus {
+
+.M-image-wrapper > * {
+	outline: none;
+	animation: none;
+}
+.M-image-wrapper:focus-within {
+	outline: var(--T-focus-outline);
+	outline-width: 1px;
+	outline-style: dotted;
+	outline-offset: -1px;
+}
+
+.Markup img:focus {
 	outline-offset: -1px;
 	outline-width: 1px;
 	outline-style: dotted;
 	animation: none;
 }
-.Markup img, .Markup video {
+.Markup img, .M-image-wrapper {
 	-webkit-transition: max-height 0.25s ease;
 	transition: max-height 0.25s ease;
 }
