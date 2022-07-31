@@ -258,17 +258,14 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 			if (name=='values') {
 				for (let name in value)
 					set(`values[${name}]`, value[name])
-			} else if (name=='keywords') {
-				for (let item of value)
-					form.append('keywords', item)
 			} else {
 				if (name=='globalPerms' && value==="")
 					value="."
 				set(name, value)
 			}
 		}
-		console.log(form)
-		//return
+		//console.log(form)
+		// return
 		return new ApiRequest('File', 'POST', form, x=>TYPES.content(x))
 	},
 }

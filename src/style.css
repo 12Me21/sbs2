@@ -211,15 +211,15 @@ tab-list > button img.avatar {
 		outline-offset: -5px;
 	}
 }
-:focus, a:focus > img {
+:focus, a:focus > img, .header-focus-anchor:focus + view-header {
 	outline: var(--T-focus-outline);
 	outline-width: 2px;
 	outline-style: solid;
 	outline-offset: -2px;
 	animation: focus-switch 0.1s linear;
 }
-img:focus {
-	animation: none;
+.header-focus-anchor {
+	position: absolute;
 }
 
 /* markup stuff */
@@ -247,10 +247,11 @@ img:focus {
 .M-spoiler-label:focus {
 	border-color: var(--T-box-bg);
 }
-.Markup img:focus {
-	outline-offset: 0;
+.Markup img:focus, .Markup video:focus {
+	outline-offset: -1px;
 	outline-width: 1px;
 	outline-style: dotted;
+	animation: none;
 }
 .Markup img, .Markup video {
 	-webkit-transition: max-height 0.25s ease;

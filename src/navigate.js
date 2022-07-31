@@ -257,7 +257,8 @@ class ViewSlot {
 ViewSlot.template = HTML`
 <view-slot class='COL'>
 	<div class=slot-overlay></div>
-	<view-header $=header tabindex=0 accesskey="q">
+	<span tabindex=0 accesskey="q" class='header-focus-anchor'></span>
+	<view-header $=header>
 		<span $=header_extra></span>
 		<h1 $=title class='ellipsis'></h1>
 		<span class='header-buttons ROW' $=header_buttons></span>
