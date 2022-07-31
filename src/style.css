@@ -248,6 +248,14 @@ tab-list > button img.avatar {
 	border-color: var(--T-box-bg);
 }
 
+.Markup media-player .M-image-wrapper {
+	height: 75vh !important;
+	width: auto !important;
+}
+.Markup media-player .M-image-wrapper > video {
+	object-fit: contain;
+}
+
 .M-image-wrapper > * {
 	outline: none;
 	animation: none;

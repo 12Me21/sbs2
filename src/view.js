@@ -266,12 +266,14 @@ const View = NAMESPACE({
 				return
 			if (shrink=='video') {
 				element.parentNode.toggleAttribute('data-big')
+				ev.preventDefault()
 				return
 			}
 			if (element==this.$embiggened)
 				element = null // already big: make small
 			this.set_embiggened(element)
-		}, {passive: true})
+			ev.preventDefault()
+		})
 		
 		// clicking outside an image shrinks it
 		// maybe could block this if the click is on a link/button?
