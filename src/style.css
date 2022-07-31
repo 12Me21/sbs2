@@ -431,15 +431,15 @@ pre {
 /* userlist */
 .userlist {
 	display: flex;
-	flex-flow: wrap;
 	box-sizing: content-box;
-	min-height: var(--bar-height);
+	height: var(--bar-height);
 	
 	padding: 3px 0;
 	background: var(--databarbgcolor);
+	contain: strict;
 }
 .userlist > * {
-	flex: none;
+	flex: initial;
 	width: var(--bar-height);
 	height: var(--bar-height);
 	/*border: 1px solid goldenrod;*/
@@ -451,6 +451,7 @@ pre {
 .userlist > * > .avatar {
 	width: 100%;
 	height: 100%;
+	object-fit: cover;
 }
 .status-idle > .avatar {
 	filter: grayscale(1);
@@ -466,6 +467,9 @@ pre {
 }
 .userlist2 > .userlist {
 	padding: 3px;
+	min-width: 0;
+	flex: initial;
+	contain: content; /* ehhh i wish you could set different contain in the x/y directions... */
 }
 
 
