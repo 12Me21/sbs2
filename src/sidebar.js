@@ -5,6 +5,7 @@ const Sidebar = NAMESPACE({
 	tabs: null,
 	$my_avatar: null,
 	userlist: new StatusDisplay(0, null),
+	LOGINEXPIRELONG: 60 * 60 * 24 * 365,
 	
 	normal_open: false,
 	fullscreen_open: false,
@@ -84,7 +85,8 @@ const Sidebar = NAMESPACE({
 		
 		$loginForm.onsubmit = ev=>{
 			ev.preventDefault()
-			Req.get_auth($loginForm.username.value, $loginForm.password.value).do = (resp, err)=>{
+			const seconds = $loginForm.extended_login.checked ? this.LOGINEXPIRELONG : null
+			Req.get_auth($loginForm.username.value, $loginForm.password.value, seconds).do = (resp, err)=>{
 				if (err) {
 					alert("❌ logging in failed\n"+err)
 				} else {

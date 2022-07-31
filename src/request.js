@@ -178,8 +178,11 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 	/////////////////////////
 	
 	// log in using username/password
-	get_auth(username, password) {
-		return this.request('User/login', null, {username, password})
+	get_auth(username, password, expire_time=null) {
+		const credentials = {username, password}
+		if (expire_time)
+			credentials.expire_time = expire_time
+		return this.request('User/login', null, credentials)
 	},
 	
 	// logs the user out and clears the cached token
