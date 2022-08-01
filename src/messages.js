@@ -313,7 +313,7 @@ class MessageList {
 		}, {passive:true})
 	}
 }
-MessageList.part_template = 𐀶`<message-part role=listitem tabindex=-1>`
+MessageList.part_template = 𐀶`<message-part role=listitem>`
 MessageList.controls = null
 MessageList.controls_message = null
 MessageList.prototype.max_parts = 500
