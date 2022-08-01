@@ -300,17 +300,23 @@ class MessageList {
 		// This works on mobile, because touches trigger mouseover.
 		// the touch creates a virtual cursor which stays there,
 		// until you touch somewhere else (which then triggers mouseleave)
-		listen('mouseover', ev=>{
+		let enter = ev=>{
 			let elem = ev.target.closest("message-part, message-controls, .message-list")
 			if (!elem || elem.classList.contains('message-list'))
 				this.show_controls(null)
 			else if (elem.tagName=='MESSAGE-PART')
 				this.show_controls(elem)
 			// otherwise, the element is <message-controls> so we do nothing
-		}, {passive:true})
-		listen('mouseleave', ev=>{
-			this.show_controls(null)
-		}, {passive:true})
+		}
+		
+		if (IOS_SAFARI) {
+			listen('click', enter, {passive:true})
+		} else {
+			listen('mouseover', enter, {passive:true})
+			listen('mouseleave', ev=>{
+				this.show_controls(null)
+			}, {passive:true})
+		}
 	}
 }
 MessageList.part_template = 𐀶`<message-part role=listitem>`
