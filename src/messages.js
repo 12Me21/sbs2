@@ -310,7 +310,16 @@ class MessageList {
 		}
 		
 		if (IOS_SAFARI) {
-			listen('touchend', ev=>{ window.setTimeout(x=>enter(ev), 100) })
+			listen('click', enter)
+			listen('touchstart', ev=>{
+				if (!this.controls_message)
+					return
+				if (this.controls_message.contains(ev.target))
+					return
+				if (this.controls.contains(ev.target))
+				    return
+				this.show_controls(null)
+			})
 		} else {
 			listen('mouseover', enter)
 			listen('mouseleave', ev=>{ this.show_controls(null) })
