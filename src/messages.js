@@ -314,10 +314,10 @@ class MessageList {
 			listen('touchstart', ev=>{
 				if (!this.controls_message)
 					return
-				if (this.controls_message.contains(ev.target))
-					return
 				if (this.controls.contains(ev.target))
 				    return
+				if (this.controls_message.contains(ev.target))
+					;//return
 				this.show_controls(null)
 			})
 		} else {
