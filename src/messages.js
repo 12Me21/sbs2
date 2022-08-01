@@ -310,7 +310,7 @@ class MessageList {
 		}
 		
 		if (IOS_SAFARI) {
-			listen('click', enter, {passive:true})
+			listen('touchend', enter, {passive:true})
 		} else {
 			listen('mouseover', enter, {passive:true})
 			listen('mouseleave', ev=>{
