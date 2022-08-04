@@ -272,10 +272,10 @@ EditView.template = HTML`
 	<div $=top class='sized page-container SLIDES' style='height:40%'>
 		<scroll-outer data-slide=preview $=preview_outer><scroll-inner $=preview class='pageContents editPageContents'></scroll-inner></scroll-outer>
 		<div data-slide=fields $=fields class='ROW'>
-			<label>Name:<input $=name></label>
+<!--			<label>Name:<input $=name></label>
 			<label>Type:<input $=type></label>
 			<label>Description:<input $=description></label>
-			<label>Parent ID:<input $=description type=number></label>
+			<label>Parent ID:<input $=description type=number></label>-->
 			<textarea $=data style="resize:none;margin:0.5rem;" class='FILL code-textarea'></textarea>
 		</div>
 	</div>

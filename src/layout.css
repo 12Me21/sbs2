@@ -17,7 +17,7 @@
 	word-break: inherit;
 	font-family: inherit;
 	font-variant-ligatures: none;
-	contain: paint; /* optional */
+	contain: content; /* optional */
 	flex: none;
 }
 
@@ -81,7 +81,7 @@ the inner scrolling element (the one which moves when you scroll)
 /* sized containers */
 .resize-box, .resize-box > .FILL,
 .SLIDES, .SLIDES > *,
-scroll-outer,
+scroll-outer, .sized,
 view-slot, view-root,
 not-sidebar, sidebar-container,
 tab-list, sidebar-panel {

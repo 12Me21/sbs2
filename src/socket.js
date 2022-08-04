@@ -146,8 +146,8 @@ const Lp = NAMESPACE({
 			return
 		if (!this.online_and_visible())
 			return
-		if (Settings.values.socket_debug=='yes')
-			print('maybe reconnect '+(ev?ev.type:""))
+		//if (Settings.values.socket_debug=='yes')
+		//	print('maybe reconnect '+(ev?ev.type:""))
 		
 		let last = this.last_reconnect
 		this.last_reconnect = Date.now()
