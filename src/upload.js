@@ -150,6 +150,18 @@ const FileUploader = NAMESPACE({
 		this.last_file = content
 	},
 	
+	/*get_metadata(file) {
+		if (file.type=="image/png") {
+			// signature: 0-7
+			// IHDR length: 8-11
+			// IHDR name: 12-15
+			// IHDR data: 16-29
+		} else if (file.type=="image/jpeg") {
+			
+			
+		}
+	},*/
+	
 	convert_image(file, quality, callback) {
 		let img = new Image()
 		img.onload = e=>{
@@ -189,6 +201,9 @@ const FileUploader = NAMESPACE({
 		$file_image.src = ""
 		if (url) {
 			$file_image.src = url
+			$file_image.onload = ev=>{
+				$file_image.title = $file_image.naturalWidth+" x "+$file_image.naturalHeight
+			}
 			$file_url.value = url
 			$file_url.scrollLeft = 999
 		} else {
