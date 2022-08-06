@@ -37,6 +37,11 @@ input[type="number"] {
 }*/
 input[type="checkbox"] {
 	max-width: 8em;
+	/*max-width: 1rem;*/
+	/* todo: style this to match the other input fields */
+	align-self: center;
+	width: 1rem;
+	height: 1rem;
 }
 input, output, select, textarea, textarea-container {
 	font: inherit;
@@ -221,6 +226,9 @@ tab-list > button img.avatar {
 		outline-offset: -2px;
 		animation: focus-switch 0.1s linear;
 	}
+	/*.M-spoiler-label:focus {
+		border-color: var(--T-box-bg);
+	}*/
 }
 :focus-visible, a:focus-visible > img, .header-focus-anchor:focus + view-header {
 	outline: var(--T-focus-outline);
@@ -229,6 +237,11 @@ tab-list > button img.avatar {
 	outline-offset: -2px;
 	animation: focus-switch 0.1s linear;
 }
+/*.M-spoiler-label:focus-visible {
+	border-color: var(--T-box-bg);
+forgot what this was for ??
+}*/
+	
 .header-focus-anchor {
 	position: absolute;
 }
@@ -254,9 +267,6 @@ tab-list > button img.avatar {
 
 .M-spoiler-label {
 	contain: none; /* the focus outline wasnt showing, idk why */
-}
-.M-spoiler-label:focus {
-	border-color: var(--T-box-bg);
 }
 
 .Markup media-player .M-image-wrapper {
