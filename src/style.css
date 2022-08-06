@@ -67,7 +67,8 @@ select {
 	border-top-left-radius: 3px;
 }
 input[type="file"] {
-	line-height: calc(var(--bar-height) - 4px);
+	line-height: calc(var(--bar-height, 1.5rem) - 4px);
+	padding: 0;
 }
 input::file-selector-button {
 	vertical-align: top;
@@ -149,7 +150,7 @@ button[aria-selected="true"] {
 	background: var(--button-selected-bg);
 	box-shadow: 0px 1px 3px inset var(--button-shadow-color);
 }
-button:active {
+button:active, input:active::file-selector-button {
 	background: var(--button-selected-bg);
 	box-shadow: 0px 1px 3px inset var(--button-shadow-color);
 }
@@ -207,11 +208,21 @@ tab-list > button img.avatar {
 /* focus */
 @keyframes focus-switch {
 	from {
-		outline-width: 5px;
-		outline-offset: -5px;
+		outline-width: 4px;
+		outline-offset: -4px;
 	}
 }
-:focus, a:focus > img, .header-focus-anchor:focus + view-header {
+/* selector() is pretty new, but i think `not` will succeed if it's not supported */
+@supports not selector(:focus-visible) {
+	:focus, a:focus > img, .header-focus-anchor:focus + view-header {
+		outline: var(--T-focus-outline);
+		outline-width: 2px;
+		outline-style: solid;
+		outline-offset: -2px;
+		animation: focus-switch 0.1s linear;
+	}
+}
+:focus-visible, a:focus-visible > img, .header-focus-anchor:focus + view-header {
 	outline: var(--T-focus-outline);
 	outline-width: 2px;
 	outline-style: solid;
