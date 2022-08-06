@@ -219,21 +219,14 @@ tab-list > button img.avatar {
 }
 /* selector() is pretty new, but i think `not` will succeed if it's not supported */
 @supports not selector(:focus-visible) {
-	:focus, a:focus > img, .header-focus-anchor:focus + view-header {
+	:focus, .header-focus-anchor:focus + view-header {
 		outline: var(--T-focus-outline);
-		outline-width: 2px;
-		outline-style: solid;
 		outline-offset: -2px;
 		animation: focus-switch 0.1s linear;
 	}
-	/*.M-spoiler-label:focus {
-		border-color: var(--T-box-bg);
-	}*/
 }
-:focus-visible, a:focus-visible > img, .header-focus-anchor:focus + view-header {
+:focus-visible, [role="listitem"]:focus, .header-focus-anchor:focus + view-header {
 	outline: var(--T-focus-outline);
-	outline-width: 2px;
-	outline-style: solid;
 	outline-offset: -2px;
 	animation: focus-switch 0.1s linear;
 }
@@ -377,7 +370,7 @@ view-slot:not(.focused) {
 	width: 100%;
 	height: 100%;
 	z-index: 25;
-	background-image: url("data:image/gif;base64,R0lGODdhBAAEAAAAMSwAAAAABAAEAMAAAAD///8CBYxhF8hRADs=");
+	background-image: url("data:image/gif;base64,R0lGODdhBAAEAAAAMSwAAAAABAAEAMAAAAD///8CBYxhF8hRADs="); /*todo; bmp*/
 	opacity: 0.25;
 	display: none;
 	pointer-events: none;

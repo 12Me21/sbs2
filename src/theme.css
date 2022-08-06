@@ -65,7 +65,7 @@
 	
 	--T-button-border: 2px solid #00C8B4;
 	--T-textarea-border-color: #00C8B4;
-	--T-focus-outline: #F00 dashed 2px;
+	--T-focus-outline: solid 2px #F00;
 }
 
 /* dark theme */
@@ -120,7 +120,7 @@
 	
 	--T-button-border: 2px solid #05B;
 	--T-textarea-border-color: #05B;
-	--T-focus-outline: #B00 dashed 2px;
+	--T-focus-outline: solid 2px #B00;
 }
 /* unused */
 /*[data-theme="light"] [data-subtheme~="header-dark"] {
