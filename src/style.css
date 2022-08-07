@@ -395,6 +395,8 @@ view-header h1 > span {
 	border: 1px solid gray;
 	border-left: none;
 	height: calc(var(--bar-height) / 2);
+	box-sizing: border-box;
+	margin-left: auto;
 }
 .header-buttons > * {
 	font-weight: bold;
