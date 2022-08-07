@@ -211,11 +211,43 @@ class StatusDisplay {
 	redraw() {
 		if (!this.$elem)
 			return
-		this.$elem.fill()
-		Object.for(this.statuses(), (status, id)=>{
-			let user = StatusDisplay.get_user(id)
-			this.$elem.append(StatusDisplay.draw_avatar(user, status))
-		})
+		let st = this.statuses()
+		let ste = Object.entries(st)
+		let j = 0
+		let chs = [...this.$elem.childNodes]
+		//log = "redrawing "+this.id
+		for (let i=0; i<chs.length; i++) {
+			let stx = ste[j]
+			let ch = chs[i]
+			let ex_uid = +ch.dataset.uid
+			if (j >= ste.length || !(ex_uid >= stx[0])) {
+				ch.remove()
+				//log = "remove "+ex_uid
+			} else {
+				if (ex_uid == stx[0]) {
+					// now try to update the icon if changed: todo: improve
+					let user = StatusDisplay.get_user(stx[0])
+					if (ch.dataset.avatar != user.avatar)
+						ch.replaceWith(this.draw_avatar(...stx))
+					else
+						ch.dataset.status = stx[1]
+				} else {// ex_uid > stx[0]
+					//log = stx[0]+" insert before "+ex_uid
+					ch.before(this.draw_avatar(...stx))
+					i--
+				}
+				j++
+			}
+		}
+		for (; j<ste.length; j++) {
+			//log = ste[j][0]+" append"
+			this.$elem.append(this.draw_avatar(...ste[j]))
+		}
+	}
+	draw_avatar(uid, status) {
+		log = "draw avatar "+uid+" in "+this.id
+		let user = StatusDisplay.get_user(uid)
+		return StatusDisplay.draw_avatar(user, status)
 	}
 	// set your own status
 	set_status(s) {
@@ -227,8 +259,10 @@ class StatusDisplay {
 	}
 	// when a user's avatar etc. changes
 	redraw_user(user) {
-		if (this.statuses[user.id])
+		if (this.statuses[user.id]) {
+			log = 'redraw user?'
 			this.redraw()
+		}
 	}
 	// get statuses for this room
 	statuses() {
@@ -268,8 +302,10 @@ StatusDisplay.draw_avatar = function(user, status) {
 	e.firstChild.title = user.username
 	e.firstChild.setAttribute("alt", user.username)
 	e.dataset.uid = user.id
-	if (status == "idle")
-		e.classList.add('status-idle')
+	e.dataset.avatar = user.avatar
+	e.dataset.status = status
+	/*if (status == "idle")
+		e.classList.add('status-idle')*/
 	return e
 }.bind(𐀶`<a tabindex=-1><img class='avatar' width=100 height=100>`)
 

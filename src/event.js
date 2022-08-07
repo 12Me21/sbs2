@@ -59,7 +59,7 @@ class IdListeners extends Listeners {
 			// todo: what if the array was instead a Map of view -> callback?
 			// then, we just call .delete
 			// and, for registering events which aren't attached to a View, we can pass really any object, or a symbol, or etc.
-			super.destroy2(this.ids[id])
+			super.destroy2(this.ids[id], view)
 		}
 		super.on_destroy(view)
 	}
