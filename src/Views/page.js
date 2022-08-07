@@ -11,7 +11,6 @@
 
 class PageView extends BaseView {
 	Start({id, query}) {
-		print("start??")
 		let field = 'number'==typeof id ? 'id' : 'hash'
 		if (field=='id')
 			StatusDisplay.prepare(id)
@@ -211,9 +210,8 @@ class PageView extends BaseView {
 	}
 	// 8:10;35
 	Destroy() {
-		print("destroy??")
 		View.lost = this.$textarea.value
-		goto2: {
+		goto2: if (this.userlist) {
 			// HACK
 			for (let {view} of Nav.slots)
 				if (view!==this && view instanceof PageView)
@@ -221,7 +219,8 @@ class PageView extends BaseView {
 						break goto2
 			this.userlist.set_status(null)
 		}
-		this.scroller.destroy()
+		if (this.scroller)
+			this.scroller.destroy()
 		PageView.track_resize_2.remove(this.$textarea_container)
 	}
 	Insert_Text(text) {
