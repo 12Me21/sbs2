@@ -206,6 +206,7 @@ class StatusDisplay {
 		this.id = id
 		this.$elem = element
 		this.my_status = undefined
+		this.initial = true
 		Object.seal(this)
 	}
 	redraw() {
@@ -243,11 +244,15 @@ class StatusDisplay {
 			//log = ste[j][0]+" append"
 			this.$elem.append(this.draw_avatar(...ste[j]))
 		}
+		this.initial = false
 	}
 	draw_avatar(uid, status) {
-		log = "draw avatar "+uid+" in "+this.id
+		//log = "draw avatar "+uid+" in "+this.id
 		let user = StatusDisplay.get_user(uid)
-		return StatusDisplay.draw_avatar(user, status)
+		let e = StatusDisplay.draw_avatar(user, status)
+		if (this.initial)
+			e.dataset.initial = ""
+		return e
 	}
 	// set your own status
 	set_status(s) {
@@ -260,7 +265,7 @@ class StatusDisplay {
 	// when a user's avatar etc. changes
 	redraw_user(user) {
 		if (this.statuses[user.id]) {
-			log = 'redraw user?'
+			//log = 'redraw user?'
 			this.redraw()
 		}
 	}
