@@ -233,93 +233,33 @@ class StatusDisplay {
 	// get statuses for this room
 	statuses() {
 		if (this.id==0)
-			return StatusDisplay.online
-		return StatusDisplay.statuses[this.id] || {__proto__:null}
+			return Lp.online
+		return Lp.statuses[this.id] || {__proto__:null}
 	}
 	
 	// lookup a user from the cache
 	static get_user(id) {
-		let user = this.users[~id]
+		let user = Lp.users[~id]
 		if (!user)
 			throw new TypeError("can't find status user "+id)
 		return user
 	}
-	// called during `userlistupdate`
-	static update(statuses, objects) {
-		//console.log('update', statuses)
-		Object.assign(this.statuses, statuses)
-		Object.assign(this.users, objects.user)
-		// haloopdy (hack (oh my god fuck)) 
-		let online = {}
-		function merge(map, active) {
-			for (let uid in map) {
-				if (online[uid])
-					continue
-				if (active) {
-					if (map[uid]=='active')
-						online[uid] = 'idle'
-				} else {
-					if (map[uid])
-						online[uid] = map[uid]
-				}
-			}
-		}
-		for (let pid in this.statuses)
-			merge(this.statuses[pid], pid!=0)
-		//console.log('online', online)
-		let online_change = {}
-		for (let uid in this.online) {
-			let old = this.online[uid]
-			if (online[uid] != old)
-				this.online[uid] = online_change[uid] = online[uid]
-		}
-		for (let uid in online) {
-			let old = this.online[uid]
-			if (online[uid] != old)
-				this.online[uid] = online_change[uid] = online[uid]
-		}
-		for (let uid in online) {
-			if (!online[uid])
-				delete online[uid]
-		}
-		for (let uid in this.online) {
-			if (!this.online[uid])
-				delete this.online[uid]
-		}
-		//console.log('online change:', online_change)
-		let li = Events.userlist
-		for (let huh in online_change) {
-			li.fire_id(0, online_change)
-			break
-		}
-		for (let pid in statuses) {
-			if (pid!=0)
-				li.fire_id(pid, statuses[pid])
-		}
-	}
 	// called during `user_event` (i.e. when a user is edited)
 	static update_user(user) {
-		if (this.users[~user.id])
-			this.users[~user.id] = user
+		if (Lp.users[~user.id])
+			Lp.users[~user.id] = user
 	}
 	// download userlist for this page if we're not already tracking it
 	static prepare(pid) {
-		if (this.statuses[pid])
+		if (Lp.statuses[pid])
 			return
 		Lp.userlist(resp=>{
-			if (this.statuses[pid])
+			if (Lp.statuses[pid])
 				return
-			this.update(resp.statuses, resp.objects)
+			Lp.handle_statuses(resp.statuses, resp.objects)
 		})
 	}
 }
-// map(contentId -> map(userId -> status))
-StatusDisplay.statuses = {__proto__:null, '0':{}}
-StatusDisplay.online = {__proto__:null}
-// todo: this is never cleared, so technically it leaks memory.
-// but unless there are thousands of users, it won't matter
-// map(userId -> user)
-StatusDisplay.users = {__proto__:null}
 
 StatusDisplay.draw_avatar = function(user, status) {
 	let e = this()

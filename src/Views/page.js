@@ -11,6 +11,7 @@
 
 class PageView extends BaseView {
 	Start({id, query}) {
+		print("start??")
 		let field = 'number'==typeof id ? 'id' : 'hash'
 		if (field=='id')
 			StatusDisplay.prepare(id)
@@ -93,7 +94,7 @@ class PageView extends BaseView {
 		])
 		
 		// init components //
-		Object.assign(StatusDisplay.users, user)
+		Object.assign(Lp.users, user)
 		this.userlist = new StatusDisplay(this.page_id, this.$userlist)
 		this.scroller = new Scroller(this.$outer, this.$inner)
 		this.list = new MessageList(this.$message_list, this.page_id)
@@ -210,6 +211,7 @@ class PageView extends BaseView {
 	}
 	// 8:10;35
 	Destroy() {
+		print("destroy??")
 		View.lost = this.$textarea.value
 		goto2: {
 			// HACK

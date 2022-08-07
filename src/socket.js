@@ -21,15 +21,61 @@ class SocketRequestError extends TypeError {
 SocketRequestError.prototype.name = "SocketRequestError"
 
 const Lp = NAMESPACE({
+	// map(contentId -> map(userId -> status))
+	statuses: {__proto__:null, '0':{}},
+	online: {__proto__:null},
+	// todo: this is never cleared, so technically it leaks memory.
+	// but unless there are thousands of users, it won't matter
+	// map(userId -> user)
+	users: {__proto__:null},
+	
+	online_change() {
+		let online = Object.assign({__proto__:null}, this.statuses[0])
+		for (let pid in this.statuses) {
+			if (pid!=0) {
+				let map = this.statuses[pid]
+				for (let uid in map) {
+					if (map[uid]=='active' && online[uid]==undefined)
+						online[uid] = 'idle'
+				}
+			}
+		}
+		let old = this.online
+		this.online = online
+		
+		for (let map of [old, online]) /// ugh
+			for (let uid in map)
+				if (online[uid] != old[uid])
+					return true
+		return false
+	},
+	
+	// called during `userlistupdate`
+	handle_statuses(statuses, objects) {
+		//console.log('update', statuses)
+		Object.assign(this.statuses, statuses)
+		Object.assign(this.users, objects.user)
+		
+		let li = Events.userlist
+		
+		if (this.online_change())
+			li.fire_id(0)
+		
+		for (let pid in statuses) {
+			if (pid!=0)
+				li.fire_id(pid)
+		}
+	},
+	
 	set_status(id, value) {
-		this.statuses[id] = value
-		this.status_queue[id] = value
+		this.my_statuses[id] = value
+		this.my_status_queue[id] = value
 	},
 	flush_statuses(callback=null) {
 		// this loop runs ONCE, only if the status_queue is not empty
-		for (let key in this.status_queue) {
-			this.request({type:'setuserstatus', data:this.status_queue}, ({x})=>{ // messy..
-				this.status_queue = {__proto__:null}
+		for (let key in this.my_status_queue) {
+			this.request({type:'setuserstatus', data:this.my_status_queue}, ({x})=>{ // messy..
+				this.my_status_queue = {__proto__:null}
 				callback && callback()
 			})
 			break // important
@@ -84,8 +130,8 @@ const Lp = NAMESPACE({
 	},
 	
 	// statuses
-	statuses: {__proto__:null}, // all of your statuses (map of contentId -> string)
-	status_queue: {__proto__:null}, // status changes which haven't been sent yet
+	my_statuses: {__proto__:null}, // all of your statuses (map of contentId -> string)
+	my_status_queue: {__proto__:null}, // status changes which haven't been sent yet
 	
 	stop() {
 		if (this.websocket)
@@ -93,7 +139,7 @@ const Lp = NAMESPACE({
 	},
 	on_ready() {
 		// all statuses need to be resent
-		Object.assign(this.status_queue, this.statuses)
+		Object.assign(this.my_status_queue, this.my_statuses)
 		this.flush_statuses()
 		// resend all previously pending requests
 		// TODO: this will send duplicate requests, if any were recvd by
@@ -303,7 +349,7 @@ const Lp = NAMESPACE({
 			this.process_live(data.events, data.objects)
 		} break;case 'userlistupdate': {
 			Entity.do_listmap(data.objects)
-			StatusDisplay.update(data.statuses, data.objects)
+			this.handle_statuses(data.statuses, data.objects)
 		} break;case 'badtoken': {
 			//
 		} }
