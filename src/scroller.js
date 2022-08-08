@@ -289,7 +289,7 @@ Settings.add({
 	},
 })
 Settings.add({
-	name: 'scroller_anchor', label: "Scroller Anchor", type: 'select',
+	name: 'scroller_anchor', label: "Scroller Origin", type: 'select',
 	options: ['top', 'bottom'],
 	options_labels: ['top', 'bottom (unstable!)'],
 	update(value) {
