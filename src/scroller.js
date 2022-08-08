@@ -10,10 +10,11 @@ if (window.ResizeObserver) {
 				for (let event of events) {
 					let item = this.tracking.get(event.target)
 					let rect = event.contentRect
+					let m = rect[this.measure]
 					//ignore changes for hidden and unchanged elements
-					if (rect.width && rect[this.measure]!=item.size) {
+					if (rect.width && m!=item.size) {
 						item.callback(item.size) // pass old size
-						item.size = rect[this.measure]
+						item.size = m
 					}
 				}
 			})
@@ -97,21 +98,27 @@ class Scroller {
 		this.anim = null
 		this.locked = false
 		this.before = null
+		
+		this.reverse = Scroller.reverse
 		if (this.anim_type==2)
 			this.$inner.classList.add('scroll-anim3')
+		if (this.reverse)
+			this.$outer.classList.add('anchor-bottom')
 		
 		// autoscroll is enabled within this distance from the bottom
 		this.bottom_region = 10
 		
 		// i think it might not be totally reliable if both these fire at once...
-		Scroller.track_height.add(this.$outer, (old_size)=>{
-			if (this.at_bottom(old_size, undefined))
-				this.scroll_instant()
-		})
-		Scroller.track_height.add(this.$inner, (old_size)=>{
-			if (this.at_bottom(undefined, old_size))
-				this.scroll_instant()
-		})
+		if (!this.reverse) {
+			Scroller.track_height.add(this.$outer, (old_size)=>{
+				if (this.at_bottom(old_size, undefined))
+					this.scroll_instant()
+			})
+			Scroller.track_height.add(this.$inner, (old_size)=>{
+				if (this.at_bottom(undefined, old_size))
+					this.scroll_instant()
+			})
+		}
 		
 		Object.seal(this)
 	}
@@ -122,10 +129,13 @@ class Scroller {
 		// outer.bottom vs inner.bottom
 		
 		// yeah it might be better actually, if we measured the bottom position rather than 
-		return scroll-outer-this.$outer.scrollTop < this.bottom_region
+		let top = this.$outer.scrollTop
+		if (this.reverse)
+			return -top < this.bottom_region
+		return scroll-outer-top < this.bottom_region
 	}
 	scroll_instant() {
-		this.$outer.scrollTop = 9e9
+		this.$outer.scrollTop = this.reverse ? 0 : 9e9
 	}
 	scroll_height() {
 		// $inner.GBCR().height = $inner.clientHeight = outer.scrollHeight
@@ -147,8 +157,12 @@ class Scroller {
 	}
 	before_print(smooth) {
 		// not scrolled to bottom, don't do anything
-		if (!this.at_bottom())
-			return 'none'
+		if (!this.at_bottom()) {
+			if (this.reverse) {
+				return -this.scroll_height()
+			} else
+				return 'none'
+		}
 		// anim disabled
 		if (!smooth || this.anim_type==0 || 'visible'!=document.visibilityState)
 			return 'instant'
@@ -157,6 +171,12 @@ class Scroller {
 		return this.scroll_height()
 	}
 	after_print(before) {
+		if (this.reverse && 'number'==typeof before && before<0) {
+			let after = this.scroll_height()
+			if (before != after)
+				this.$outer.scrollTop -= Math.round(after-before)
+			return
+		}
 		if (this.locked) {
 			this.before = before
 			return
@@ -255,6 +275,7 @@ class Scroller {
 }
 Scroller.track_height = new ResizeTracker('height')
 Scroller.anim_type = 2
+Scroller.reverse = false
 
 //document.addEventListener('visibilitychange', )
 
@@ -266,8 +287,19 @@ Settings.add({
 		Scroller.anim_type = +value
 	},
 })
+Settings.add({
+	name: 'scroller_anchor', label: "Scroller Anchor", type: 'select',
+	options: ['top', 'bottom'],
+	options_labels: ['top', 'bottom (unstable!)'],
+	update(value) {
+		Scroller.reverse = value=='bottom'
+	},
+})
 
-// wait what if instead of animating transforming the scroller we just
-// set the .height of the newly message and animated that from 0px..
-// yeah ! hmm !
-// nn doesnt work because of margins/padding limiting min height
+// todo:
+// - use the reverse scroller trick (flex-flow: column reverse on scroll-outer), as an option, for browsers which can handle it. it looks a lot better than the current system, when DPR is not an integer.
+// - manage resize events better. track current height in a variable and reuse this, etc.  need to improve this in order to adjust pos when uhh new messages posted in reverse mode.
+// actually nevermind we can rely on scroll anchoring alone?
+// nice hmm..
+// so yeah just have a setting to enable the reverse mode and that's it?
+// just need to play the anim when a new message is posted if you're at the bottom, otherwise do nothing!
