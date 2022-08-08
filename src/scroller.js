@@ -173,8 +173,9 @@ class Scroller {
 	after_print(before) {
 		if (this.reverse && 'number'==typeof before && before<0) {
 			let after = this.scroll_height()
+			before = -before
 			if (before != after)
-				this.$outer.scrollTop -= Math.round(after-before)
+				this.$outer.scrollTop -= after-before
 			return
 		}
 		if (this.locked) {
