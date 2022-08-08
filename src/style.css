@@ -113,7 +113,7 @@ textarea-container {
 	padding: 5px;
 	background: var(--T-bg);
 	/* should be approx. line-height * 2 */
-	min-height: 2.5em;
+	min-height: calc(2.5em + 1px);
 	max-height: 25vh;	
 }
 textarea-container > textarea {
