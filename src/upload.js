@@ -216,14 +216,14 @@ const FileUploader = NAMESPACE({
 	},
 	
 	got_file(file) {
-		if (file.type=='image/webp')
+		/*if (file.type=='image/webp')
 			return this.convert_image(file, 0.7, x=>{
 				if (!x) {
 					print('image conversion failed!')
 					return
 				}
 				this.got_file(x)
-			})
+			})*/
 		
 		let url = URL.createObjectURL(file)
 		this.show_parts(1, url, file)
