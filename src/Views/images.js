@@ -120,9 +120,9 @@ class ImagesView extends BaseView {
 ImagesView.template = HTML`
 <view-root class='COL'>
 	<div $=whatever class='images-thumbnails'></div>
-	<div class='nav ROW rem1-5'>
+	<div class='nav rem1-5 ROW'>
 		<button $=prev>◀prev</button>
-		<span $=page class='textItem'>0</span>
+		<span $=page>0</span>
 		<button $=next>next▶</button>
 		<input $=bucket placeholder="bucket">
 	</div>

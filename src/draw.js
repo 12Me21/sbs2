@@ -36,17 +36,9 @@ const Draw = NAMESPACE({
 		return e
 	}.bind(𐀶`
 <entity-label>
-	<span class='textItem icon-title entity-title pre'>...</span>
+	<span class='icon-title entity-title pre'>...</span>
 </entity-label>
 `),
-	
-	//📥 text‹String›
-	//📤 ‹ParentNode›
-	text_item: function(text) {
-		let e = this()
-		e.textContent = text
-		return e
-	}.bind(𐀶`<span class='textItem pre'>`),
 	
 	// user: User or Author
 	avatar_url(user, size=100) {
@@ -166,8 +158,8 @@ const Draw = NAMESPACE({
 		return e
 	}.bind(𐀶`
 <a tabindex=-1 class='bar rem1-5 user-label'>
-	<img class='item icon avatar' width=100 height=100>
-	<span class='textItem entity-title pre'></span>
+	<img class='item avatar' width=100 height=100>
+	<span class='entity-title pre'></span>
 </a>
 `),
 	category_item: function(content, user, isCategory=true) {

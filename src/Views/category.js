@@ -116,10 +116,10 @@ CategoryView.template = HTML`
 	<div $=parent class='category-list'></div>
 	Child categories:
 	<div $=categories class='category-list'></div>
-	<div class='ROW bar rem1-5 nav'>
-		<button $=prev class='item'>◀prev</button>
-		<span $=page class='textItem'>0</span>
-		<button $=next class='item'>next▶</button>
+	<div class='bar rem1-5 nav ROW'>
+		<button $=prev>◀prev</button>
+		<span $=page>0</span>
+		<button $=next>next▶</button>
 	</div>
 	<div $=children class='category-list'></div>
 </view-root>

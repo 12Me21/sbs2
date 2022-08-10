@@ -243,10 +243,10 @@ const Sidebar = NAMESPACE({
 		
 		return d
 	}.bind(𐀶`
-<div class='bar rem1-5 ellipsis'>
+<div class='sidebar-comment bar ellipsis'>
 	<a tabindex=-1 class='user-label'>
 		<img class='item avatar' width=100 height=100>
-		<span class='textItem entity-title pre'></span>
+		<span class='entity-title pre'></span>
 	</a>:&#32;
 </div>
 `),

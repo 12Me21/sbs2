@@ -24,6 +24,7 @@
 /* always display images at correct aspect ratio, even if the element is the wrong size */
 img {
 	object-fit: contain;
+	vertical-align: top; /* when displayed inline */
 }
 
 /* by default, hidden just sets `display: none`, which is overridden by any element which has its display explicitly set (most of them) */
@@ -109,13 +110,15 @@ td, th {  /* border renders outside */
 }
 
 /* this is really hard to get working */
+/* i wrote that comment in like 2017 it's not that bad w */
 .ellipsis {
 	overflow: hidden;
 	text-overflow: ellipsis;
-	white-space: pre !important;
+	line-height: var(--bar-height);
 }
-.ellipsis * {
+.ellipsis, .ellipsis * {
 	white-space: pre !important;
+	vertical-align: top !important;
 }
 
 /*********
@@ -129,17 +132,6 @@ td, th {  /* border renders outside */
 	overflow: hidden;
 	box-sizing: content-box;
 	min-height: var(--bar-height);
-	line-height: var(--bar-height);
-}
-.bar, .bar * {
-	/* if this isn't `top`, the .bar system's inline elements will overflow, because of their line-height */
-	/* the real solution here is to use flex instead. but ehh */
-	vertical-align: top !important;
-}
-.textItem { /* basically anything within a .bar */
-	display: inline;
-	min-height: var(--bar-height);
-	line-height: var(--bar-height);
 }
 .item { /* for images and other blocks that can't wrap */
 	display: inline-block;
@@ -335,6 +327,10 @@ but, then we can't add a border to the image
 	/* hide the sidebar */
 	:root:not(.f-mobileSidebar) sidebar-container {
 		visibility: hidden;
+	}
+	
+	sidebar-container > .userlist {
+		padding: 3px;
 	}
 }
 

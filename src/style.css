@@ -202,12 +202,13 @@ tab-list > button[aria-selected="true"] {
 	text-shadow:
 		-.5px -.5px 1px var(--T-color),
 		1px 1px 0px var(--T-color);
+	contain: none;
 }
 tab-list > button img.avatar {
 	width: auto;
 	height: 100%;
 	background: transparent;
-	line-height: var(--bar-height, 1.5rem);
+	line-height: var(--bar-height, 1.5rem); /* for alt text */
 }
 
 /* focus */
@@ -377,11 +378,12 @@ view-slot:not(.focused) {
 }
 
 view-header h1 {
+	flex: auto;
+	min-width: 0;
+	align-self: center;
+	padding-right: 0.25rem;
 	font-size: 1.625em;
 	font-weight: normal;
-	padding-right: 0.25rem;
-	flex: initial;
-	min-width: 0;
 }
 view-header h1 .entity-title {
 	font-weight: normal;
@@ -390,21 +392,26 @@ view-header h1 > span {
 	padding-left: 0.25rem;
 }
 
+/* messy... */
 .header-buttons {
-	background: gray;
-	border: 1px solid gray;
-	border-left: none;
-	height: calc(var(--bar-height) / 2);
 	box-sizing: border-box;
+	height: calc(var(--bar-height) / 2);
 	margin-left: auto;
+	padding: 1px 0;
+	background: goldenrod;
 }
 .header-buttons > * {
-	font-weight: bold;
 	height: 100%;
+	padding: 0 0.25em;
 	margin-left: 1px;
 	font-size: 0.875em;
-	padding: 0 0.25em;
+	font-weight: bold;
 	background: var(--bar-bg);
+	display: flex;
+	align-items: center;
+}
+.header-buttons > :last-child {
+	margin-right: 1px;
 }
 .header-buttons > * > :last-child {
 	text-decoration: underline;
@@ -801,6 +808,7 @@ view-root:not(.f-editing) .chat-edit-controls {
 	color: var(--databartxtcolor);
 	--T-link-color: var(--link-invert-color);
 	--T-link-hover-color: var(--link-invert-hover-color);
+	align-items: center;
 }
 .nav > span {
 	color: var(--databartxtcolor);
@@ -930,6 +938,7 @@ not-sidebar {
 	z-index: 90;
 }
 .sidebar-comment {
+	--bar-height: 1.5rem;
 	contain: strict;
 }
 
