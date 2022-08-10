@@ -138,13 +138,18 @@ class MessageList {
 	// display a Message at the bottom of the list
 	// ONLY use this for messages from live message_events
 	// if cb is set, it will be called before a message is inserted
+	// return: (todo improve this. rn we only use it for updating the title notif.)
+	// true - new message added at bottom
+	// false - replaced/removed an edited/deleted/rethreaded message
+	// null - nothing
 	display_live(msg, cb=null) {
 		let id = msg.id
 		
 		let existing = this.parts.get(id)
 		if (existing) {
 			cb && cb()
-			return this.replace(existing, msg)
+			this.replace(existing, msg)
+			return false
 		}
 		
 		// deleted, or for another room
@@ -162,11 +167,13 @@ class MessageList {
 			/// but technically, we should check against the page's
 			// lastmessageid, if we /aren't/ loading initial messages
 			// to make sure the edited message is new message.
-			return this.display_only(msg)
+			this.display_only(msg)
+			return true
 		}
 		if (id>prev.data.id) {
 			cb && cb()
-			return this.display_bottom(msg)
+			this.display_bottom(msg)
+			return true
 		}
 		
 		if (!msg.edited)
@@ -179,6 +186,7 @@ class MessageList {
 		// rethreaded from another room
 		print("unimplemented: rethread ", id)
 		//this.rethread(msg)
+		return false
 	}
 	
 	// display a Message at the top or bottom of the list

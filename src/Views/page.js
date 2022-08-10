@@ -251,8 +251,7 @@ class PageView extends BaseView {
 		}
 		for (let msg of comments) {
 			if (this.list.display_live(msg, cb))
-				if (!msg.deleted && !msg.edited)
-					last_new = msg
+				last_new = msg
 		}
 		if (x==null) // nothing printed
 			return
