@@ -21,11 +21,7 @@ class Author {
 		let {a, big, n} = message.values
 		if (user) {
 			this.username = user.username
-			let bridge = user.id==5410 && user.username=="sbs_discord_bridge"
-			this.bridge = bridge
-			if (bridge) {
-				message.text = "null"
-			}
+			this.bridge = user.id==5410 && user.username=="sbs_discord_bridge"
 			this.avatar = valid(a) ? String(a) : user.avatar
 		}
 		this.nickname = valid(n) ? Author.filter_nickname(n) : null
