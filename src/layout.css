@@ -12,13 +12,14 @@
 * {
 	margin: 0;
 	box-sizing: border-box;
+	contain: content;
+	flex: none;
+	/*padding: 0;*/
 	/* override default browser styles */
 	/* (these are all inherited properties) */
 	word-break: inherit;
 	font-family: inherit;
 	font-variant-ligatures: none;
-	contain: content; /* optional */
-	flex: none;
 }
 
 /* always display images at correct aspect ratio, even if the element is the wrong size */
@@ -56,11 +57,9 @@ html, body {
 .COL { flex-flow: column; }
 
 .FILL { flex: 0mm; }
-.ROW > .FILL { min-width: 0; }
-.COL > .FILL { min-height: 0; }
+.ROW > .FILL, .ROW > .sized { min-width: 0; }
+.COL > .FILL, .COL > .sized { min-height: 0; }
 .sized { flex-shrink: 1; }
-.ROW > .sized { min-width: 0; }
-.COL > .sized { min-height: 0; }
 
 
 /* views */

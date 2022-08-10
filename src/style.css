@@ -339,7 +339,6 @@ view-header {
 	color: var(--databartxtcolor);
 	box-shadow: var(--normal-shadow);
 	z-index: 4;
-	contain: content;
 	display: flex;
 	flex-flow: wrap;
 	min-height: var(--bar-height);
@@ -492,7 +491,7 @@ pre {
 	padding: 3px;
 	min-width: 0;
 	flex: initial;
-	contain: content; /* ehhh i wish you could set different contain in the x/y directions... */
+	contain: content; /* can't be strict */
 }
 
 
