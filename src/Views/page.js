@@ -373,12 +373,10 @@ PageView.track_resize_2 = new ResizeTracker('width')
 PageView.template = HTML`
 <view-root class='COL resize-box'>
 	<scroll-outer class='page-container sized' $=page_container>
-		<div class='pageInfoPane bar rem1-5' style='justify-content:space-between;'>
-			<div class='ROW'>
-				<label>Watching: <input type=checkbox $=watching></label>
-				<span $=author style='margin: 0 0.5rem;'></span>
-				<span $=create_date>Created: <time></time></span>
-			</div>
+		<div class='pageInfoPane bar rem1-5 ROW'>
+			<label>Watching: <input type=checkbox $=watching></label>
+			<span $=author style='margin: 0 0.5rem;'></span>
+			<span $=create_date>Created: <time></time></span>
 		</div>
 		<div class='pageContents' $=page_contents></div>
 	</scroll-outer>

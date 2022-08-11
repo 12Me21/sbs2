@@ -731,6 +731,9 @@ view-root:not(.f-editing) .chat-edit-controls {
 	height: 1rem;
 	margin: 0.25rem;
 }
+.category-list > * > span {
+	flex: auto;
+}
 .category-list > .user-label > span {
 	font-weight: normal;
 }
@@ -820,10 +823,16 @@ view-root:not(.f-editing) .chat-edit-controls {
 }
 .pageInfoPane {
 	display: flex;
+	flex-flow: wrap;
 	padding: 0 5px;
 	border-bottom: 1px solid var(--T-border-color);
 	background: var(--bar-bg);
+	align-items: center;
 	/*box-shadow: var(--normal-shadow);*/
+}
+.pageInfoPane .user-label {
+	display: flex;
+	align-items: center;
 }
 /* user page */
 .userPageBox {
