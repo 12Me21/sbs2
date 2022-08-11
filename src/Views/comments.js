@@ -13,17 +13,17 @@ class CommentsView extends BaseView {
 				['range', 'range', {label: "Id Range", param: 'ids'}],
 				//todo: combine these 3 into one field type
 				// for page + pagesize + direction
-				['limit', 'number', {label: "Per Page (200)", param: 'limit'}],
-				['page', 'number', {label: "Page (1)", param: 'p'}],
-				['reverse', 'checkbox', {label: "Newest First", param: 'r'}],
 			],
 		})
 		this.form.from_query(query)
+		this.$page.value = query.page || 1
+		this.$limit.value = query.limit || ""
+		this.$order.value = query.r != null ? 'newest' : 'oldest'
 		this.pid = id ? id : null
 		if (id)
 			this.form.inputs.pages.value = [id]
 		let data = this.form.get()
-		let [search, merge] = this.build_search(data)
+		let [search, merge] = this.build_search(data, +query.page || 1, +query.limit)
 		this.merge = merge
 		
 		if (!search)
@@ -56,10 +56,10 @@ class CommentsView extends BaseView {
 	
 	Render({message:comments, content:pages}) {
 		if (!comments.length) {
-			this.$status.textContent = "(no results)"
+			this.$status.textContent = "(none)"
 			return
 		}
-		this.$status.textContent = "results: "+comments.length
+		this.$status.textContent = comments.length
 		// todo: we can also do SOME merging, if the search has multiple pages but meets all other requirements.
 		if (this.merge) {
 			this.$results.append(CommentsView.draw_result(comments, pages))
@@ -81,9 +81,9 @@ class CommentsView extends BaseView {
 		if (!this.location) return // just incase somehow you click a button after the view unloads? idk. it'sdefinitely a concern but i feel like tehre should be a general solution..
 		this.form.read()
 		// pages are kinda bad now... like, p=0, that's actually p=1, so you press next and go to p=2.. i need to add range limits on the fields etc.
-		let pi = this.form.inputs.page
+		let pi = this.$page
 		if (dir) {
-			let p = pi.value || 1 //rrrr
+			let p = +pi.value || 1 //rrrr
 			if (p+dir<1) {
 				if (dir>=0)
 					p = 1-dir
@@ -103,20 +103,35 @@ class CommentsView extends BaseView {
 		} else {
 			this.location.id = null
 		}
-		if (this.location.query.page==0)
-			this.location.query.page = "1"
+		// order
+		let reverse = this.$order.value=='newest'
+		if (reverse)
+			this.location.query.r = ""
+		else
+			delete this.location.query.r
+		
+		// limit
+		let limit = +this.$limit.value
+		if (limit)
+			this.location.query.limit = limit
+		else
+			delete this.location.query.limit
+		// page
+		this.location.query.page = pi.value
+		if (this.location.query.page<=1)
+			delete this.location.query.page
 		
 		this.Slot.load_location(this.location)
 	}
 	
-	build_search(data) {
+	build_search(data, page, limit, reverse) {
 		// check if form is empty
 		if (!(data.search || (data.users && data.users.length) || data.range || data.start || data.end))
 			return [null, false]
 		
 		let values = {}, query = ["!notdeleted()"], order = 'id', merge = true
 		
-		if (data.reverse) {
+		if (reverse) {
 			order = 'id_desc'
 			merge = false
 		}
@@ -161,8 +176,7 @@ class CommentsView extends BaseView {
 			values.end = data.end.toISOString()
 			query.push("createDate < @end")
 		}
-		let limit = data.limit || 200 // ugh we need a system for default values or something
-		let page = data.page || 1 // 1 indexed
+		limit = limit || 200
 		let skip = (page-1) * limit
 		// todo: pages kinda suck, 
 		
@@ -182,7 +196,7 @@ class CommentsView extends BaseView {
 	static draw_result(comment, pages) {
 		let e = this.result_template()
 		let inner = e.lastChild.lastChild
-		let link = e.firstChild.firstChild
+		let link = e.firstChild
 		
 		let list
 		if (Array.isArray(comment)) {
@@ -194,7 +208,6 @@ class CommentsView extends BaseView {
 			list.display_only(comment)
 		}
 		let parent = pages[~list.pid]
-		
 		link.append(Draw.content_label(parent))
 		
 		let btns = inner.previousSibling.childNodes
@@ -213,19 +226,30 @@ class CommentsView extends BaseView {
 
 CommentsView.template = HTML`
 <view-root style='overflow-y:scroll;'>
-	<form $=html_form class='nav' method=dialog>
+	<form $=html_form method=dialog style='background:#666;color:white;'>
 		<br $=form_placeholder>
-		<button name=search>🔍Search</button>
-		<button name=prev>◀prev</button>
-		<button name=next>next▶</button>
-		<span $=status></span>
+		<div class='nav'>
+			<select $=order>
+				<option>newest</option>
+				<option>oldest</option>
+			</select>
+			&nbsp;
+			<button name=prev>◀</button>
+			<input $=page style='width:30px'>
+			<button name=next>▶</button>
+			&nbsp;shown:
+			<span $=status></span>
+			/
+			<input $=limit style='width:30px'>
+			<button name=search style='margin-left:auto;'>🔍Search</button>
+		</div>
 	</form>
 	<div $=results class='comment-search-results'></div>
 </view-root>
 `
 CommentsView.result_template = 𐀶`
 <div class='search-comment'>
-	<div class='bar rem1-5 search-comment-page'><a></a></div>
+	<div class='bar rem1-5 search-comment-page'></div>
 	<div class='ROW'>
 		<div class='search-comment-buttons COL'><button data-action=load_older>↑</button><button data-action=load_newer>↓</button></div>
 		<message-list class='FILL'></message-list>

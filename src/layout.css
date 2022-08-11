@@ -157,7 +157,13 @@ td, th {  /* border renders outside */
 form-table {
 	display: grid;
 	grid-template-columns: auto auto;
+	grid-template-columns: fit-content(50%) auto;
 	grid-auto-flow: row;
+	padding: 3px;
+	padding-left: 0.5rem;
+}
+form-table > :nth-child(n+3) {
+	margin-top: 2px;
 }
 form-table > .label {
 	grid-column: 1;
@@ -166,6 +172,9 @@ form-table > .label {
 form-table > .field {
 	grid-column: 2;
 	grid-row: auto;
+}
+form-table > .field > * {
+	vertical-align: top;
 }
 form-table > .wide {
 	grid-column: 1 / 3;

@@ -757,6 +757,8 @@ view-root:not(.f-editing) .chat-edit-controls {
 	border-bottom: 1px solid var(--T-border-color);
 }
 .search-comment-page {
+	display: flex;
+	align-items: center;
 	background: var(--bar-bg);
 }
 .search-comment-buttons {
@@ -769,10 +771,14 @@ view-root:not(.f-editing) .chat-edit-controls {
 	padding: 0;
 }
 .nav {
+	display: flex;
+	flex-flow: wrap;
+	align-items: center;
 	background: var(--light-invert-bg);
 	color: var(--databartxtcolor);
 	--T-link-color: var(--link-invert-color);
 	--T-link-hover-color: var(--link-invert-hover-color);
+	padding: 2px;
 }
 .nav > span {
 	color: var(--databartxtcolor);
@@ -989,6 +995,7 @@ not-sidebar {
 	border-top-style: solid;
 }
 .search-page {
+	display: block;
 	border: 1px var(--T-border-color);
 	border-bottom-style: solid;
 }
