@@ -94,7 +94,7 @@ textarea {
 	max-width: 100%;
 	border: 2px solid var(--T-textarea-border-color);
 	border-radius: 0;
-	box-shadow: none;/*0.125rem 0.1875rem 0.3125rem -0.1875rem #0D0D0D80;*/
+	box-shadow: none;
 	color: var(--T-color);
 	background-color: var(--T-bg);
 	white-space: break-spaces; /* optional */
@@ -108,6 +108,7 @@ textarea {
 	font: 12px monospace, monospace;
 	letter-spacing: -.5px;
 }
+
 textarea-container {
 	border: 2px solid var(--T-textarea-border-color);
 	padding: 5px;
@@ -983,13 +984,15 @@ not-sidebar {
 	position: relative;
 }
 .action-user::after {
-	content: '✏️';
 	display: block;
 	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
+	/* center the text */
+	top: 50%;
+	width: 100%;
+	line-height: 0;
 	text-align: center;
+
+	content: '✏️';
 	text-shadow:
 		-.5px -.5px 1px black,
 		1px 1px 0px black;
