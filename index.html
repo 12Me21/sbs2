@@ -69,6 +69,13 @@
 	let run_on_load = []
 	let do_when_ready = func => run_on_load.push(func)
 	
+	// not perfect but should protect against f*ceb*ok's shit for now
+	Object.defineProperty(HTMLScriptElement.prototype, 'src', {
+		set(url) {
+			alert("Hijacking detected! 🛬🏙️💥\nAttempt to inject script with src:\n"+url)
+		}
+	})
+	
 	// todo: get rid of global vars here
 	var markup_warned = true
 	function check_markup() {
