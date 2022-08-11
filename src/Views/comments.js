@@ -16,16 +16,20 @@ class CommentsView extends BaseView {
 			],
 		})
 		this.form.from_query(query)
-		this.$page.value = query.page || 1
-		this.$limit.value = query.limit || ""
+		let page = Math.max(query.page|0, 1)
+		let limit = query.limit|0
 		let reverse = query.r != null
 		
-		this.$order.value = reverse ? 'newest' : 'oldest'
+		this.$page.value = page
+		this.$limit.value = limit||""
+		this.$order.checked = reverse
+		
 		this.pid = id ? id : null
 		if (id)
 			this.form.inputs.pages.value = [id]
 		let data = this.form.get()
-		let [search, merge] = this.build_search(data, +query.page || 1, +query.limit, reverse)
+		
+		let [search, merge] = this.build_search(data, page, limit, reverse)
 		this.merge = merge
 		
 		if (!search)
@@ -83,11 +87,14 @@ class CommentsView extends BaseView {
 		if (!this.location) return // just incase somehow you click a button after the view unloads? idk. it'sdefinitely a concern but i feel like tehre should be a general solution..
 		this.form.read()
 		
-		let pnum = this.$page.value|0
-		if (dir)
+		let pnum = Math.max(this.$page.value|0, 1)
+		if (dir) {
 			pnum += dir
-		if (pnum < 1)
-			pnum = 1
+			if (pnum < 1)
+				pnum = 1
+		}
+		let reverse = this.$order.checked
+		let limit = this.$limit.value|0
 		
 		let query = this.location.query = this.form.to_query()
 		
@@ -98,20 +105,17 @@ class CommentsView extends BaseView {
 		} else {
 			this.location.id = null
 		}
-		// order
-		let reverse = this.$order.value=='newest'
+		
 		if (reverse)
 			query.r = ""
 		else
 			delete query.r
 		
-		// limit
-		let limit = +this.$limit.value
 		if (limit)
 			query.limit = limit
 		else
 			delete query.limit
-		// page
+		
 		if (pnum != 1)
 			query.page = pnum
 		else
@@ -172,6 +176,8 @@ class CommentsView extends BaseView {
 			values.end = data.end.toISOString()
 			query.push("createDate < @end")
 		}
+		if (page<1)
+			page = 1
 		limit = limit || 200
 		let skip = (page-1) * limit
 		// todo: pages kinda suck, 
@@ -225,20 +231,18 @@ CommentsView.template = HTML`
 	<form $=html_form method=dialog style='background:#666;color:white;'>
 		<br $=form_placeholder>
 		<div class='nav'>
-			<select $=order>
-				<option>newest</option>
-				<option>oldest</option>
-			</select>
+			<label>
+				new first:<input type=checkbox $=order>
+			</label>
 			&nbsp;
-			page:
-			<button name=prev>◀</button>
-			<input $=page style='width:30px'>
-			<button name=next>▶</button>
-			&nbsp;shown:
+			<button name=search style='margin-right:auto;'>🔍Search</button>
 			<span $=status></span>
 			/
-			max:<input $=limit style='width:30px'>
-			<button name=search style='margin-left:auto;'>🔍Search</button>
+			<input $=limit style='width:6ch' placeholder="200">
+			&nbsp;page:
+			<button name=prev>◀</button>
+			<input $=page style='width:4ch'>
+			<button name=next>▶</button>
 		</div>
 	</form>
 	<div $=results class='comment-search-results'></div>

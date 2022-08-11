@@ -780,6 +780,12 @@ view-root:not(.f-editing) .chat-edit-controls {
 	--T-link-hover-color: var(--link-invert-hover-color);
 	padding: 2px;
 }
+.nav > * {
+	align-self: stretch;
+}
+.nav > label {
+	align-self: center;
+}
 .nav > span {
 	color: var(--databartxtcolor);
 	align-self: center;
