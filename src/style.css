@@ -11,12 +11,6 @@ html {
 	font-feature-settings: "ss04" on;
 }
 
-* {
-	/* disable ligatures like fi ffi etc.
-		(doesn't affect real languages or emoji) */
-	font-variant-ligatures: none !important;
-}
-
 body {
 	background: var(--T-bg);
 }
@@ -311,12 +305,6 @@ forgot what this was for ??
 	color: var(--T-link-hover-color);
 	text-decoration: underline;
 }
-/*view-header :any-link {
-	color: var(--link-invert-color);
-}
-view-header :any-link:hover {
-	color: var(--link-invert-hover-color);
-}*/
 
 
 #\$main_slides > view-slot {
@@ -334,15 +322,16 @@ view-header :any-link:hover {
 
 /* header */
 view-header {
+	display: flex;
+	flex-flow: wrap;
+	min-height: var(--bar-height);
 	--bar-height: 2.25rem;
+	z-index: 4;
+	
 	background-color: var(--databarbgcolor);
 	transition: background-color linear 100ms;
 	color: var(--databartxtcolor);
 	box-shadow: var(--normal-shadow);
-	z-index: 4;
-	display: flex;
-	flex-flow: wrap;
-	min-height: var(--bar-height);
 }
 /* loading status */
 view-header.error {
@@ -367,14 +356,14 @@ view-slot:not(.focused) {
 	--normal-shadow: none;
 }
 .slot-overlay {
+	pointer-events: none;
 	position: absolute;
 	width: 100%;
 	height: 100%;
 	z-index: 25;
+	display: none;
 	background-image: url("data:image/gif;base64,R0lGODdhBAAEAAAAMSwAAAAABAAEAMAAAAD///8CBYxhF8hRADs="); /*todo; bmp*/
 	opacity: 0.25;
-	display: none;
-	pointer-events: none;
 }
 
 view-header h1 {
@@ -394,7 +383,6 @@ view-header h1 > span {
 
 /* messy... */
 .header-buttons {
-	box-sizing: border-box;
 	height: calc(var(--bar-height) / 2);
 	margin-left: auto;
 	padding: 1px 0;
@@ -489,19 +477,19 @@ pre {
 	z-index: 4;
 }
 .userlist2 > .userlist {
-	padding: 3px;
-	min-width: 0;
 	flex: initial;
+	min-width: 0;
+	padding: 3px;
 	contain: content; /* can't be strict */
 }
 
 
 /* damn forms */
 form-table > .label {
+	align-self: center;
+	padding-right: 0.5rem;
 	font-weight: 500;
 	text-align: right;
-	padding-right: 0.5rem;
-	align-self: center;
 }
 form-table > .field {
 	vertical-align: middle;
@@ -723,62 +711,36 @@ view-root:not(.f-editing) .chat-edit-controls {
 	border: 1px solid gray;
 	display: block;
 }
-.category-page {
-	background: var(--bar-bg);
-	/*max-width: 400px;
-	width: 100%;
-	align-self: flex-start;*/
-}
-.category-page {
-	margin-left: -0.5rem;
-	display: flex;
-	flex-flow: wrap;
-}
-.category-page > * {
-	padding-left: 0.5rem;
-}
-/* TODO: switch to grid layout */
+
 .category-list {
-	display: table;
+	display: grid;
+	grid-template-columns: auto auto;
+	grid-auto-flow: row;
+	background: gray;
+}
+.category-list > :any-link:hover {
+	background: var(--T-bg);
 }
 .category-list > * {
-	display: table-row;
+	display: flex;
+	align-items: center;
+	background: var(--bar-bg);
 }
-.category-list > * > :first-child {
-	max-width: max-content;
-	width: max-content;
-	border-left: solid 1px white;
-}
-.category-list > * > * {
-	display: table-cell;
-	border-top: solid 1px white;
-	border-bottom: solid 1px black;
-	border-right: solid 1px gray;
-	vertical-align: middle !important;
-}
-.category-list > * > * > * {
-}
-.category-page > entity-label {
-	min-height: unset; /* hack */
-	align-self: center;
-	
-}
-.category-page > entity-label > span { /* hack */
-	line-height: normal;
-	min-height: unset;
-	display: block;
-}
-.category-page > .user-label .avatar {/* hack */
+.category-list > .user-label .avatar {/* hack */
 	width: 1rem;
 	height: 1rem;
 	margin: 0.25rem;
 }
-.category-page > .user-label {
-	margin-left: 2rem;
-}
-.category-page > .user-label > span {
+.category-list > .user-label > span {
 	font-weight: normal;
 }
+.category-list > :nth-child(n+3) {
+	margin-top: 1px;
+}
+.category-list > :nth-child(2n) {
+	margin-left: 1px;
+}
+
 /* misc views */
 .editor-textarea {
 	min-height: 3rem;
@@ -808,10 +770,10 @@ view-root:not(.f-editing) .chat-edit-controls {
 	color: var(--databartxtcolor);
 	--T-link-color: var(--link-invert-color);
 	--T-link-hover-color: var(--link-invert-hover-color);
-	align-items: center;
 }
 .nav > span {
 	color: var(--databartxtcolor);
+	align-self: center;
 }
 
 .modified.save-button {
@@ -987,11 +949,12 @@ not-sidebar {
 	display: block;
 	position: absolute;
 	/* center the text */
-	top: 50%;
+	top: 0;
 	width: 100%;
-	line-height: 0;
+	height: 100%;
+	line-height: var(--bar-height);
 	text-align: center;
-
+	
 	content: '✏️';
 	text-shadow:
 		-.5px -.5px 1px black,

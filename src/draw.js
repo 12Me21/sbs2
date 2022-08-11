@@ -164,16 +164,15 @@ const Draw = NAMESPACE({
 `),
 	category_item: function(content, user, isCategory=true) {
 		const e = this()
-		e.href = "#category/"+content.id
+		e.firstChild.href = "#category/"+content.id
 		const label = Draw.content_label(content, isCategory)
-		e.append(label)
-		e.classList.add(isCategory?'rem2':'rem1-5')
+		e.firstChild.append(...label.childNodes) //hack...
 		let author = user[~content.createUserId]
 		if (author)
-			e.append(Draw.user_label(author))
+			e.lastChild.replaceWith(Draw.user_label(author))
 		return e
 	}.bind(𐀶`
-<a class='bar category-page ROW'></a>
+<a class='bar rem1-5 category-page'></a><span></span>
 `),
 	
 	// opt: todo: what if instead of passing the func to the callback

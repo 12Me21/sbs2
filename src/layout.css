@@ -14,11 +14,12 @@
 	box-sizing: border-box;
 	contain: content;
 	flex: none;
-	/*padding: 0;*/
 	/* override default browser styles */
 	/* (these are all inherited properties) */
 	word-break: inherit;
 	font-family: inherit;
+	/* disable ligatures like fi ffi etc.
+		(doesn't affect real languages or emoji) */
 	font-variant-ligatures: none;
 }
 
@@ -127,7 +128,6 @@ td, th {  /* border renders outside */
 
 /* These 3 classes handle like 90% of the layout lol */
 .bar { /* contains textitems and items */
-	display: block;
 	overflow: hidden;
 	box-sizing: content-box;
 	min-height: var(--bar-height);
