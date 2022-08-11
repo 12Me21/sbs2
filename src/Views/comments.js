@@ -5,7 +5,7 @@ class CommentsView extends BaseView {
 	Start({id, query}) {
 		this.form = new Form({
 			fields: [
-				['search', 'text', {label: "Search", param: 's', placeholder: "wildcards: _ %"}],
+				['search', 'text', {label: "Text", param: 's', placeholder: "wildcards: _ %"}],
 				['pages', 'number_list', {label: "Page Ids", param: 'pid'}],
 				['users', 'number_list', {label: "User Ids", param: 'uid'}],
 				['start', 'date', {label: "Start Date", param: 'start'}],
