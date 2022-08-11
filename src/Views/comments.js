@@ -234,13 +234,14 @@ CommentsView.template = HTML`
 				<option>oldest</option>
 			</select>
 			&nbsp;
+			page:
 			<button name=prev>◀</button>
 			<input $=page style='width:30px'>
 			<button name=next>▶</button>
 			&nbsp;shown:
 			<span $=status></span>
 			/
-			<input $=limit style='width:30px'>
+			max:<input $=limit style='width:30px'>
 			<button name=search style='margin-left:auto;'>🔍Search</button>
 		</div>
 	</form>
