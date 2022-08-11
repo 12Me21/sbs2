@@ -18,12 +18,14 @@ class CommentsView extends BaseView {
 		this.form.from_query(query)
 		this.$page.value = query.page || 1
 		this.$limit.value = query.limit || ""
-		this.$order.value = query.r != null ? 'newest' : 'oldest'
+		let reverse = query.r != null
+		
+		this.$order.value = reverse ? 'newest' : 'oldest'
 		this.pid = id ? id : null
 		if (id)
 			this.form.inputs.pages.value = [id]
 		let data = this.form.get()
-		let [search, merge] = this.build_search(data, +query.page || 1, +query.limit)
+		let [search, merge] = this.build_search(data, +query.page || 1, +query.limit, reverse)
 		this.merge = merge
 		
 		if (!search)
@@ -80,46 +82,40 @@ class CommentsView extends BaseView {
 	go(dir) {
 		if (!this.location) return // just incase somehow you click a button after the view unloads? idk. it'sdefinitely a concern but i feel like tehre should be a general solution..
 		this.form.read()
-		// pages are kinda bad now... like, p=0, that's actually p=1, so you press next and go to p=2.. i need to add range limits on the fields etc.
-		let pi = this.$page
-		if (dir) {
-			let p = +pi.value || 1 //rrrr
-			if (p+dir<1) {
-				if (dir>=0)
-					p = 1-dir
-				else
-					return
-			}
-			pi.value = p + dir
-		} else {
-			pi.value = 1
-		}
 		
-		this.location.query = this.form.to_query()
+		let pnum = this.$page.value|0
+		if (dir)
+			pnum += dir
+		if (pnum < 1)
+			pnum = 1
+		
+		let query = this.location.query = this.form.to_query()
+		
 		let pages = this.form.inputs.pages.value
 		if (pages && pages.length==1) {
 			this.location.id = pages[0]
-			delete this.location.query.pid
+			delete query.pid
 		} else {
 			this.location.id = null
 		}
 		// order
 		let reverse = this.$order.value=='newest'
 		if (reverse)
-			this.location.query.r = ""
+			query.r = ""
 		else
-			delete this.location.query.r
+			delete query.r
 		
 		// limit
 		let limit = +this.$limit.value
 		if (limit)
-			this.location.query.limit = limit
+			query.limit = limit
 		else
-			delete this.location.query.limit
+			delete query.limit
 		// page
-		this.location.query.page = pi.value
-		if (this.location.query.page<=1)
-			delete this.location.query.page
+		if (pnum != 1)
+			query.page = pnum
+		else
+			delete query.page
 		
 		this.Slot.load_location(this.location)
 	}
