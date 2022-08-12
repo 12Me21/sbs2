@@ -1,5 +1,11 @@
 /* normal weight */
 @font-face{
+	font-family: heart;
+	src: url('data:font/woff2;base64,d09GMgABAAAAAAKQAAwAAAAABXgAAAJAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAABmAAgmYIBBEICoEwgTILCgABNgIkAxAEIAWCbgcgG5sEIxEWgwWAvziwiey6wO5QDGLcRkqhcFwSmv5q7PFMxY+FeZVi57v1eKifA3u7+UmR2dYCqlZoQEcgJJHE8Yy+tmcvvXFEyQxC3TolK+fJcJ40TfmyJe1AM40bHGiouQacBxLBkOhWrG1nPn4p1z6ZYuIND4lKJzQilc508xaZuslPz4+vswLwDPYCCjDDwPb5WB5gQBhp6TZ1Hh6KIB5WRxE9jVDyTvxTk9fyBc7EHPHXnOhEqjsBkAAYGSi0nuL/w28XUxGQ4/IbRgrUqDAVBWsF2KkSmKrSGWsVA5ES2laGBrqCoYAQhw6SkopoMJBIQC+HgMtH52lE20pQQEcUzMMmQAEJspSIAf3ZulvZblrnbmNffeJizN/nLv9n2N7a+vZh/+GPH7e9//w55qGzzs+HVraf9DPuo3e48aPO+184b+y41Oiau73w+bxY3bHwqlBwrZF8ORJJr08d3baoBkaT9vHP/n2Oyyq/0cQsvMdOYyeHRZmpw4EAvrozO3os/a9jlwK+7c7wm7cY3LZZ3kBHCYLd97t5B/KiAACUvGM05B3yjsECxTQJEiGwEkB3dwSAFCBUugiQOhghQGWEAwIUlTMC1Dq7LkCj8lglSieg5qFR8dRdD17ZXo7jReMUr/W12aXReASwRElYakIBw3m42Qj4hqwMETqNgSmBYwiFQEIcaBwVfpmCZ2WkkOQKRHobzeEmswWJHLTUVENWeIu/ZKtYB6iYQXLMGxcSgkdPfSah4UkGAPjXnLMKAAA=') format('woff2');
+	font-weight: normal;
+	font-style: normal;
+}
+@font-face{
 	font-family: roboto;
 	src: url(roboto-400.woff2) format('woff2');
 	font-weight: normal;
