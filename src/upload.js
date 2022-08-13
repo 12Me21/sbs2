@@ -166,8 +166,8 @@ const FileUploader = NAMESPACE({
 		let img = new Image()
 		img.onload = e=>{
 			let canvas = document.createElement('canvas')
-			canvas.width = img.width
-			canvas.height = img.height
+			canvas.width = img.naturalWidth
+			canvas.height = img.naturalHeight
 			let c2d = canvas.getContext('2d')
 			c2d.drawImage(img, 0, 0)
 			URL.revokeObjectURL(img.src)
