@@ -1,0 +1,244 @@
+<!doctype html><html lang=en-QS><meta charset=utf-8><meta name=viewport content="width=device-width, height=device-height, initial-scale=1" id=$meta_viewport>
+<title>upload form</title>
+
+<style>
+	@import "../src/theme.css";
+	@import "../src/layout.css";
+	@import "../src/style.css";
+	
+	#\$form {
+		width: 300px;
+		display: flex;
+		flex-flow: column;
+		height: 500px;
+		border: 3px solid green;
+	}
+	#\$form > .form-row {
+		display: flex;
+		flex-flow: row;
+		height: 1.5rem;
+	}
+	#\$form label {
+		display: contents;
+	}
+	.form-row span {
+		flex: none;
+		align-self: center;
+	}
+	#\$form .field {
+		flex: 1 1 0;
+		min-width: 0;
+	}
+	output {
+		all: revert;
+		flex: 1 1 auto;
+		text-align: center;
+	}
+	input[type="checkbox"] {
+		max-width: 1rem;
+		align-self: center;
+		width: 1rem;
+		height: 1rem;
+	}
+	input[type="checkbox"]:checked {
+		
+	}
+	label:nth-child(n+2) > :first-child {
+		margin-left: 0.5rem;
+	}
+	#\$form > div[data-page] {
+		display: none;
+	}
+	#\$form[data-page="browse"] > div[data-page~="browse"],
+	#\$form[data-page="fields"] > div[data-page~="fields"],
+	#\$form[data-page="resize"] > div[data-page~="resize"] {
+		display: flex;
+	}
+	#\$form .image-box {
+		display: block;
+	}
+	#\$form .image-box > img {
+		border: 2px dotted gray;
+	}
+</style>
+
+<form id=$form method=dialog data-page=browse>
+	<div class='form-row' data-page=browse>
+		<input type=file accept="image/png,image/jpeg,image/gif,image/bmp,image/webp,.png,.jpg,.jpeg,.gif,.bmp,.webp" name=browse class='field'>
+	</div>
+	<div class='form-row' data-page='fields resize'>
+		<button name=cancel class='field'>Cancel</button>
+		<button name=upload class='field'>Upload</button>
+		<label>
+			<span>Q</span>
+			<select value=off name=quantize><option>off</option><option>2</option></select>
+		</label>
+	</div>
+	<div class='form-row' id=$color data-page='fields resize'>
+		<span style='margin-right:auto'>
+			<output name=type></output>:
+			<output name=size></output>
+		</span>
+		<span>
+			<output name=width></output>×
+			<output name=height></output>
+		</span>
+		<label>
+			<span>edit</span>
+			<input type=checkbox name=resize class='field' autocomplete=off>
+		</label>
+	</div>
+	<div class='form-row' data-page=fields>
+		<input name=name required class='field' placeholder="Name">
+		<label>
+			<span>Public:</span>
+			<input type=checkbox class='field' name=public checked>
+		</label>
+	</div>
+	<div class='form-row' data-page=fields>
+		<input class='field' name=bucket placeholder="Bucket">
+		<input name=hash class='field' pattern="^[a-z-]{8,32}$" placeholder="Hash">
+	</div>
+	<div class='form-row' data-page=resize>
+		<label>
+			<span>Size:</span>
+			<input type=number min=1 max=1 step=1 class='field' name=scale>
+		</label>
+		<button type=button name=half>÷2</button>
+	</div>
+	<div class='form-row' data-page=resize>
+		<label>
+			<span>Quality:</span>
+			<input type=range min=0 max=1 step=0.01 class='field' name=quality>
+		</label>
+	</div>
+	<div class='FILL image-box' style="min-height:3rem" id=$image_box>
+	</div>
+</form>
+<canvas id=$canvas hidden></canvas>
+<br>
+
+<input type=number min=100 max=1000 value=300 id=$resize>
+
+<script>
+	$resize.oninput = ev=>{
+		$form.style.width = $resize.value+"px"
+	}
+	
+	let canvas = $canvas
+	
+	let iimg = new Image()
+	let oimg = new Image()
+	
+	function draw_image(dw) {
+		let {naturalWidth:w, naturalHeight:h} = iimg
+		if (!dw)
+			dw = w
+		let dh = Math.round(dw * h / w)
+		canvas.width = dw
+		canvas.height = dh
+		let c2d = canvas.getContext('2d')
+		c2d.drawImage(iimg, 0, 0, dw, dh)
+	}
+	
+	function init_form(f) {
+		f.quality.onchange = ev=>{
+			convert_show(+f.quality.value)
+		}
+		f.scale.onchange = ev=>{
+			draw_image(+f.scale.value)
+			f.quality.onchange()
+		}
+		f.resize.onchange = ev=>{
+			if (f.resize.checked) {
+				f.dataset.page = 'resize'
+				if (!oimg) {
+					draw_image(+f.scale.value)
+					convert_show(+f.quality.value)
+				} else {
+					show_details(f, oimg)
+				}
+			} else {
+				f.dataset.page = 'fields'
+				show_details(f, iimg)
+			}
+		}
+		f.browse.onchange = ev=>{
+			let file = ev.target.files[0]
+			ev.target.value = ""
+			if (file)
+				update_form(f, file)
+		}
+	}
+	
+	function convert_show(qual) {
+		canvas.toBlob(blob=>{
+			form_image(oimg, blob)
+			oimg.onload = ev=>{
+				if ($form.resize.checked)
+					show_details($form, oimg)
+			}
+		}, qual ? 'image/jpeg' : 'image/png', qual)
+	}
+	
+	function blob_image(elem, blob) {
+		URL.revokeObjectURL(elem.src)
+		elem.src = ""
+		elem.src = URL.createObjectURL(blob)
+	}
+	
+	// got image
+	function update_form(f, file) {
+		//f.reset()
+		f.resize.checked = false
+		f.dataset.page = 'fields'
+		f.name.value = file.name
+		//f.public.checked
+		//f.bucket.value
+		f.hash.value = null
+		oimg = null
+		
+		form_image(iimg, file, true)
+		iimg.onload = ev=>{
+			f.scale.value = f.scale.max = iimg.naturalWidth
+			show_details(f, iimg)
+		}
+	}
+	
+	function form_image(img, file, clear) {
+		img.dataset.type = file.type
+		img.dataset.size = file.size
+		
+		if (img.src)
+			URL.revokeObjectURL(img.src)
+		if (clear)
+			img.src = ""
+		img.src = URL.createObjectURL(file)
+	}
+	
+	let shown
+	function show_details(f, img) {
+		if (img !== shown) {
+			$image_box.replaceChildren(img)
+			shown = img
+		}
+		
+		let size = +img.dataset.size
+		if (size < 100e3) { // 0-100kb (green - yellow)
+			size = (size) / (100e3)
+			$color.style.backgroundColor = "rgb("+(size*255)+",255,0)"
+		} else if (size < 2e6) { // 100kb - 2mb (yellow-red)
+			size = (size-100e3) / (2e6-100e3)
+			$color.style.backgroundColor = "rgb(255,"+((1-size)*255)+",0)"
+		} else { // > 2mb (too large)
+			$color.style.backgroundColor = "magenta"
+		}
+		
+		f.type.value = img.dataset.type.replace("image/", "")
+		f.size.value = (img.dataset.size/1000).toFixed(1)+" kB"
+		f.width.value = img.naturalWidth
+		f.height.value = img.naturalHeight
+	}
+	
+	init_form($form)
+</script>
