@@ -1,70 +1,45 @@
 'use strict'
-let ResizeTracker
-// ResizeObserver is a very new feature (added in ~2020)
-if (window.ResizeObserver) {
-	ResizeTracker = class {
-		constructor(measure) {
-			this.measure = measure
+
+class ResizeTracker {
+	constructor(measure) {
+		this.measure = measure
+		// ResizeObserver is a very new feature (added in ~2020)
+		if (window.ResizeObserver) {
 			this.tracking = new WeakMap()
 			this.observer = new ResizeObserver(events=>{
-				for (let event of events) {
-					let item = this.tracking.get(event.target)
-					let rect = event.contentRect
-					let m = rect[this.measure]
-					//ignore changes for hidden and unchanged elements
-					if (rect.width && m!=item.size) {
-						item.callback(item.size) // pass old size
-						item.size = m
-					}
-				}
+				for (let {target, contentRect} of events)
+					this.handle(target, contentRect)
 			})
-			Object.seal(this)
+		} else {
+			this.tracking = new Map()
+			this.observer = {observe(){}, unobserve(){}}
+			// this never gets cleared uhh
+			this.interval = window.setInterval(()=>{
+				for (let target of this.tracking.keys())
+					this.handle(target, target.getBoundingClientRect())
+			}, 200)
 		}
-		add(element, callback) {
-			this.observer.observe(element)
-			this.tracking.set(element, {
-				callback: callback,
-				size: element.getBoundingClientRect()[this.measure],
-			})
-		}
-		remove(element) {
-			this.observer.unobserve(element)
-			this.tracking.delete(element)
+		Object.seal(this)
+	}
+	handle(target, rect) {
+		let item = this.tracking.get(target)
+		let dim = rect[this.measure]
+		//ignore changes for hidden and unchanged elements
+		if (rect.width && dim!=item.size) {
+			item.callback(item.size) // pass old size
+			item.size = dim
 		}
 	}
-} else {
-	ResizeTracker = class {
-		constructor(measure) {
-			this.measure = measure
-			this.tracking = []
-			this.interval = window.setInterval(()=>{
-				for (let item of this.tracking) {
-					let rect = item.element.getBoundingClientRect()
-					if (rect.width && rect[this.measure]!=item.size) {
-						item.callback(item.size)
-						item.size = rect[this.measure]
-					}
-				}
-			}, 200)
-			Object.seal(this)
-		}
-		add(element, callback) {
-			this.tracking.push({
-				element: element,
-				callback: callback,
-				size: element.getBoundingClientRect()[this.measure],
-			})
-		}
-		remove(element) {
-			let i = this.tracking.findIndex(x => x.element == element)
-			i>=0 && this.tracking.splice(i, 1)
-		}
+	add(element, callback) {
+		this.observer.observe(element)
+		let size = element.getBoundingClientRect()[this.measure]
+		this.tracking.set(element, {callback, size})
+	}
+	remove(element) {
+		this.observer.unobserve(element)
+		this.tracking.delete(element)
 	}
 }
-
-
-//Object.seal(Scroller)
-//Object.seal(Scroller.prototype)
 
 // todo: we only want to animate if an element is inserted/removed/resized at the BOTTOM of the screen. but how to detect this? probably best, I suppose, if the chat room handles it?
 
@@ -93,7 +68,6 @@ class Scroller {
 		middle.append(this.$inner)
 		this.$outer.append(middle)
 		
-		this.dist = null
 		this.anim_type = Scroller.anim_type
 		this.anim = null
 		this.locked = false
