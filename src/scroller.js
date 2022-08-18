@@ -175,7 +175,7 @@ class Scroller {
 			let after = this.scroll_height()
 			before = -before
 			if (before != after)
-				this.$outer.scrollTop -= after-before
+				this.$outer.scrollTop -= after-before // maybe round this to the nearest DPR or 1/DPR?
 			return
 		}
 		if (this.locked) {
