@@ -67,11 +67,12 @@ html, body {
 view-slot {
 	display: flex;
 	flex-flow: column;
+	contain: strict;
 }
 view-root {
 	flex: 0mm !important;
+	contain: strict;
 }
-
 /* use solid backgrounds on elements
  to improve rendering performance + subpixel text usage */
 
@@ -79,22 +80,23 @@ view-root {
 from what i've noticed, the most important thing is having a solid BG on
 the inner scrolling element (the one which moves when you scroll)
 */
-/* sized containers */
-.resize-box, .resize-box > .FILL,
-.SLIDES, .SLIDES > *,
-scroll-outer, .sized,
-view-slot, view-root,
+
 not-sidebar, sidebar-container,
-tab-list, sidebar-panel {
+.resize-box, tab-list {
 	contain: strict;
 	background: var(--T-bg);
 }
-/* their scrolling contents */
-.resize-box > *,
-sidebar-panel > *,
-scroll-outer > *,
-scroll-middle, scroll-inner, message-list {
-	background-color: inherit;
+.SLIDES,
+view-slot, view-root,
+scroll-outer, scroll-inner, scroll-middle,
+.message-list {
+	background: var(--T-bg);
+}
+.resize-box > .FILL, .sized {
+	contain: strict;
+}
+.resize-box > *, .SLIDES > * {
+	background: inherit;
 }
 
 ul, ol, li, /* bullets render outside */
@@ -185,20 +187,20 @@ form-table > .wide {
  **************/
 
 scroll-outer {
-	display: block;
-	height: 100%;
-	overflow-y: scroll;
-}
-scroll-middle {
 	display: flex;
 	flex-flow: column;
-	overflow: hidden;
-	min-height: 100%;
-	justify-content: flex-end;
+	height: 100%;
+	overflow-y: scroll;
+	contain: strict;
+}
+scroll-middle {
+	flex: none;
+	margin-top: auto; /* this presses the contents against the bottom if necessary */
+	overflow: hidden; overflow: clip;
 }
 scroll-inner {
 	display: block;
-	flex: 0 0 0; /* safari ?*/
+	flex: none;
 }
 scroll-middle > scroll-inner {
 	position: relative;
@@ -257,12 +259,14 @@ but, then we can't add a border to the image
 	display: block;
 	position: relative;
 	overflow: hidden;
+	contain: strict;
 }
 .SLIDES > * {
 	position: absolute;
 	width: 100%;
 	height: 100%;
 	overflow: auto;
+	contain: strict;
 }
 .SLIDES > :not(.shown) {
 	visibility: hidden;
