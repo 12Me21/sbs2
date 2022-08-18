@@ -78,8 +78,6 @@ class UploaderImage {
 				this.format = format
 				this.blob = null
 				this.blob = await this.canvas_to_blob(task)
-				// todo: allow cancelling early (i.e. returning here if a new update is initiated)
-				
 				await this.blob_to_img()
 				if (task!==this.task)
 					throw undefined
