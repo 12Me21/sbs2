@@ -807,7 +807,12 @@ view-root:not(.f-editing) .chat-edit-controls {
 }
 
 /* file viewer */
-.images-thumbnails img {
+.images-thumbnails {
+	display: flex;
+	flex-flow: row wrap;
+}
+
+.images-thumbnails div {
 	cursor: pointer;
 	height: 60px;
 	width: 60px;
@@ -819,6 +824,10 @@ view-root:not(.f-editing) .chat-edit-controls {
 }
 .images-container {
 	flex-grow: 1;
+}
+.images-data > * {
+	border-bottom: 1px solid var(--T-border-color);
+	padding: 2px 0.25rem;
 }
 
 /* page */
@@ -845,6 +854,13 @@ view-root:not(.f-editing) .chat-edit-controls {
 .pageInfoPane .user-label {
 	display: flex;
 	align-items: center;
+}
+.user-label2 {
+	display: flex;
+	align-items: center;
+}
+.user-label > span {
+	flex: 0 1 auto;
 }
 /* user page */
 .userPageBox {

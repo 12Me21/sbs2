@@ -68,10 +68,7 @@ class ImagesView extends BaseView {
 		
 		this.form = new Form({
 			fields: [
-				['user', 'user_output', {label: "User"}],
-				['filename', 'text', {label: "File Name"}],
 				['values', 'text', {label: "Values"}], // todo: add an input type for like, json or specifically these values types idk
-				['meta', 'output', {label: "Meta"}],
 				['permissions', 'text', {label: "Permissions"}], //could be a real permission editor but image permissions don't really work anyway
 				//['size', 'output', {output: true, label: "Size"}], I wish
 				// ['quantization', 'output', {label: "Quantization"}],
@@ -83,11 +80,16 @@ class ImagesView extends BaseView {
 		this.user = user
 		View.set_title(" Images ")
 		for (let file of content) {
-			const img = document.createElement('img')
-			img.src = Req.file_url(file.hash, "size=60")
-			img.onclick = e=>{this.select_image(file)}
-			//let meta = JSON.parse(file.meta)
-			this.$whatever.append(img)
+			let div = document.createElement('div')
+			
+			let url = Req.file_url(file.hash, "size=60")
+			let bg = `no-repeat url("${url}") center/contain, #DDD`
+			if (!Entity.has_perm(file.permissions, 0, 'R'))
+				bg = `no-repeat url(resource/hiddenpage.png) top left / 20px, ` + bg
+			div.style.background = bg
+			
+			div.onclick = e=>{this.select_image(file)}
+			this.$whatever.append(div)
 		}
 		this.$page.textContent = this.page
 		this.$bucket.value = this.bucket||""
@@ -97,20 +99,29 @@ class ImagesView extends BaseView {
 	select_image(content) {
 		this.current = content
 		this.$image.src = "" // always set this, otherwise the old image will be visible until the new one loads
-		if (!content) {
-			this.$image_link.href = ""
-			this.$image_link.textContent = ""
+		if (!content)
 			return
-		}
 		this.$image.src = Req.file_url(content.hash)
+		
 		this.$image_link.href = `#page/${content.id}`
-		this.$image_link.textContent = content.hash
-		this.$image_link.textContent += " "+Draw.time_string(content.createDate2)
+		this.$filename.textContent = content.name2
+		this.$hash.textContent = content.hash
+		
+		let author = this.user[~content.createUserId]
+		let x = Draw.user_label(author)
+		x.classList.add('user-label2')
+		this.$author.fill(x)
+		
+		let meta = content.meta ? JSON.parse(content.meta) : {}
+		let info = content.literalType.replace("image/", "")+" | "+(meta.size/1000).toFixed(1)+" kB"+" | "+meta.width+"×"+meta.height
+		if (meta.quantize)
+			info += " | Q "+meta.quantize
+		this.$meta.textContent = info
+		
+		this.$date.textContent = Draw.time_string(content.createDate2)
+		
 		this.form.set({
-			user: this.user[~content.createUserId],
-			filename: content.name,
 			values: JSON.stringify(content.values),
-			meta: content.meta,
 			permissions: JSON.stringify(content.permissions),
 		})
 		this.form.write()
@@ -124,14 +135,20 @@ ImagesView.template = HTML`
 		<button $=prev>◀prev</button>
 		<span $=page>0</span>
 		<button $=next>next▶</button>
+		Bucket:
 		<input $=bucket placeholder="bucket">
 	</div>
 	<div class='FILL ROW'>
 		<div class='FILL images-container'>
 			<img $=image class='images-current'>
 		</div>
-		<div style="width:50%">
-			<a $=image_link></a>
+		<div style="width:50%" class='COL images-data'>
+			<a $=image_link style='font-weight:bold'>
+				[<span $=hash style='font:var(--T-monospace-font)'></span>] <span $=filename class='pre'></span>
+			</a>
+			<div $=meta></div>
+			<div $=author></div>
+			<time $=date></time>
 			<button $=set_avatar>Set Avatar</button>
 			<button $=in_sidebar>show in sidebar</button>
 			<div $=data></div>
