@@ -814,33 +814,36 @@ view-root:not(.f-editing) .chat-edit-controls {
 
 .images-thumbnails div {
 	cursor: pointer;
-	height: 60px;
+	box-sizing: content-box;
+	padding: 2px;
 	width: 60px;
+	height: 60px;
 }
 .images-current {
-	max-height: 100%;
-	max-width: 100%;
-	border: 1px solid gray;
+	--border-width: 1px;
+	max-height: calc(100% - var(--border-width) * 2);
+	max-width: calc(100% - var(--border-width) * 2);
+	box-sizing: content-box;
+	aspect-ratio: 4 / 3;
+	border: var(--border-width) solid gray;
 }
+
 .images-container {
-	flex-grow: 1;
 }
+
 .images-data > * {
 	border-bottom: 1px solid var(--T-border-color);
 	padding: 2px 0.25rem;
 }
-.images-meta {
+.images-data > div {
 	padding: 0;
 	display: flex;
+	flex-flow: row wrap;
+	align-items: center;
 }
 .images-meta > * {
 	border-right: 1px solid gray;
 	padding: 2px 0.25rem;
-}
-.images-meta b {
-	font: var(--T-monospace-font);
-	font-size: 1rem;
-	font-weight: bold;
 }
 
 /* page */

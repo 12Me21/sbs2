@@ -3,21 +3,18 @@
 class ImagesView extends BaseView {
 	Start(location) {
 		this.current = null
-		this.user = null
 		
 		let bucket = location.query.bucket
 		let page = (location.query.page|0) || 1
-		// TODO: bucket search
-		let search = "contentType = @file"
-		if (bucket)
-			search += " AND !valuelike(@key, @bucket)"
 		this.page = page
 		this.bucket = bucket
+		
+		let search = "contentType = {{3}}"
+		if (bucket)
+			search += " AND !valuelike({{bucket}}, @bucket)"
 		return {
 			chain: {
 				values: {
-					file: 3,
-					key: 'bucket',
 					bucket: JSON.stringify(bucket),
 				},
 				requests: [
@@ -65,28 +62,47 @@ class ImagesView extends BaseView {
 			FileUploader.show_content(this.current)
 			Sidebar.tabs.select('file')
 		}
-		
-		this.form = new Form({
-			fields: [
-				['values', 'text', {label: "Values"}], // todo: add an input type for like, json or specifically these values types idk
-				['permissions', 'text', {label: "Permissions"}], //could be a real permission editor but image permissions don't really work anyway
-				//['size', 'output', {output: true, label: "Size"}], I wish
-				// ['quantization', 'output', {label: "Quantization"}],
-			]
-		})
-		this.$data.fill(this.form.elem)
 	}
 	Render({content, user}) {
-		this.user = user
-		View.set_title(" Images ")
+		let title = " Images "
+		if (this.bucket)
+			title += "("+this.bucket+")"
+		this.Slot.set_title(title)
+		
 		for (let file of content) {
+			// heck (todo: put this somewhere better?)
+			let meta = file.Meta = new FileMeta(file, user[~file.createUserId])
+			
+			let bg = '#DDD'
+			
+			function round(x) {
+				if (x % 2 == 0.5)
+					return Math.floor(x)
+				return Math.round(x)
+			}
+			
 			let div = document.createElement('div')
 			
+			if (meta.width) {
+				let max = Math.max(meta.width, meta.height)
+				// this needs to be changed to round 0.5 to nearest even #?
+				let width = round(meta.width / max * 60)
+				let height = round(meta.height / max * 60)
+				bg = `no-repeat linear-gradient(orange, red) center / ${width+2}px ${height+2}px, ` + bg
+				/*div.style.width = width+"px"
+				div.style.height = height+"px"*/
+			}
+			
 			let url = Req.file_url(file.hash, "size=60")
-			let bg = `no-repeat url("${url}") center/contain, #DDD`
+			
+			bg = `no-repeat url("${url}") center, ` + bg
+			
 			if (!Entity.has_perm(file.permissions, 0, 'R'))
 				bg = `no-repeat url(resource/hiddenpage.png) top left / 20px, ` + bg
+			
 			div.style.background = bg
+			
+			div.title = file.name // todo: more
 			
 			div.onclick = e=>{this.select_image(file)}
 			this.$whatever.append(div)
@@ -98,34 +114,32 @@ class ImagesView extends BaseView {
 	
 	select_image(content) {
 		this.current = content
+		
 		this.$image.src = "" // always set this, otherwise the old image will be visible until the new one loads
+		this.$image_show.hidden = !content
 		if (!content)
 			return
+		
+		let meta = content.Meta
+		
+		this.$image.style.aspectRatio = meta.width+" / "+meta.height
 		this.$image.src = Req.file_url(content.hash)
 		
 		this.$image_link.href = `#page/${content.id}`
 		this.$filename.textContent = content.name2
 		//this.$hash.textContent = content.hash
 		
-		let author = this.user[~content.createUserId]
-		let x = Draw.user_label(author)
+		let x = Draw.user_label(meta.createUser)
 		x.classList.add('user-label2')
 		this.$author.fill(x)
 		
-		let meta = content.meta ? JSON.parse(content.meta) : {}
 		this.$image_type.textContent = content.literalType.replace("image/", "").toUpperCase()
-		this.$image_kb.textContent = (meta.size/1000).toFixed(1)
+		this.$image_kb.textContent = Math.round(meta.size/1000)
 		this.$image_width.textContent = meta.width
 		this.$image_height.textContent = meta.height
 		this.$image_quantize.textContent = meta.quantize || ""
 		
 		this.$date.textContent = Draw.time_string(content.createDate2)
-		
-		this.form.set({
-			values: JSON.stringify(content.values),
-			permissions: JSON.stringify(content.permissions),
-		})
-		this.form.write()
 	}
 }
 
@@ -139,12 +153,12 @@ ImagesView.template = HTML`
 		Bucket:
 		<input $=bucket placeholder="bucket">
 	</div>
-	<div class='FILL ROW'>
-		<div class='FILL images-container'>
+	<div class='FILL ROW' $=image_show hidden>
+		<div class='images-container' style="width:50%">
 			<img $=image class='images-current'>
 		</div>
-		<div style="width:50%" class='COL images-data'>
-			<a $=image_link style='font-weight:bold'>
+		<div class='COL images-data FILL'>
+			<a $=image_link style='font-weight:bold;text-decoration:underline;'>
 				<span $=filename class='pre'></span>
 			</a>
 			<div $=meta class='images-meta'>
@@ -153,11 +167,14 @@ ImagesView.template = HTML`
 				<span><b $=image_width></b>×<b $=image_height></b></span>
 				<span>q<b $=image_quantize></b></span>
 			</div>
-			<div $=author></div>
-			<time $=date></time>
-			<button $=set_avatar>Set Avatar</button>
-			<button $=in_sidebar>show in sidebar</button>
-			<div $=data></div>
+			<div>
+				<span $=author></span>
+				<time $=date style='margin-left: 0.5rem'></time>
+			</div>
+			<div>
+				<button $=set_avatar>Set Avatar</button>
+				<button $=in_sidebar>show in sidebar</button>
+			</div>
 		</div>
 	</div>
 </view-root>

@@ -11,6 +11,20 @@ for (let enm of Object.values(ABOUT.details.codes)) {
 }
 Object.freeze(CODES)
 
+class FileMeta {
+	constructor(content, user) {
+		let meta = content.meta ? JSON.parse(content.meta) : {}
+		this.width = meta.width
+		this.height = meta.height
+		this.size = meta.size
+		this.quantize = meta.quantize
+		
+		this.createUser = user
+		
+		this.name 
+	}
+}
+
 // todo: permissions class? idk
 
 // this isn't really just "author", so much as um,
@@ -97,6 +111,13 @@ for (let name in ABOUT.details.types) {
 			writable: true,
 		}
 	}
+	// hhh
+	if (name == 'content') {
+		proto_desc.Meta = {
+			value: null,
+			writable: true,
+		}
+	}
 	let fields = ABOUT.details.types[name]
 	let defaults = ABOUT.details.objects[name]
 	for (let key in fields) {
@@ -121,7 +142,7 @@ for (let name in ABOUT.details.types) {
 				// "image.<extension>" - from clipboard
 				// GUID(?) - iOS file upload
 				if (n=="" || /^\w{8}-\w{4}-\w{4}-\w{4}-\w{12}|^image\.[a-z]{3,4}/.test(n))
-					n = "file:"+(this.hash||this.id)
+					n = "untitled:"+(this.hash||this.id)
 			}
 			return n
 		}}
