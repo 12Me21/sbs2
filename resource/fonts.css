@@ -37,13 +37,12 @@
 	font-style: italic;
 }
 /* monospaced font */
-/* I loaded/saved this with fontforge and the filesize reduced from 105k to 63k... not sure why (see: old/cm2.woff2) */
 @font-face{
 	font-family: 'cascadia code';
-	src: url(cascadia-mono.woff2) format('woff2');
+	src: url(cascadia-code.woff2) format('woff2');
 	font-weight: normal;
 	font-style: normal;
-}/* CascadiaCode.woff2 */
+}
 
 /*@font-face{
 	font-family: twemoji;
