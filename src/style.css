@@ -829,6 +829,19 @@ view-root:not(.f-editing) .chat-edit-controls {
 	border-bottom: 1px solid var(--T-border-color);
 	padding: 2px 0.25rem;
 }
+.images-meta {
+	padding: 0;
+	display: flex;
+}
+.images-meta > * {
+	border-right: 1px solid gray;
+	padding: 2px 0.25rem;
+}
+.images-meta b {
+	font: var(--T-monospace-font);
+	font-size: 1rem;
+	font-weight: bold;
+}
 
 /* page */
 /* hecko yo */

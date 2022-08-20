@@ -105,7 +105,7 @@ class ImagesView extends BaseView {
 		
 		this.$image_link.href = `#page/${content.id}`
 		this.$filename.textContent = content.name2
-		this.$hash.textContent = content.hash
+		//this.$hash.textContent = content.hash
 		
 		let author = this.user[~content.createUserId]
 		let x = Draw.user_label(author)
@@ -113,10 +113,11 @@ class ImagesView extends BaseView {
 		this.$author.fill(x)
 		
 		let meta = content.meta ? JSON.parse(content.meta) : {}
-		let info = content.literalType.replace("image/", "")+" | "+(meta.size/1000).toFixed(1)+" kB"+" | "+meta.width+"×"+meta.height
-		if (meta.quantize)
-			info += " | Q "+meta.quantize
-		this.$meta.textContent = info
+		this.$image_type.textContent = content.literalType.replace("image/", "").toUpperCase()
+		this.$image_kb.textContent = (meta.size/1000).toFixed(1)
+		this.$image_width.textContent = meta.width
+		this.$image_height.textContent = meta.height
+		this.$image_quantize.textContent = meta.quantize || ""
 		
 		this.$date.textContent = Draw.time_string(content.createDate2)
 		
@@ -144,9 +145,14 @@ ImagesView.template = HTML`
 		</div>
 		<div style="width:50%" class='COL images-data'>
 			<a $=image_link style='font-weight:bold'>
-				[<span $=hash style='font:var(--T-monospace-font)'></span>] <span $=filename class='pre'></span>
+				<span $=filename class='pre'></span>
 			</a>
-			<div $=meta></div>
+			<div $=meta class='images-meta'>
+				<b $=image_type></b>
+				<span><b $=image_kb></b>kB</span>
+				<span><b $=image_width></b>×<b $=image_height></b></span>
+				<span>q<b $=image_quantize></b></span>
+			</div>
 			<div $=author></div>
 			<time $=date></time>
 			<button $=set_avatar>Set Avatar</button>
