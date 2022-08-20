@@ -272,8 +272,8 @@ const View = NAMESPACE({
 			if (element==this.$embiggened)
 				element = null // already big: make small
 			this.set_embiggened(element)
-			//ev.preventDefault()
-		}, {passive:true})
+			ev.preventDefault()
+		})
 		
 		// clicking outside an image shrinks it
 		// maybe could block this if the click is on a link/button?
