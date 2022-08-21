@@ -20,25 +20,28 @@ class UploaderImage {
 		this.blob_to_img()
 	}
 	blob_to_img() {
+		console.log('to img', this.blob)
 		if (this.img.src)
 			URL.revokeObjectURL(this.img.src)
 		this.img.src = this.blob ? URL.createObjectURL(this.blob) : ""
-		return this.img.decode()
+		if (this.blob)
+			return this.img.decode()
 	}
 	// doesn't set this.blob
 	canvas_to_blob(task) {
+		console.log('to blob')
 		return new Promise((y,n)=>{
 			this.canvas.toBlob(blob=>{
 				if (this.task!==task)
 					n()
 				else {
-					this.blob = blob
-					blob ? y() : n()
+					blob ? y(blob) : n()
 				}
 			}, this.format, this.quality)
 		})
 	}
 	source_to_canvas() {
+		console.log('to canvas')
 		let {naturalWidth:w, naturalHeight:h} = this.source.img
 		let dw = this.width || w
 		let dh = Math.round(dw * h / w)
@@ -55,6 +58,7 @@ class UploaderImage {
 		this.task = null
 	}
 	async update(source, width, format, quality) {
+		console.log('update', source, width, format, quality)
 		if (this.task)
 			return
 		let task = this.task = unique++
@@ -107,9 +111,11 @@ class Uploader {
 				}
 			})
 		}
-		this.$f.resize.onchange = ev=>{
+		this.$f.mode.onchange = ev=>{
 			if (ev.currentTarget.checked) {
 				this.update()
+			} else {
+				this.back()
 			}
 		}
 		this.$f.scale.onchange = ev=>{
@@ -129,14 +135,14 @@ class Uploader {
 				this.got_upload(file)
 		}
 		
-		this.in.img.onload = ev=>{
+		/*this.in.img.onload = ev=>{
 			let w = this.in.img.naturalWidth
 			this.$f.scale.value = this.$f.scale.max = w
 			this.$f.scale_num.value = this.$f.scale_num.max = w
 			this.show_details(this.in)
-		}
+		}*/
 	}
-	update() {
+	async update() {
 		if (!this.$f.mode.checked)
 			return null
 		let source = this.in
@@ -144,19 +150,27 @@ class Uploader {
 		let quality = +this.$f.quality.value/100
 		let format = quality ? 'image/jpeg' : 'image/png'
 		await this.out.update(source, width, format, quality)
+		this.showing = this.out
 		this.show_details(this.out)
+		this.$f.dataset.page = 'resize'
 	}
-	got_upload(file) {
-		this.done()
+	back() {
+		this.showing = this.in
+		this.show_details(this.in)
+		this.$f.dataset.page = 'fields'
+	}
+	async got_upload(file) {
+		//this.done()
 		//f.reset()
-		this.$f.resize.checked = false
+		this.$f.mode.checked = false
 		this.$f.name.value = file.name
 		//f.public.checked
 		//f.bucket.value
 		this.$f.hash.value = null
 		
 		this.in.blob = file
-		this.blob_to_img(this.in)
+		await this.in.blob_to_img()
+		this.back()
 	}
 	
 	show_details(t) {
