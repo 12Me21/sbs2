@@ -609,7 +609,7 @@ message-block > img.bigAvatar {
 
 message-block > message-header {
 	display: flex;
-	flex-flow: wrap-reverse;
+	flex-flow: row-reverse wrap-reverse;
 	align-items: flex-start; /* vertically align items to bottom */
 	margin-left: var(--chat-gutter);
 	padding-top: var(--chat-message-gap);

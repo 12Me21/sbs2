@@ -352,7 +352,7 @@ MessageList.draw_block = function(comment, part) {
 	
 	let header = avatar.nextSibling
 	
-	let name = header.firstChild
+	let name = header.lastChild
 	if (author.nickname == null) {
 		name.firstChild.textContent = author.username
 	} else {
@@ -367,7 +367,7 @@ MessageList.draw_block = function(comment, part) {
 		}
 	}
 	
-	let time = header.lastChild
+	let time = header.firstChild
 	time.dateTime = comment.createDate
 	time.textContent = Draw.time_string(comment.Author.date)
 	
@@ -379,8 +379,8 @@ MessageList.draw_block = function(comment, part) {
 <message-block>
 	<img class='avatar' width=50 height=50 alt="">
 	<message-header>
-		<message-username><span class='username pre'></span>:</message-username>
 		<time></time>
+		<message-username><span class='username pre'></span>:</message-username>
 	</message-header>
 	<message-contents></message-contents>
 </message-block>`,
