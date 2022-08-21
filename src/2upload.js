@@ -17,7 +17,12 @@ class UploaderImage {
 	// todo: use FinalizationRegistry to detect leaks?
 	free() {
 		this.blob = null
-		this.blob_to_img()
+		if (this.img.src) {
+			this.img.src = ""
+			URL.revokeObjectURL(this.img.src)
+		}
+		this.canvas = null
+		this.source = null
 	}
 	blob_to_img() {
 		console.log('to img', this.blob)
@@ -68,8 +73,8 @@ class UploaderImage {
 			default:
 				return false
 			case source !== this.source:
-				this.source = source
 				this.free()
+				this.source = source
 				if (!this.source)
 					return false
 			case width !== this.width:
@@ -102,15 +107,6 @@ class Uploader {
 		
 		// todo: if these change faster than we can encode the img
 		// that's REALLY bad, we need to ratelimit this
-		this.$f.quality.onchange = ev=>{
-			this.encode_canvas(+ev.currentTarget.value, ()=>{
-				this.oimg.onload = ev=>{
-					this.show_details(this.out)
-					// todo: lets just have a single consistent callback
-					// and then check whether we should call show_details
-				}
-			})
-		}
 		this.$f.mode.onchange = ev=>{
 			if (ev.currentTarget.checked) {
 				this.update()
@@ -118,15 +114,16 @@ class Uploader {
 				this.back()
 			}
 		}
+		this.$f.quality.onchange = ev=>{
+			this.update()
+		}
 		this.$f.scale.onchange = ev=>{
-			let v = +ev.currentTarget.value
-			this.$f.scale_num.value = v
-			this.update_canvas(v)
+			this.$f.scale_num.value = ev.currentTarget.value
+			this.update()
 		}
 		this.$f.scale_num.onchange = ev=>{
-			let v = +ev.currentTarget.value
-			this.$f.scale.value = v
-			this.update_canvas(v)
+			this.$f.scale.value = ev.currentTarget.value
+			this.update()
 		}
 		this.$f.browse.onchange = ev=>{
 			let file = ev.currentTarget.files[0]
@@ -134,13 +131,12 @@ class Uploader {
 			if (file)
 				this.got_upload(file)
 		}
-		
-		/*this.in.img.onload = ev=>{
-			let w = this.in.img.naturalWidth
-			this.$f.scale.value = this.$f.scale.max = w
-			this.$f.scale_num.value = this.$f.scale_num.max = w
-			this.show_details(this.in)
-		}*/
+		this.$f.cancel.onclick = ev=>{
+			this.$f.dataset.page = 'browse'
+			this.out.cancel()
+			this.in.free()
+			this.out.free()
+		}
 	}
 	async update() {
 		if (!this.$f.mode.checked)
@@ -170,6 +166,13 @@ class Uploader {
 		
 		this.in.blob = file
 		await this.in.blob_to_img()
+		let w = this.in.img.naturalWidth
+		this.$f.scale.value = this.$f.scale.max = w
+		this.$f.scale_num.value = this.$f.scale_num.max = w
+		if (this.in.blob.type=='image/jpeg')
+			this.$f.quality.value = 70 //
+		else
+			this.$f.quality.value = 0
 		this.back()
 	}
 	
@@ -191,8 +194,8 @@ class Uploader {
 			this.$color.style.backgroundColor = "magenta"
 		}
 		
-		this.$f.type.value = t.blob.type.replace("image/", "")
-		this.$f.size.value = (t.blob.size/1000).toFixed(1)+" kB"
+		this.$f.type.value = t.blob.type.replace("image/", "").toUpperCase()
+		this.$f.size.value = (t.blob.size/1000).toFixed(1)
 		this.$f.width.value = t.img.naturalWidth
 		this.$f.height.value = t.img.naturalHeight
 	}
