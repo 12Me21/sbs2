@@ -1,5 +1,7 @@
 'use strict'
 
+let IMG_PER_PAGE = 30
+
 class ImagesView extends BaseView {
 	Start(location) {
 		this.current = null
@@ -18,7 +20,7 @@ class ImagesView extends BaseView {
 					bucket: JSON.stringify(bucket),
 				},
 				requests: [
-					{type: 'content', fields: '*', query: search, order: 'id_desc', limit: 20, skip: (page-1)*20},
+					{type: 'content', fields: '*', query: search, order: 'id_desc', limit: IMG_PER_PAGE, skip: (page-1)*IMG_PER_PAGE},
 					{type:'user', fields:'*', query:"id IN @content.createUserId."},
 				],
 			},
@@ -86,14 +88,14 @@ class ImagesView extends BaseView {
 			if (meta.width) {
 				let max = Math.max(meta.width, meta.height)
 				// this needs to be changed to round 0.5 to nearest even #?
-				let width = round(meta.width / max * 60)
-				let height = round(meta.height / max * 60)
+				let width = round(meta.width / max * AVATAR_SIZE)
+				let height = round(meta.height / max * AVATAR_SIZE)
 				bg = `no-repeat linear-gradient(orange, red) center / ${width+2}px ${height+2}px, ` + bg
 				/*div.style.width = width+"px"
 				div.style.height = height+"px"*/
 			}
 			
-			let url = Req.file_url(file.hash, "size=60")
+			let url = Req.image_url(file.hash, AVATAR_SIZE)
 			
 			bg = `no-repeat url("${url}") center, ` + bg
 			
@@ -123,7 +125,7 @@ class ImagesView extends BaseView {
 		let meta = content.Meta
 		
 		this.$image.style.aspectRatio = meta.width+" / "+meta.height
-		this.$image.src = Req.file_url(content.hash)
+		this.$image.src = Req.image_url(content.hash)
 		
 		this.$image_link.href = `#page/${content.id}`
 		this.$filename.textContent = content.name2

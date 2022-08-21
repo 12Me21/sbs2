@@ -178,7 +178,7 @@ class PageView extends BaseView {
 				}
 			}
 			img.alt = page.description
-			img.src = Req.file_url(page.hash)
+			img.src = Req.image_url(page.hash)
 			
 			let ne = Draw.button("Set Avatar", e=>{
 				Req.me.avatar = this.page.hash

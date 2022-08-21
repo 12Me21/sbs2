@@ -217,10 +217,14 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 		localStorage.setItem(this.storage_key, token)
 	},
 	
-	file_url(id, query) {
-		if (query)
-			return `https://${this.server}/File/raw/${id}?${query}`
-		return `https://${this.server}/File/raw/${id}`
+	image_url(id, size, crop) {
+		let url = `https://${this.server}/File/raw/${id}`
+		if (size) {
+			url += `?size=${size}`
+			if (crop)
+				url += `&crop=true`
+		}
+		return url
 	},
 	
 	delete(type, id) {

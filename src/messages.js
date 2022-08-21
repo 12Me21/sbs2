@@ -377,7 +377,7 @@ MessageList.draw_block = function(comment, part) {
 }.bind({
 	block: 𐀶`
 <message-block>
-	<img class='avatar' width=100 height=100 alt="">
+	<img class='avatar' width=50 height=50 alt="">
 	<message-header>
 		<message-username><span class='username pre'></span>:</message-username>
 		<time></time>

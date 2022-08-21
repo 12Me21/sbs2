@@ -66,7 +66,7 @@ select {
 	border-top-left-radius: 3px;
 }
 input[type="file"] {
-	line-height: calc(var(--bar-height, 1.5rem) - 4px);
+	line-height: calc(var(--bar-height, 1.5625rem) - 4px);
 	padding: 0;
 }
 input::file-selector-button {
@@ -168,7 +168,7 @@ tab-list {
 	display: flex;
 	flex-flow: row;
 	width: 100%;
-	height: var(--bar-height, 1.5rem);
+	height: var(--bar-height, 1.5625rem);
 	background-color: var(--databarbgcolor) !important;
 }
 tab-list > button {
@@ -203,7 +203,7 @@ tab-list > button img.avatar {
 	width: auto;
 	height: 100%;
 	background: transparent;
-	line-height: var(--bar-height, 1.5rem); /* for alt text */
+	line-height: var(--bar-height, 1.5625rem); /* for alt text */
 }
 
 /* focus */
@@ -816,8 +816,8 @@ view-root:not(.f-editing) .chat-edit-controls {
 	cursor: pointer;
 	box-sizing: content-box;
 	padding: 2px;
-	width: 60px;
-	height: 60px;
+	width: 50px;
+	height: 50px;
 }
 .images-current {
 	--border-width: 1px;
@@ -953,7 +953,7 @@ not-sidebar {
 	z-index: 90;
 }
 .sidebar-comment {
-	--bar-height: 1.5rem;
+	--bar-height: 1.5625rem;
 	contain: strict;
 }
 
@@ -973,7 +973,7 @@ not-sidebar {
 
 .activity-page-bottom {
 	display: flex;
-	height: 1.5rem;
+	height: 1.5625rem;
 	overflow: hidden;
 	justify-content: space-between;
 	contain: strict;

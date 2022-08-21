@@ -27,7 +27,7 @@ const Sidebar = NAMESPACE({
 		if (Req.auth) {
 			user_label = document.createElement('span')
 			let img = document.createElement('img')
-			img.width = img.height = 100
+			img.width = img.height = 50
 			img.className = 'item avatar'
 			img.alt = "🔧️"
 			user_label.append(img)
@@ -245,7 +245,7 @@ const Sidebar = NAMESPACE({
 	}.bind(𐀶`
 <div class='sidebar-comment bar ellipsis'>
 	<a tabindex=-1 class='user-label'>
-		<img class='item avatar' width=100 height=100>
+		<img class='item avatar' width=50 height=50>
 		<span class='entity-title pre'></span>
 	</a>:&#32;
 </div>

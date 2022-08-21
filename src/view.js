@@ -26,7 +26,7 @@
 Markup.renderer.url_scheme['sbs:'] = (url, thing)=>{
 	if (thing=='image') {
 		if (url.pathname.startsWith("image/"))
-			return Req.file_url(url.pathname.substring(6)+url.search)
+			return Req.image_url(url.pathname.substring(6)+url.search)
 	}
 	return "#"+url.pathname+url.search+url.hash
 }
