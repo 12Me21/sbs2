@@ -590,9 +590,11 @@ message-block {
 	padding-bottom: 1px;
 }
 
-message-block > img.avatar {
+message-block > img {
 	position: absolute;
 	z-index: -1;
+}
+message-block > img.avatar {
 	width: var(--chat-avatar-size);
 	height: var(--chat-avatar-size);
 	margin-left: 0.5rem;
@@ -601,8 +603,6 @@ message-block > img.avatar {
 	border: 1px solid #777;
 }
 message-block > img.bigAvatar {
-	position: absolute;
-	z-index: -1;
 	width: var(--chat-gutter);
 	height: 100%;
 	object-fit: cover;
@@ -1107,5 +1107,8 @@ not-sidebar {
 	textarea-container > textarea {
 		padding-left: 2px;
 		width: -webkit-fill-available; width: -moz-available; width: stretch;
+	}
+	message-block > img {
+		-webkit-user-select: none;
 	}
 }
