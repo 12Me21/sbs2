@@ -247,45 +247,53 @@ const View = NAMESPACE({
 		}
 	},
 	
-	$embiggened: null,
-	set_embiggened(img) {
-		if (this.$embiggened) delete this.$embiggened.dataset.big
-		this.$embiggened = img
-		if (this.$embiggened) this.$embiggened.dataset.big = ""
+	shrink_all() {
+		this.embiggened = false
+		for (let e of document.querySelectorAll('[data-big]'))
+			e.removeAttribute('data-big')
 	},
+	
+	embiggened: false,
 	
 	init() {
 		// clicking an image causes it to toggle between big/small
 		// we use mousedown so it happens sooner (vs waiting for click)
 		document.addEventListener('mousedown', ev=>{
-			let element = ev.target
 			if (ev.button)
 				return
+			
+			let element = ev.target
 			let shrink = element.getAttribute('data-shrink')
 			if (shrink==null)
 				return
-			if (shrink=='video') {
-				element.parentNode.toggleAttribute('data-big')
-				ev.preventDefault()
-				return
-			}
-			if (element==this.$embiggened)
-				element = null // already big: make small
-			this.set_embiggened(element)
-			ev.preventDefault()
+			if (shrink=='video')
+				element = element.parentNode
+			
+			if (!ev.ctrlKey && this.embiggened)
+				this.shrink_all()
+			
+			if (!element.hasAttribute('data-big'))
+				this.embiggened = true
+			
+			element.toggleAttribute('data-big')
+			//ev.preventDefault()
 		})
 		
 		// clicking outside an image shrinks it
 		// maybe could block this if the click is on a link/button?
 		document.addEventListener('click', ev=>{
-			let element = ev.target
-			// this happens if an image was clicked to expand it.
-			// (click fires after mousedown)
-			if (element==this.$embiggened)
+			if (!this.embiggened)
 				return
+			
+			let element = ev.target
 			if (element instanceof HTMLTextAreaElement)
-				return // allow clicking textarea
-			this.set_embiggened(null)
+				return
+			if (element.closest('media-player'))
+				return
+			if (element.hasAttribute('data-shrink'))
+				return
+			
+			this.shrink_all()
 		}, {passive: true})
 	},	
 })
