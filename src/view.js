@@ -247,10 +247,11 @@ const View = NAMESPACE({
 		}
 	},
 	
-	shrink_all() {
+	shrink_all(skip) {
 		this.embiggened = false
 		for (let e of document.querySelectorAll('[data-big]'))
-			e.removeAttribute('data-big')
+			if (e !== skip)
+				e.removeAttribute('data-big')
 	},
 	
 	embiggened: false,
@@ -270,7 +271,7 @@ const View = NAMESPACE({
 				element = element.parentNode
 			
 			if (!ev.ctrlKey && this.embiggened)
-				this.shrink_all()
+				this.shrink_all(element)
 			
 			if (!element.hasAttribute('data-big'))
 				this.embiggened = true
