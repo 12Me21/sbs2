@@ -587,6 +587,7 @@ message-block {
 	min-height: calc(var(--chat-avatar-size) + var(--chat-message-gap));
 	position: relative;
 	z-index: 0;
+	padding-bottom: 1px;
 }
 
 message-block > img.avatar {
@@ -613,30 +614,25 @@ message-header {
 	align-items: flex-start; /* vertically align items to bottom */
 	margin-left: var(--chat-gutter);
 	padding-top: var(--chat-message-gap);
+	margin-bottom: 1px;
+	line-height: 1.2;
 }
-message-header > * {
-	flex: 0 1 auto;
-}
-message-header > time {
+message-header > [role="time"] {
 	margin-left: auto; /* expanding margin, pushes element to the right */
-	text-align: right;
-	font-weight: normal;
-	color: var(--chat-dim-color);
 	/* If the username/timestamp line wraps, this negative margin means */
 	/* the <time> can go inside <message-header>'s padding-top region, */
 	/* which reduces the amount of extra vertical space used */
 	margin-top: calc(0px - var(--chat-message-gap));
+	text-align: right;
+	font-size: 0.875em;
+	color: var(--chat-dim-color);
 }
-message-username {
-	line-height: 1.2;
-}
-message-username > span {
+message-header i {
 	color: gray;
+	font-style: normal;
 }
-message-contents {
+message-block > :last-child {
 	display: block;
-	min-height: 1.5rem; /*this is so <message-controls> always has somewhere to be shown*/
-	margin: 1px 0;
 	overflow: hidden; /* do we need this */
 }
 /* message parts */
