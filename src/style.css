@@ -607,15 +607,19 @@ message-block > img.bigAvatar {
 	object-fit: cover;
 }
 
-message-block > message-header {
+message-header {
 	display: flex;
-	flex-flow: row-reverse wrap-reverse;
+	flex-flow: wrap-reverse;
 	align-items: flex-start; /* vertically align items to bottom */
 	margin-left: var(--chat-gutter);
 	padding-top: var(--chat-message-gap);
 }
-message-block > message-header > time {
+message-header > * {
+	flex: 0 1 auto;
+}
+message-header > time {
 	margin-left: auto; /* expanding margin, pushes element to the right */
+	text-align: right;
 	font-weight: normal;
 	color: var(--chat-dim-color);
 	/* If the username/timestamp line wraps, this negative margin means */
@@ -626,7 +630,7 @@ message-block > message-header > time {
 message-username {
 	line-height: 1.2;
 }
-.real-name-label {
+message-username > span {
 	color: gray;
 }
 message-contents {

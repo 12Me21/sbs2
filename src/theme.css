@@ -4,7 +4,7 @@
 :root {
 	--T-font: 1em roboto, heart, sans-serif;
 	--T-monospace-font: 0.8125em 'cascadia code', consolas, monospace;
-	/* chat left margin (determines size of avatars on messages) */
+	
 	--chat-avatar-size: 52px; /* 50x50 + border */
 }
 

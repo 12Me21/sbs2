@@ -13,7 +13,7 @@
 	margin: 0;
 	box-sizing: border-box;
 	contain: content;
-	flex: none;
+	/*flex: none;*/
 	/* override default browser styles */
 	/* (these are all inherited properties) */
 	word-break: inherit;
@@ -57,6 +57,7 @@ html, body {
 .ROW, .COL { display: flex; }
 .COL { flex-flow: column; }
 
+.ROW > *, .COL > * { flex: none; }
 .FILL { flex: 0mm; }
 .ROW > .FILL, .ROW > .sized { min-width: 0; }
 .COL > .FILL, .COL > .sized { min-height: 0; }
