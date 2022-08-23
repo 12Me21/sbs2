@@ -188,6 +188,16 @@ form-table > .wide {
  ** Scroller **
  **************/
 
+scroll-outer {
+	display: block;
+	height: 100%;
+	overflow-y: scroll;
+	contain: strict;
+}
+scroll-inner {
+	display: block;
+}
+
 auto-scroller {
 	display: flex;
 	flex-flow: column;
@@ -195,20 +205,14 @@ auto-scroller {
 	height: 100%;
 	contain: strict;
 }
-
-scroll-outer {
-	height: 100%;
-	overflow-y: scroll;
-	contain: strict;
+auto-scroller.anchor-bottom {
+	flex-flow: column-reverse;
+	overflow-anchor: none;
 }
 scroll-middle {
 	flex: none;
 	margin-top: auto; /* this presses the contents against the bottom if necessary */
-	overflow: hidden; overflow: clip;
-}
-scroll-inner {
-	display: block;
-	flex: none;
+	overflow: hidden; /*overflow: clip;?*/
 }
 scroll-middle > scroll-inner {
 	position: relative;
@@ -216,12 +220,6 @@ scroll-middle > scroll-inner {
 /* TODO: wait i thought this was broken?? causing lag on ios? seems fine now th*/
 scroll-inner.scroll-anim3 {
 	transition: transform .4015s cubic-bezier(.16,1,.3,1) 10ms;
-}
-
-auto-scroller.anchor-bottom {
-	display: flex;
-	flex-flow: column-reverse;
-	overflow-anchor: none;
 }
 /*xssxxxdddsssaweeexxwxxx333wexxxxxxxweewswwwzzzzw2xxxxxxxxxxxeeezzzwwaaawwwwwwwwwwwwwwwwwwwwwww d dccc eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee`zzzzzzzzzaaaaaaaaaaaaaaaaxxsdssssssssaaasdssddddddddddasdasdasdasdasd*/
 
