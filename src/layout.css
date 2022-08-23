@@ -187,9 +187,14 @@ form-table > .wide {
  ** Scroller **
  **************/
 
-scroll-outer {
+.scroller {
 	display: flex;
 	flex-flow: column;
+	overflow-y: scroll;
+	contain: strict;
+}
+
+scroll-outer {
 	height: 100%;
 	overflow-y: scroll;
 	contain: strict;

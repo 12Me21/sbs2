@@ -68,6 +68,7 @@ class Scroller {
 		let middle = document.createElement('scroll-middle')
 		middle.append(this.$inner)
 		this.$outer.append(middle)
+		this.$outer.classList.add('scroller')
 		
 		this.anim = null
 		this.locked = false
