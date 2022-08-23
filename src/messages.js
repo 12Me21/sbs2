@@ -368,7 +368,7 @@ MessageList.draw_block = function(comment, part) {
 	}
 	
 	let time = header.lastChild
-	time.dateTime = comment.createDate
+	//time.dateTime = comment.createDate
 	time.textContent = "\t­\t"+Draw.time_string(comment.Author.date)
 	
 	e.lastChild.appendChild(part)
