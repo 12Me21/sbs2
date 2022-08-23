@@ -90,6 +90,7 @@ not-sidebar, sidebar-container,
 .SLIDES,
 view-slot, view-root,
 scroll-outer, scroll-inner, scroll-middle,
+auto-scroller,
 .message-list {
 	background: var(--T-bg);
 }
@@ -187,10 +188,11 @@ form-table > .wide {
  ** Scroller **
  **************/
 
-.scroller {
+auto-scroller {
 	display: flex;
 	flex-flow: column;
 	overflow-y: scroll;
+	height: 100%;
 	contain: strict;
 }
 
@@ -216,7 +218,7 @@ scroll-inner.scroll-anim3 {
 	transition: transform .4015s cubic-bezier(.16,1,.3,1) 10ms;
 }
 
-scroll-outer.anchor-bottom {
+auto-scroller.anchor-bottom {
 	display: flex;
 	flex-flow: column-reverse;
 	overflow-anchor: none;

@@ -381,7 +381,7 @@ PageView.template = HTML`
 		<div class='pageContents' $=page_contents></div>
 	</scroll-outer>
 	<div $=resize_handle class='userlist2 resize-handle' style='--bar-height:2.4375rem'><div $=userlist class='userlist'></div></div>
-	<scroll-outer class='FILL' $=outer>
+	<auto-scroller class='FILL' $=outer>
 		<scroll-inner $=inner>
 			<div $=extra>
 				<button $=load_older>load older messages</button>
@@ -390,7 +390,7 @@ PageView.template = HTML`
 			<message-list $=message_list></message-list>
 			<div class='chat-bottom' tabindex=0></div>
 		</scroll-inner>
-	</scroll-outer>
+	</auto-scroller>
 	<div class='inputPane ROW'>
 		<div class='chat-edit-controls COL'>
 			<input $=markup placeholder="markup" style="width:50px;">
