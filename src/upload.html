@@ -72,7 +72,7 @@
 </style>
 <style id=$style></style>
 
-<form id=$form method=dialog data-page=browse>
+<form id=$form method=dialog data-page=browse autocomplete=off>
 	<div class='form-row' data-page=browse>
 		<input type=file accept="image/png,image/jpeg,image/gif,image/bmp,image/webp,.png,.jpg,.jpeg,.gif,.bmp,.webp" name=browse class='field'>
 	</div>
@@ -89,10 +89,12 @@
 			<b><output name=type></output></b>:
 			<b><output name=size></output></b>kB&nbsp;
 		</span>
-		<span>
+		<span style='margin-right:auto'>
 			<b><output name=width></output></b>×<b><output name=height></output></b>
 		</span>
-		<span style='margin-left:auto'><output name=edited></output></span>
+		<label>
+			<input class='field' type=checkbox name=edit>
+		</label>
 		<button type=button class='field' name=mode style='flex:initial'>Edit</button>
 	</div>
 	<div class='form-row' data-page=fields>
@@ -113,10 +115,6 @@
 		<label>
 			<span>Quality:</span>
 			<input type=range min=0 max=100 step=1 class='field' name=quality>
-		</label>
-		<label>
-			<span>Edit:</span>
-			<input class='field' type=checkbox name=edit>
 		</label>
 	</div>
 	<div class='form-row' data-page=resize>
