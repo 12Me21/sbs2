@@ -69,18 +69,10 @@
 	let run_on_load = []
 	let do_when_ready = func => run_on_load.push(func)
 	
-	// not perfect but should protect against f*ceb*ok's shit for now
-	Object.defineProperty(HTMLScriptElement.prototype, 'src', {
-		set(url) {
-			alert("Hijacking detected! 🛬🏙️💥\nAttempt to inject script with src:\n"+url)
-		}
-	})
-	
 	// todo: get rid of global vars here
-	var markup_warned = true
-	function check_markup() {
+	/*function check_markup() {
 		return "yeah"===window.getComputedStyle(document.documentElement).getPropertyValue('--Markup-loaded')
-	}
+	}*/
 	
 	function alert_error(msg, message, source, line, col) {
 		source = source.replace(BASE_URL, "📁 ")
@@ -92,14 +84,17 @@
 	}
 	
 	window.onerror = (message, source, line, col, error)=>{
-		if (!markup_warned && !check_markup()) {
-			markup_warned = true
-			alert("❓MISSING SUBMODULE DETECTED!\n🩸Check: "+new URL('markup2/', window.location).href+"\n🩸If the ‘markup2’ folder is empty:\n🩸\n🩸Run: git submodule update --init\n🩸or download the files manually at:\n🩸https://github.com/12Me21/markup2")
-		}
 		(window.queueMicrotask || window.setTimeout)(()=>{
 			alert_error("🎆 ERROR DURING PAGE LOAD!", message, source, line, col)
 		})
 	}
+	
+	// not perfect but should protect against f*ceb*ok's shit for now
+	Object.defineProperty(HTMLScriptElement.prototype, 'src', {
+		set(url) {
+			alert("Hijacking detected! 🛬🏙️💥\nAttempt to inject script with src:\n"+url)
+		}
+	})
 	
 	//let store_prefix = OPTS.has('dev') ? "dev-" : ""
 	// load settings very early
@@ -138,7 +133,6 @@
 		$meta_viewport.content += ", user-scalable=no"
 	
 	console.log("🌅 early init done")
-	markup_warned = false
 </script>
 
 <!--START-->
