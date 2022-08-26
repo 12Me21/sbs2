@@ -7,7 +7,7 @@
 	@import "../src/style.css";
 	
 	#\$form {
-		width: 300px;
+		width: 200px;
 		display: flex;
 		flex-flow: column;
 		height: 500px;
@@ -25,6 +25,9 @@
 	.form-row span {
 		flex: none;
 		align-self: center;
+	}
+	#\$form button {
+		padding: 0 0.25rem;
 	}
 	#\$form .field {
 		flex: 1 1 0;
@@ -82,7 +85,7 @@
 		</label>
 	</div>
 	<div class='form-row' id=$color data-page='fields resize'>
-		<span >
+		<span>
 			<b><output name=type></output></b>:
 			<b><output name=size></output></b>kB
 		</span>
@@ -106,18 +109,20 @@
 		<input name=hash class='field' pattern="^[a-z-]{8,32}$" placeholder="Hash">
 	</div>
 	<div class='form-row' data-page=resize>
+		<input class='field' type=checkbox name=edit>
+		<label>
+			<span>Quality:</span>
+			<input type=range min=0 max=100 step=1 class='field' name=quality>
+		</label>
+	</div>
+	<div class='form-row' data-page=resize>
+		
 		<label>
 			<span>Size:</span>
 			<input type=range min=1 max=1 step=1 class='field' name=scale>
 			<input type=text size=5 style='flex:none' class='field' name=scale_num>
 		</label>
 		<!--<button type=button name=half>÷2</button>-->
-	</div>
-	<div class='form-row' data-page=resize>
-		<label>
-			<span>Quality:</span>
-			<input type=range min=0 max=100 step=1 class='field' name=quality>
-		</label>
 	</div>
 	<div class='FILL image-box' style="min-height:3rem" id=$image_box data-page='resize fields'>
 	</div>

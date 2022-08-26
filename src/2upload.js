@@ -105,6 +105,7 @@ class UploaderImage {
 class Uploader {
 	mode_state(state) {
 		this.$f.mode.setAttribute('aria-selected', state)
+		this.$f.dataset.page = state ? 'resize' : 'fields'
 	}
 	constructor(f) {
 		this.$f = f
@@ -112,18 +113,25 @@ class Uploader {
 		this.out = new UploaderImage()
 		this.showing = null
 		
-		// todo: if these change faster than we can encode the img
-		// that's REALLY bad, we need to ratelimit this
-		this.$f.mode.onclick = ev=>{
-			let state = ev.currentTarget.getAttribute('aria-selected')=='true'
-			state = !state
+		this.$f.edit.onchange = ev=>{
+			let state = ev.currentTarget.checked
+			this.$f.scale.disabled = !state
+			this.$f.quality.disabled = !state
+			this.$f.scale_num.disabled = !state
 			if (state) {
 				this.update()
 			} else {
 				this.back()
 			}
+		}
+		
+		this.$f.mode.onclick = ev=>{
+			let state = ev.currentTarget.getAttribute('aria-selected')=='true'
+			state = !state
 			this.mode_state(state)
 		}
+		// todo: if these change faster than we can encode the img
+		// that's REALLY bad, we need to ratelimit this
 		this.$f.quality.onchange = ev=>{
 			this.update()
 		}
@@ -142,11 +150,14 @@ class Uploader {
 				this.got_upload(file)
 		}
 		this.$f.cancel.onclick = ev=>{
-			this.$f.dataset.page = 'browse'
 			this.out.cancel()
 			this.in.free()
 			this.out.free()
 		}
+	}
+	show_out() {
+		this.showing = this.out
+		this.show_details(this.out)
 	}
 	async update() {
 		let source = this.in
@@ -154,14 +165,17 @@ class Uploader {
 		let quality = +this.$f.quality.value/100
 		let format = quality ? 'image/jpeg' : 'image/png'
 		await this.out.update(source, width, format, quality)
-		this.showing = this.out
-		this.show_details(this.out)
-		this.$f.dataset.page = 'resize'
+		if (this.out.img.complete) {
+			this.show_out()
+		} else {
+			this.out.img.addEventListener('load', ev=>{
+				this.show_out()
+			}, {once:true})
+		}
 	}
 	back() {
 		this.showing = this.in
 		this.show_details(this.in)
-		this.$f.dataset.page = 'fields'
 	}
 	async got_upload(file, name=file.name) {
 		//this.done()

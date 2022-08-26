@@ -82,6 +82,11 @@ input::placeholder {
 input:invalid {
 	background: var(--error-bg);
 }
+input:disabled {
+	background: var(--bar-bg);
+	color: var(--chat-dim-color);
+	border-color: gray;
+}
 
 /* textarea */
 textarea {
