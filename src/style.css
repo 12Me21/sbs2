@@ -364,12 +364,16 @@ view-slot:not(.focused) {
 	height: 100%;
 	z-index: 25;
 	display: none;
-	background-image: url("data:image/gif;base64,R0lGODdhBAAEAAAAMSwAAAAABAAEAMAAAAD///8CBYxhF8hRADs="); /*todo; bmp*/
+	background: fixed url("data:image/gif;base64,R0lGODdhBAAEAAAAMSwAAAAABAAEAMAAAAD///8CBYxhF8hRADs="); /*todo; bmp*/
 	opacity: 0.25;
 }
+dialog {
+	margin: auto;
+}
 dialog::backdrop {
-	background: url("data:image/webp;base64,UklGRiwAAABXRUJQVlA4TB8AAAAvH8AHEA8w//M///sfeBALJvlL784gov8TgJ7k+dMEAA==") 0 / 4px;
-	/*opacity: 0.25;*/
+	background: fixed 2px 1px / 4px url("data:image/webp;base64,UklGRiwAAABXRUJQVlA4TB8AAAAvH8AHAA8w//M///MfeBALJvlL784gov8TgJ7k+dMEAA==");
+/*UklGRiwAAABXRUJQVlA4TB8AAAAvH8AHEA8w//M///sfeBALJvlL784gov8TgJ7k+dMEAA==*/
+	opacity: 0.5;
 }
 
 view-header h1 {
