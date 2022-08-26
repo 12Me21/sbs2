@@ -346,6 +346,7 @@ window.addEventListener('blur', ev=>{
 
 View.register('iframe', IframeView)*/
 
+// unfinished
 class Paginator {
 	constructor() {
 		this.page = 1
@@ -358,5 +359,18 @@ class Paginator {
 			location.query.p = this.page
 		else
 			delete location.query.p
+	}
+}
+
+
+//
+// alert/confirm/prompt is becoming unreliable in ios safari?
+// it supports <dialog> now, so we can use that instead
+// (I don't particularly like custom popups because they can be unreliable)
+// actually what if we just show the info in the sidebar in a temp. tab
+// instead?
+class Dialog {
+	constructor() {
+		
 	}
 }

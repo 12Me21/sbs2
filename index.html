@@ -145,8 +145,8 @@
 <!-- this part will be replaced by the build script -->
 <link rel=stylesheet href=resource/fonts.css>
 <link rel=stylesheet href=src/layout.css>
-<link rel=stylesheet href=src/style.css>
 <link rel=stylesheet href=markup2/markup.css>
+<link rel=stylesheet href=src/style.css>
 <link rel=stylesheet href=src/theme.css>
 <style id=$customCSS></style>
 
@@ -210,17 +210,18 @@
 	
 	<tab-list id=$sidebar_tabs aria-label="sidebar tabs"></tab-list>
 	
+	<!-- sidebar panels -->
 	<div id=$sidebarTop class='sized SLIDES'>
 		
-		<sidebar-panel id=$sidebarActivityPanel>
+		<div id=$sidebarActivityPanel>
 			<scroll-outer id=$sidebarActivity class='activity-scroller' tabindex=-1 style='padding-top:3px;'></scroll-outer>
-		</sidebar-panel>
+		</div>
 		
-		<sidebar-panel id=$sidebarWatchPanel>
+		<div id=$sidebarWatchPanel>
 			<scroll-outer id=$sidebarWatch class='activity-scroller' tabindex=-1></scroll-outer>
-		</sidebar-panel>
+		</div>
 		
-		<sidebar-panel id=$sidebarNavPanel tabindex=-1 style='overflow-y:scroll;'>
+		<div id=$sidebarNavPanel tabindex=-1 style='overflow-y:scroll;'>
 			<div class='rem1-5 ROW'>
 				<input class='FILL item' id=$searchInput>
 				<button id=$searchButton class='item'>Search</button>
@@ -228,9 +229,9 @@
 			<div id=$searchResults role='list'></div>
 			<div class='ROW' style='justify-content:space-around;'><span>🐈︎</span><span>🐈︎</span><span>🐈︎</span><span>🐈︎</span><span>🐈︎</span></div>
 			<div id=$sidebarCategories role='list'></div>
-		</sidebar-panel>
+		</div>
 		
-		<sidebar-panel id=$sidebarFilePanel class='COL'>
+		<div id=$sidebarFilePanel class='COL'>
 			<div class='rem1-5 ROW' style='justify-content:space-between;'>
 				<div class='FILL COL' id=$file_inputs>
 					<input type=file accept="image/png,image/jpeg,image/gif,image/bmp,image/webp,.png,.jpg,.jpeg,.gif,.bmp" id=$file_browse class='item'>
@@ -255,9 +256,9 @@
 				  the images view is a temporary solution then in that case
 			-->
 			<a href=#images>View Images</a>
-		</sidebar-panel>
+		</div>
 		
-		<sidebar-panel id=$sidebarUserPanel class='COL'>
+		<div id=$sidebarUserPanel class='COL'>
 			<!--<tab-list id=$settings_tabs aria-label="settings tabs"></tab-list>-->
 			<div class='registerBox'>
 				<button onclick='RELOAD()'>Reload</button>
@@ -278,12 +279,15 @@
 				js eval:
 				<textarea id=$debugInput class='code-textarea'></textarea>
 			</div>
-		</sidebar-panel>
+		</div>
 		
-		<sidebar-panel id=$sidebarEditor class='COL'>
-		</sidebar-panel>
+		<div id=$sidebarPopupPanel class='COL'>
+		</div>
+		
+		<div id=$sidebarEditorPanel class='COL'></div>
 	</div>
-	
+
+<!-- sidebar bottom -->
 	<div id=$sidebarResize class='resize-handle'></div>
 	
 	<div class='FILL' id=$sidebarBottom>

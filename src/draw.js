@@ -402,6 +402,10 @@ class Tabs {
 		for (let data of def)
 			this.add(data)
 	}
+	selected() {
+		let tab = this.tabs.find(tab=>tab.btn.getAttribute('aria-selected')=='true')
+		return tab ? tab.name : null
+	}
 	select(name) {
 		let tab = this.tabs.find(tab=>tab.name==name)
 		if (tab)
@@ -416,6 +420,8 @@ class Tabs {
 		
 		let btn = data.btn = button_template()
 		this.$elem.append(btn)
+		if (data.hidden)
+			btn.hidden = true
 		
 		btn.id = this.name+"-tab-"+data.name
 		btn.setAttribute('aria-controls', panel.id)

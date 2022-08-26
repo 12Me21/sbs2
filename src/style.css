@@ -126,6 +126,7 @@ textarea-container > textarea:focus {
 /************
  ** Button **
  ************/
+
 button {
 	cursor: pointer;
 	font: inherit;
@@ -355,6 +356,7 @@ view-slot:not(.focused) .slot-overlay {
 view-slot:not(.focused) {
 	--normal-shadow: none;
 }
+
 .slot-overlay {
 	pointer-events: none;
 	position: absolute;
@@ -364,6 +366,10 @@ view-slot:not(.focused) {
 	display: none;
 	background-image: url("data:image/gif;base64,R0lGODdhBAAEAAAAMSwAAAAABAAEAMAAAAD///8CBYxhF8hRADs="); /*todo; bmp*/
 	opacity: 0.25;
+}
+dialog::backdrop {
+	background: url("data:image/webp;base64,UklGRiwAAABXRUJQVlA4TB8AAAAvH8AHEA8w//M///sfeBALJvlL784gov8TgJ7k+dMEAA==") 0 / 4px;
+	/*opacity: 0.25;*/
 }
 
 view-header h1 {
@@ -1042,7 +1048,7 @@ not-sidebar {
 .local-settings {
 	padding: 0.3125rem 0.5rem;
 }
-#\$sidebarEditor > textarea {
+#\$sidebarEditorPanel > textarea {
 	flex: 1;
 	resize: none;
 	width: 100%;
@@ -1052,7 +1058,7 @@ not-sidebar {
 	flex-flow: wrap;
 	align-items: center;
 }
-.local-settings > div > button, #\$sidebarEditor > button {
+.local-settings > div > button, #\$sidebarEditorPanel > button {
 	margin: 1px;
 }
 .local-settings > div > * {
