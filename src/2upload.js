@@ -153,6 +153,7 @@ class Uploader {
 			this.out.cancel()
 			this.in.free()
 			this.out.free()
+			this.$f.dataset.page = 'browse'
 		}
 	}
 	show_out() {
@@ -203,6 +204,7 @@ class Uploader {
 	show_details(t) {
 		if (this.showing !== t)
 			return
+		this.$f.edited.value = t===this.out ? "**" : ""
 		
 		if (t.img !== this.$image_box.firstChild)
 			this.$image_box.replaceChildren(t.img)

@@ -7,7 +7,7 @@
 	@import "../src/style.css";
 	
 	#\$form {
-		width: 200px;
+		width: 300px;
 		display: flex;
 		flex-flow: column;
 		height: 500px;
@@ -87,12 +87,13 @@
 	<div class='form-row' id=$color data-page='fields resize'>
 		<span>
 			<b><output name=type></output></b>:
-			<b><output name=size></output></b>kB
+			<b><output name=size></output></b>kB&nbsp;
 		</span>
 		<span>
 			<b><output name=width></output></b>×<b><output name=height></output></b>
 		</span>
-		<button type=button class='field' name=mode style='flex:initial;margin-left:auto'>Edit</button>
+		<span style='margin-left:auto'><output name=edited></output></span>
+		<button type=button class='field' name=mode style='flex:initial'>Edit</button>
 	</div>
 	<div class='form-row' data-page=fields>
 		<label>
@@ -109,10 +110,13 @@
 		<input name=hash class='field' pattern="^[a-z-]{8,32}$" placeholder="Hash">
 	</div>
 	<div class='form-row' data-page=resize>
-		<input class='field' type=checkbox name=edit>
 		<label>
 			<span>Quality:</span>
 			<input type=range min=0 max=100 step=1 class='field' name=quality>
+		</label>
+		<label>
+			<span>Edit:</span>
+			<input class='field' type=checkbox name=edit>
 		</label>
 	</div>
 	<div class='form-row' data-page=resize>
