@@ -32,13 +32,15 @@
 	--message-focus-bg: #E5FCFF;
 	--bar-bg: #EEE;
 	--error-bg: #FFC0CB;
-	--T-red-bg: #FCB;
-	--T-orange-bg: #FEA;
+	
+	--T-red-bg:    #FBC;
+	--T-orange-bg: #FDA;
 	--T-yellow-bg: #FF8;
-	--T-green-bg: #CFC;
-	--T-blue-bg: #CEF;
-	--T-purple-bg: #ECF;
-	--T-gray-bg: #DDD;
+	--T-green-bg:  #BFA;
+	--T-blue-bg:   #CEF;
+	--T-purple-bg: #DBF;
+	--T-gray-bg:   #DDD;
+	
 	--edit-textarea-bg: #FFFF80;
 	--normal-shadow: 0 2px 3px #0000004D;
 	--T-edit-color: goldenrod;
