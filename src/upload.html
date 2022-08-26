@@ -61,7 +61,13 @@
 	#\$form .image-box > img {
 		border: 2px dotted gray;
 	}
+	dialog::backdrop {
+		background: fixed url("data:image/webp;base64,UklGRjAAAABXRUJQVlA4TCQAAAAvF8AFAIXatm0k7r+02txbR/R/AhoE3gVUFVBVT/pUoKqA1wE=");
+		background-size: calc(4px / var(--scale, 1));
+		/*UklGRiwAAABXRUJQVlA4TB8AAAAvH8AHEA8w//M///sfeBALJvlL784gov8TgJ7k+dMEAA==*/
+	}
 </style>
+<style id=$style></style>
 
 <form id=$form method=dialog data-page=browse>
 	<div class='form-row' data-page=browse>
@@ -76,20 +82,20 @@
 		</label>
 	</div>
 	<div class='form-row' id=$color data-page='fields resize'>
-		<span style='margin-right:auto'>
+		<span >
 			<b><output name=type></output></b>:
 			<b><output name=size></output></b>kB
 		</span>
 		<span>
 			<b><output name=width></output></b>×<b><output name=height></output></b>
 		</span>
-		<label>
-			<span>edit</span>
-			<input type=checkbox name=mode class='field' autocomplete=off>
-		</label>
+		<button type=button class='field' name=mode style='flex:initial;margin-left:auto'>Edit</button>
 	</div>
 	<div class='form-row' data-page=fields>
-		<input name=name required class='field' placeholder="Name">
+		<label>
+			<span>Title:</span>
+			<input name=name required class='field' placeholder="Name">
+		</label>
 		<label>
 			<span>Public:</span>
 			<input type=checkbox class='field' name=public checked>
@@ -118,17 +124,40 @@
 </form>
 <canvas id=$canvas hidden></canvas>
 <br>
-
+<img src="https://qcs.shsbs.xyz/api/File/raw/21302?size=100&crop=true">
 <input type=number min=100 max=1000 value=300 id=$resize>
 
 <script src=2upload.js></script>
 
 <script>
+	update = function self(ev) {
+		let pr = window.devicePixelRatio
+		matchMedia(`(-webkit-device-pixel-ratio: ${pr})`).addEventListener('change', self, {once:true})
+		$style.textContent = `dialog::backdrop { --scale: ${pr / Math.round(pr)}; }`
+	}
+	update()
+	
 	$resize.oninput = ev=>{
 		$form.style.width = $resize.value+"px"
 	}	
 	
 	let f = new Uploader($form)
+	f.init()
 	f.$image_box = $image_box
 	f.$color = $color
 </script>
+<dialog id=$dialog>
+	<form method=dialog><button>close</button></form>
+	a
+</dialog>
+PROBLEM: the edit switch doesn't work as expected, since
+even with editing enabled, you want to be able to edit the name etc.
+so, to do that, you'd need to unclick edit, type the name, then remember to switch back into edit mode before uploading.
+what we need to do is have a separate edit checkbox, and then a button to switch between tabs.
+there are 3 states:
+1: viewing fields, edit disabled
+2: viewing fields, edit enabled
+3: viewing sliders: edit enabled
+alternatively, we could have the edit checkbox located in the edit tab
+and have the tab switcher shown at all times.
+then, to edit an image you switch to the edit tab first, then check a checkbox there to unlock the controls.

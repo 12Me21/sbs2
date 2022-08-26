@@ -1,5 +1,9 @@
 let unique = 1
 
+function is_untitled(name) {
+	return !name || /^(\w{8}-\w{4}-\w{4}-\w{4}-\w{12}|image)\.\w{3,4}$/.test(name)
+}
+
 class UploaderImage {
 	constructor() {
 		this.img = new Image()
@@ -99,6 +103,9 @@ class UploaderImage {
 }
 
 class Uploader {
+	mode_state(state) {
+		this.$f.mode.setAttribute('aria-selected', state)
+	}
 	constructor(f) {
 		this.$f = f
 		this.in = new UploaderImage()
@@ -107,12 +114,15 @@ class Uploader {
 		
 		// todo: if these change faster than we can encode the img
 		// that's REALLY bad, we need to ratelimit this
-		this.$f.mode.onchange = ev=>{
-			if (ev.currentTarget.checked) {
+		this.$f.mode.onclick = ev=>{
+			let state = ev.currentTarget.getAttribute('aria-selected')=='true'
+			state = !state
+			if (state) {
 				this.update()
 			} else {
 				this.back()
 			}
+			this.mode_state(state)
 		}
 		this.$f.quality.onchange = ev=>{
 			this.update()
@@ -139,8 +149,6 @@ class Uploader {
 		}
 	}
 	async update() {
-		if (!this.$f.mode.checked)
-			return null
 		let source = this.in
 		let width = +this.$f.scale.value
 		let quality = +this.$f.quality.value/100
@@ -155,11 +163,13 @@ class Uploader {
 		this.show_details(this.in)
 		this.$f.dataset.page = 'fields'
 	}
-	async got_upload(file) {
+	async got_upload(file, name=file.name) {
 		//this.done()
 		//f.reset()
-		this.$f.mode.checked = false
-		this.$f.name.value = file.name
+		//if (is_untitled(file.name))
+		
+		this.mode_state(false)
+		this.$f.name.value = name
 		//f.public.checked
 		//f.bucket.value
 		this.$f.hash.value = null
@@ -199,5 +209,59 @@ class Uploader {
 		this.$f.width.value = t.img.naturalWidth
 		this.$f.height.value = t.img.naturalHeight
 	}
+	// cannot be destroyed. oops?
+	init() {
+		let es = document.createElement('span')
+		function pick_name(transfer, cb) {
+			let html = transfer.types.indexOf('text/html')
+			if (html>=0) {
+				transfer.items[html].getAsString(string=>{
+					let m = / (aria-label|title|alt|src)="([^<"]+?)"/.exec(string)
+					console.log(string, m)
+					if (m) {
+						es.innerHTML = m[2]
+						string = es.textContent
+						es.textContent = ""
+					}
+					cb(string)
+				})
+				return
+			}
+			let text = transfer.types.indexOf('text/plain')
+			if (text>=0) {
+				transfer.items[text].getAsString(string=>{
+					cb(string)
+				})
+				return
+			}
+			cb()
+		}
+		
+		document.addEventListener('paste', ev=>{
+			let data = ev.clipboardData
+			// get image
+			let file = data && data.files[0]
+			if (file && file.type.startsWith("image/")) {
+				pick_name(data, (name=file.name)=>{
+					this.got_upload(file, name)
+				})
+			}
+		})
+		document.addEventListener('dragover', ev=>{
+			if (ev.dataTransfer.types.includes("Files")) {
+				ev.preventDefault()
+				ev.dataTransfer.dropEffect = 'copy'
+			}
+		})
+		document.addEventListener('drop', ev=>{
+			if (ev.target instanceof HTMLTextAreaElement)
+				return
+			let file = ev.dataTransfer.files[0]
+			if (file) {
+				ev.preventDefault()
+				if (/^image\//.test(file.type))
+					this.got_upload(file)
+			}
+		})
+	}
 }
-
