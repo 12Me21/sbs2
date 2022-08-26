@@ -296,13 +296,11 @@ forgot what this was for ??
 }
 
 /* Links */
-:any-link {
+a {
 	text-decoration: none;
-}
-:any-link {
 	color: var(--T-link-color);
 }
-:any-link:hover {
+a:hover {
 	color: var(--T-link-hover-color);
 	text-decoration: underline;
 }
