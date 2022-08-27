@@ -280,3 +280,61 @@ class Uploader {
 		})
 	}
 }
+
+// problem: flickering on ios?
+// seems like it immediately blanks the image when src is updated
+// rather than waiting til the new image is ready...
+
+window.GeneratorFunction = function* () {}.constructor
+window.Generator = GeneratorFunction.prototype
+
+Generator.prototype.run = function(ok=console.info, err=e=>{ throw e }) {
+	let step, main = data=>{
+		step = defer => [data,step]=[defer,main] 
+		try {
+			let r = this.next(data)
+			if (r.done) [data,step]=[r.value,ok]
+		} catch (e) { [data,step]=[e,err] }
+		step(data)
+	}
+	main()
+	step(x=>step(x))
+	return this
+}
+
+// sub-task factory - canvas encoder
+function* encode_canvas(STEP, canvas, format, quality) {
+	let blob = yield canvas.toBlob(STEP, format, quality)
+	
+	let ok = false, img = document.createElement('img')
+	try {
+		img.src = URL.createObjectURL(blob)
+		console.log('created object url')
+		yield img.onload = STEP
+		ok = true
+		return img
+	} finally {
+		if (!ok) {
+			console.log('revoked object url')
+			URL.revokeObjectURL(img.src)
+		}
+	}
+}
+
+let canvas = document.createElement('canvas')
+canvas.width=500
+canvas.height=300
+
+// task factory - encode `canvas` as jpeg
+function* encode_test() {
+	let STEP = yield
+	let img = yield* encode_canvas(STEP, canvas, 'image/jpeg', 0.4)
+	console.info("finished", img)
+	document.body.append(img)
+}
+
+let task = encode_test().run()
+task.return() // cancel before it finishes
+
+canvas.getContext('2d').fillRect(10, 50, 100, 100)
+task = encode_test().run()
