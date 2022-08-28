@@ -211,6 +211,7 @@ const Entity = NAMESPACE({
 		return listmap
 	},
 	
+	// TODO: yeah this makes the console.log messages harder to read too. gosh. we should check how often the values are used. and if a linear search is more suitable?
 	do_list(list, name) {
 		// todo: better system for mapping types
 		let type = list.Type || this.key_type(name)

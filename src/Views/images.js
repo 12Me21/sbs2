@@ -8,12 +8,15 @@ class ImagesView extends BaseView {
 		
 		let bucket = location.query.bucket
 		let page = (location.query.page|0) || 1
+		let uid = location.query.uid
 		this.page = page
 		this.bucket = bucket
 		
 		let search = "contentType = {{3}}"
 		if (bucket)
 			search += " AND !valuelike({{bucket}}, @bucket)"
+		if (uid)
+			search += " AND createUserId = {{"+uid+"}}"
 		return {
 			chain: {
 				values: {

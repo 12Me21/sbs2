@@ -1,6 +1,6 @@
 'use strict'
 
-let AVATAR_SIZE = 50
+let AVATAR_SIZE = 100 //50 // 50 was causing issues with jpegs being too low quality, for now.
 if (window.devicePixelRatio > 1)
 	AVATAR_SIZE = 100
 
