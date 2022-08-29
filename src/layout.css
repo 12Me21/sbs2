@@ -328,7 +328,7 @@ but, then we can't add a border to the image
 /* narrow screen: fullscreen sidebar */
 @media all and (max-width: 700px) {
 	/* make it fullscreen */
-	sidebar-container {
+	sidebar-container, not-sidebar {
 		position: fixed;
 		left: 0; top: 0; bottom: 0; right: 0;
 		width: initial !important;
@@ -340,7 +340,7 @@ but, then we can't add a border to the image
 	
 	/* hide the stuff behind the sidebar so you don't interact with it */
 	:root.f-mobileSidebar not-sidebar {
-		visibility: hidden; 
+		visibility: hidden;
 	}
 	/* hide the sidebar */
 	:root:not(.f-mobileSidebar) sidebar-container {
