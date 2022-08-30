@@ -13,7 +13,6 @@
 	margin: 0;
 	box-sizing: border-box;
 	contain: content;
-	/*flex: none;*/
 	/* override default browser styles */
 	/* (these are all inherited properties) */
 	word-break: inherit;
@@ -26,7 +25,10 @@
 /* always display images at correct aspect ratio, even if the element is the wrong size */
 img {
 	object-fit: contain;
-	vertical-align: top; /* when displayed inline */
+}
+
+img, button, input, select {
+	vertical-align: top;
 }
 
 /* by default, hidden just sets `display: none`, which is overridden by any element which has its display explicitly set (most of them) */
@@ -99,6 +101,9 @@ auto-scroller,
 }
 .resize-box > *, .SLIDES > * {
 	background: inherit;
+}
+.resize-box > resize-handle {
+	background: var(--databarbgcolor);
 }
 
 ul, ol, li, /* bullets render outside */
@@ -283,30 +288,31 @@ but, then we can't add a border to the image
 /****************
  ** Resize Box **
  ****************/
-.resize-handle {
+resize-handle {
 	--bar-height: 1.1875rem;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none; -moz-user-select: none; user-select: none;
 	color: var(--databartxtcolor);
 	background: var(--databarbgcolor);
 	overflow: hidden;
+	line-height: var(--bar-height);
 }
-.resize-handle[data-dragging] {
+resize-handle[data-dragging] {
 	cursor: grabbing;
 }
-.COL > .resize-handle {
+.COL > resize-handle {
 	height: var(--bar-height);
-	line-height: var(--bar-height);
 	cursor: ns-resize;
 }
-.ROW > .resize-handle {
+.ROW > resize-handle {
 	width: var(--bar-height);
 	cursor: ew-resize;
+	line-height: unset;
 }
-.COL > .resize-handle::before {
+.COL > resize-handle::before {
 	content: "↕︎";
 }
-.ROW > .resize-handle::before {
+.ROW > resize-handle::before {
 	display: block;
 	content: "↔︎";
 	text-align: center;
