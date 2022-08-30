@@ -479,7 +479,7 @@ pre {
 .userlist2 {
 	display: flex;
 	height: unset !important;
-	background: linear-gradient(var(--databarbgcolor) 0mm, var(--databarbgcolor) 1.1875rem, var(--bar-bg) 1.1875rem);
+	background: linear-gradient(var(--databarbgcolor) 0mm, var(--databarbgcolor) 1.1875rem, var(--bar-bg) 1.1875rem) !important /* aa */;
 	border-bottom: 1px solid var(--T-border-color);
 	box-shadow: var(--normal-shadow);
 	z-index: 4;
