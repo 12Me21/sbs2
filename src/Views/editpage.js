@@ -281,7 +281,7 @@ EditView.template = HTML`
 	</div>
 	<resize-handle $=resize style='--bar-height:2em;' class='nav'>
 		<label>preview:<input type=checkbox $=preview_button></label>
-		<span $=preview_controls>
+		<span $=preview_controls style=display:contents>
 			| <label>live:<input type=checkbox $=live_button></label>
 			<button $=render_button>render full</button>
 		</span>

@@ -792,8 +792,7 @@ view-root:not(.f-editing) .chat-edit-controls {
 .nav > * {
 	align-self: stretch;
 }
-.nav > label {
-	align-self: center;
+.nav label {
 	display: contents;
 }
 .nav > span {

@@ -100,7 +100,10 @@ auto-scroller,
 	contain: strict;
 }
 .resize-box > *, .SLIDES > * {
-	background: var(--T-bg);
+	background: inherit;
+}
+.resize-box > resize-handle {
+	background: var(--databarbgcolor);
 }
 
 ul, ol, li, /* bullets render outside */
@@ -289,9 +292,7 @@ resize-handle {
 	--bar-height: 1.1875rem;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none; -moz-user-select: none; user-select: none;
-	--T-color: var(--databartxtcolor);
 	color: var(--databartxtcolor);
-	--T-bg: var(--databarbgcolor);
 	background: var(--databarbgcolor);
 	overflow: hidden;
 	flex: none;

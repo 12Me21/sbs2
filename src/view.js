@@ -310,6 +310,35 @@ Settings.add({
 	},
 })
 
+class TestView extends BaseView {
+	Start(location) {
+		return {quick: true}
+	}
+	Quick() {
+		// evil idea; what if we made shortcuts to access ev.target and currentTarget (ev.t, ev.c) and things like, Node.textContent (node.t) etc.
+		this.$inputmode.onchange = ev=>{
+			this.$textarea.setAttribute('inputmode', this.$inputmode.value)
+		}
+		this.$textarea.onkeydown = ev=>{
+			this.$out.fill()
+			for (let field of ['timeStamp','key','code','location','shiftKey','ctrlKey','altKey','metaKey','repeat','isComposing','keyCode']) {
+				this.$out.append(field.padStart(11)+": ")
+				this.$out.append(ev[field]+"\n")
+			}
+		}
+		View.set_title("test")
+	}
+}
+TestView.template = HTML`
+<view-root class='COL' style='overflow-y:scroll'>
+	Key test:
+	<div>inputmode:<input $=inputmode autocomplete=off></div>
+	<textarea $=textarea></textarea>
+	<pre $=out></pre>
+</view-root>
+`
+View.register('test', TestView)
+
 // we also need an event system, where events are automatically unhooked
 // when a View is unloaded.
 

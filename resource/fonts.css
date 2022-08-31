@@ -41,5 +41,5 @@
 /* use twitter emoji font if you have it installed locally (too large to bother including with the site) */
 @font-face{
 	font-family: x-twemoji;
-	src: local(Hecko);
+	src: local(TwemojiMozilla);
 }
