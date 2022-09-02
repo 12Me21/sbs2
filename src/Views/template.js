@@ -10,10 +10,16 @@
  */
 
 /**
+ * Chain verification function
+ * @typedef {(Object) => boolean} ChainVerificationFunc
+ */
+
+/**
  * Chain request
  * @typedef {Object} ChainRequest
  * @property {boolean} [quick] - Used to determine whether `Quick' or `Render' should be run. True=Quick, False=Render
  * @property {Object} [chain] - The API request parameters.
+ * @property {ChainVerificationFunc} [check] - Used to check if the API request was valid or not
  */
 
 // Naming convention is {Name}View.
