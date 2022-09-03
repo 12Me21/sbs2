@@ -70,6 +70,8 @@ const FileUploader = NAMESPACE({
 				blob.name = url
 				this.got_file(blob)
 				$file_url_input.value = ""
+			} catch(e) {
+				print('failed:', e)
 			} finally {
 				$file_url_form.removeAttribute('data-disabled')
 			}

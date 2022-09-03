@@ -39,6 +39,7 @@
 	src: local(CascadiaCode-Regular), url(cascadia-code.woff2) format('woff2');
 }
 /* use twitter emoji font if you have it installed locally (too large to bother including with the site) */
+/* https://github.com/mozilla/twemoji-colr */
 @font-face{
 	font-family: x-twemoji;
 	src: local(TwemojiMozilla);
