@@ -290,6 +290,7 @@ forgot what this was for ??
 }
 .Markup [data-big] {
 	max-height: 60vh;
+	height: auto !important;
 }
 .Markup img[data-state="error"][alt] {
 	width: 100%; /* idk */
