@@ -260,8 +260,7 @@ forgot what this was for ??
 }
 
 .Markup media-player .M-image-wrapper {
-	height: 75vh !important;
-	width: auto !important;
+	max-height: 75vh !important;
 }
 .Markup media-player .M-image-wrapper > video {
 	object-fit: contain;
@@ -290,11 +289,8 @@ forgot what this was for ??
 }
 .Markup [data-big] {
 	max-height: 60vh;
-	height: auto !important;
 }
-.Markup img[data-state="error"][alt] {
-	width: 100%; /* idk */
-}
+
 
 /* Links */
 a {

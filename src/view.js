@@ -233,7 +233,7 @@ const View = NAMESPACE({
 				// todo: load top to bottom on pages
 				data = data.filter(x=>x.isIntersecting).sort((a, b)=>b.boundingClientRect.bottom-a.boundingClientRect.bottom)
 				for (let {target} of data) {
-					if (!target.src) {
+					if (target.dataset.src) {
 						target.src = target.dataset.src
 						delete target.dataset.src
 						this.unobserve(target)
