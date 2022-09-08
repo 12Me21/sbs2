@@ -26,7 +26,7 @@
 Markup.renderer.url_scheme['sbs:'] = (url, thing)=>{
 	if (thing=='image') {
 		if (url.pathname.startsWith("image/"))
-			return Req.file_url(url.pathname.substring(6)+url.search)
+			return Req.image_url(url.pathname.substring(6)+url.search)
 	}
 	return "#"+url.pathname+url.search+url.hash
 }
@@ -167,7 +167,7 @@ const View = NAMESPACE({
 	set_title(title) {
 		// prevent the browser from collapsing sequences of spaces
 		// replace every other one with a NBSP
-		title = title.replace(/  /g, "  ").replace(/\n/g, "  ")
+		title = title.replace(/  /g, "  ").replace(/\n/g, "  \n")
 		document.title = title
 		this.real_title = title
 		this.change_favicon(null)
@@ -186,7 +186,7 @@ const View = NAMESPACE({
 			text = this.real_title
 			icon = null
 		} else {
-			text = text.replace(/  /g, "  ").replace(/\n/g, "  ")
+			text = text.replace(/  /g, "  ").replace(/\n/g, "  \n")
 		}
 		document.title = text
 		this.change_favicon(icon || null)
@@ -233,7 +233,7 @@ const View = NAMESPACE({
 				// todo: load top to bottom on pages
 				data = data.filter(x=>x.isIntersecting).sort((a, b)=>b.boundingClientRect.bottom-a.boundingClientRect.bottom)
 				for (let {target} of data) {
-					if (!target.src) {
+					if (target.dataset.src) {
 						target.src = target.dataset.src
 						delete target.dataset.src
 						this.unobserve(target)
@@ -247,45 +247,54 @@ const View = NAMESPACE({
 		}
 	},
 	
-	$embiggened: null,
-	set_embiggened(img) {
-		if (this.$embiggened) delete this.$embiggened.dataset.big
-		this.$embiggened = img
-		if (this.$embiggened) this.$embiggened.dataset.big = ""
+	shrink_all(skip) {
+		this.embiggened = false
+		for (let e of document.querySelectorAll('[data-big]'))
+			if (e !== skip)
+				e.removeAttribute('data-big')
 	},
+	
+	embiggened: false,
 	
 	init() {
 		// clicking an image causes it to toggle between big/small
 		// we use mousedown so it happens sooner (vs waiting for click)
 		document.addEventListener('mousedown', ev=>{
-			let element = ev.target
 			if (ev.button)
 				return
+			
+			let element = ev.target
 			let shrink = element.getAttribute('data-shrink')
 			if (shrink==null)
 				return
-			if (shrink=='video') {
-				element.parentNode.toggleAttribute('data-big')
-				ev.preventDefault()
-				return
-			}
-			if (element==this.$embiggened)
-				element = null // already big: make small
-			this.set_embiggened(element)
+			if (shrink=='video')
+				element = element.parentNode
+			
+			if (!ev.ctrlKey && this.embiggened)
+				this.shrink_all(element)
+			
+			if (!element.hasAttribute('data-big'))
+				this.embiggened = true
+			
+			element.toggleAttribute('data-big')
 			//ev.preventDefault()
-		}, {passive:true})
+		})
 		
 		// clicking outside an image shrinks it
 		// maybe could block this if the click is on a link/button?
 		document.addEventListener('click', ev=>{
-			let element = ev.target
-			// this happens if an image was clicked to expand it.
-			// (click fires after mousedown)
-			if (element==this.$embiggened)
+			if (!this.embiggened)
 				return
+			
+			let element = ev.target
 			if (element instanceof HTMLTextAreaElement)
-				return // allow clicking textarea
-			this.set_embiggened(null)
+				return
+			if (element.closest('media-player'))
+				return
+			if (element.hasAttribute('data-shrink'))
+				return
+			
+			this.shrink_all()
 		}, {passive: true})
 	},	
 })
@@ -300,6 +309,35 @@ Settings.add({
 		View.toggle_observer(value=='on')
 	},
 })
+
+class TestView extends BaseView {
+	Start(location) {
+		return {quick: true}
+	}
+	Quick() {
+		// evil idea; what if we made shortcuts to access ev.target and currentTarget (ev.t, ev.c) and things like, Node.textContent (node.t) etc.
+		this.$inputmode.onchange = ev=>{
+			this.$textarea.setAttribute('inputmode', this.$inputmode.value)
+		}
+		this.$textarea.onkeydown = ev=>{
+			this.$out.fill()
+			for (let field of ['timeStamp','key','code','location','shiftKey','ctrlKey','altKey','metaKey','repeat','isComposing','keyCode']) {
+				this.$out.append(field.padStart(11)+": ")
+				this.$out.append(ev[field]+"\n")
+			}
+		}
+		View.set_title("test")
+	}
+}
+TestView.template = HTML`
+<view-root class='COL' style='overflow-y:scroll'>
+	Key test:
+	<div>inputmode:<input $=inputmode autocomplete=off></div>
+	<textarea $=textarea></textarea>
+	<pre $=out></pre>
+</view-root>
+`
+View.register('test', TestView)
 
 // we also need an event system, where events are automatically unhooked
 // when a View is unloaded.
@@ -337,6 +375,7 @@ window.addEventListener('blur', ev=>{
 
 View.register('iframe', IframeView)*/
 
+// unfinished
 class Paginator {
 	constructor() {
 		this.page = 1
@@ -349,5 +388,18 @@ class Paginator {
 			location.query.p = this.page
 		else
 			delete location.query.p
+	}
+}
+
+
+//
+// alert/confirm/prompt is becoming unreliable in ios safari?
+// it supports <dialog> now, so we can use that instead
+// (I don't particularly like custom popups because they can be unreliable)
+// actually what if we just show the info in the sidebar in a temp. tab
+// instead?
+class Dialog {
+	constructor() {
+		
 	}
 }

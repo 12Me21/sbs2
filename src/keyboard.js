@@ -25,15 +25,20 @@ let Edit = NAMESPACE({
 
 // todo: namespace?
 function switch_tab(next, no_focus) {
-	if (!next)
-		return
+	if (!next || (next.hidden && !no_focus)) //hack
+		return false
 	let tablist = next.parentNode
 	for (let tab of tablist.children) {
 		let panel = document.getElementById(tab.getAttribute('aria-controls'))
 		let current = tab===next
 		tab.setAttribute('aria-selected', current)
-		if (panel)
+		if (panel) {
+			if (!current) {
+				if (panel.onpause)
+					panel.onpause(null) // todo: hack!
+			}
 			panel.classList.toggle('shown', current)
+		}
 		tab.tabIndex = current ? 0 : -1
 	}
 	if (!no_focus)

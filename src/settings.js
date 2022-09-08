@@ -113,20 +113,28 @@ class SettingProto {
 				elem.placeholder = this.placeholder
 			let btn = document.createElement('button')
 			btn.textContent = '🖥️ Editor'
+			let in_editor = false
+			function back() {
+				btn.textContent = '🖥️ Editor'
+				row.append(...$sidebarEditorPanel.childNodes)
+				in_editor = false
+			}
+			// TODO: hack!!
 			btn.onclick = ev=>{
-				if ($sidebarEditor.classList.contains('shown')) {
-					btn.textContent = '🖥️ Editor'
-					$sidebarEditor.classList.remove('shown')
-					$sidebarUserPanel.classList.add('shown')
-					row.append(...$sidebarEditor.childNodes)
+				if (in_editor) {
+					back()
+					Sidebar.tabs.select('user')
 				} else {
-					if ($sidebarEditor.hasChildNodes())
+					if ($sidebarEditorPanel.hasChildNodes())
 						return // uh oh
 					btn.textContent = '❎ Back'
-					$sidebarUserPanel.classList.remove('shown')
-					$sidebarEditor.classList.add('shown')
-					$sidebarEditor.append(...row.childNodes)
+					$sidebarEditorPanel.append(...row.childNodes)
+					$sidebarEditorPanel.onpause = ev=>{
+						back()
+					}
+					Sidebar.tabs.select('editor')
 					elem.focus()
+					in_editor = true
 				}
 			}
 			row.append(btn)

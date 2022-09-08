@@ -1,53 +1,46 @@
-/* normal weight */
-@font-face{
-	font-family: heart;
+/* 𖹭 */
+@font-face { 
+	font-family: x-heart;
+	unicode-range: U+16E6D;
+	/* can we shorten this more? */
 	src: url('data:font/woff2;base64,d09GMgABAAAAAAJ8AAwAAAAABXwAAAIuAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAABmAAgmYIBBEICoE0gUELCgABNgIkAxAEIAWCbgcgG6oEUZTsyRDAjwTjZvIQRV1DaIKnNkdHevScv+Lhv/3+t8/MnC9iED25re6avCSiJ0LzRKR00VKgvgsJzXnpV4m4qRKqkTKMSm1gnA5UXylwEnmysRmJza7/31vDjcb/DfjUOZ/AgR10HUABZhj1/ACMooADwpDTbcoeL4VpUvVEBNEBNa/EP0luy1nEmm/Xr4BwmUKRg5wXIOuBaXdrnx7Avf43BQLa3tyD9YRExRZoOE7ghiBqLBiC2MK0KNB1vDcwAlYAQjx8IDoq0YeZEAXUxyHgIcdzEqLrFNDAABp2wAWABgoorYXoNHQDX/NjkRi87FMmwO6vL/Toh8nKgK7v/3LXR0v8Ko4+USPv70bzZ5zKAGkS8C/wJ515mAG874fUX+vHF5mXfNixuOiJ16dH8R7hbrmWHFvcHBubJ+Kh84V4/83PSc3U8j3clb6yWodGJvIplTn6rJcMjZlG3dZAyxiAAJZf52/P+P7/A8MD4Mf9whD8ZV/G1V0vN6QJBhQQ9N/vYcgrIDcQAKDlFUuQV5BX1IRmqwgUhMBhAMZ8IgBFgFANC1D0W0egWudAoKmeEUhD3hLoU30RRBsEch76VF6MGefVQRPe9HnK04z/JX36fAZPbHzw5PYHTtk5+LlaeeNXsimc9HD3xZm3gx0rpXI28jgWxUIp0TOU8qTEg0q0/j7sXKa5R782H82KMumTM3fOOsi5/O3jNG/TcsYdaJmbDm9WoPfueusC') format('woff2');
-	font-weight: normal;
-	font-style: normal;
 }
-@font-face{
+/* normal weight */
+@font-face {
 	font-family: roboto;
-	src: url(roboto-400.woff2) format('woff2');
-	font-weight: normal;
-	font-style: normal;
+	src: local(Roboto-Regular), url(roboto-400.woff2) format('woff2');
 }
-@font-face{
+@font-face {
 	font-family: roboto;
-	src: url(roboto-400i.woff2) format('woff2');
-	font-weight: normal;
+	src: local(Roboto-Italic), url(roboto-400i.woff2) format('woff2');
 	font-style: italic;
 }
 /* medium weight (no italic?) (only used for ui things) */
-@font-face{
+@font-face {
 	font-family: roboto;
-	src: url(roboto-500.woff2) format('woff2');
+	src: local(Roboto-Medium), url(roboto-500.woff2) format('woff2');
 	font-weight: 500;
 }
 /* bold */
-@font-face{
+@font-face {
 	font-family: roboto;
-	src: url(roboto-700.woff2) format('woff2');
+	src: local(Roboto-Bold), url(roboto-700.woff2) format('woff2');
 	font-weight: bold;
-	font-style: normal;
 }
-@font-face{
+@font-face {
 	font-family: roboto;
-	src: url(roboto-700i.woff2) format('woff2');
+	src: local(Roboto-Italic), url(roboto-700i.woff2) format('woff2');
 	font-weight: bold;
 	font-style: italic;
 }
 /* monospaced font */
-/* I loaded/saved this with fontforge and the filesize reduced from 105k to 63k... not sure why (see: old/cm2.woff2) */
-@font-face{
+@font-face {
 	font-family: 'cascadia code';
-	src: url(cascadia-mono.woff2) format('woff2');
-	font-weight: normal;
-	font-style: normal;
-}/* CascadiaCode.woff2 */
-
-/*@font-face{
-	font-family: twemoji;
-	/* todo: look into font-display, unicode-range
-	font-weight: 100 900;
-	src: url(twemoji.woff2) format('woff2');
-}*/
+	src: local(CascadiaCode-Regular), url(cascadia-code.woff2) format('woff2');
+}
+/* use twitter emoji font if you have it installed locally (too large to bother including with the site) */
+/* https://github.com/mozilla/twemoji-colr */
+@font-face{
+	font-family: x-twemoji;
+	src: local(TwemojiMozilla);
+}

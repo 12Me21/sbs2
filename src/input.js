@@ -533,31 +533,4 @@ const INPUTS = {
 			this.value = this.input.value || null
 		}
 	},
-	// BROKEN
-	user_output: class extends GenericInput {
-		constructor(p) {
-			super(p)
-			this.input = elem('div')
-			this.avatar = elem('img')
-			this.username = elem('span')
-			this.input.append(this.avatar)
-			this.input.append(this.username)
-			this.input.className = 'bar rem1-5'
-			this.elem = this.input
-		}
-		draw() {
-			
-			void 0
-		}
-		write() {
-			const user = this.value
-			if (!user) return
-			this.avatar.src = Draw.avatar_url(user)
-			this.username.textContent = user.username
-			// this.input.fill(this.value ? Draw.entity_title_link(this.value) : null)
-		}
-		read() {
-			void 0
-		}
-	},
 }

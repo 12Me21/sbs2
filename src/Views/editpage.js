@@ -279,14 +279,14 @@ EditView.template = HTML`
 			<textarea $=data style="resize:none;margin:0.5rem;" class='FILL code-textarea'></textarea>
 		</div>
 	</div>
-	<div $=resize style='--bar-height:2em;' class='resize-handle'>
+	<resize-handle $=resize style='--bar-height:2em;' class='nav'>
 		<label>preview:<input type=checkbox $=preview_button></label>
-		<span $=preview_controls>
+		<span $=preview_controls style=display:contents>
 			| <label>live:<input type=checkbox $=live_button></label>
 			<button $=render_button>render full</button>
 		</span>
 		<label>| Section: <select style='width:5rem;' $=section></select></label>
-	</div>
+	</resize-handle>
 	<textarea $=textarea class='FILL editor-textarea' style='margin:3px;'></textarea>
 </view-root>
 `

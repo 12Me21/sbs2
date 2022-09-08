@@ -66,7 +66,7 @@ select {
 	border-top-left-radius: 3px;
 }
 input[type="file"] {
-	line-height: calc(var(--bar-height, 1.5rem) - 4px);
+	line-height: calc(var(--bar-height, 1.5625rem) - 4px);
 	padding: 0;
 }
 input::file-selector-button {
@@ -131,6 +131,7 @@ textarea-container > textarea:focus {
 /************
  ** Button **
  ************/
+
 button {
 	cursor: pointer;
 	font: inherit;
@@ -150,7 +151,7 @@ button:disabled {
 	color: var(--chat-dim-color); /*todo: proper color here */
 	background: var(--button-disabled-bg);
 }
-button[aria-selected="true"] {
+button[aria-selected="true"], button[data-selected="true"] {
 	backguijkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkiiiinround: var(--button-selected-bg);
 	background: var(--button-selected-bg);
 	box-shadow: 0px 1px 3px inset var(--button-shadow-color);
@@ -173,7 +174,7 @@ tab-list {
 	display: flex;
 	flex-flow: row;
 	width: 100%;
-	height: var(--bar-height, 1.5rem);
+	height: var(--bar-height, 1.5625rem);
 	background-color: var(--databarbgcolor) !important;
 }
 tab-list > button {
@@ -208,7 +209,7 @@ tab-list > button img.avatar {
 	width: auto;
 	height: 100%;
 	background: transparent;
-	line-height: var(--bar-height, 1.5rem); /* for alt text */
+	line-height: var(--bar-height, 1.5625rem); /* for alt text */
 }
 
 /* focus */
@@ -264,8 +265,7 @@ forgot what this was for ??
 }
 
 .Markup media-player .M-image-wrapper {
-	height: 75vh !important;
-	width: auto !important;
+	max-height: 75vh !important;
 }
 .Markup media-player .M-image-wrapper > video {
 	object-fit: contain;
@@ -295,18 +295,14 @@ forgot what this was for ??
 .Markup [data-big] {
 	max-height: 60vh;
 }
-.Markup img[data-state="error"][alt] {
-	width: 100%; /* idk */
-}
+
 
 /* Links */
-:any-link {
+a {
 	text-decoration: none;
-}
-:any-link {
 	color: var(--T-link-color);
 }
-:any-link:hover {
+a:hover {
 	color: var(--T-link-hover-color);
 	text-decoration: underline;
 }
@@ -360,6 +356,7 @@ view-slot:not(.focused) .slot-overlay {
 view-slot:not(.focused) {
 	--normal-shadow: none;
 }
+
 .slot-overlay {
 	pointer-events: none;
 	position: absolute;
@@ -367,8 +364,16 @@ view-slot:not(.focused) {
 	height: 100%;
 	z-index: 25;
 	display: none;
-	background-image: url("data:image/gif;base64,R0lGODdhBAAEAAAAMSwAAAAABAAEAMAAAAD///8CBYxhF8hRADs="); /*todo; bmp*/
+	background: fixed url("data:image/gif;base64,R0lGODdhBAAEAAAAMSwAAAAABAAEAMAAAAD///8CBYxhF8hRADs="); /*todo; bmp*/
 	opacity: 0.25;
+}
+dialog {
+	margin: auto;
+}
+dialog::backdrop {
+	background: fixed 2px 1px / 4px url("data:image/webp;base64,UklGRiwAAABXRUJQVlA4TB8AAAAvH8AHAA8w//M///MfeBALJvlL784gov8TgJ7k+dMEAA==");
+/*UklGRiwAAABXRUJQVlA4TB8AAAAvH8AHEA8w//M///sfeBALJvlL784gov8TgJ7k+dMEAA==*/
+	opacity: 0.5;
 }
 
 view-header h1 {
@@ -476,7 +481,7 @@ pre {
 .userlist2 {
 	display: flex;
 	height: unset !important;
-	background: linear-gradient(var(--databarbgcolor) 0mm, var(--databarbgcolor) 1.1875rem, var(--bar-bg) 1.1875rem);
+	background: linear-gradient(var(--databarbgcolor) 0mm, var(--databarbgcolor) 1.1875rem, var(--bar-bg) 1.1875rem) !important /* aa */;
 	border-bottom: 1px solid var(--T-border-color);
 	box-shadow: var(--normal-shadow);
 	z-index: 4;
@@ -592,11 +597,14 @@ message-block {
 	min-height: calc(var(--chat-avatar-size) + var(--chat-message-gap));
 	position: relative;
 	z-index: 0;
+	padding-bottom: 1px;
 }
 
-message-block > img.avatar {
+message-block > img {
 	position: absolute;
 	z-index: -1;
+}
+message-block > img.avatar {
 	width: var(--chat-avatar-size);
 	height: var(--chat-avatar-size);
 	margin-left: 0.5rem;
@@ -605,39 +613,36 @@ message-block > img.avatar {
 	border: 1px solid #777;
 }
 message-block > img.bigAvatar {
-	position: absolute;
-	z-index: -1;
 	width: var(--chat-gutter);
 	height: 100%;
 	object-fit: cover;
 }
 
-message-block > message-header {
+message-header {
 	display: flex;
 	flex-flow: wrap-reverse;
 	align-items: flex-start; /* vertically align items to bottom */
 	margin-left: var(--chat-gutter);
 	padding-top: var(--chat-message-gap);
+	margin-bottom: 1px;
+	line-height: 1.2;
 }
-message-block > message-header > time {
+message-header > [role="time"] {
 	margin-left: auto; /* expanding margin, pushes element to the right */
-	font-weight: normal;
-	color: var(--chat-dim-color);
 	/* If the username/timestamp line wraps, this negative margin means */
 	/* the <time> can go inside <message-header>'s padding-top region, */
 	/* which reduces the amount of extra vertical space used */
 	margin-top: calc(0px - var(--chat-message-gap));
+	text-align: right;
+	font-size: 0.875em;
+	color: var(--chat-dim-color);
 }
-message-username {
-	line-height: 1.2;
-}
-.real-name-label {
+message-header i {
 	color: gray;
+	font-style: normal;
 }
-message-contents {
+message-block > :last-child {
 	display: block;
-	min-height: 1.5rem; /*this is so <message-controls> always has somewhere to be shown*/
-	margin: 1px 0;
 	overflow: hidden; /* do we need this */
 }
 /* message parts */
@@ -784,12 +789,13 @@ view-root:not(.f-editing) .chat-edit-controls {
 	--T-link-color: var(--link-invert-color);
 	--T-link-hover-color: var(--link-invert-hover-color);
 	padding: 2px;
+	line-height: normal;
 }
 .nav > * {
 	align-self: stretch;
 }
-.nav > label {
-	align-self: center;
+.nav label {
+	display: contents;
 }
 .nav > span {
 	color: var(--databartxtcolor);
@@ -812,18 +818,43 @@ view-root:not(.f-editing) .chat-edit-controls {
 }
 
 /* file viewer */
-.images-thumbnails img {
+.images-thumbnails {
+	display: flex;
+	flex-flow: row wrap;
+}
+
+.images-thumbnails div {
 	cursor: pointer;
-	height: 60px;
-	width: 60px;
+	box-sizing: content-box;
+	padding: 2px;
+	width: 50px;
+	height: 50px;
 }
 .images-current {
-	max-height: 100%;
-	max-width: 100%;
-	border: 1px solid gray;
+	--border-width: 1px;
+	max-height: calc(100% - var(--border-width) * 2);
+	max-width: calc(100% - var(--border-width) * 2);
+	box-sizing: content-box;
+	aspect-ratio: 4 / 3;
+	border: var(--border-width) solid gray;
 }
+
 .images-container {
-	flex-grow: 1;
+}
+
+.images-data > * {
+	border-bottom: 1px solid var(--T-border-color);
+	padding: 2px 0.25rem;
+}
+.images-data > div {
+	padding: 0;
+	display: flex;
+	flex-flow: row wrap;
+	align-items: center;
+}
+.images-meta > * {
+	border-right: 1px solid gray;
+	padding: 2px 0.25rem;
 }
 
 /* page */
@@ -850,6 +881,13 @@ view-root:not(.f-editing) .chat-edit-controls {
 .pageInfoPane .user-label {
 	display: flex;
 	align-items: center;
+}
+.user-label2 {
+	display: flex;
+	align-items: center;
+}
+.user-label > span {
+	flex: 0 1 auto;
 }
 /* user page */
 .userPageBox {
@@ -926,7 +964,7 @@ not-sidebar {
 	z-index: 90;
 }
 .sidebar-comment {
-	--bar-height: 1.5rem;
+	--bar-height: 1.5625rem;
 	contain: strict;
 }
 
@@ -946,7 +984,7 @@ not-sidebar {
 
 .activity-page-bottom {
 	display: flex;
-	height: 1.5rem;
+	height: 1.5625rem;
 	overflow: hidden;
 	justify-content: space-between;
 	contain: strict;
@@ -1015,7 +1053,7 @@ not-sidebar {
 .local-settings {
 	padding: 0.3125rem 0.5rem;
 }
-#\$sidebarEditor > textarea {
+#\$sidebarEditorPanel > textarea {
 	flex: 1;
 	resize: none;
 	width: 100%;
@@ -1025,7 +1063,7 @@ not-sidebar {
 	flex-flow: wrap;
 	align-items: center;
 }
-.local-settings > div > button, #\$sidebarEditor > button {
+.local-settings > div > button, #\$sidebarEditorPanel > button {
 	margin: 1px;
 }
 .local-settings > div > * {
@@ -1080,5 +1118,8 @@ not-sidebar {
 	textarea-container > textarea {
 		padding-left: 2px;
 		width: -webkit-fill-available; width: -moz-available; width: stretch;
+	}
+	message-block > img {
+		-webkit-user-select: none;
 	}
 }

@@ -70,6 +70,8 @@ const FileUploader = NAMESPACE({
 				blob.name = url
 				this.got_file(blob)
 				$file_url_input.value = ""
+			} catch(e) {
+				print('failed:', e)
 			} finally {
 				$file_url_form.removeAttribute('data-disabled')
 			}
@@ -84,7 +86,7 @@ const FileUploader = NAMESPACE({
 			let curr = Nav.view()
 			if (!curr || !curr.Insert_Text) return
 			
-			let url = Req.file_url(file.hash)
+			let url = Req.image_url(file.hash)
 			
 			let meta = JSON.parse(file.meta)
 			let markup = Settings.values.chat_markup
@@ -144,7 +146,7 @@ const FileUploader = NAMESPACE({
 	},
 	
 	show_content(content) {
-		let url = Req.file_url(content.hash)
+		let url = Req.image_url(content.hash)
 		this.show_parts(2, url, null)
 		$file_upload_page.href = "#page/"+content.hash
 		this.last_file = content

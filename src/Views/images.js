@@ -1,27 +1,29 @@
 'use strict'
 
+let IMG_PER_PAGE = 30
+
 class ImagesView extends BaseView {
 	Start(location) {
 		this.current = null
-		this.user = null
 		
 		let bucket = location.query.bucket
 		let page = (location.query.page|0) || 1
-		// TODO: bucket search
-		let search = "contentType = @file"
-		if (bucket)
-			search += " AND !valuelike(@key, @bucket)"
+		let uid = location.query.uid
 		this.page = page
 		this.bucket = bucket
+		
+		let search = "contentType = {{3}}"
+		if (bucket)
+			search += " AND !valuelike({{bucket}}, @bucket)"
+		if (uid)
+			search += " AND createUserId = {{"+uid+"}}"
 		return {
 			chain: {
 				values: {
-					file: 3,
-					key: 'bucket',
 					bucket: JSON.stringify(bucket),
 				},
 				requests: [
-					{type: 'content', fields: '*', query: search, order: 'id_desc', limit: 20, skip: (page-1)*20},
+					{type: 'content', fields: '*', query: search, order: 'id_desc', limit: IMG_PER_PAGE, skip: (page-1)*IMG_PER_PAGE},
 					{type:'user', fields:'*', query:"id IN @content.createUserId."},
 				],
 			},
@@ -65,29 +67,50 @@ class ImagesView extends BaseView {
 			FileUploader.show_content(this.current)
 			Sidebar.tabs.select('file')
 		}
-		
-		this.form = new Form({
-			fields: [
-				['user', 'user_output', {label: "User"}],
-				['filename', 'text', {label: "File Name"}],
-				['values', 'text', {label: "Values"}], // todo: add an input type for like, json or specifically these values types idk
-				['meta', 'output', {label: "Meta"}],
-				['permissions', 'text', {label: "Permissions"}], //could be a real permission editor but image permissions don't really work anyway
-				//['size', 'output', {output: true, label: "Size"}], I wish
-				// ['quantization', 'output', {label: "Quantization"}],
-			]
-		})
-		this.$data.fill(this.form.elem)
 	}
 	Render({content, user}) {
-		this.user = user
-		View.set_title(" Images ")
+		let title = " Images "
+		if (this.bucket)
+			title += "("+this.bucket+")"
+		this.Slot.set_title(title)
+		
 		for (let file of content) {
-			const img = document.createElement('img')
-			img.src = Req.file_url(file.hash, "size=60")
-			img.onclick = e=>{this.select_image(file)}
-			//let meta = JSON.parse(file.meta)
-			this.$whatever.append(img)
+			// heck (todo: put this somewhere better?)
+			let meta = file.Meta = new FileMeta(file, user[~file.createUserId])
+			
+			let bg = '#DDD'
+			
+			function round(x) {
+				if (x % 2 == 0.5)
+					return Math.floor(x)
+				return Math.round(x)
+			}
+			
+			let div = document.createElement('div')
+			
+			if (meta.width) {
+				let max = Math.max(meta.width, meta.height)
+				// this needs to be changed to round 0.5 to nearest even #?
+				let width = round(meta.width / max * AVATAR_SIZE)
+				let height = round(meta.height / max * AVATAR_SIZE)
+				bg = `no-repeat linear-gradient(orange, red) center / ${width+2}px ${height+2}px, ` + bg
+				/*div.style.width = width+"px"
+				div.style.height = height+"px"*/
+			}
+			
+			let url = Req.image_url(file.hash, AVATAR_SIZE)
+			
+			bg = `no-repeat url("${url}") center, ` + bg
+			
+			if (!Entity.has_perm(file.permissions, 0, 'R'))
+				bg = `no-repeat url(resource/hiddenpage.png) top left / 20px, ` + bg
+			
+			div.style.background = bg
+			
+			div.title = file.name // todo: more
+			
+			div.onclick = e=>{this.select_image(file)}
+			this.$whatever.append(div)
 		}
 		this.$page.textContent = this.page
 		this.$bucket.value = this.bucket||""
@@ -96,24 +119,32 @@ class ImagesView extends BaseView {
 	
 	select_image(content) {
 		this.current = content
+		
 		this.$image.src = "" // always set this, otherwise the old image will be visible until the new one loads
-		if (!content) {
-			this.$image_link.href = ""
-			this.$image_link.textContent = ""
+		this.$image_show.hidden = !content
+		if (!content)
 			return
-		}
-		this.$image.src = Req.file_url(content.hash)
+		
+		let meta = content.Meta
+		
+		this.$image.style.aspectRatio = meta.width+" / "+meta.height
+		this.$image.src = Req.image_url(content.hash)
+		
 		this.$image_link.href = `#page/${content.id}`
-		this.$image_link.textContent = content.hash
-		this.$image_link.textContent += " "+Draw.time_string(content.createDate2)
-		this.form.set({
-			user: this.user[~content.createUserId],
-			filename: content.name,
-			values: JSON.stringify(content.values),
-			meta: content.meta,
-			permissions: JSON.stringify(content.permissions),
-		})
-		this.form.write()
+		this.$filename.textContent = content.name2
+		//this.$hash.textContent = content.hash
+		
+		let x = Draw.user_label(meta.createUser)
+		x.classList.add('user-label2')
+		this.$author.fill(x)
+		
+		this.$image_type.textContent = content.literalType.replace("image/", "").toUpperCase()
+		this.$image_kb.textContent = Math.round(meta.size/1000)
+		this.$image_width.textContent = meta.width
+		this.$image_height.textContent = meta.height
+		this.$image_quantize.textContent = meta.quantize || ""
+		
+		this.$date.textContent = Draw.time_string(content.createDate2)
 	}
 }
 
@@ -124,17 +155,31 @@ ImagesView.template = HTML`
 		<button $=prev>◀prev</button>
 		<span $=page>0</span>
 		<button $=next>next▶</button>
+		Bucket:
 		<input $=bucket placeholder="bucket">
 	</div>
-	<div class='FILL ROW'>
-		<div class='FILL images-container'>
+	<div class='FILL ROW' $=image_show hidden>
+		<div class='images-container' style="width:50%">
 			<img $=image class='images-current'>
 		</div>
-		<div style="width:50%">
-			<a $=image_link></a>
-			<button $=set_avatar>Set Avatar</button>
-			<button $=in_sidebar>show in sidebar</button>
-			<div $=data></div>
+		<div class='COL images-data FILL'>
+			<a $=image_link style='font-weight:bold;text-decoration:underline;'>
+				<span $=filename class='pre'></span>
+			</a>
+			<div $=meta class='images-meta'>
+				<b $=image_type></b>
+				<span><b $=image_kb></b>kB</span>
+				<span><b $=image_width></b>×<b $=image_height></b></span>
+				<span>q<b $=image_quantize></b></span>
+			</div>
+			<div>
+				<span $=author></span>
+				<time $=date style='margin-left: 0.5rem'></time>
+			</div>
+			<div>
+				<button $=set_avatar>Set Avatar</button>
+				<button $=in_sidebar>show in sidebar</button>
+			</div>
 		</div>
 	</div>
 </view-root>

@@ -27,7 +27,7 @@ const Sidebar = NAMESPACE({
 		if (Req.auth) {
 			user_label = document.createElement('span')
 			let img = document.createElement('img')
-			img.width = img.height = 100
+			img.width = img.height = 50
 			img.className = 'item avatar'
 			img.alt = "🔧️"
 			user_label.append(img)
@@ -46,6 +46,8 @@ const Sidebar = NAMESPACE({
 			}, accesskey: 's', shadow:true},
 			{name: 'file', label: "📷", panel: $sidebarFilePanel, shadow:true},
 			{name: 'user', label: user_label, panel: $sidebarUserPanel, shadow:true},
+			{name: 'editor', label: null, panel: $sidebarEditorPanel, hidden:true},
+			{name: 'popup', label: null, panel: $sidebarPopupPanel, hidden:true},
 		], $sidebar_tabs, "sidebar")
 		
 		if (Req.auth)
@@ -160,13 +162,19 @@ const Sidebar = NAMESPACE({
 		return div
 	},
 	
-	toggle() {
+	toggle(state=null) {
 		let fullscreen = this.is_mobile()
 		if (fullscreen) {
-			this.fullscreen_open = !this.fullscreen_open
+			if (state!=null)
+				this.fullscreen_open = state
+			else
+				this.fullscreen_open = !this.fullscreen_open
 			document.documentElement.classList.toggle('f-mobileSidebar', this.fullscreen_open)
 		} else {
-			this.normal_open = !this.normal_open
+			if (state!=null)
+				this.normal_open = state
+			else
+				this.normal_open = !this.normal_open
 			document.documentElement.classList.toggle('f-sidebar', this.normal_open)
 			localStorage.setItem('sbs-sidebar', this.normal_open)
 		}
@@ -268,7 +276,7 @@ const Sidebar = NAMESPACE({
 	}.bind(𐀶`
 <div class='sidebar-comment bar ellipsis'>
 	<a tabindex=-1 class='user-label'>
-		<img class='item avatar' width=100 height=100>
+		<img class='item avatar' width=50 height=50>
 		<span class='entity-title pre'></span>
 	</a>:&#32;
 </div>

@@ -1,4 +1,9 @@
 'use strict'
+
+let AVATAR_SIZE = 100 //50 // 50 was causing issues with jpegs being too low quality, for now.
+if (window.devicePixelRatio > 1)
+	AVATAR_SIZE = 100
+
 // HTML RENDERING
 const Draw = NAMESPACE({
 	// TODO: rewrite the css/layout for these
@@ -9,7 +14,7 @@ const Draw = NAMESPACE({
 		// choose icon
 		let bg
 		if (content.contentType==CODES.file)
-			bg = "url("+Req.file_url(content.hash, "size=30&crop=true")+")"
+			bg = "url("+Req.image_url(content.hash, AVATAR_SIZE, true)+")"
 		else if (content.contentType==CODES.userpage)
 			bg = 'url(resource/page-userpage.png)'
 		else if (content.contentType!=CODES.page)
@@ -41,10 +46,10 @@ const Draw = NAMESPACE({
 `),
 	
 	// user: User or Author
-	avatar_url(user, size=100) {
+	avatar_url(user, size=AVATAR_SIZE) {
 		if (!user || !user.avatar || user.avatar==="0")
 			return "resource/avatar.png"
-		return Req.file_url(user.avatar, "size="+size+"&crop=true")
+		return Req.image_url(user.avatar, size, true)
 	},
 	
 	//📥 user‹User›
@@ -54,7 +59,7 @@ const Draw = NAMESPACE({
 		e.src = Draw.avatar_url(user)
 		e.setAttribute("alt", user.username)
 		return e
-	}.bind(𐀶`<img class='item avatar' width=100 height=100 alt="">`),
+	}.bind(𐀶`<img class='item avatar' width=50 height=50 alt="">`),
 	
 	// used by activity
 	//📥 user‹User›
@@ -158,7 +163,7 @@ const Draw = NAMESPACE({
 		return e
 	}.bind(𐀶`
 <a tabindex=-1 class='bar rem1-5 user-label'>
-	<img class='item avatar' width=100 height=100>
+	<img class='item avatar' width=50 height=50>
 	<span class='entity-title pre'></span>
 </a>
 `),
@@ -303,7 +308,7 @@ StatusDisplay.draw_avatar = function(user, status) {
 	/*if (status == "idle")
 		e.classList.add('status-idle')*/
 	return e
-}.bind(𐀶`<a tabindex=-1><img class='avatar' width=100 height=100>`)
+}.bind(𐀶`<a tabindex=-1><img class='avatar' width=50 height=50>`)
 
 
 
@@ -397,6 +402,10 @@ class Tabs {
 		for (let data of def)
 			this.add(data)
 	}
+	selected() {
+		let tab = this.tabs.find(tab=>tab.btn.getAttribute('aria-selected')=='true')
+		return tab ? tab.name : null
+	}
 	select(name) {
 		let tab = this.tabs.find(tab=>tab.name==name)
 		if (tab)
@@ -411,6 +420,8 @@ class Tabs {
 		
 		let btn = data.btn = button_template()
 		this.$elem.append(btn)
+		if (data.hidden)
+			btn.hidden = true
 		
 		btn.id = this.name+"-tab-"+data.name
 		btn.setAttribute('aria-controls', panel.id)

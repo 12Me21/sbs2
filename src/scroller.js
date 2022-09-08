@@ -1,70 +1,45 @@
 'use strict'
-let ResizeTracker
-// ResizeObserver is a very new feature (added in ~2020)
-if (window.ResizeObserver) {
-	ResizeTracker = class {
-		constructor(measure) {
-			this.measure = measure
+
+class ResizeTracker {
+	constructor(measure) {
+		this.measure = measure
+		// ResizeObserver is a very new feature (added in ~2020)
+		if (window.ResizeObserver) {
 			this.tracking = new WeakMap()
 			this.observer = new ResizeObserver(events=>{
-				for (let event of events) {
-					let item = this.tracking.get(event.target)
-					let rect = event.contentRect
-					let m = rect[this.measure]
-					//ignore changes for hidden and unchanged elements
-					if (rect.width && m!=item.size) {
-						item.callback(item.size) // pass old size
-						item.size = m
-					}
-				}
+				for (let {target, contentRect} of events)
+					this.handle(target, contentRect)
 			})
-			Object.seal(this)
+		} else {
+			this.tracking = new Map()
+			this.observer = {observe(){}, unobserve(){}}
+			// this never gets cleared uhh
+			this.interval = window.setInterval(()=>{
+				for (let target of this.tracking.keys())
+					this.handle(target, target.getBoundingClientRect())
+			}, 200)
 		}
-		add(element, callback) {
-			this.observer.observe(element)
-			this.tracking.set(element, {
-				callback: callback,
-				size: element.getBoundingClientRect()[this.measure],
-			})
-		}
-		remove(element) {
-			this.observer.unobserve(element)
-			this.tracking.delete(element)
+		Object.seal(this)
+	}
+	handle(target, rect) {
+		let item = this.tracking.get(target)
+		let dim = rect[this.measure]
+		//ignore changes for hidden and unchanged elements
+		if (rect.width && dim!=item.size) {
+			item.callback(item.size) // pass old size
+			item.size = dim
 		}
 	}
-} else {
-	ResizeTracker = class {
-		constructor(measure) {
-			this.measure = measure
-			this.tracking = []
-			this.interval = window.setInterval(()=>{
-				for (let item of this.tracking) {
-					let rect = item.element.getBoundingClientRect()
-					if (rect.width && rect[this.measure]!=item.size) {
-						item.callback(item.size)
-						item.size = rect[this.measure]
-					}
-				}
-			}, 200)
-			Object.seal(this)
-		}
-		add(element, callback) {
-			this.tracking.push({
-				element: element,
-				callback: callback,
-				size: element.getBoundingClientRect()[this.measure],
-			})
-		}
-		remove(element) {
-			let i = this.tracking.findIndex(x => x.element == element)
-			i>=0 && this.tracking.splice(i, 1)
-		}
+	add(element, callback) {
+		this.observer.observe(element)
+		let size = element.getBoundingClientRect()[this.measure]
+		this.tracking.set(element, {callback, size})
+	}
+	remove(element) {
+		this.observer.unobserve(element)
+		this.tracking.delete(element)
 	}
 }
-
-
-//Object.seal(Scroller)
-//Object.seal(Scroller.prototype)
 
 // todo: we only want to animate if an element is inserted/removed/resized at the BOTTOM of the screen. but how to detect this? probably best, I suppose, if the chat room handles it?
 
@@ -83,7 +58,8 @@ if (window.ResizeObserver) {
 // then, on inserting a new element, we expand the height to fit the new content
 // have to use resizeobserver to adjust.. nnn
 
-
+// todo:
+// - manage resize events better. track current height in a variable and reuse this, etc.  need to improve this in order to adjust pos when uhh new messages posted in reverse mode.
 class Scroller {
 	constructor(outer, inner) {
 		this.$outer = outer
@@ -93,23 +69,24 @@ class Scroller {
 		middle.append(this.$inner)
 		this.$outer.append(middle)
 		
-		this.dist = null
-		this.anim_type = Scroller.anim_type
 		this.anim = null
 		this.locked = false
 		this.before = null
-		
-		this.reverse = Scroller.reverse
-		if (this.anim_type==2)
-			this.$inner.classList.add('scroll-anim3')
-		if (this.reverse)
-			this.$outer.classList.add('anchor-bottom')
-		
 		// autoscroll is enabled within this distance from the bottom
 		this.bottom_region = 10
 		
-		// i think it might not be totally reliable if both these fire at once...
-		if (!this.reverse) {
+		this.anim_type = Scroller.anim_type
+		if (this.anim_type==2)
+			this.$inner.classList.add('scroll-anim3')
+		
+		this.reverse = Scroller.reverse
+		if (this.reverse) {
+			this.$outer.classList.add('anchor-bottom')
+			this.at_bottom = function() {
+				return -this.$outer.scrollTop < this.bottom_region
+			}
+		} else {
+			// i think it might not be totally reliable if both these fire at once...
 			Scroller.track_height.add(this.$outer, (old_size)=>{
 				if (this.at_bottom(old_size, undefined))
 					this.scroll_instant()
@@ -130,21 +107,12 @@ class Scroller {
 		
 		// yeah it might be better actually, if we measured the bottom position rather than 
 		let top = this.$outer.scrollTop
-		if (this.reverse)
-			return -top < this.bottom_region
 		return scroll-outer-top < this.bottom_region
 	}
 	scroll_instant() {
 		this.$outer.scrollTop = this.reverse ? 0 : 9e9
 	}
 	scroll_height() {
-		// $inner.GBCR().height = $inner.clientHeight = outer.scrollHeight
-		// but the latter 2 are rounded to integers
-		
-		// for detecting size change during print, 
-		// could use scrollTop instead of scroll_height()
-		// since scroll_instant() will increase it by the distance added.
-		// except, this doesnt work until the $inner height is > outer height (i.e. not when the container is mostly empty)
 		return this.$inner.getBoundingClientRect().height
 	}
 	set_offset(y) {
@@ -155,6 +123,10 @@ class Scroller {
 		// i think we're saved by scroll anchoring here, or something
 		fn(this.$inner)
 	}
+	// TODO: instead of this complex stateless stuff, we should just track one pending anim
+	// since we can only play one at once anyway
+	// like, when before_print is called, capture the current state (UNLESS before_print has already been called, in which case we ignore the second call (as well as the subsequent extra after_print?)),
+	// and after print will proceed based on those values, when called.
 	before_print(smooth) {
 		// not scrolled to bottom, don't do anything
 		if (!this.at_bottom()) {
@@ -296,11 +268,3 @@ Settings.add({
 		Scroller.reverse = value=='bottom'
 	},
 })
-
-// todo:
-// - use the reverse scroller trick (flex-flow: column reverse on scroll-outer), as an option, for browsers which can handle it. it looks a lot better than the current system, when DPR is not an integer.
-// - manage resize events better. track current height in a variable and reuse this, etc.  need to improve this in order to adjust pos when uhh new messages posted in reverse mode.
-// actually nevermind we can rely on scroll anchoring alone?
-// nice hmm..
-// so yeah just have a setting to enable the reverse mode and that's it?
-// just need to play the anim when a new message is posted if you're at the bottom, otherwise do nothing!
