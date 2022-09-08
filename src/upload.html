@@ -153,18 +153,3 @@
 	f.$image_box = $image_box
 	f.$color = $color
 </script>
-<dialog id=$dialog>
-	<form method=dialog><button>close</button></form>
-	a
-</dialog>
-PROBLEM: the edit switch doesn't work as expected, since
-even with editing enabled, you want to be able to edit the name etc.
-so, to do that, you'd need to unclick edit, type the name, then remember to switch back into edit mode before uploading.
-what we need to do is have a separate edit checkbox, and then a button to switch between tabs.
-there are 3 states:
-1: viewing fields, edit disabled
-2: viewing fields, edit enabled
-3: viewing sliders: edit enabled
-alternatively, we could have the edit checkbox located in the edit tab
-and have the tab switcher shown at all times.
-then, to edit an image you switch to the edit tab first, then check a checkbox there to unlock the controls.

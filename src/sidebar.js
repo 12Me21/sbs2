@@ -137,6 +137,29 @@ const Sidebar = NAMESPACE({
 		})
 	},
 	
+	output(stuff) {
+		let div = document.createElement('div')
+		div.className += " debugMessage pre"
+		div.append(stuff)
+		do_when_ready(()=>{
+			try {
+				if (this.printing) {
+					alert("recursive print detected!")
+					return
+				}
+				this.printing = true
+				this.scroller.print(inner=>{
+					inner.append(div)
+					this.message_count++
+				})
+				this.limit_messages()
+			} finally {
+				this.printing = false
+			}
+		})
+		return div
+	},
+	
 	toggle() {
 		let fullscreen = this.is_mobile()
 		if (fullscreen) {

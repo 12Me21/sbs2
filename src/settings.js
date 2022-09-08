@@ -232,9 +232,23 @@ Settings.add({
 		let btn = document.createElement('button')
 		btn.textContent = 'reload css'
 		btn.onclick = ev=>{
-			for(let sheet of document.styleSheets)
-				if(sheet.href)
-					sheet.ownerNode.href+="#"
+			for (let sheet of [...document.styleSheets])
+				if (sheet.href) {
+					let node = sheet.ownerNode
+					let nw = node.cloneNode()
+					let note = Sidebar.output(`reloading ‘${nw.href.replace(/^.*[/]/, "")}’...`)
+					nw.onload = ev=>{
+						nw.onload=nw.onerror=null
+						node.remove()
+						note.append(" [OK]")
+					}
+					nw.onerror = ev=>{
+						nw.onload=nw.onerror=null
+						note.append(" [ERROR]")
+					}
+					nw.href += "#"
+					node.after(nw)
+				}
 		}
 		label.after(btn)
 	},

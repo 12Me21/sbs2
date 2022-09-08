@@ -321,7 +321,7 @@ function* encode_canvas(STEP, canvas, format, quality) {
 	}
 }
 
-let canvas = document.createElement('canvas')
+/*let canvas = document.createElement('canvas')
 canvas.width=500
 canvas.height=300
 
@@ -338,3 +338,4 @@ task.return() // cancel before it finishes
 
 canvas.getContext('2d').fillRect(10, 50, 100, 100)
 task = encode_test().run()
+*/
