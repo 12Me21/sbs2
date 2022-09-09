@@ -1,6 +1,6 @@
 'use strict'
 
-class RegisterView extends BaseView {
+class AccountView extends BaseView {
 	Start({id, query}) {
 		return {quick: true}
 	}
@@ -62,7 +62,7 @@ class RegisterView extends BaseView {
 	}
 }
 
-RegisterView.template = HTML`
+AccountView.template = HTML`
 <view-root>
 	<button $=logout_all>Log out all sessions</button>
 	<hr>
@@ -81,4 +81,4 @@ RegisterView.template = HTML`
 </view-root>
 `
 
-View.register('register', RegisterView)
+View.register('account', AccountView)
