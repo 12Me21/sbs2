@@ -117,20 +117,15 @@ const Draw = NAMESPACE({
 	},
 	
 	password_input: function(name='password', nw=false) {
-		let e = this()
+		let e = nw ? this.new() : this.old()
 		let cb = e.lastChild.lastChild
-		let pw = e.firstChild
-		let pw2
+		let pw = e.firstChild, pw2
 		if (nw) {
-			pw.autocomplete='new-password'
-			pw2 = pw.cloneNode(true)
-			pw.after(pw2)
-			pw.name = name+"1"
+			pw2 = pw.lastChild
+			pw = pw.firstChild
 			pw2.name = name+"2"
-		} else {
-			pw.name = name
-			pw.autocomplete='current-password'
 		}
+		pw.name = name
 		cb.onchange = ev=>{
 			let type = ev.target.checked ? 'text' : 'password'
 			pw.type = type
@@ -138,12 +133,23 @@ const Draw = NAMESPACE({
 				pw2.type = type
 		}
 		return e
-	}.bind(𐀶`
-<span>
-	<input placeholder=Password type=password>
-	<label>👁️<input type=checkbox autocomplete=off></label>
-</span>
-`),
+	}.bind({
+		old: 𐀶`
+<password-input>
+	<input placeholder="password" type=password autocomplete=current-password>
+	<label title="Show Password">👁️<input type=checkbox autocomplete=off></label>
+</password-input>
+`,
+		new: 𐀶`
+<password-input>
+	<span class='COL'>
+		<input placeholder="new password" type=password autocomplete=new-password>
+		<input placeholder="repeat" type=password autocomplete=new-password>
+	</span>
+	<label title="Show Password">👁️<input type=checkbox autocomplete=off></label>
+</password-input>
+`,
+	}),
 	
 	button: function(label, onclick) {
 		let e = this()

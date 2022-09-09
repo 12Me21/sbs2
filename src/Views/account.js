@@ -20,23 +20,14 @@ class AccountView extends BaseView {
 				}
 			}
 		}
-		this.$form.onchange = ev=>{
-			let e = ev.target
-			if (e.hasAttribute('data-show-password')) {
-				let p = e.parentNode.parentNode
-				for (let pass of p.querySelectorAll('input[data-password]')) {
-					pass.type = e.checked ? 'text' : 'password'
-				}
-			}
-		}
 		this.$form.onsubmit = ev=>{
 			ev.preventDefault()
 			let opw = ev.target.password.value
-			let pw1 = ev.target.new_password1.value
+			let pw1 = ev.target.new_password.value
 			let pw2 = ev.target.new_password2.value
 			if (pw1 !== pw2) {
 				alert("❌ passwords don't match")
-				ev.target.new_password1.value = ""
+				ev.target.new_password.value = ""
 				ev.target.new_password2.value = ""
 				return
 			}
@@ -54,30 +45,32 @@ class AccountView extends BaseView {
 		}
 	}
 	Quick() {
+		this.Slot.set_title("Account")
 	}
 	Destroy() {
-	}
-	password_visible(state) {
-		let fields = this.$root.querySelectorAll('')
 	}
 }
 
 AccountView.template = HTML`
 <view-root>
-	<button $=logout_all>Log out all sessions</button>
+	<div class=registerBox>
+		<h2>Change Password</h2>
+		<form $=form method=dialog autocomplete=off>
+			<div class='ROW' $=old_password>
+				current password:&nbsp;
+			</div>
+			<br>
+			<div class='ROW' $=new_password>
+				new password:&nbsp;
+			</div>
+			<br>
+			<button>Change Password</button>
+		</form>
+	</div class=registerBox>
 	<hr>
-<h2>Change Password</h2>
-	<form $=form method=dialog autocomplete=off>
-		<label class='ROW' style='align-items:center;' $=old_password>
-			current password:
-		</label>
-		<br>
-		<label class='ROW' style='align-items:center;' $=new_password>
-			new password:
-		</label>
-		<br>
-		<button>Change Password</button>
-	</form>
+	<div class=registerBox>
+		<button $=logout_all>Log out all sessions</button>
+	</div class=registerBox>
 </view-root>
 `
 

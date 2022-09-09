@@ -87,6 +87,22 @@ input:disabled {
 	color: var(--chat-dim-color);
 	border-color: gray;
 }
+
+password-input {
+	display: inline-flex !important; /*not a hack*/
+	align-items: center;
+}
+password-input > span {
+	display: flex;
+	flex-flow: column;
+}
+password-input > span > :first-child {
+	margin-bottom: 2px;
+}
+password-input > label {
+	margin-left: 3px;
+}
+
 
 /* textarea */
 textarea {
