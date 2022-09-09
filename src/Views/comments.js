@@ -166,9 +166,12 @@ class CommentsView extends BaseView {
 					values.max_id = range.max+1
 					query.push("id < @max_id")
 				}
-				merge = false // for now
 			}
 		}
+		
+		if (!data.pages || data.pages.length>1)
+			merge = false // temporary hack disable
+		
 		if (data.start) {
 			values.start = data.start.toISOString()
 			query.push("createDate > @start") // should these be ≥/≤?
