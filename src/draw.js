@@ -116,6 +116,35 @@ const Draw = NAMESPACE({
 		return date.toLocaleString([], options)
 	},
 	
+	password_input: function(name='password', nw=false) {
+		let e = this()
+		let cb = e.lastChild.lastChild
+		let pw = e.firstChild
+		let pw2
+		if (nw) {
+			pw.autocomplete='new-password'
+			pw2 = pw.cloneNode(true)
+			pw.after(pw2)
+			pw.name = name+"1"
+			pw2.name = name+"2"
+		} else {
+			pw.name = name
+			pw.autocomplete='current-password'
+		}
+		cb.onchange = ev=>{
+			let type = ev.target.checked ? 'text' : 'password'
+			pw.type = type
+			if (pw2)
+				pw2.type = type
+		}
+		return e
+	}.bind(𐀶`
+<span>
+	<input placeholder=Password type=password>
+	<label>👁️<input type=checkbox autocomplete=off></label>
+</span>
+`),
+	
 	button: function(label, onclick) {
 		let e = this()
 		e.append(label)
