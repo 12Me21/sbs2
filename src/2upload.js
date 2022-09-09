@@ -59,9 +59,23 @@ class UploaderImage {
 			this.canvas = document.createElement('canvas')
 		this.canvas.width = dw
 		this.canvas.height = dh
-		
 		let c2d = this.canvas.getContext('2d')
-		c2d.drawImage(this.source.img, 0, 0, dw, dh)
+		// todo: option to resize in 2 steps?
+		c2d.imageSmoothingEnabled = true
+		let src = this.source.img
+		if (c2d.imageSmoothingQuality) {
+			c2d.imageSmoothingQuality = "high"
+		} else if (this.width/w < .34) {
+			// do it in 2 steps
+			let n = document.createElement('canvas')
+			n.width = dw*2
+			n.height = dh*2
+			let c = n.getContext('2d')
+			c.imageSmoothingEnabled = false
+			c.drawImage(this.source.img, 0, 0, dw*2, dh*2)
+			src = n
+		}
+		c2d.drawImage(src, 0, 0, dw, dh)
 	}
 	cancel() {
 		this.task = null
@@ -113,9 +127,16 @@ class Uploader {
 		this.out = new UploaderImage()
 		this.showing = null
 		
+		this.$f.onsubmit = ev=>{
+			ev.preventDefault()
+			if (ev.submitter.name=='scale_num')
+				return
+			alert('sent')
+		}
+		
 		this.$f.edit.onchange = ev=>{
 			let state = ev.currentTarget.checked
-			this.$f.scale.disabled = !state
+			//this.$f.scale.disabled = !state
 			this.$f.quality.disabled = !state
 			this.$f.scale_num.disabled = !state
 			if (state) {
@@ -135,12 +156,12 @@ class Uploader {
 		this.$f.quality.onchange = ev=>{
 			this.update()
 		}
-		this.$f.scale.onchange = ev=>{
+/*		this.$f.scale.onchange = ev=>{
 			this.$f.scale_num.value = ev.currentTarget.value
 			this.update()
-		}
+		}*/
 		this.$f.scale_num.onchange = ev=>{
-			this.$f.scale.value = ev.currentTarget.value
+			//this.$f.scale.value = ev.currentTarget.value
 			this.update()
 		}
 		this.$f.browse.onchange = ev=>{
@@ -162,7 +183,7 @@ class Uploader {
 	}
 	async update() {
 		let source = this.in
-		let width = +this.$f.scale.value
+		let width = +this.$f.scale_num.value
 		let quality = +this.$f.quality.value/100
 		let format = quality ? 'image/jpeg' : 'image/png'
 		await this.out.update(source, width, format, quality)
@@ -192,7 +213,7 @@ class Uploader {
 		this.in.blob = file
 		await this.in.blob_to_img()
 		let w = this.in.img.naturalWidth
-		this.$f.scale.value = this.$f.scale.max = w
+		//this.$f.scale.value = this.$f.scale.max = w
 		this.$f.scale_num.value = this.$f.scale_num.max = w
 		if (this.in.blob.type=='image/jpeg')
 			this.$f.quality.value = 70 //
