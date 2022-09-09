@@ -166,6 +166,7 @@ class CommentsView extends BaseView {
 					values.max_id = range.max+1
 					query.push("id < @max_id")
 				}
+				merge = false // for now
 			}
 		}
 		if (data.start) {
