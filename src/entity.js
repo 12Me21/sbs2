@@ -32,7 +32,7 @@ class FileMeta {
 class Author {
 	constructor(message, user, content) {
 		let valid = x => x && ('string'==typeof x || 'number'==typeof x)
-		let {a, big, n} = message.values
+		let {a, big, b, n=b} = message.values
 		if (user) {
 			this.username = user.username
 			this.bridge = user.id==5410 && user.username=="sbs_discord_bridge"
