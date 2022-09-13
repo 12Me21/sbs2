@@ -119,7 +119,31 @@ function focus_next(elem) { // function ({next: nextElementSibling}) {
 	try_focus(get_neighbor(elem, 1))
 }
 
+function cursor_move(dir, ev) {
+	ev.preventDefault()
+	let f = document.activeElement
+	if (!f || !f.setSelectionRange)
+		return
+	let s = f.selectionStart+dir
+	f.setSelectionRange(s, s)
+}
+
 document.addEventListener('keydown', e=>{
+	if (e.ctrlKey) {
+		if (e.key=='f') {
+			cursor_move(1, e)
+			return
+		}
+		if (e.key=='b') {
+			cursor_move(-1, e)
+			return
+		}
+		if (e.key=='e') {
+			cursor_move(99999, e)
+			return
+		}
+	}
+	
 	let focused = document.activeElement
 	if (!focused) return
 	let role = focused.getAttribute('role')

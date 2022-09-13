@@ -99,7 +99,7 @@
 	</div>
 	<div class='form-row' data-page=fields>
 		<label>
-			<span>Title:</span>
+			<span>Name:</span>
 			<input name=name required class='field' placeholder="Name">
 		</label>
 		<label>
@@ -118,10 +118,9 @@
 		</label>
 	</div>
 	<div class='form-row' data-page=resize>
-		
 		<label>
 			<span>Size:</span>
-			<input type=text size=5 style='flex:none' class='field' name=scale_num>
+			<input type=text size=5 style='flex:none' class='field' name=scale>
 		</label>
 		<!--<button type=button name=half>÷2</button>-->
 	</div>
@@ -136,12 +135,12 @@
 <script src=2upload.js></script>
 
 <script>
-	update = function self(ev) {
+	/*update = function self(ev) {
 		let pr = window.devicePixelRatio
 		matchMedia(`(-webkit-device-pixel-ratio: ${pr})`).addEventListener('change', self, {once:true})
 		$style.textContent = `dialog::backdrop { --scale: ${pr / Math.round(pr)}; }`
 	}
-	update()
+	update()*/
 	
 	$resize.oninput = ev=>{
 		$form.style.width = $resize.value+"px"

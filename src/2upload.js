@@ -121,29 +121,31 @@ class Uploader {
 		this.$f.mode.setAttribute('aria-selected', state)
 		this.$f.dataset.page = state ? 'resize' : 'fields'
 	}
+	edit_state(state) {
+		this.editing = state
+		this.$f.dataset.editing = state
+		if (state) {
+			this.update()
+		} else {
+			this.back()
+		}
+	}
 	constructor(f) {
 		this.$f = f
 		this.in = new UploaderImage()
 		this.out = new UploaderImage()
 		this.showing = null
+		this.editing = false
 		
 		this.$f.onsubmit = ev=>{
 			ev.preventDefault()
-			if (ev.submitter.name=='scale_num')
+			if (ev.submitter.name=='scale')
 				return
 			alert('sent')
 		}
 		
 		this.$f.edit.onchange = ev=>{
-			let state = ev.currentTarget.checked
-			//this.$f.scale.disabled = !state
-			this.$f.quality.disabled = !state
-			this.$f.scale_num.disabled = !state
-			if (state) {
-				this.update()
-			} else {
-				this.back()
-			}
+			this.edit_state(ev.target.checked)
 		}
 		
 		this.$f.mode.onclick = ev=>{
@@ -156,12 +158,7 @@ class Uploader {
 		this.$f.quality.onchange = ev=>{
 			this.update()
 		}
-/*		this.$f.scale.onchange = ev=>{
-			this.$f.scale_num.value = ev.currentTarget.value
-			this.update()
-		}*/
-		this.$f.scale_num.onchange = ev=>{
-			//this.$f.scale.value = ev.currentTarget.value
+		this.$f.scale.onchange = ev=>{
 			this.update()
 		}
 		this.$f.browse.onchange = ev=>{
@@ -181,9 +178,15 @@ class Uploader {
 		this.showing = this.out
 		this.show_details(this.out)
 	}
+	back() {
+		this.showing = this.in
+		this.show_details(this.in)
+	}
 	async update() {
+		if (!this.editing)
+			return
 		let source = this.in
-		let width = +this.$f.scale_num.value
+		let width = +this.$f.scale.value
 		let quality = +this.$f.quality.value/100
 		let format = quality ? 'image/jpeg' : 'image/png'
 		await this.out.update(source, width, format, quality)
@@ -195,31 +198,21 @@ class Uploader {
 			}, {once:true})
 		}
 	}
-	back() {
-		this.showing = this.in
-		this.show_details(this.in)
-	}
 	async got_upload(file, name=file.name) {
-		//this.done()
-		//f.reset()
-		//if (is_untitled(file.name))
-		
-		this.mode_state(false)
-		this.$f.name.value = name
-		//f.public.checked
-		//f.bucket.value
-		this.$f.hash.value = null
-		
 		this.in.blob = file
 		await this.in.blob_to_img()
+		// reset the form
+		this.mode_state(false)
+		this.$f.name.value = name
+		this.$f.hash.value = null
 		let w = this.in.img.naturalWidth
-		//this.$f.scale.value = this.$f.scale.max = w
-		this.$f.scale_num.value = this.$f.scale_num.max = w
+		this.$f.scale.value = this.$f.scale.max = w
 		if (this.in.blob.type=='image/jpeg')
-			this.$f.quality.value = 70 //
+			this.$f.quality.value = 70
 		else
 			this.$f.quality.value = 0
-		this.back()
+		this.$f.edit.checked = false
+		this.edit_state(false)
 	}
 	
 	show_details(t) {
@@ -241,7 +234,7 @@ class Uploader {
 		}
 		
 		this.$f.type.value = t.blob.type.replace("image/", "").toUpperCase()
-		this.$f.size.value = (t.blob.size/1000).toFixed(1)
+		this.$f.size.value = (t.blob.size/1000).toFixed(0)
 		this.$f.width.value = t.img.naturalWidth
 		this.$f.height.value = t.img.naturalHeight
 	}
