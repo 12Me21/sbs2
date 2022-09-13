@@ -426,9 +426,16 @@ document.addEventListener('click', ev=>{
 	// find nearest slot if we're inside one, otherwise use focused slot
 	let slot = link.closest('view-slot')
 	slot = (slot && Nav.slots.find(s=>s.$root===slot)) || Nav.focused_slot()
-	// load url into slot
-	if (!slot.load_url(href.slice(1)))
-		Sidebar.close_fullscreen()
+	if (link.target!='_self') { //hack
+		// load url into slot
+		if (!slot.load_url(href.slice(1)))
+			Sidebar.close_fullscreen()
+	} else {
+		//todo: actually add the hash into the url??
+		let target = slot.$root.querySelector(`a[name="${CSS.escape(href.slice(1))}"]`)
+		if (target)
+			target.scrollIntoView()
+	}
 }, {capture:true})
 
 /*window.addEventListener('blur', ev=>{
