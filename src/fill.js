@@ -78,6 +78,7 @@ function NO_CONVERT(type) {
 	throw new FieldError("🚮 invalid type conversion", this, "⛔ to "+type)
 }
 METHOD(Object, Symbol.toPrimitive, NO_CONVERT)
+METHOD(RegExp, Symbol.toPrimitive, RegExp.prototype.toString)
 //METHOD(Object, Symbol.toStringTag, undefined)
 METHOD(Error, Symbol.toPrimitive, function() {
 	return this.toString()+"\n"+this.stack
