@@ -259,8 +259,10 @@ ViewSlot.template = HTML`
 	<div class=slot-overlay></div>
 	<span tabindex=0 accesskey="q" class='header-focus-anchor'></span>
 	<view-header $=header>
-		<span $=header_extra></span>
-		<h1 $=title class='ellipsis'></h1>
+		<div>
+			<div $=header_extra></div>
+			<h1 $=title class='ellipsis'></h1>
+		</div>
 		<span class='header-buttons ROW' $=header_buttons></span>
 	</view-header>
 </view-slot>

@@ -392,11 +392,17 @@ dialog::backdrop {
 	opacity: 0.5;
 }
 
-view-header h1 {
+view-header > div {
 	flex: auto;
 	min-width: 0;
 	align-self: center;
 	padding-right: 0.25rem;
+	display: flex;
+}
+view-header > div > div {
+	flex: none;
+}
+view-header h1 {
 	font-size: 1.625em;
 	font-weight: normal;
 }
@@ -806,6 +812,13 @@ view-root:not(.f-editing) .chat-edit-controls {
 	--T-link-hover-color: var(--link-invert-hover-color);
 	padding: 2px;
 	line-height: normal;
+}
+.ROW.resize-box > .nav { /* used by editpage */
+	flex-direction: column;
+}
+.COL > resize-handle.nav {
+	min-height: var(--bar-height);
+	height: unset;
 }
 .nav > * {
 	align-self: stretch;

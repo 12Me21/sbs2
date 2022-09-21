@@ -88,7 +88,6 @@ class EditView extends BaseView {
 			this.$root.classList.toggle('COL', !c)
 			this.resize.switch(c ? 'right' : 'top')
 			this.$resize.style.setProperty('--bar-height', c ? "5em" : "2em")
-			this.$resize.style.flexDirection = c ? 'column' : 'row'
 			if (!c)
 				this.$root.prepend(this.$top, this.$resize)
 			else
