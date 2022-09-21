@@ -351,10 +351,8 @@ class ResizeBar {
 	constructor(element, tab, side, save=null, def=null) {
 		this.$elem = element
 		this.$handle = tab
-		this.horiz = side=='left'||side=='right'
-		this.dir = side=='top'||side=='left' ? 1 : -1
 		this.save = save
-		
+		this.switch(side)
 		this.start_pos = null
 		this.start_size = null
 		this.size = null
@@ -372,6 +370,14 @@ class ResizeBar {
 			this.update_size(def)
 		
 		Object.seal(this)
+	}
+	switch(side) {
+		this.horiz = side=='left'||side=='right'
+		this.dir = side=='top'||side=='left' ? 1 : -1
+		if (this.size != null)
+			this.update_size(this.size)
+		// remove the opposite dir's style
+		this.$elem.style[!this.horiz?'width':'height'] = ""
 	}
 	event_pos(ev) {
 		if (ev.touches)
