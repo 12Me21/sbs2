@@ -463,7 +463,7 @@ view-header h1 > span {
 	padding: 2px 3px;
 }
 pre {
-	font: var(--T-monospace-font);
+	font-family: 0.8125em var(--T-monospace-font);
 }
 .debugMessage > pre {
 	overflow-x: scroll;

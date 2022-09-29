@@ -3,7 +3,7 @@
 /* shared */
 :root {
 	--T-font: 1em roboto, x-heart, x-twemoji, sans-serif;
-	--T-monospace-font: 0.8125em 'cascadia code', consolas, monospace;
+	--T-monospace-font: 'cascadia code', consolas, monospace;
 	
 	--chat-avatar-size: 52px; /* 50x50 + border */
 }
