@@ -42,5 +42,6 @@
 /* https://github.com/mozilla/twemoji-colr */
 @font-face{
 	font-family: x-twemoji;
+	unicode-range: U+100-10FFFF;
 	src: local(TwemojiMozilla);
 }
