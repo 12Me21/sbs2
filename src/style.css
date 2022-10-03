@@ -305,7 +305,6 @@ forgot what this was for ??
 	animation: none;
 }
 .Markup img, .M-image-wrapper {
-	-webkit-transition: max-height 0.25s ease;
 	transition: max-height 0.25s ease;
 }
 .Markup [data-big] {
@@ -463,7 +462,8 @@ view-header h1 > span {
 	padding: 2px 3px;
 }
 pre {
-	font-family: 0.8125em var(--T-monospace-font);
+	font-family: var(--T-monospace-font);
+	font-size: 0.8125em;
 }
 .debugMessage > pre {
 	overflow-x: scroll;
@@ -1132,6 +1132,18 @@ not-sidebar {
 
 [data-disabled] {
 	opacity: 0.5; /* todo */
+}
+
+.edit-field {
+	display: flex;
+	align-items: center;
+	margin-bottom: 0.25rem;
+}
+.edit-field > input {
+	flex: 1;
+	margin-left: 0.25rem;
+	font-family: var(--T-monospace-font);
+	font-size: 0.8125em;
 }
 /* mobile stuff */
 @media all and (max-width: 700px) {

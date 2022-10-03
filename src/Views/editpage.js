@@ -25,6 +25,7 @@ class EditView extends BaseView {
 				return
 			}
 			data.text = this.page.text
+			data.keywords = this.$keywords.value.match(/[^,\s]+/g)
 			
 			let text
 			if (this.current_section == null) {
@@ -182,11 +183,12 @@ class EditView extends BaseView {
 		for (let [k,v] of Object.entries(page)) {
 			let info = ABOUT.details.types.content[k]
 			if (!info || info[creating?'writableOnInsert':'writableOnUpdate']) {
-				if (k!='text')
+				if (k!='text' && k!='keywords')
 					writable[k] = v
 			}
 		}
 		this.$data.value = JSON.stringify(writable, null, 1)
+		this.$keywords.value = page.keywords.join(" ")
 		
 		this.$preview_button.checked = false
 		this.toggle_preview(false)
@@ -266,12 +268,13 @@ EditView.template = HTML`
 <view-root class='resize-box COL'>
 	<div $=top class='sized page-container SLIDES'>
 		<scroll-outer data-slide=preview $=preview_outer><scroll-inner $=preview class='pageContents editPageContents'></scroll-inner></scroll-outer>
-		<div data-slide=fields $=fields class='ROW'>
+		<div data-slide=fields $=fields class='COL' style=padding:0.5rem>
 <!--			<label>Name:<input $=name></label>
 			<label>Type:<input $=type></label>
 			<label>Description:<input $=description></label>
 			<label>Parent ID:<input $=description type=number></label>-->
-			<textarea $=data style="resize:none;margin:0.5rem;" class='FILL code-textarea'></textarea>
+			<label class='edit-field'>Keywords:<input $=keywords style=word-spacing:0.5em></label>
+			<textarea $=data style="resize:none;" class='FILL code-textarea'></textarea>
 		</div>
 	</div>
 	<resize-handle $=resize style='--bar-height:2em;gap:0.25rem;' class='nav'>
