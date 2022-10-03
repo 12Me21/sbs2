@@ -25,7 +25,9 @@ class EditView extends BaseView {
 				return
 			}
 			data.text = this.page.text
-			data.keywords = this.$keywords.value.match(/[^,\s]+/g)
+			data.keywords = this.$edit_keywords.value.match(/[^,\s]+/g)
+			data.name = this.$edit_name.value
+			data.literalType = this.$edit_type.value
 			
 			let text
 			if (this.current_section == null) {
@@ -183,12 +185,14 @@ class EditView extends BaseView {
 		for (let [k,v] of Object.entries(page)) {
 			let info = ABOUT.details.types.content[k]
 			if (!info || info[creating?'writableOnInsert':'writableOnUpdate']) {
-				if (k!='text' && k!='keywords')
+				if (k!='text' && k!='keywords' && k!='name' && k!='literalType')
 					writable[k] = v
 			}
 		}
 		this.$data.value = JSON.stringify(writable, null, 1)
-		this.$keywords.value = page.keywords.join(" ")
+		this.$edit_keywords.value = page.keywords.join(" ")
+		this.$edit_name.value = page.name
+		this.$edit_type.value = page.literalType
 		
 		this.$preview_button.checked = false
 		this.toggle_preview(false)
@@ -273,7 +277,9 @@ EditView.template = HTML`
 			<label>Type:<input $=type></label>
 			<label>Description:<input $=description></label>
 			<label>Parent ID:<input $=description type=number></label>-->
-			<label class='edit-field'>Keywords:<input $=keywords style=word-spacing:0.5em></label>
+			<label class='edit-field'>Title:<input $=edit_name></label>
+			<label class='edit-field'>Kind:<input $=edit_type placeholder=literalType></label>
+			<label class='edit-field'>Keywords:<input $=edit_keywords style=word-spacing:0.5em></label>
 			<textarea $=data style="resize:none;" class='FILL code-textarea'></textarea>
 		</div>
 	</div>
