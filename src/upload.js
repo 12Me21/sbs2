@@ -7,7 +7,7 @@ const FileUploader = NAMESPACE({
 		this.file_upload_form = new Form({
 			fields: [
 				['size', 'output', {label: "Info"}], //todo: separate set of output fields?
-				['name', 'text', {label: "File Name"}],
+				['name', 'text', {label: "Name"}],
 				['hash', 'text', {label: "Hash"}],
 				['bucket', 'text', {label: "Bucket"}],
 				['quantize', 'select', {
@@ -220,10 +220,11 @@ const FileUploader = NAMESPACE({
 	got_file(file) {
 		let url = URL.createObjectURL(file)
 		this.show_parts(1, url, file)
+		let name = String(file.name)//.replace(/[.]\w{3,4}$/, "")
 		window.setTimeout(()=>URL.revokeObjectURL(url))
 		this.file_upload_form.set_some({
 			size: file.type+" "+(file.size/1000)+" kB",
-			name: file.name,
+			name,
 			hash: null,
 		})
 		this.file_upload_form.write()
