@@ -33,6 +33,14 @@ class ViewSlot {
 			this.set_focus()
 		}, {passive:true, capture:true})
 		
+		this.$close.onclick = ev=>{
+			let x = Nav.slots.indexOf(this)
+			if (x!=-1)
+				Nav.slots.splice(x, 1)
+			this.destroy()
+			Nav.set_address(true)
+		}
+		
 		Object.seal(this)
 	}
 	set_focus() {
@@ -114,6 +122,8 @@ class ViewSlot {
 		if (Nav.focused==this) {
 			if (Nav.slots[0])
 				Nav.slots[0].set_focus()
+			else
+				Nav.focused=null
 		}
 		this.cancel()
 		this.switch_view(null)
@@ -264,6 +274,7 @@ ViewSlot.template = HTML`
 			<h1 $=title class='ellipsis'></h1>
 		</div>
 		<span class='header-buttons ROW' $=header_buttons></span>
+		<button $=close class='slot-close'>×</button>
 	</view-header>
 </view-slot>
 `
@@ -428,11 +439,18 @@ document.addEventListener('click', ev=>{
 	// find nearest slot if we're inside one, otherwise use focused slot
 	let slot = link.closest('view-slot')
 	slot = (slot && Nav.slots.find(s=>s.$root===slot)) || Nav.focused_slot()
+	// load url into slot
 	if (link.target!='_self') { //hack
-		// load url into slot
+		//ctrl: new slot
+		if (ev.ctrlKey) {
+			slot = new ViewSlot()
+			Nav.slots.push(slot)
+			slot.set_focus()
+		}
 		if (!slot.load_url(href.slice(1)))
 			Sidebar.close_fullscreen()
 	} else {
+		// #anchor url
 		//todo: actually add the hash into the url??
 		let target = slot.$root.querySelector(`a[name="${CSS.escape(href.slice(1))}"]`)
 		if (target)

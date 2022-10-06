@@ -1148,6 +1148,18 @@ not-sidebar {
 	font-size: 0.8125em;
 	word-spacing: -0.375ch;
 }
+
+view-header .slot-close {
+	color: red;
+	font-weight: bold;
+	padding: 0 0.25em;
+	margin-left: 0.25em;
+	border-width: 1px;
+	height: calc(var(--bar-height) / 2);
+}
+view-slot:only-of-type > view-header .slot-close {
+	display: none;
+}
 /* mobile stuff */
 @media all and (max-width: 700px) {
 	input, textarea, textarea-container {
