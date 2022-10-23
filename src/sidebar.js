@@ -194,6 +194,9 @@ const Sidebar = NAMESPACE({
 	displayed_ids: {__proto__:null},
 	
 	display_messages(comments, initial=false) {
+		// ok so the reason this used to break scrolling is:
+		// because we DEFER the scroll animation remember!
+		this.limit_messages()
 		// todo: show page titles?
 		this.scroller.print(inner=>{
 			for (let c of comments) {
@@ -229,7 +232,6 @@ const Sidebar = NAMESPACE({
 				}
 			}
 		}, !initial)
-		this.limit_messages()
 		//if (initial)
 		//	this.scroller.scroll_instant()
 	},

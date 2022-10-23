@@ -242,6 +242,12 @@ class PageView extends BaseView {
 	// comments: [Comment]
 	// animate: Boolean - whether to play the scrolling animation
 	display_live(comments) {
+		if (this.list.over_limit() && !this.$limit_checkbox.checked) {
+			this.scroller.print_top(inner=>{
+				this.list.limit_messages()
+			})
+		}
+		
 		let last_new = null
 		let x = null
 		// todo: we should only smooth scroll if message is modifed at the END of the list
@@ -258,11 +264,6 @@ class PageView extends BaseView {
 		
 		this.scroller.after_print(x)
 		
-		if (this.list.over_limit() && !this.$limit_checkbox.checked) {
-			this.scroller.print_top(inner=>{
-				this.list.limit_messages()
-			})
-		}
 		if (last_new)
 			View.comment_notification(last_new)
 	}
