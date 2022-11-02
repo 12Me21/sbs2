@@ -229,14 +229,16 @@ const View = NAMESPACE({
 		if (!this.observer == !state)
 			return
 		if (state) {
+			// ugh why is this defined HERE
 			this.observer = new IntersectionObserver(function(data) {
 				// todo: load top to bottom on pages
 				data = data.filter(x=>x.isIntersecting).sort((a, b)=>b.boundingClientRect.bottom-a.boundingClientRect.bottom)
 				for (let {target} of data) {
-					if (target.dataset.src) {
-						target.src = target.dataset.src
-						delete target.dataset.src
+					let src = target.dataset.src
+					if (src) {
 						this.unobserve(target)
+						this._x_load(target, src) //hack, etc.
+						delete target.dataset.src
 					}
 				}
 			})
