@@ -224,8 +224,67 @@ const Draw = NAMESPACE({
 			elem.disabled = true
 			callback(()=>{elem.disabled = false}, elem)
 		}
+	},
+	
+	// todo: move all the image rendering code somewhere
+	load_image(e, src, force) {
+		if (!force && Draw.observer) {
+			e.dataset.src = src
+			Draw.observer.observe(e)
+			return
+		}
+		const set_size = (state)=>{
+			e.width = e.naturalWidth
+			e.height = e.naturalHeight
+			e.dataset.state = state
+			e.style.setProperty('--width', e.naturalWidth)
+			e.style.setProperty('--height', e.naturalHeight)
+		}
+		e.src = src
+		if (e.naturalHeight)
+			set_size('loaded')
+		else // otherwise wait for load
+			e.decode().then(ok=>{
+				set_size('loaded')
+			}, no=>{
+				e.dataset.state = 'error'
+			})
+	},
+	
+	observer: null,
+	observer_callback: function(data) {
+		// todo: load top to bottom on pages
+		data = data.filter(x=>x.isIntersecting).sort((a, b)=>b.boundingClientRect.bottom-a.boundingClientRect.bottom)
+		for (let {target} of data) {
+			let src = target.dataset.src
+			if (src) {
+				this.unobserve(target)
+				Draw.load_image(target, src, true)
+				delete target.dataset.src
+			}
+		}
 	}
+	
 })
+
+// todo: just make the renderer into a class ugh, then we can extend it easily..
+Markup.renderer.create.image = ({url, alt, width, height})=>{
+	const src = Markup.renderer.filter_url(url, 'image')
+	const e = document.createElement('img')
+	e.classList.add('M-image')
+	e.tabIndex = 0
+	e.dataset.state = "loading"
+	e.dataset.shrink = ""
+	if (alt!=null)
+		e.alt = e.title = alt
+	if (height) {
+		e.width = width
+		e.height = height
+		e.dataset.state = 'size'
+	}
+	Draw.load_image(e, src, false)
+	return e
+}
 
 
 
