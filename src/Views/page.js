@@ -271,7 +271,9 @@ class PageView extends BaseView {
 	textarea_resize() {
 		this.$textarea.style.height = "10px"
 		let height = this.$textarea.scrollHeight
-		this.$textarea.parentNode.style.height = height+1+"px"
+		let dpr = window.devicePixelRatio
+		height = Math.ceil(height/dpr+1)*dpr
+		this.$textarea.parentNode.style.height = `${height}px`
 		this.$textarea.style.height = "100%"
 	}
 	

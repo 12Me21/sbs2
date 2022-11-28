@@ -127,20 +127,22 @@ textarea {
 textarea-container {
 	border: 2px solid var(--T-textarea-border-color);
 	padding: 5px;
+	padding-bottom: 3px;
 	background: var(--T-bg);
 	/* should be approx. line-height * 2 */
-	min-height: calc(2.5em + 1px);
+	min-height: calc(2.5em + 2px);
 	max-height: 25vh;	
 }
 textarea-container > textarea {
 	box-shadow: none;
 	border-radius: 0;
 	font-size: 1em !important;
+	outline: none !important;
+}
+textarea-container:focus-within {
+	box-shadow: 0 0 0 2px #878;
 }
 textarea-container > textarea:focus {
-	outline: 5px solid #878;
-	outline-offset: 3px;
-	border-radius: 0;
 	animation-name: none;
 }
 
