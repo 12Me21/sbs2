@@ -140,7 +140,7 @@ textarea-container > textarea {
 	outline: none !important;
 }
 textarea-container:focus-within {
-	box-shadow: 0 0 0 2px #878;
+	box-shadow: inset 0 0 0 2px #878;
 }
 textarea-container > textarea:focus {
 	animation-name: none;
