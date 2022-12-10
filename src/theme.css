@@ -18,6 +18,7 @@
 	--T-color: #000;
 	--T-link-color: #045;
 	--T-link-hover-color: #009688;
+	--T-link-visited-color: #606;
 	--T-link-bg: #E5E5FF;
 	--T-time-color: #333;
 	--T-border-color: #808080;
@@ -76,6 +77,7 @@
 	caret-color: var(--T-color);
 	--T-color: #FFF;
 	--T-link-color: #9CE;
+	--T-link-visited-color: #9365bc;
 	--T-link-hover-color: #5CE;
 	--T-link-bg: #156;
 	--T-time-color: #EEE;
