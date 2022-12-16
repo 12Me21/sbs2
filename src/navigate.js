@@ -431,6 +431,14 @@ document.addEventListener('click', ev=>{
 	if (!link)
 		return
 	let href = link.getAttribute('href') // note: can't use `link.href`
+	let target = link.target
+	
+	//if (https://oboy.smilebasicsource.com/12/#comments/4545?s=bpp)
+	if (href.startsWith('https://oboy.smilebasicsource.com/12/')) {
+		href = "#"+link.pathname.slice(4)+link.search+link.hash
+		target = ""
+	}
+	
 	if (!href.startsWith("#"))
 		return
 	// a
@@ -440,7 +448,7 @@ document.addEventListener('click', ev=>{
 	let slot = link.closest('view-slot')
 	slot = (slot && Nav.slots.find(s=>s.$root===slot)) || Nav.focused_slot()
 	// load url into slot
-	if (link.target!='_self') { //hack
+	if (target!='self') { //hack
 		//ctrl: new slot
 		if (ev.ctrlKey) {
 			slot = new ViewSlot()
