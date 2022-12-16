@@ -187,6 +187,15 @@ const Entity = NAMESPACE({
 			return true
 		return perms[uid] && perms[uid].includes(perm)
 	},
+	user_has_perm(perms, user, perm) {
+		if (user.groups) {
+			for(let group of user.groups) {
+				if (this.has_perm(perms, group, perm))
+					return true
+			}
+		}
+		return this.has_perm(perms, user.id, perm)
+	},
 	
 	// should this return null?
 	// I'm not sure how this should work exactly

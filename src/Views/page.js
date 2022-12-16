@@ -139,7 +139,9 @@ class PageView extends BaseView {
 		
 		//let can_edit = /u/i.test(page.permissions[Req.uid]) // unused
 		
-		let can_talk = page.createUserId==Req.uid || Entity.has_perm(page.permissions, Req.uid, 'C')
+		// You don't need to check createUser, the page always has the correct
+		// permissions (createUser always full perms in page.permissions regardless)
+		let can_talk = Entity.user_has_perm(page.permissions, Req.me, 'C')
 		this.$textarea.disabled = !can_talk
 		if (can_talk)
 			this.$textarea.focus()
