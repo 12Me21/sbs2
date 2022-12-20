@@ -25,7 +25,7 @@ class EditView extends BaseView {
 				return
 			}
 			data.text = this.page.text
-			data.keywords = this.$edit_keywords.value.match(/[^,\s]+/g)
+			data.keywords = this.$edit_keywords.value.match(/[^,\s]+/g) || []
 			data.name = this.$edit_name.value
 			data.literalType = this.$edit_type.value
 			
