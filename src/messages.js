@@ -72,7 +72,6 @@ class MessageList {
 		if(r.lastContentId !== msg.values.originalContentId)
 			rethread.innerHTML += ` (orig: <a href="#page/${msg.values.originalContentId}" target="_blank">page ${msg.values.originalContentId}</a>)`
 		rethread.innerHTML += ` - ${(new Date(r.date)).toLocaleString()}`
-		fragment.appendChild(rethread)
 
 		return rethread
 	}
