@@ -58,6 +58,25 @@ class MessageList {
 		}
 	}
 	
+	// Added to showcase how to detect a rethreaded message, and what you might want to show below the message
+	// part. But I didn't know how you wanted to handle the display, so I only log it to the console. Feel
+	// free to do whatever with the message! y wants to see it!
+	draw_rethread(msg) {
+		// Fields are 'date', 'count', 'position' (start or end, or 'start|end' if single message), and 'lastContentId'.
+		// Generally, 'lastContentId' is enough, but you may want to display where it came from originally if the value
+		// differs from 'originalContentId'. See: https://github.com/randomouscrap98/contentapi/wiki/Breaking-Changes#december-19th-2022
+		var r = msg.values.rethread
+		var rethread = document.createElement("div")
+		rethread.className = "rethread"
+		rethread.innerHTML = `${r.position.toUpperCase()}: Rethreaded ${r.count} messages from <a href="#page/${r.lastContentId}" target="_blank">page ${r.lastContentId}</a>`
+		if(r.lastContentId !== msg.values.originalContentId)
+			rethread.innerHTML += ` (orig: <a href="#page/${msg.values.originalContentId}" target="_blank">page ${msg.values.originalContentId}</a>)`
+		rethread.innerHTML += ` - ${(new Date(r.date)).toLocaleString()}`
+		fragment.appendChild(rethread)
+
+		return rethread
+	}
+
 	// draw a message
 	// msg: Message
 	// return: Element
@@ -67,6 +86,9 @@ class MessageList {
 		if (msg.edited)
 			e.className += " edited"
 		Markup.convert_lang(msg.text, msg.values.m, e, {intersection_observer: View.observer})
+		// Do something with the rethread info! 
+		if(msg.values.rethread)
+			console.log(draw_rethread(msg))
 		return e
 	}
 	// draw a message and insert it into the linked list
