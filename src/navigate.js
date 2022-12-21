@@ -403,7 +403,7 @@ const Nav = NAMESPACE({
 	
 	start() {
 		// send users at ?page/123 to #page/123
-		if (window.location.hash=="" && window.location.search.length>1) {
+		if (window.location.hash=="" && window.location.search.length>1 && !window.location.search.startsWith("?dev")) {
 			let x = new URL(window.location)
 			x.hash = "#"+x.search.substring(1)
 			x.search = ""
@@ -433,7 +433,6 @@ document.addEventListener('click', ev=>{
 	let href = link.getAttribute('href') // note: can't use `link.href`
 	let target = link.target
 	
-	//if (https://oboy.smilebasicsource.com/12/#comments/4545?s=bpp)
 	if (href.startsWith('https://oboy.smilebasicsource.com/12/')) {
 		href = link.hash
 		target = ""
