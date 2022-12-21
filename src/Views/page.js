@@ -18,9 +18,11 @@ class PageView extends BaseView {
 			chain: {
 				values: {
 					key: id,
+					action: 4 // update action
 				},
 				requests: [
 					{type: 'content', fields: "*", query: `${field} = @key`},
+					{type: 'activity', fields: "*", query: `contentId in @content.id AND action = @action`, order: "date_desc", "limit": 1},
 					{type: 'message', fields: "*", query: "contentId IN @content.id AND !notdeleted()", order: 'id_desc', limit: 30},
 					{name: 'Mpinned', type: 'message', fields: "*", query: "id IN @content.values.pinned"},
 					{type: 'user', fields: "*", query: "id IN @content.createUserId OR id IN @message.createUserId OR id IN @message.editUserId OR id IN @Mpinned.createUserId OR id IN @Mpinned.editUserId"},
@@ -81,7 +83,7 @@ class PageView extends BaseView {
 			}
 		})
 	}
-	Render({message, content:[page], Mpinned:pinned, user, watch}) {
+	Render({message, content:[page], Mpinned:pinned, user, watch, activity:[activity]}) {
 		this.page_id = page.id
 		
 		// header //
@@ -100,7 +102,7 @@ class PageView extends BaseView {
 		this.pinned_list = null
 		
 		// draw stuff //
-		this.update_page(page, user)
+		this.update_page(page, user, activity)
 		this.update_watch(watch[0])
 		
 		this.userlist.set_status("viewing")
@@ -165,7 +167,7 @@ class PageView extends BaseView {
 		this.watch = watch
 		this.$watching.checked = !!this.watch
 	}
-	update_page(page, user) {
+	update_page(page, user, activity) {
 		this.page = page
 		this.author = user[~page.createUserId]
 		if (page.contentType==CODES.file) {
@@ -203,6 +205,12 @@ class PageView extends BaseView {
 			Markup.convert_lang(page.text, page.values.markupLang, this.$page_contents, {intersection_observer: View.observer})
 		}
 		this.$create_date.lastChild.replaceWith(Draw.time_ago(page.createDate2))
+		if (activity) {
+			this.$edit_date.style.display = "inline"
+			this.$edit_date.lastChild.replaceWith(Draw.time_ago(new Date(activity.date)))
+		} else {
+			this.$edit_date.style.display = "none"
+		}
 		this.$author.fill(Draw.user_label(this.author))
 		//this.$edit_date
 	}
@@ -381,6 +389,7 @@ PageView.template = HTML`
 		<div class='pageInfoPane bar rem1-5 ROW'>
 			<label>Watching: <input type=checkbox $=watching></label>
 			<span $=author style='margin: 0 0.5rem;'></span>
+			<span $=edit_date style='margin-right: 0.5rem'>Edited: <time></time></span>
 			<span $=create_date>Created: <time></time></span>
 		</div>
 		<div class='pageContents' $=page_contents></div>
