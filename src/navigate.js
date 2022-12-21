@@ -435,7 +435,7 @@ document.addEventListener('click', ev=>{
 	
 	//if (https://oboy.smilebasicsource.com/12/#comments/4545?s=bpp)
 	if (href.startsWith('https://oboy.smilebasicsource.com/12/')) {
-		href = "#"+link.pathname.slice(4)+link.search+link.hash
+		href = link.hash
 		target = ""
 	}
 	
