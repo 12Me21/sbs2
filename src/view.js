@@ -31,6 +31,14 @@ Markup.renderer.url_scheme['sbs:'] = (url, thing)=>{
 	return "#"+url.pathname+url.search+url.hash
 }
 
+Markup.renderer.url_scheme['https:'] = (url, thing)=>{
+	if (url.host == "new.smilebasicsource.com") {
+		if (url.pathname.startsWith("/api/File/raw/"))
+			url.host = "qcs.shsbs.xyz"
+	}
+	return url.href	
+}
+
 class BaseView {
 	constructor(location, slot) {
 		this.location = location
