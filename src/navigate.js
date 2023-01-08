@@ -449,7 +449,7 @@ document.addEventListener('click', ev=>{
 	// load url into slot
 	if (target!='self') { //hack
 		//ctrl: new slot
-		if (ev.ctrlKey) {
+		if (ev.ctrlKey || ev.metaKey) {
 			slot = new ViewSlot()
 			Nav.slots.push(slot)
 			slot.set_focus()
