@@ -8,7 +8,7 @@ html {
 	font: var(--T-font);
 	line-height: normal;
 	/* alternate glyphs for K and k (whatever) */
-	font-feature-settings: "ss04" on;
+	/* font-feature-settings: "ss04" on; /* no! bad! */
 }
 
 body {
