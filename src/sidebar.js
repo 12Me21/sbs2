@@ -86,7 +86,7 @@ const Sidebar = NAMESPACE({
 		$login_password.replaceWith(Draw.password_input('password'))
 		$loginForm.onsubmit = ev=>{
 			ev.preventDefault()
-			Req.get_auth($loginForm.username.value, $loginForm.password.value).do = (resp, err)=>{
+			Req.get_auth($loginForm.username.value, $loginForm.password.value, $loginForm.long.checked).do = (resp, err)=>{
 				if (err) {
 					alert("❌ logging in failed\n"+err)
 				} else {

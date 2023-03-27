@@ -266,7 +266,10 @@
 				<form id=$loginForm method=dialog>
 					<input placeholder=Username name=username><br>
 					<br id=$login_password><br>
-					<button>Log In</button>
+					<div class='ROW' style=align-items:center>
+						<button>Log In</button>
+						<label style='display:contents'>&nbsp;&mdash;&nbsp;forever:&nbsp;<input type=checkbox name=long></label>
+					</div>
 				</form>
 				<div id=$loginError></div>
 			</div>
