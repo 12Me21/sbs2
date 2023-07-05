@@ -738,6 +738,10 @@ view-root:not(.f-editing) .chat-edit-controls {
 .chatTextarea[disabled] {
 	background: silver;
 }
+
+.chat-controls-extra {
+	display: none;
+}
 
 .file-page-image {
 	max-width: 100%;

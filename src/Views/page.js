@@ -54,6 +54,10 @@ class PageView extends BaseView {
 				}
 			}
 		}
+		// temp test
+		this.$undo_button.onclick = e=>{ Edit.exec(this.$textarea, 'undo') }
+		this.$redo_button.onclick = e=>{ Edit.exec(this.$textarea, 'redo') }
+		
 		this.$send.onclick = e=>{ this.send_message() }
 		this.$cancel.onclick = e=>{ this.edit_comment(null) }
 		this.$root.onkeydown = e=>{
@@ -400,6 +404,10 @@ PageView.template = HTML`
 		<div class='chat-edit-controls COL'>
 			<input $=markup placeholder="markup" style="width:50px;">
 			<button class='FILL' $=cancel>Cancel</button>
+		</div>
+		<div class='chat-controls-extra COL' style='justify-content:end;'>
+			<button $=redo_button style='padding:0 2px'>↷</button>
+			<button $=undo_button style='padding:0 2px'>↶</button>
 		</div>
 		<textarea-container class='FILL' $=textarea_container>
 			<textarea class='chatTextarea' $=textarea accesskey="z"></textarea>

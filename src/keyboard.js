@@ -21,6 +21,10 @@ let Edit = NAMESPACE({
 		elem.focus()
 		document.execCommand('insertText', false, text)
 	},
+	exec(elem, command, ...args) {
+		elem.focus()
+		document.execCommand(command, false, ...args)
+	}
 })
 
 // todo: namespace?
