@@ -461,6 +461,7 @@ const INPUTS = {
 	date: class extends GenericInput {
 		constructor(p) {
 			super(p)
+			this.shortcuts = !!p.date_shortcuts
 		}
 		draw() {
 			this.elem = elem('div')
@@ -475,7 +476,26 @@ const INPUTS = {
 			//this.input2.step = "1"
 			this.elem.append(this.input2)
 			
-			this.input2.onchange = this.input1.onchange = this.attach_onchange()
+			let oc = this.input2.onchange = this.input1.onchange = this.attach_onchange()
+			if (this.shortcuts) {
+				// HACK
+				for (let [label,prop] of [['−1y','FullYear'],['−1mo','Month']]) {
+					let btn = elem('button')
+					btn.type = 'button'
+					btn.textContent = label
+					btn.onclick = ev=>{
+						let old = this.value
+						this.read()
+						if (!this.value)
+							this.value = new Date()
+						this.value['set'+prop](this.value['get'+prop]()-1)
+						this.write()
+						this.value = old
+						oc && oc(ev)
+					}
+					this.elem.append(btn)
+				}
+			}
 		}
 		read() {
 			// we can't use the .valueAsNumber or .valueAsDate attributes because these read the times in utc
@@ -502,8 +522,8 @@ const INPUTS = {
 					str(v.getDate())
 				time =
 					str(v.getHours())+":"+
-					str(v.getMinutes())+":"+
-					str(v.getSeconds())
+					str(v.getMinutes())//+":"+
+//					"00"//str(v.getSeconds())
 			}
 			this.input1.value = date
 			this.input2.value = time

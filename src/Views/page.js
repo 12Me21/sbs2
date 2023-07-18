@@ -57,6 +57,7 @@ class PageView extends BaseView {
 		// temp test
 		this.$undo_button.onclick = e=>{ Edit.exec(this.$textarea, 'undo') }
 		this.$redo_button.onclick = e=>{ Edit.exec(this.$textarea, 'redo') }
+		//idea (unrelated) when page loads, if there's a lost unsent message, put it into the undo history of the textarea (by setting .value and then running Edit.clear)  or just put it directly in the text area sure.
 		
 		this.$send.onclick = e=>{ this.send_message() }
 		this.$cancel.onclick = e=>{ this.edit_comment(null) }

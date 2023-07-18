@@ -8,7 +8,7 @@ class CommentsView extends BaseView {
 				['search', 'text', {label: "Text", param: 's', placeholder: "wildcards: _ %"}],
 				['pages', 'number_list', {label: "Page Ids", param: 'pid'}],
 				['users', 'number_list', {label: "User Ids", param: 'uid'}],
-				['start', 'date', {label: "Start Date", param: 'start'}],
+				['start', 'date', {label: "Start Date", param: 'start', date_shortcuts: true}],
 				['end', 'date', {label: "End Date", param: 'end'}],
 				['range', 'range', {label: "Id Range", param: 'ids'}],
 				//todo: combine these 3 into one field type
