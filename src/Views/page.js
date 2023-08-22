@@ -327,7 +327,9 @@ class PageView extends BaseView {
 		else {
 			data = {values:{}, contentId:this.page_id, text:null}
 			let sv = Settings.values
-			if (Req.me)
+			if (sv.avatar)
+				data.values.a = sv.avatar
+			else if (Req.me)
 				data.values.a = Req.me.avatar
 			if (sv.nickname)
 				data.values.n = Author.filter_nickname(sv.nickname)
@@ -434,6 +436,10 @@ Settings.add({
 	name: 'chat_markup', label: "Chat Markup", type: 'select',
 	options: ['12y2', '12y', 'plaintext'],
 	order: -8000,
+})
+Settings.add({
+	name: 'avatar', label: "Device Avatar", type: 'text',
+	order: -7000,
 })
 /*Settings.add({
 	name: 'big_avatar',
