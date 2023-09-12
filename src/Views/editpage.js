@@ -28,6 +28,7 @@ class EditView extends BaseView {
 			data.keywords = this.$edit_keywords.value.match(/[^,\s]+/g) || []
 			data.name = this.$edit_name.value
 			data.literalType = this.$edit_type.value
+			data.values.markupLang = this.$edit_markup.value || "plaintext"
 			
 			let text
 			if (this.current_section == null) {
@@ -189,6 +190,10 @@ class EditView extends BaseView {
 					writable[k] = v
 			}
 		}
+		if (writable.values && writable.values.markupLang) {
+			this.$edit_markup.value = page.values.markupLang || "plaintext"
+			delete writable.values.markupLang
+		}
 		this.$data.value = JSON.stringify(writable, null, 1)
 		this.$edit_keywords.value = page.keywords.join(" ")
 		this.$edit_name.value = page.name
@@ -241,7 +246,7 @@ class EditView extends BaseView {
 	}
 	update_preview(full) {
 		let shouldScroll = this.$preview_outer.scrollHeight-this.$preview_outer.clientHeight-this.$preview_outer.scrollTop
-		Markup.convert_lang(this.$textarea.value, this.page.values.markupLang, this.$preview, {preview: !full})
+		Markup.convert_lang(this.$textarea.value, this.$edit_markup.value, this.$preview, {preview: !full})
 		//console.log(shouldScroll, 'scr?')
 		if (shouldScroll < 20)
 			this.$preview_outer.scrollTop = 9e9
@@ -280,6 +285,7 @@ EditView.template = HTML`
 			<label class='edit-field'>Title:<input $=edit_name></label>
 			<label class='edit-field'>Kind:<input $=edit_type placeholder=literalType></label>
 			<label class='edit-field'>Keywords:<input $=edit_keywords style=word-spacing:0.5em></label>
+			<label class='edit-field'>Markup:<input $=edit_markup placeholder=markupLang></label>
 			<textarea $=data style="resize:none;" class='FILL code-textarea'></textarea>
 		</div>
 	</div>
