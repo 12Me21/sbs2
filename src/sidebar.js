@@ -259,6 +259,12 @@ const Sidebar = NAMESPACE({
 		let author = comment.Author
 		let name = author.bridge ? author.nickname+"*" : author.username
 		
+		// censor spoiler contents
+		let text = comment.text
+		if ("".startsWith.call(text,"\\h"))
+			text = text.replace(/^\\h(\[.*?\])?[^]*/, "<spoiler $1>")
+		
+		// (not censored in mouseover text)
 		d.title = `${name} in [${author.page_name}]:\n${comment.text}`
 		
 		/*todo: fix,		if (comment.editDate && comment.editUserId!=comment.createUserId) {
@@ -272,7 +278,7 @@ const Sidebar = NAMESPACE({
 		link.firstChild.src = Draw.avatar_url(author)
 		link.lastChild.textContent = name
 		
-		d.append(comment.text.replace(/\n/g, "  "))
+		d.append(text.replace(/\n/g, "  "))
 		
 		return d
 	}.bind(𐀶`
