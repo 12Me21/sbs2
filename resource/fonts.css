@@ -8,28 +8,28 @@
 /* normal weight */
 @font-face {
 	font-family: roboto;
-	src: local(Roboto-Regular), url(roboto-400.woff2) format('woff2');
+	src: url(roboto-400.woff2) format('woff2');
 }
 @font-face {
 	font-family: roboto;
-	src: local(Roboto-Italic), url(roboto-400i.woff2) format('woff2');
+	src: url(roboto-400i.woff2) format('woff2');
 	font-style: italic;
 }
 /* medium weight (no italic?) (only used for ui things) */
 @font-face {
 	font-family: roboto;
-	src: local(Roboto-Medium), url(roboto-500.woff2) format('woff2');
+	src: url(roboto-500.woff2) format('woff2');
 	font-weight: 500;
 }
 /* bold */
 @font-face {
 	font-family: roboto;
-	src: local(Roboto-Bold), url(roboto-700.woff2) format('woff2');
+	src: url(roboto-700.woff2) format('woff2');
 	font-weight: bold;
 }
 @font-face {
 	font-family: roboto;
-	src: local(Roboto-BoldItalic), url(roboto-700i.woff2) format('woff2');
+	src: url(roboto-700i.woff2) format('woff2');
 	font-weight: bold;
 	font-style: italic;
 }
