@@ -36,20 +36,24 @@ class PageView extends BaseView {
 		this.editing = null
 		this.pre_edit = null
 		
-		this.$textarea.enterKeyHint = !['newline', 'newline, strip trailing'].includes(Settings.values.chat_enter) ? "send" : "enter" // uh this won't update though... need a settings change watcher
-		this.$textarea_container.onkeydown = e=>{
-			if (e.isComposing)
+		function enter_submits() {
+			return !['newline', 'newline, strip trailing'].includes(Settings.values.chat_enter)
+		}
+		
+		this.$textarea.enterKeyHint = enter_submits() ? "send" : "enter" // uh this won't update though... need a settings change watcher
+		this.$textarea_container.onkeydown = ev=>{
+			if (ev.isComposing)
 				return
 			// enter - send
-			if ('Enter'==e.key && !e.shiftKey && !['newline', 'newline, strip trailing'].includes(Settings.values.chat_enter)) {
-				e.preventDefault()
+			if ('Enter'==ev.key && !ev.shiftKey && enter_submits()) {
+				ev.preventDefault()
 				this.send_message()
 			}
 			// up arrow - edit previous message
-			if ('ArrowUp'==e.key && this.$textarea.value=="") {
+			if ('ArrowUp'==ev.key && this.$textarea.value=="") {
 				let comment = this.my_last_message()
 				if (comment) {
-					e.preventDefault()
+					ev.preventDefault()
 					this.edit_comment(comment)
 				}
 			}
@@ -90,7 +94,7 @@ class PageView extends BaseView {
 		this.page_id = page.id
 		
 		// header //
-		this.Slot.set_entity_title(page)
+		this.Slot.set_entity_title(page) // todo: this doesnt change when the page is edited. should be in update_page??
 		this.Slot.add_header_links([
 			{icon:"📜️", label:"logs", href:"#comments/"+page.id+"?r"},
 			{icon:"✏️", label:"edit", href:"#editpage/"+page.id},
@@ -173,6 +177,10 @@ class PageView extends BaseView {
 	update_page(page, user) {
 		this.page = page
 		this.author = user[~page.createUserId]
+		
+		if (Settings.values.textarea_placeholder_title)
+			this.$textarea.placeholder = page.name
+		
 		if (page.contentType==CODES.file) {
 			// messy code
 			let img = document.createElement('img')
