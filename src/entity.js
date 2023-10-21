@@ -287,8 +287,8 @@ const Entity = NAMESPACE({
 	
 	ascending(list, field='id') {
 		if (list.length>1 && list[0][field] > list[1][field]) {
-			print("warning: events reversed?")
 			list.reverse()
+			return true
 		}
 	},
 })
