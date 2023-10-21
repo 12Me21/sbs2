@@ -8,6 +8,7 @@ const FileUploader = NAMESPACE({
 			fields: [
 				['size', 'output', {label: "Info"}], //todo: separate set of output fields?
 				['name', 'text', {label: "Name"}],
+				['keywords', 'text', {label: "Tags"}],
 				['hash', 'text', {label: "Hash"}],
 				['bucket', 'text', {label: "Bucket"}],
 				['quantize', 'select', {
@@ -124,6 +125,8 @@ const FileUploader = NAMESPACE({
 				params.quantize = data.quantize
 			if (data.hash)
 				params.hash = data.hash
+			if (data.keywords)
+				params.keywords = data.keywords
 			if (priv)
 				params.globalPerms = ""
 			print(`uploading ${priv?"private":"public"} file...`)
