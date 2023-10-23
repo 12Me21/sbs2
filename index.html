@@ -259,7 +259,6 @@
 			<div class='registerBox'>
 				<button onclick='RELOAD()'>Reload</button>
 				<button onclick='Lp.start_websocket(true)'>Reset Socket</button>			
-				<button onclick="window.setTimeout(x=>document.addEventListener('click',ev=>print(ev.target),{once:true}))">Inspect</button>
 				<button id=$logOut style="float:right">Log out</button>
 			</div>
 			<div class='loggedOut registerBox'>
@@ -278,6 +277,9 @@
 			<div class='loggedOut registerBox'>
 				js eval:
 				<textarea id=$debugInput class='code-textarea'></textarea>
+			</div>
+			<div class='registerBox'>
+				<button onclick="window.setTimeout(x=>document.addEventListener('click',ev=>{print(ev.target.outerHTML||ev.target),{once:true}))}">Inspect (click element)</button><!-- todo: maybe display an outline on this element? -->
 			</div>
 		</div>
 		
