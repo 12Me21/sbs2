@@ -80,6 +80,15 @@ let Debug = ((u=NAMESPACE({
 				e.append(thing.toString())
 				break
 			}
+			if (thing instanceof Element) {
+				let text = "<"+thing.tagName
+				// technically this could fail if e.g. a class inherits from Element and overrides .attributes to do something weird..
+				for (let x of thing.attributes) {
+					text += ` ${x.name}="${x.value.replace(/&/g,"&amp;").replace(/"/g,"&quot;")}"`
+				}
+				e.append(text += ">")
+				break
+			}
 			let text = "{???}"
 			let pro = Object.getPrototypeOf(thing)
 			if (pro === Object.prototype) {

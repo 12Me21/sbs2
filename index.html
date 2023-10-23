@@ -259,6 +259,7 @@
 			<div class='registerBox'>
 				<button onclick='RELOAD()'>Reload</button>
 				<button onclick='Lp.start_websocket(true)'>Reset Socket</button>			
+				<button onclick="window.setTimeout(x=>document.addEventListener('click',ev=>print(ev.target),{once:true}))">Inspect</button>
 				<button id=$logOut style="float:right">Log out</button>
 			</div>
 			<div class='loggedOut registerBox'>
