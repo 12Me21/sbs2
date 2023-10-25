@@ -113,6 +113,7 @@ const Lp = NAMESPACE({
 	last_id: "",
 	no_restart: false,
 	websocket: null,
+	message_count: 0,
 	
 	// visual stuff
 	state_change(state, ping) {
@@ -163,6 +164,7 @@ const Lp = NAMESPACE({
 			this.websocket.onmessage = null
 			this.websocket.close()
 			this.websocket = null
+			this.message_count = 0
 		}
 	},
 	
@@ -237,6 +239,7 @@ const Lp = NAMESPACE({
 		this.fails++
 		
 		this.websocket = new WebSocket(`wss://${Req.server}/live/ws?lastId=${this.last_id}&token=${encodeURIComponent(Req.auth)}`)
+		this.message_count = 0
 		this.state_change('opening')
 		
 		this.websocket.onopen = e=>{
@@ -249,13 +252,13 @@ const Lp = NAMESPACE({
 		this.websocket.onerror = ({target})=>{
 			console.warn("websocket error")
 			this.fails++
-			target.got_error = true //hack
+			target._got_error = true //hack
 		}
 		
 		this.websocket.onclose = ({code, reason, wasClean, target})=>{
 			console.log("ws closed", code, reason, wasClean)
 			let desc
-			if (target.got_error)
+			if (target._got_error)
 				desc = "websocket closed 📶 (connection error)."
 			else if (wasClean)
 				desc = "websocket closed (clean)."
@@ -277,6 +280,7 @@ const Lp = NAMESPACE({
 			this.got_life()
 			this.fails = 0
 			this.handle_response(JSON.parse(data))
+			this.message_count++
 		}
 	},
 	/*************************
@@ -300,8 +304,14 @@ const Lp = NAMESPACE({
 	},
 	handle_response(response) {
 		if (response.type=='unexpected' && /ExpiredCheckpoint/.test(response.error)) {
-			print("server restart, lastid reset?")
-			this.last_id = 0
+			if (this.message_count > 10) {
+				this.last_id = 0
+				print("safe server restart, lastid reset!")
+			} else {
+				this.last_id = ""
+				this.no_restart = true
+				print("🥀 server restart while disconnected? reload client")
+			}
 			return
 		}
 		if (response.type=='badtoken') {
