@@ -86,7 +86,10 @@ let Debug = ((u=NAMESPACE({
 				for (let x of thing.attributes) {
 					text += ` ${x.name}="${x.value.replace(/&/g,"&amp;").replace(/"/g,"&quot;")}"`
 				}
-				e.append(text += ">")
+				text += ">"
+				if (thing.childElementCount)
+					text += `\n(${thing.childElementCount} childs)`
+				e.append(text)
 				break
 			}
 			let text = "{???}"
