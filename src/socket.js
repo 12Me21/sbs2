@@ -304,14 +304,8 @@ const Lp = NAMESPACE({
 	},
 	handle_response(response) {
 		if (response.type=='unexpected' && /ExpiredCheckpoint/.test(response.error)) {
-			if (this.message_count > 10) {
-				this.last_id = 0
-				print("safe server restart, lastid reset!")
-			} else {
-				this.last_id = ""
-				this.no_restart = true
-				print("🥀 server restart while disconnected? reload client")
-			}
+			print("server restart? lastid reset!")
+			this.last_id = 0
 			return
 		}
 		if (response.type=='badtoken') {
@@ -456,3 +450,10 @@ websocket state indication
 	type: 'select',
 	options: ['no', 'yes'],
 })*/
+
+// safe server restart sequence:
+// 1: we are connected to the server (proof: the current websocket has recieved more than 1 message)
+// 2: this websocket fires a `close` event WITHOUT an `error` event - meaning: the socket was explicitly closed (by either end) and didn't just fail due to a connection error
+// 3: (potentially some failed auto-reconnect attempts, because server hasn't started yet)
+// 4: our first successful reconnect dies immediately with a checkpoint error (since now the lastid is old)
+// 5: on the NEXT reconnect: set lastid to 0

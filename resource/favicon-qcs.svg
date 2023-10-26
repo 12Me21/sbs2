@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" height="16">
+	<!--background-->
+	<g>
+		<!--shadow:--> <circle cx="8.5" cy="8.5" r="7.5" fill="rgb(0,150,136)" opacity="0.33"/>
+		<!--circle:--> <circle cx="7.5" cy="7.5" r="6.5" fill="black" stroke="rgb(0,150,136)" stroke-width="2"/>
+	</g>
+	<!--text-->
+	<g fill="white" stroke="black" paint-order="stroke" stroke-width="2" stroke-linejoin="round">
+		<!--q:--> <path d="M 5.5,6 a 20,20 0 00 -0.5,5 h1 l -1,1 c -1,0 -1,-1 -1,-2 c -1,0 -2,0 -2,-2 s 1,-2 2,-2 h1 ZM 4,7 c -1,0 -1,0 -1,1 s 0,1 1,1 v-2 Z"/>
+		<!--c:--> <path d="M 8,9 v1 c -1,0 -2,0 -2,-2 s 1,-2 2,-2 h1.5 v1 h-1.5 c -1,0 -1,0 -1,1 s 0,1 1,1 Z"/>
+		<!--s:--> <path d="M 10,9 c 1,0 1,0 1,-1 h-1 c 0,-2 1,-2 2,-2 h1 v1 h-1 c -1,0 -1,0 -1,1 h1 c 0,2 -1,2 -2,2 h-1 v-1 h1 Z"/>
+	</g>
+</svg>
