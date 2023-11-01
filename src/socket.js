@@ -142,6 +142,7 @@ const Lp = NAMESPACE({
 		// all statuses need to be resent
 		Object.assign(this.my_status_queue, this.my_statuses)
 		this.flush_statuses()
+		this.userlist(data=>{this.handle_statuses(data.statuses, data.objects)})
 		// resend all previously pending requests
 		// TODO: this will send duplicate requests, if any were recvd by
 		// the server right before the socket closed
@@ -338,6 +339,7 @@ const Lp = NAMESPACE({
 			handler && handler.callback(response)
 		} break;case 'userlist': {
 			Entity.do_listmap(data.objects)
+			console.info('userlist', data)
 			handler && handler.callback(data)
 		} break;case 'ping': {
 			handler && handler.callback(response)
@@ -353,6 +355,7 @@ const Lp = NAMESPACE({
 			this.process_live(data.events, data.objects)
 		} break;case 'userlistupdate': {
 			Entity.do_listmap(data.objects)
+			console.info('userlistupdate', data)
 			this.handle_statuses(data.statuses, data.objects)
 		} break;case 'badtoken': {
 			//
