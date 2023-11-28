@@ -260,12 +260,12 @@ const Lp = NAMESPACE({
 			console.log("ws closed", code, reason, wasClean)
 			let desc
 			if (target._got_error)
-				desc = "websocket closed 📶 (connection error)."
+				desc = "websocket closed:"
 			else if (wasClean)
 				desc = "websocket closed (clean)."
 			else
 				desc = "websocket closed."
-			print(desc+"\n "+code+" "+reason)
+			print(desc+" "+code+" "+reason)
 			
 			this.ready = false
 			this.state_change('dead')
