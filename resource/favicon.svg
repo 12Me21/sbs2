@@ -1,26 +1,13 @@
-<!-- new sbs favicon/logo (12) -->
-<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-	<defs>
-		<!-- "S" template -->
-		<path id="s" d="M0,0v-.5l-1-.5h-1l-1,1v1l1,1h1v1h-1l-1,0v.5l1,.5h1l1-1v-1l-1-1h-1v-1h1z"/>
-		<!-- "SBS" template -->
-		<g id="sbs">
-			<!-- first S -->
-			<use href="#s" x="5" y="6"/>
-			<!-- "B" -->
-			<path d="M6,5v5h2l1-1v-1l-1-.5l1-.5v-1l-1-1zm1,1h1v1h-1zm0,2h1v1h-1z"/>
-			<!-- second S -->
-			<use href="#s" x="13" y="6"/>
-		</g>
-	</defs>
-	<g stroke="#009688">
-		<!-- shadow -->
-		<line x1="7.5" y1="7.5" x2="8.5" y2="8.5" stroke-width="15" stroke-linecap="round" opacity="0.33"/>
-		<!-- circle -->
-		<circle cx="7.5" cy="7.5" r="6.5" fill="#000" stroke-width="2"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" height="16">
+	<!--background-->
+	<g>
+		<!--shadow:--> <circle cx="8.5" cy="8.5" r="7.5" fill="rgb(0,150,136)" opacity="0.33"/>
+		<!--circle:--> <circle cx="7.5" cy="7.5" r="6.5" fill="black" stroke="rgb(0,150,136)" stroke-width="2"/>
 	</g>
-	<!-- "SBS" outline -->
-	<use href="#sbs" stroke-width="2" stroke="#000" stroke-linejoin="round"/>
-	<!-- "SBS" fill -->
-	<use href="#sbs" fill="#FFF"/>
+	<!--text-->
+	<g fill="white" stroke="black" paint-order="stroke" stroke-width="2" stroke-linejoin="round">
+		<!--q:--> <path d="M 5.5,6 a 20,20 0 00 -0.5,5 h1 l -1,1 c -1,0 -1,-1 -1,-2 c -1,0 -2,0 -2,-2 s 1,-2 2,-2 h1 ZM 4,7 c -1,0 -1,0 -1,1 s 0,1 1,1 v-2 Z"/>
+		<!--c:--> <path d="M 8,9 v1 c -1,0 -2,0 -2,-2 s 1,-2 2,-2 h1.5 v1 h-1.5 c -1,0 -1,0 -1,1 s 0,1 1,1 Z"/>
+		<!--s:--> <path d="M 10,9 c 1,0 1,0 1,-1 h-1 c 0,-2 1,-2 2,-2 h1 v1 h-1 c -1,0 -1,0 -1,1 h1 c 0,2 -1,2 -2,2 h-1 v-1 h1 Z"/>
+	</g>
 </svg>
