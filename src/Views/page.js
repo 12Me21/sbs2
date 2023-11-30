@@ -178,8 +178,8 @@ class PageView extends BaseView {
 		this.page = page
 		this.author = user[~page.createUserId]
 		
-		if (Settings.values.textarea_placeholder_title)
-			this.$textarea.placeholder = page.name
+		//if (Settings.values.textarea_placeholder_title)
+		this.$textarea.placeholder = page.name
 		
 		if (page.contentType==CODES.file) {
 			// messy code
