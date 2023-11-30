@@ -339,7 +339,7 @@ const Lp = NAMESPACE({
 			handler && handler.callback(response)
 		} break;case 'userlist': {
 			Entity.do_listmap(data.objects)
-			console.info('userlist', data)
+			//console.info('userlist', data)
 			handler && handler.callback(data)
 		} break;case 'ping': {
 			handler && handler.callback(response)
@@ -355,7 +355,7 @@ const Lp = NAMESPACE({
 			this.process_live(data.events, data.objects)
 		} break;case 'userlistupdate': {
 			Entity.do_listmap(data.objects)
-			console.info('userlistupdate', data)
+			//console.info('userlistupdate', data)
 			this.handle_statuses(data.statuses, data.objects)
 		} break;case 'badtoken': {
 			//
