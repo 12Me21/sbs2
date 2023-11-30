@@ -1,12 +1,17 @@
 'use strict'
 const TYPES = {}
 
+// convert each enum descriptor in ABOUT.details.codes
+// from [value]→name to [name]→value
 const CODES = {__proto__:null}
-for (let enm of Object.values(ABOUT.details.codes)) {
-	for (let [num, name] of Object.entries(enm)) {
-		if (name in CODES && CODES[name]!=+num)
-			print('warning! enum collision')
-		CODES[name] = +num
+for (let [type, map] of Object.entries(ABOUT.details.codes)) {
+	let z = CODES[type] = {__proto__:null}
+	for (let [num, name] of Object.entries(map)) {
+		z[name] = +num
+		// for backwards compatibility:
+		/*if (name in CODES && CODES[name]!=+num)
+			console.info('enum collision')
+		CODES[name] = +num*/
 	}
 }
 Object.freeze(CODES)
@@ -138,7 +143,7 @@ for (let name in ABOUT.details.types) {
 	if (name=='content') {
 		proto_desc.name2 = {get() {
 			let n = this.name
-			if (this.contentType == CODES.file) {
+			if (this.contentType == CODES.InternalContentType.file) {
 				// "image.<extension>" - from clipboard
 				// GUID(?) - iOS file upload
 				if (n=="" || /^\w{8}-\w{4}-\w{4}-\w{4}-\w{12}|^image\.[a-z]{3,4}/.test(n))

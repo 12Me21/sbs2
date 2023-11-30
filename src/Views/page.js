@@ -181,7 +181,7 @@ class PageView extends BaseView {
 		//if (Settings.values.textarea_placeholder_title)
 		this.$textarea.placeholder = page.name
 		
-		if (page.contentType==CODES.file) {
+		if (page.contentType==CODES.InternalContentType.file) {
 			// messy code
 			let img = document.createElement('img')
 			img.className = "file-page-image"

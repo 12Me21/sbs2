@@ -128,7 +128,7 @@ class ActivityContainer {
 		if (!page)
 			page = TYPES.content({id: pid||0})
 		// ignore activity on files, and deletions
-		if (action && (page.contentType==CODES.file || action==CODES.delete))
+		if (action && (page.contentType==CODES.InternalContentType.file || action==CODES.UserAction.delete))
 			return
 		let item = this.update_content(pid, page, date)
 		if (uid)
