@@ -58,15 +58,57 @@ class MessageList {
 		}
 	}
 	
+	// Added to showcase how to detect a rethreaded message, and what you might want to show below the message
+	// part. But I didn't know how you wanted to handle the display, so I only log it to the console. Feel
+	// free to do whatever with the message! y wants to see it!
+	draw_rethread(msg) {
+		// Fields are 'date', 'count', 'position' (start or end, or 'start|end' if single message), and 'lastContentId'.
+		// Generally, 'lastContentId' is enough, but you may want to display where it came from originally if the value
+		// differs from 'originalContentId'. See: https://github.com/randomouscrap98/contentapi/wiki/Breaking-Changes#december-19th-2022
+		/* if you didn't make your html templating system so hard to use outside your
+		 * slot thing maybe i could actually use it. but here we ar e >:(.
+		 * making this your responsibility to refactor :smile: */
+		const { rethread:r } = msg.values
+		const e = 𐀶`<div class=rethread>
+			<span></span>: Rethreaded <span></span> messages from <a target="_blank"></a>
+			<span></span>
+			<span role=time></span>
+		</div>`()
+		e.children[0].innerText = r.position.toUpperCase()
+		e.children[1].innerText = r.count
+		const pageLink = e.children[2]
+		pageLink.href = `#page/${r.lastContentId}`
+		pageLink.innerText = `page ${r.lastContentId}`
+		if (r.lastContentId !== msg.values.originalContentId) {
+			const origE = 𐀶`<span>(orig: <a target="_blank"></a>)</span>`()
+			const origPageLink = origE.firstChild
+			origPageLink.href = `#page/${msg.values.originalContentId}`
+			origPageLink.innerText = `page ${msg.value.originalContentId}`
+			e.children[3].fill(origE)
+		}
+		e.children[4].innerText = ` - ${(new Date(r.date)).toLocaleString()}`
+		return e
+	}
+
 	// draw a message
 	// msg: Message
 	// return: Element
 	draw_part(msg) {	
-		let e = MessageList.part_template()
+		const e = MessageList.part_template()
+		const extraTop = e.children[0]
+		const content = e.children[1]
+		const extraBottom = e.children[2]
 		e.dataset.id = msg.id
 		if (msg.edited)
 			e.className += " edited"
-		Markup.convert_lang(msg.text, msg.values.m, e, {intersection_observer: View.observer})
+		Markup.convert_lang(msg.text, msg.values.m, content, {intersection_observer: View.observer})
+		// Do something with the rethread info! 
+		if(msg.values.rethread) {
+			const position = msg.values.rethread.position.toUpperCase()
+			const rethread = this.draw_rethread(msg)
+			const extra = (position === "START" ? extraTop : extraBottom)
+			extra.fill(rethread)
+		}
 		return e
 	}
 	// draw a message and insert it into the linked list
@@ -334,7 +376,11 @@ class MessageList {
 		}
 	}
 }
-MessageList.part_template = 𐀶`<message-part role=listitem>`
+MessageList.part_template = 𐀶`<message-part role=listitem>
+	<div></div>
+	<div></div>
+	<div></div>
+</message-part>`
 MessageList.controls = null
 MessageList.controls_message = null
 MessageList.prototype.max_parts = 500

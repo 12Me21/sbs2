@@ -725,6 +725,14 @@ message-controls:hover + message-part {
 	background: var(--message-hover-bg);
 }
 
+.rethread {
+	font-style: italic;
+	color: var(--chat-dim-color);
+	margin: 0.25em;
+	padding: 0.25em;
+	border: 1px solid var(--T-border-color);
+}
+
 /* chat input pane */
 .inputPane {
 	background: var(--bar-bg);
