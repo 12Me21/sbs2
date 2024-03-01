@@ -84,6 +84,8 @@
 	}
 	
 	window.onerror = (message, source, line, col, error)=>{
+		if (/^\w+-extension:/.test(source)) // browser extensions love to inject scripts that fail
+			return
 		(window.queueMicrotask || window.setTimeout)(()=>{
 			alert_error("🎆 ERROR DURING PAGE LOAD!", message, source, line, col)
 		})
