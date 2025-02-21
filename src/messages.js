@@ -346,7 +346,8 @@ class MessageList {
 			values: {last: id, pid: this.pid},
 			requests: [
 				{type:'message', fields:'*', query, order, limit:amount},
-				{type:'user', fields:'*', query:"id in @message.createUserId"},
+				{name:'replies', type:'message', fields:'*', query:'id in @message.values.replyingTo'},
+				{type:'user', fields:'*', query:"id in @message.createUserId OR id IN @replies.createUserId"},
 			],
 		}, resp=>{
 			let first = true
