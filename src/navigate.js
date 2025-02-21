@@ -404,7 +404,7 @@ const Nav = NAMESPACE({
 	
 	start() {
 		// send users at ?page/123 to #page/123
-		if (window.location.hash=="" && window.location.search.length>1 && !window.location.search.startsWith("?dev")) {
+		if (window.location.hash=="" && window.location.search.length>1 && !window.location.search.startsWith("?api")) {
 			let x = new URL(window.location)
 			x.hash = "#"+x.search.substring(1)
 			x.search = ""

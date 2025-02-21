@@ -2,8 +2,8 @@
 
 /* shared */
 :root {
-	--T-font: 1em roboto, x-heart, /*arial,*/ x-twemoji, sans-serif;
-	--T-monospace-font: 'cascadia code', consolas, monospace;
+	--T-font: 1em roboto, x-heart, sans-serif, 'Apple Color Emoji', 'Twemoji Mozilla';
+	--T-monospace-font: 'cascadia code', consolas, monospace, 'Apple Color Emoji', 'Twemoji Mozilla';
 	
 	--chat-avatar-size: 52px; /* 50x50 + border */
 }

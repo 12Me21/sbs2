@@ -239,7 +239,8 @@ const Lp = NAMESPACE({
 		this.last_reconnect = Date.now()
 		this.fails++
 		
-		this.websocket = new WebSocket(`wss://${Req.server}/live/ws?lastId=${this.last_id}&token=${encodeURIComponent(Req.auth)}`)
+		let ws_url = Req.server_url.replace(/^http/,"ws")
+		this.websocket = new WebSocket(`${ws_url}/api/live/ws?lastId=${this.last_id}&token=${encodeURIComponent(Req.auth)}`)
 		this.message_count = 0
 		this.state_change('opening')
 		

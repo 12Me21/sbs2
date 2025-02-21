@@ -184,7 +184,7 @@ let Act = {
 				{type:'activity', fields:'id,contentId,userId,action,date', query:"date > @yesterday AND !basichistory()", order:'id'},
 				// watches
 				{type:'watch', fields:'*'},
-				{name:'Cwatch', type:'content', fields:'name,id,permissions,contentType,lastRevisionId,lastCommentId,hash', query: "!notdeleted() AND id IN @watch.contentId", order:'lastCommentId_desc'},
+				{name:'Cwatch', type:'content', fields:'name,id,permissions,contentType,lastRevisionId,lastCommentId,hash,values', query: "!notdeleted() AND id IN @watch.contentId", order:'lastCommentId_desc'},
 				{name:'Mwatch', type:'message', fields: '*', query: 'id in @Cwatch.lastCommentId', order: 'id_desc'},
 				// shared
 				{type:'user', fields:'*', query:"id IN @message_aggregate.createUserId OR id IN @message.createUserId OR id IN @watch.userId OR id IN @activity.userId"},

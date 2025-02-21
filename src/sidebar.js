@@ -84,6 +84,8 @@ const Sidebar = NAMESPACE({
 		})
 		View.bind_enter($searchInput, $searchButton.onclick)
 		$login_password.replaceWith(Draw.password_input('password'))
+		if (Req.server_url != "https://qcs.shsbs.xyz")
+			$login_server_url.textContent = " ⚠️ to server: "+Req.server_url
 		$loginForm.onsubmit = ev=>{
 			ev.preventDefault()
 			Req.get_auth($loginForm.username.value, $loginForm.password.value, $loginForm.long.checked).do = (resp, err)=>{

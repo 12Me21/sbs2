@@ -177,6 +177,53 @@ class MessageList {
 		return part
 	}
 	
+	// `relative`: the message to display the message `msg` around
+	// `where`: where around the message? either 'before'/'after'
+	display_around(relative, msg, where = 'before') {
+		const [prev, next] = where == 'before'
+			? [relative.prev, relative]
+			: [relative, relative.next]
+		// know: `where` doesn't matter anymore
+		
+		if (next == this) return this.display_bottom(msg)
+		if (prev == this) return this.display_top(msg)
+		// know: the [prev/next]s are not the ends, so they'll have `elem`s
+		
+		const same_block = prev.elem.parentNode == next.elem.parentNode
+		
+		const part = this.add_part(msg, prev, next)
+		if (this.check_merge(msg, next.data)) {
+			// print('new message part can be part of next message block')
+			next.elem.before(part.elem)
+			return part
+		}
+		
+		if (this.check_merge(prev.data, msg)) {
+			// print('new message part can be part of prev message block')
+			prev.elem.after(part.elem)
+			return part
+		}
+		
+		const next_block = next.elem.parentNode.parentNode
+		// Are `prev` and `next` effectively in separate message blocks?
+		// (Can't use `prev.elem` in the expr because it might be null)
+		if (!same_block) {
+			// print('cannot merge with either, so create a new block before next message block')
+			next_block.before(MessageList.draw_block(msg, part.elem))
+		} else {
+			// print('splice (create a block inside an existing block, splitting it into two)...')
+			const block_containing_msg = MessageList.draw_block(msg, part.elem)
+			const parts = Array.from(next.elem.parentNode.children)
+			const next_index = parts.indexOf(next.elem)
+			next_block.after(block_containing_msg)
+			const splice_block = MessageList.draw_block(next.data)
+			block_containing_msg.after(splice_block)
+			Element.prototype.append.apply(splice_block.lastChild, parts.splice(next_index))
+		}
+		
+		return part
+	}
+	
 	// existing: Part - the part to replace
 	// msg: Message - the new message data
 	replace(existing, msg) {
@@ -198,8 +245,12 @@ class MessageList {
 		// normal edited message?
 		if (!msg.edited)
 			print("warning: duplicate message ", id)
-		if (msg.Author.merge_hash != existing.data.Author.merge_hash)
-			print("unimplemented: merge hash changed: ", id)
+		// fancy edited message?
+		if (msg.Author.merge_hash != existing.data.Author.merge_hash) {
+			let next = existing.next
+			this.remove(existing)
+			return this.display_around(next, msg, 'before')
+		}
 		let elem = this.draw_part(msg)
 		existing.elem.replaceWith(elem)
 		existing.elem = elem
@@ -256,8 +307,7 @@ class MessageList {
 			return null
 		
 		// rethreaded from another room
-		print("unimplemented: rethread ", id)
-		//this.rethread(msg)
+		this.rethread(msg)
 		return false
 	}
 	
@@ -318,6 +368,12 @@ class MessageList {
 		let over = this.parts.length - this.max_parts
 		for (let i=0; i<over; i++)
 			this.remove(this.next)
+	}
+	
+	rethread(msg) {
+		let pivot = this.prev
+		while (pivot != this && pivot.data.id > msg.id) pivot = pivot.prev
+		return this.display_around(pivot, msg, 'after')
 	}
 
 	// elem: <message-part> or null
@@ -487,7 +543,7 @@ MessageList.draw_block = function(comment, part) {
 	//time.dateTime = comment.createDate
 	time.textContent = "\t­\t"+Draw.time_string(comment.Author.date)
 	
-	e.lastChild.appendChild(part)
+	if (part) e.lastChild.appendChild(part)
 	
 	return e
 }.bind({

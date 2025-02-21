@@ -61,7 +61,7 @@ class ApiRequest extends XMLHttpRequest {
 		throw err
 	}
 	go() {
-		this.open(this.method, `https://${Req.server}/${this.url}`)
+		this.open(this.method, `${Req.server_url}/api/${this.url}`)
 		this.setRequestHeader('CACHE-CONTROL', "L, ratio, no-store, no-cache, must-revalidate") // we probably only need no-store here
 		if (Req.auth)
 			this.setRequestHeader('AUTHORIZATION', "Bearer "+Req.auth)
@@ -139,8 +139,12 @@ ${resp}`)
 }
 
 const Req = { // this stuff can all be static methods on ApiRequest maybe?
-	server: OPTS.has('dev') ?
-		"oboy.smilebasicsource.com/api" : "qcs.shsbs.xyz/api",
+	// url of the contentapi server, with the scheme (http or https) but without /api
+	server_url: OPTS.get('api') || "https://qcs.shsbs.xyz",
+	// for backwards compat
+	get server() {
+		return this.server_url.replace(/^https?:[/][/]/, "")+"/api"
+	},
 	
 	get storage_key() {
 		return `token-${this.server}`
@@ -221,7 +225,7 @@ const Req = { // this stuff can all be static methods on ApiRequest maybe?
 	},
 	
 	image_url(id, size, crop) {
-		let url = `https://${this.server}/File/raw/${id}`
+		let url = `${this.server_url}/api/File/raw/${id}`
 		if (size) {
 			url += `?size=${size}`
 			if (crop)

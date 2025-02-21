@@ -192,7 +192,7 @@ class CommentsView extends BaseView {
 				requests: [
 					{type:'message', fields:'*', query:query.join(" AND "), order, limit, skip},
 					{name:'replies', type:'message', fields:'*', query:'id in @message.values.replyingTo'},
-					{type:'content', fields:'name,id,createUserId,permissions,contentType,literalType', query:"id IN @message.contentId"},
+					{type:'content', fields:'name,id,createUserId,permissions,contentType,literalType,values', query:"id IN @message.contentId"},
 					{type:'user', fields:'*', query:"id IN @message.createUserId OR id IN @content.createUserId OR id IN @replies.createUserId"},
 				],
 			},

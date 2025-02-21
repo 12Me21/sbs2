@@ -262,6 +262,8 @@ const View = NAMESPACE({
 				return
 			
 			let element = ev.target
+			if (!(element instanceof HTMLElement))
+				return // this Happens sometimes
 			let shrink = element.getAttribute('data-shrink')
 			if (shrink==null)
 				return

@@ -91,8 +91,9 @@ input:disabled {
 password-input {
 	display: inline-flex !important; /*not a hack*/
 	align-items: center;
+	max-width: 100%;
 }
-password-input > span {
+password-input > span { /* this span doesn't exist anymore and i can't remember what this was supposed to do */
 	display: flex;
 	flex-flow: column;
 }

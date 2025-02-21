@@ -109,18 +109,17 @@ class PageView extends BaseView {
 			{icon:"✏️", label:"edit", href:"#editpage/"+page.id},
 			{icon:"🗂️", label:"childs", href:"#category/"+page.id},
 		])
-
-		if (!OPTS.has('dev')) {
-			const domain = Req.server.split("/")[0]
+		
+		if (Req.server_url == "https://qcs.shsbs.xyz") {
 			let href = undefined
 			if (page.values.share) {
-				href = `https://${domain}/share/${page.hash}`;
-			} else if (parent?.values.share && parent?.literalType==="resource") {
-				href = `https://${domain}/share/${parent.hash}/${page.hash}`;
+				href = `${Req.server_url}/share/${page.hash}`
+			} else if (parent && parent.values.share && parent.literalType=="resource") {
+				href = `${Req.server_url}/share/${parent.hash}/${page.hash}`
 			}
 			if (href) {
 				this.Slot.add_header_links([
-					{icon:"🌐", label:"blog", href, target: "_blank"}
+					{icon:"🌐", label:"blog", href, target:"_blank"}
 				])
 			}
 		}
