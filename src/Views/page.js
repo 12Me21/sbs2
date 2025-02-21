@@ -69,7 +69,10 @@ class PageView extends BaseView {
 		
 		this.$send.onclick = e=>{ this.send_message() }
 		this.$cancel.onclick = e=>{ this.edit_comment(null) }
-		this.$cancel_reply.onclick = e=>{ this.reply_to_comment(null) }
+		this.$cancel_reply.onclick = e=>{
+			this.reply_to_comment(null)
+			this.$textarea.focus()
+		}
 		this.$root.onkeydown = e=>{
 			if ('Escape'==e.key)
 				this.edit_comment(null)
@@ -96,6 +99,7 @@ class PageView extends BaseView {
 			if (e.detail.action=='reply') {
 				e.stopPropagation()
 				this.reply_to_comment(e.detail.data)
+				this.$textarea.focus()
 			}
 		})
 	}
