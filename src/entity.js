@@ -35,7 +35,7 @@ class FileMeta {
 // this isn't really just "author", so much as um,
 // extra data to use when rendering a comment
 class Author {
-	constructor(message, user, content) {
+	constructor(message, user, content, reply=undefined) {
 		let valid = x => x && ('string'==typeof x || 'number'==typeof x)
 		let {a, big, b, n=b, apx} = message.values
 		if (user) {
@@ -50,6 +50,7 @@ class Author {
 		this.date = new Date(message.createDate)
 		if (content)
 			this.page_name = content.name2
+		this.reply = reply
 	}
 	static filter_nickname(name) {
 		return String(name).substring(0, 50).replace(/\n/g, "  ")
@@ -252,9 +253,17 @@ const Entity = NAMESPACE({
 	},
 	
 	// link user data with comments
-	link_comments({message, user, content}) {
+	link_comments({message, user, content, replies}) {
+		replies?.forEach((r) => {
+			r.Author = new Author(r, user[~r.createUserId], content?.[~r.contentId])
+		})
 		for (let m of message) {
-			m.Author = new Author(m, user[~m.createUserId], content?.[~m.contentId])
+			m.Author = new Author(
+				m,
+				user[~m.createUserId],
+				content?.[~m.contentId],
+				m.values.replyingTo ? replies?.[~m.values.replyingTo] : null
+			)
 			m.LinkedUsers = m.uidsInText.map(uid => user[~uid]).filter(v => v)
 		}
 	},

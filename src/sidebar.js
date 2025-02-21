@@ -262,9 +262,7 @@ const Sidebar = NAMESPACE({
 		let name = author.bridge ? author.nickname+"*" : author.username
 		
 		// censor spoiler contents
-		let text = comment.text
-		if ("".startsWith.call(text,"\\h"))
-			text = text.replace(/^\\h(\[.*?\])?[^]*/, "<spoiler $1>")
+		let text = censorSpoilerText(comment.text)
 		
 		// (not censored in mouseover text)
 		d.title = `${name} in [${author.page_name}]:\n${comment.text}`

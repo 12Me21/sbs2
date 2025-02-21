@@ -23,8 +23,9 @@ class PageView extends BaseView {
 					{type: 'content', fields: "*", query: `${field} = @key`},
 					{name: 'Pcontent', type: 'content', fields: "*", query: `id = @content.parentId`},
 					{type: 'message', fields: "*", query: "contentId IN @content.id AND !notdeleted()", order: 'id_desc', limit: 30},
+					{name: 'replies', type: 'message', fields: '*', query: "id in @message.values.replyingTo AND id NOT IN @message.id"},
 					{name: 'Mpinned', type: 'message', fields: "*", query: "id IN @content.values.pinned"},
-					{type: 'user', fields: "*", query: "id IN @content.createUserId OR id IN @message.createUserId OR id IN @message.editUserId OR id IN @Mpinned.createUserId OR id IN @Mpinned.editUserId"},
+					{type: 'user', fields: "*", query: "id IN @content.createUserId OR id IN @message.createUserId OR id IN @message.editUserId OR id IN @Mpinned.createUserId OR id IN @Mpinned.editUserId OR id IN @replies.createUserId"},
 					{type: 'watch', fields: "*", query: "contentId IN @content.id"}
 				],
 			},
@@ -36,6 +37,8 @@ class PageView extends BaseView {
 			this.$textarea.value = View.lost
 		this.editing = null
 		this.pre_edit = null
+		this.pre_edit_replying_to = null
+		this.replying_to = null
 		
 		function enter_submits() {
 			return !['newline', 'newline, strip trailing'].includes(Settings.values.chat_enter)
@@ -66,6 +69,10 @@ class PageView extends BaseView {
 		
 		this.$send.onclick = e=>{ this.send_message() }
 		this.$cancel.onclick = e=>{ this.edit_comment(null) }
+		this.$cancel_reply.onclick = e=>{
+			this.reply_to_comment(null)
+			this.$textarea.focus()
+		}
 		this.$root.onkeydown = e=>{
 			if ('Escape'==e.key)
 				this.edit_comment(null)
@@ -88,6 +95,11 @@ class PageView extends BaseView {
 			if (e.detail.action=='edit') {
 				e.stopPropagation()
 				this.edit_comment(e.detail.data)
+			}
+			if (e.detail.action=='reply') {
+				e.stopPropagation()
+				this.reply_to_comment(e.detail.data)
+				this.$textarea.focus()
 			}
 		})
 	}
@@ -365,6 +377,8 @@ class PageView extends BaseView {
 				}
 			}
 		}
+		if (this.replying_to)
+			this.reply_to_comment(null)
 		// reset input
 		if (this.editing)
 			this.edit_comment(null)
@@ -398,6 +412,10 @@ class PageView extends BaseView {
 				data.values.apx = true
 			data.values.m = sv.chat_markup
 		}
+		if (this.replying_to)
+			data.values.replyingTo = this.replying_to.id
+		else
+			delete data.values.replyingTo
 		data.text = this.$textarea.value
 		if (['submit, strip trailing', 'newline, strip trailing'].includes(Settings.values.chat_enter) && data.text.endsWith("\n"))
 			data.text = data.text.slice(0, -1)
@@ -425,13 +443,22 @@ class PageView extends BaseView {
 				this.editing = null
 				this.write_input(this.pre_edit)
 				this.Flag('editing', false)
+				if (this.replying_to)
+					this.reply_to_comment(this.pre_edit_replying_to)
 			}
 			return
 		}
 		// todo: maybe this should be a stack? and then if you edit another post while already in edit mode... sometHing ..
-		if (!this.editing)
+		if (!this.editing) {
 			this.pre_edit = this.read_input()
+			this.pre_edit_replying_to = this.replying_to
+		}
 		this.editing = comment
+		if (comment.values.replyingTo) {
+			this.list.get_reply_message(comment.values.replyingTo).then((msg) => {
+				this.reply_to_comment(msg)
+			})
+		}
 		this.Flag('editing', true)
 		// do this after the flag, so the width is right
 		this.write_input(comment) 
@@ -440,6 +467,23 @@ class PageView extends BaseView {
 			this.$textarea.focus()
 			this.$textarea.setSelectionRange(99999, 99999) // move cursor to end
 		})
+	}
+
+	reply_to_comment(comment=null) {
+		if (!comment) {
+			if (this.replying_to) {
+				this.$replying_to_text.textContent = ""
+				this.replying_to = null
+				this.Flag('replying', false)
+			}
+			return
+		}
+		
+		this.replying_to = comment
+		this.$replying_to_avatar.src = Draw.avatar_url(this.replying_to.Author)
+		this.$replying_to_name.textContent = this.replying_to.Author.username
+		this.$replying_to_text.textContent = this.replying_to.text
+		this.Flag('replying', true)
 	}
 }
 PageView.track_resize_2 = new ResizeTracker('width')
@@ -464,7 +508,16 @@ PageView.template = HTML`
 			<div class='chat-bottom' tabindex=0></div>
 		</scroll-inner>
 	</auto-scroller>
-	<div class='inputPane ROW'>
+	<div>
+	<div class='ROW inputPane replyPane'>
+		<button $=cancel_reply>×</button>
+		<div class='ROW'>
+			<div>⤴️ <b>Replying to</b></div>
+			<img $=replying_to_avatar width=16 height=16>
+			<div><span $=replying_to_name class=pre></span>: <span $=replying_to_text class=pre></span></div>
+		</div>
+	</div>
+	<Div class='inputPane ROW'>
 		<div class='chat-edit-controls COL'>
 			<input $=markup placeholder="markup" style="width:50px;">
 			<button class='FILL' $=cancel>Cancel</button>
@@ -481,6 +534,7 @@ PageView.template = HTML`
 			<button class='FILL' $=send>Send</button>
 		</div>
 	</div>
+   </div>
 </view-root>
 `
 

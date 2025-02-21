@@ -610,6 +610,7 @@ I need the <message-part>s to extend into the gutter, so that i can detect which
 (I also can't use left margin on <message-block>, since mouse events only apply within the border-box)
 */
 message-block {
+	contain: initial;
 	display: block;
 	box-sizing: content-box;
 	font-size: 1em; /* ? */
@@ -621,7 +622,6 @@ message-block {
 	padding-right: 0.5rem;
 	min-height: calc(var(--chat-avatar-size) + var(--chat-message-gap));
 	position: relative;
-	z-index: 0;
 	padding-bottom: 1px;
 }
 
@@ -702,8 +702,8 @@ message-header i {
 	font-style: normal;
 }
 message-block > :last-child {
+	contain: initial;
 	display: block;
-	overflow: hidden; /* do we need this */
 }
 /* message parts */
 message-part {
@@ -744,35 +744,70 @@ message-part.boundary-bottom {
 	border-bottom: 2px solid red;
 }
 
+reply-block {
+	margin-bottom: 0.5em;
+}
+reply-block, reply-block > a {
+	display: flex;
+	flex-direction: row;
+	font-size: 0.6em;
+	align-items: center;
+	gap: 0.25em;
+}
+reply-block > a {
+	gap: 0.25em;
+	font-size: 1em;
+}
+reply-block > a > span {
+	max-width: 30em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+reply-block > a > img {
+	width: 1em;
+	height: 1em;
+}
+
 /* message action controls */
 message-controls {
-	display: inline-flex;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
 	position: absolute;
+	/*transform: translateY(-1rem);*/
 	width: var(--chat-gutter);
-	z-index: 1;
+	z-index: 20;
 	-webkit-user-select: none; -moz-user-select: none; user-select: none;
 }
 /* hack to set the height */
-message-controls::before {
-	content: "a";
-	padding: 2px 0; /* note: same as message-part */
-	width: 0;
-	overflow: hidden;
-	visibility: hidden;
-}
 message-controls > button {
-	flex: 0mm;
-	padding: 0 !important;
-	line-height: 0.5rem !important;
-	overflow: hidden;
+	padding: 2px 0;
 }
-message-controls:hover + message-part {
+message-controls:hover + message-part > div.Markup, message-controls:hover + message-part {
 	background: var(--message-hover-bg);
 }
 
 /* chat input pane */
 .inputPane {
 	background: var(--bar-bg);
+}
+.replyPane {
+	display: none;
+}
+.f-replying .replyPane {
+	display: flex;
+}
+.replyPane > div {
+   display: flex;
+   flex-direction: row;
+   align-items: center;
+   margin-left: 0.5em;
+   gap: 0.25em;
+	font-size: 0.8em;
+}
+.replyPane > div > img {
+   width: 1em;
+   height: 1em;
 }
 view-root.f-editing .chatTextarea {
 	background: var(--edit-textarea-bg);

@@ -1,5 +1,11 @@
 'use strict'
 
+function censorSpoilerText(text) {
+	if ("".startsWith.call(text, "\\h"))
+		text = text.replace(/^\\h(\[.*?\])?[^]*/, "<spoiler $1>")
+	return text
+}
+
 class MessageList {
 	constructor(element, pid, edit) {
 		this.$list = element
@@ -57,6 +63,50 @@ class MessageList {
 			}
 		}
 	}
+
+	get_reply_message(id) {
+		return new Promise((resolve, reject) => {
+			const replyMessage = this.parts.get(id)
+
+			if (replyMessage) {
+				resolve(replyMessage.data)
+				return
+			}
+
+			// here's to hoping that it captures the element in the closure during a promise...
+			Req.chain({
+				values: {
+					key: id
+				},
+				requests: [
+					{ type: 'message', fields: '*', query: 'id = @key' },
+					{ type: 'user', fields: '*', query: 'id in @message.createUserId' }
+				]
+			}).do = (resp, err) => {
+				if (err) {
+					reject(err)
+				}
+				resolve(resp.message[~id])
+			}
+		})
+	}
+
+	// msg: Message being replied to
+	// target: reply block link
+	draw_reply_block(target, msg=undefined) {
+		const content = target.lastElementChild
+		const avatar = target.firstElementChild
+
+		if (!msg) {
+			content.textContent = "Not Available"
+			return
+		}
+
+		target.href = `#comments?ids=${msg.id}`
+		avatar.src = Draw.avatar_url(msg.Author)
+		const text = censorSpoilerText(msg.text)
+		content.textContent = `${msg.Author.username}: ${text}`
+	}
 	
 	// draw a message
 	// msg: Message
@@ -70,7 +120,25 @@ class MessageList {
 			msg.LinkedUsers.forEach(user => {
 				msg.text = msg.text.replace(new RegExp(`%${user.id}%`, "g"), user.username)
 			})
-		Markup.convert_lang(msg.text, msg.values.m, e, {intersection_observer: View.observer})
+		Markup.convert_lang(msg.text, msg.values.m, e.firstElementChild, {intersection_observer: View.observer})
+		if (msg.values.replyingTo) {
+			const { replyingTo } = msg.values
+			const replyBlock = MessageList.reply_template()
+			const replyLink = replyBlock.lastElementChild
+			// reply is already chained and linked
+			if (msg.Author.reply) {
+				this.draw_reply_block(replyLink, msg.Author.reply)
+			} else {
+				// find existing message
+				this.get_reply_message(replyingTo).then((resp) => {
+					this.draw_reply_block(replyLink, resp)
+				}).catch((err) => {
+					console.error(err)
+					this.draw_reply_block(replyLink)
+				})				
+			}
+			e.prepend(replyBlock)
+		}
 		return e
 	}
 	// draw a message and insert it into the linked list
@@ -278,7 +346,8 @@ class MessageList {
 			values: {last: id, pid: this.pid},
 			requests: [
 				{type:'message', fields:'*', query, order, limit:amount},
-				{type:'user', fields:'*', query:"id in @message.createUserId"},
+				{name:'replies', type:'message', fields:'*', query:'id in @message.values.replyingTo'},
+				{type:'user', fields:'*', query:"id in @message.createUserId OR id IN @replies.createUserId"},
 			],
 		}, resp=>{
 			let first = true
@@ -342,6 +411,7 @@ class MessageList {
 		}
 		btn('info', "⚙️")
 		btn('edit', "✏️")
+		btn('reply', "⤴️")
 		
 		let listen = (ev, fn)=>{
 			document.addEventListener(ev, fn, {passive: true})
@@ -394,7 +464,15 @@ class MessageList {
 		}
 	}
 }
-MessageList.part_template = 𐀶`<message-part role=listitem>`
+MessageList.part_template = 𐀶`<message-part role=listitem><div></div></message-part>`
+MessageList.reply_template = 𐀶`
+<reply-block>
+⤴️ <b>Reply to</b>
+<a>
+<img width=16 height=16> <span>Loading...</span>
+</a>
+</reply-block>
+`
 MessageList.controls = null
 MessageList.controls_message = null
 MessageList.prototype.max_parts = 500
