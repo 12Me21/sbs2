@@ -472,16 +472,18 @@ class PageView extends BaseView {
 	reply_to_comment(comment=null) {
 		if (!comment) {
 			if (this.replying_to) {
+				this.$replying_to_text.textContent = ""
 				this.replying_to = null
 				this.Flag('replying', false)
 			}
 			return
 		}
-
+		
 		this.replying_to = comment
-		this.Flag('replying', true)
 		this.$replying_to_avatar.src = Draw.avatar_url(this.replying_to.Author)
-		this.$replying_to_text.textContent = `${this.replying_to.Author.username}: ${this.replying_to.text}`
+		this.$replying_to_name.textContent = this.replying_to.Author.username
+		this.$replying_to_text.textContent = this.replying_to.text
+		this.Flag('replying', true)
 	}
 }
 PageView.track_resize_2 = new ResizeTracker('width')
@@ -506,15 +508,15 @@ PageView.template = HTML`
 			<div class='chat-bottom' tabindex=0></div>
 		</scroll-inner>
 	</auto-scroller>
-   <div>
-   <div class='ROW inputPane replyPane'>
-     <button $=cancel_reply>×</button>
-     <div class='ROW'>
-<div>⤴️ <b>Replying to</b></div>
-       <img $=replying_to_avatar width=16 height=16>
-       <div $=replying_to_text></div>
-     </div>
-   </div>
+	<div>
+	<div class='ROW inputPane replyPane'>
+		<button $=cancel_reply>×</button>
+		<div class='ROW'>
+			<div>⤴️ <b>Replying to</b></div>
+			<img $=replying_to_avatar width=16 height=16>
+			<div><span $=replying_to_name class=pre></span>: <span $=replying_to_text class=pre></span></div>
+		</div>
+	</div>
 	<Div class='inputPane ROW'>
 		<div class='chat-edit-controls COL'>
 			<input $=markup placeholder="markup" style="width:50px;">
