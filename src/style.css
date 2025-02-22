@@ -791,23 +791,16 @@ message-controls:hover + message-part > div.Markup, message-controls:hover + mes
 .inputPane {
 	background: var(--bar-bg);
 }
-.replyPane {
+view-root:not(.f-replying) .replyPane {
 	display: none;
 }
-.f-replying .replyPane {
-	display: flex;
-}
 .replyPane > div {
-   display: flex;
-   flex-direction: row;
    align-items: center;
    margin-left: 0.5em;
    gap: 0.25em;
 	font-size: 0.8em;
 }
 .replyPane > div > img {
-   width: 1em;
-   height: 1em;
 }
 view-root.f-editing .chatTextarea {
 	background: var(--edit-textarea-bg);

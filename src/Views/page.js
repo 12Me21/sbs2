@@ -482,7 +482,7 @@ class PageView extends BaseView {
 		this.replying_to = comment
 		this.$replying_to_avatar.src = Draw.avatar_url(this.replying_to.Author)
 		this.$replying_to_name.textContent = this.replying_to.Author.username
-		this.$replying_to_text.textContent = this.replying_to.text
+		this.$replying_to_text.textContent = this.replying_to.text.replace(/\n/g, "  ")
 		this.Flag('replying', true)
 	}
 }
@@ -511,10 +511,9 @@ PageView.template = HTML`
 	<div>
 	<div class='ROW inputPane replyPane'>
 		<button $=cancel_reply>×</button>
-		<div class='ROW'>
-			<div>⤴️ <b>Replying to</b></div>
-			<img $=replying_to_avatar width=16 height=16>
-			<div><span $=replying_to_name class=pre></span>: <span $=replying_to_text class=pre></span></div>
+		<div class='FILL bar ellipsis' style='--bar-height: 1rem; align-self: center; contain: strict;'><!-- this is i think the proper way to use the old 'bar' system (which i created as an alternative to flex)-->
+			⤴️ <b>Replying to</b>&#32;
+			<span class='user-label'><img class='item avatar' $=replying_to_avatar><span class='entity-title pre' $=replying_to_name></span></span>: <span $=replying_to_text class=pre></span>
 		</div>
 	</div>
 	<Div class='inputPane ROW'>
