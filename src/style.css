@@ -794,14 +794,6 @@ message-controls:hover + message-part > div.Markup, message-controls:hover + mes
 view-root:not(.f-replying) .replyPane {
 	display: none;
 }
-.replyPane > div {
-   align-items: center;
-   margin-left: 0.5em;
-   gap: 0.25em;
-	font-size: 0.8em;
-}
-.replyPane > div > img {
-}
 view-root.f-editing .chatTextarea {
 	background: var(--edit-textarea-bg);
 }

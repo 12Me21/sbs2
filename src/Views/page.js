@@ -511,7 +511,7 @@ PageView.template = HTML`
 	<div>
 	<div class='ROW inputPane replyPane'>
 		<button $=cancel_reply>×</button>
-		<div class='FILL bar ellipsis' style='--bar-height: 1rem; align-self: center; contain: strict;'><!-- this is i think the proper way to use the old 'bar' system (which i created as an alternative to flex)-->
+		<div class='FILL bar ellipsis' style='--bar-height: 1rem; align-self: center; contain: strict; font-size: 0.8em; margin-left: 0.5em;'><!-- this is i think the proper way to use the old 'bar' system -->
 			⤴️ <b>Replying to</b>&#32;
 			<span class='user-label'><img class='item avatar' $=replying_to_avatar><span class='entity-title pre' $=replying_to_name></span></span>: <span $=replying_to_text class=pre></span>
 		</div>
