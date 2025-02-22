@@ -745,28 +745,10 @@ message-part.boundary-bottom {
 }
 
 reply-block {
-	margin-bottom: 0.5em;
-}
-reply-block, reply-block > a {
-	display: flex;
-	flex-direction: row;
-	font-size: 0.6em;
-	align-items: center;
-	gap: 0.25em;
-}
-reply-block > a {
-	gap: 0.25em;
-	font-size: 1em;
-}
-reply-block > a > span {
-	max-width: 30em;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-reply-block > a > img {
-	width: 1em;
-	height: 1em;
+	display: block;
+	--bar-height: 0.8125rem;
+	font-size: 0.625rem;
+	padding-bottom: 0.5em;
 }
 
 /* message action controls */

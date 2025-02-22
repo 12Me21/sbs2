@@ -90,22 +90,22 @@ class MessageList {
 			}
 		})
 	}
-
+	
 	// msg: Message being replied to
 	// target: reply block link
 	draw_reply_block(target, msg=undefined) {
-		const content = target.lastElementChild
-		const avatar = target.firstElementChild
-
+		let [avatar, name, content] = target.children
+		
 		if (!msg) {
 			content.textContent = "Not Available"
 			return
 		}
-
+		
 		target.href = `#comments?ids=${msg.id}`
 		avatar.src = Draw.avatar_url(msg.Author)
 		const text = censorSpoilerText(msg.text)
-		content.textContent = `${msg.Author.username}: ${text}`
+		name.textContent = msg.Author.username
+		content.textContent = text
 	}
 	
 	// draw a message
@@ -466,10 +466,10 @@ class MessageList {
 }
 MessageList.part_template = 𐀶`<message-part role=listitem><div></div></message-part>`
 MessageList.reply_template = 𐀶`
-<reply-block>
-⤴️ <b>Reply to</b>
+<reply-block class='bar ellipsis'>
+⤴️ <b>Reply to</b>&#32;
 <a>
-<img width=16 height=16> <span>Loading...</span>
+<img class='item avatar'> <span class='entity-title pre'></span>: <span>Loading...</span>
 </a>
 </reply-block>
 `
