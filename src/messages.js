@@ -113,14 +113,50 @@ class MessageList {
 	// return: Element
 	draw_part(msg) {	
 		let e = MessageList.part_template()
+		let markup = e.firstElementChild
 		e.dataset.id = msg.id
 		if (msg.edited)
-			e.className += " edited"
+			e.classList.add('edited')
+		if (Object.keys(msg.engagement).length) {
+			e.classList.add('reacted')
+			let rl = MessageList.react_list()
+			for (const [react, count] of Object.entries(msg.engagement.reaction)) {
+				let r = MessageList.react()
+				let [rv, rc] = r.children
+				
+				// for (let i = 0; i < count; i++) {
+				// 	let rvi = document.createElement('span')
+				// 	rvi.textContent = react
+				// 	rv.appendChild(rvi)
+				// }
+				
+				rv.textContent = react
+				rc.textContent = count.toString()
+				
+				// if (count == 1) r.replaceWith(rv)
+				
+				let reactedWith = msg.ReactedWith.reaction?.engagement == react;
+				if (reactedWith)
+					r.classList.add('reacted-with')
+				
+				r.onclick = (ev) => {
+					const b = ev.currentTarget
+					let addReact = !reactedWith
+					let what = addReact ? 'setengagement' : 'deleteengagement'
+					let req = `Shortcuts/message/${msg.id}/${what}/reaction`
+					Array.from(rl.children).forEach(el => el.disabled = true)
+					Req.request(req, null, addReact ? react : null)
+				}
+				
+				rl.appendChild(r)
+			}
+			e.appendChild(rl)
+		}
 		if (msg.module !== null && msg.uidsInText.length > 0)
 			msg.LinkedUsers.forEach(user => {
 				msg.text = msg.text.replace(new RegExp(`%${user.id}%`, "g"), user.username)
 			})
-		Markup.convert_lang(msg.text, msg.values.m, e.firstElementChild, {intersection_observer: View.observer})
+		Markup.convert_lang(msg.text, msg.values.m, markup, {intersection_observer: View.observer})
 		if (msg.values.replyingTo) {
 			const { replyingTo } = msg.values
 			const replyBlock = MessageList.reply_template()
@@ -346,8 +382,9 @@ class MessageList {
 			values: {last: id, pid: this.pid},
 			requests: [
 				{type:'message', fields:'*', query, order, limit:amount},
+				{name:'engagement', type:'message_engagement', fields:'*', query:"messageId in @message.id"},
 				{name:'replies', type:'message', fields:'*', query:'id in @message.values.replyingTo'},
-				{type:'user', fields:'*', query:"id in @message.createUserId OR id IN @replies.createUserId"},
+				{type:'user', fields:'*', query:"id in @message.createUserId OR id IN @replies.createUserId"}
 			],
 		}, resp=>{
 			let first = true
@@ -473,6 +510,8 @@ MessageList.reply_template = 𐀶`
 </a>
 </reply-block>
 `
+MessageList.react_list = 𐀶`<div class='reacts'></span>`
+MessageList.react = 𐀶`<button class='react'><span class='pre'></span> <i class='react-count'></i></span>`
 MessageList.controls = null
 MessageList.controls_message = null
 MessageList.prototype.max_parts = 500

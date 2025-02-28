@@ -748,6 +748,9 @@ message-part.boundary-top {
 message-part.boundary-bottom {
 	border-bottom: 2px solid red;
 }
+message-part .reacts { display: inline-block; }
+message-part .reacts .react { border-radius: 100vmax; }
+message-part .reacts .react.reacted-with { border-color: var(--button-hover-bg); }
 
 reply-block {
 	display: block;
