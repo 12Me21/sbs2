@@ -630,7 +630,7 @@ message-block.module {
 
 message-block > img {
 	position: absolute;
-	z-index: -1;
+	/* z-index: -1; */
 }
 message-block > img.avatar {
 	width: var(--chat-avatar-size);
@@ -752,17 +752,20 @@ reply-block {
 
 /* message action controls */
 message-controls {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
+	display: inline-flex;
+	flex-wrap: wrap;
 	position: absolute;
 	/*transform: translateY(-1rem);*/
 	width: var(--chat-gutter);
 	z-index: 20;
 	-webkit-user-select: none; -moz-user-select: none; user-select: none;
 }
-/* hack to set the height */
 message-controls > button {
-	padding: 2px 0;
+	flex: 0 1 50%;
+	height: calc(1.1875rem + 4px);
+	padding: 0;
+	line-height: 0.5rem !important;
+	overflow: hidden;
 }
 message-controls:hover + message-part > div.Markup, message-controls:hover + message-part {
 	background: var(--message-hover-bg);
