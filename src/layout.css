@@ -149,6 +149,9 @@ td, th {  /* border renders outside */
 .bar .avatar {
 	width: var(--bar-height);
 }
+button.item {
+	line-height: normal !important;
+}
 
 .rem1-7 { --bar-height: 1.6875rem; }
 .rem1-5 { --bar-height: 1.5625rem; }
