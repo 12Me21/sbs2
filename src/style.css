@@ -707,7 +707,7 @@ message-block > :last-child {
 /* message parts */
 message-part {
 	display: block;
-	overflow: visible;
+	overflow: visible; /* ? */
 	min-height: 1rem;
 	padding: 2px 0;
 	/* total indent here is: <0.5rem> [avatar] <0.5rem> <3px> */
@@ -718,6 +718,12 @@ message-part {
 	-webkit-background-clip: padding !important;
 	-webkit-background-clip: padding-box !important;
 	background-clip: padding-box !important;
+	background: var(--T-bg);
+}
+message-part > .Markup {
+	background: inherit !important;
+	overflow: visible;
+	contain: initial;
 }
 message-block.module > div > message-part {
 	color: var(--chat-dim-color);
@@ -767,7 +773,7 @@ message-controls > button {
 	line-height: 0.5rem !important;
 	overflow: hidden;
 }
-message-controls:hover + message-part > div.Markup, message-controls:hover + message-part {
+message-controls:hover + message-part {
 	background: var(--message-hover-bg);
 }
 
