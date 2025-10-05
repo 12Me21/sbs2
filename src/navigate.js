@@ -38,7 +38,8 @@ class ViewSlot {
 			if (x!=-1)
 				Nav.slots.splice(x, 1)
 			this.destroy()
-			Nav.set_address(true)
+			Nav.set_address(false)
+			Lp.flush_statuses() // hack, since normally statuses are flushed by the new view (which they probably shouldn't be?) and we can't rely on that here
 		}
 		
 		Object.seal(this)
