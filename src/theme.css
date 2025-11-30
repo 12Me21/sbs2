@@ -77,8 +77,9 @@
 	caret-color: var(--T-color);
 	--T-color: #FFF;
 	--T-link-color: #9CE;
-	--T-link-visited-color: #9365bc;
+	--T-link-visited-color: #C8F;
 	--T-link-hover-color: #5CE;
+	--T-custom-link-decoration: underline #08F;
 	--T-link-bg: #156;
 	--T-time-color: #EEE;
 	--T-border-color: #000;
