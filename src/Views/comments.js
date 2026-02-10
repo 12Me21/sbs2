@@ -58,6 +58,16 @@ class CommentsView extends BaseView {
 			])
 		this.$results.fill()
 		this.form.write()
+		this.message_info = new MessageInfo()
+		this.$message_info.append(this.message_info.$root)
+		
+		this.$root.addEventListener('message_control', e=>{
+			if (e.detail.action=='info') {
+				e.stopPropagation()
+				this.message_info.set_message(e.detail.data)
+			}
+		})
+
 	}
 	
 	Render({message:comments, content:pages}) {
@@ -232,7 +242,8 @@ class CommentsView extends BaseView {
 }
 
 CommentsView.template = HTML`
-<view-root style='overflow-y:scroll;'>
+<view-root class='COL'>
+<div class='FILL' style='overflow-y:scroll;'>
 	<form $=html_form method=dialog style='background:#666;color:white;'>
 		<br $=form_placeholder>
 		<div class='nav'>
@@ -251,6 +262,8 @@ CommentsView.template = HTML`
 		</div>
 	</form>
 	<div $=results class='comment-search-results'></div>
+</div>
+	<div $=message_info></div>
 </view-root>
 `
 CommentsView.result_template = 𐀶`

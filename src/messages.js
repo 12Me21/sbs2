@@ -394,31 +394,29 @@ class MessageList {
 			this.control_buttons.edit.hidden = !me
 		}
 	}
-	
+	static send_mce(action, data, target) {
+		let ev2 = new CustomEvent('message_control', {
+			bubbles: true, cancellable: true,
+			detail: {data, action},
+		})
+		target.dispatchEvent(ev2)
+	}
 	static init() {
 		// draw the message controls
 		this.controls = document.createElement('message-controls')
 		this.control_buttons = {__proto__:null}
 		// draw the things
-		let handler = ev=>{
-			let action = ev.currentTarget.dataset.action
-			let ev2 = new CustomEvent('message_control', {
-				bubbles: true, cancellable: true,
-				detail: {data: null, action},
-			})
-			this.controls_message.dispatchEvent(ev2)
-		}
 		// yeah
 		let btn = (action, label)=>{
 			let btn = document.createElement('button')
-			btn.onclick = handler
+			btn.onclick = ev=>{ this.send_mce(action, null, this.controls_message) }
 			btn.dataset.action = action
 			btn.tabIndex=-1
 			btn.append(label)
 			this.controls.append(btn)
 			this.control_buttons[action] = btn
 		}
-		btn('info', "⚙️")
+		btn('info', "🗺️")
 		btn('edit', "✏️")
 		btn('reply', "⤴️")
 		
@@ -576,6 +574,6 @@ MessageList.init()
 Object.seal(MessageList)
 
 document.addEventListener('message_control', ev=>{
-	if (ev.detail.action=='info')
+	if (ev.detail.action=='info' || ev.detail.action=='raw')
 		alert(JSON.stringify(ev.detail.data, null, 1)) // <small heart>
 })

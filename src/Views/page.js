@@ -74,12 +74,13 @@ class PageView extends BaseView {
 			this.$textarea.focus()
 		}
 		this.$reply_info.onclick = e=>{
-			alert(JSON.stringify(this.replying_to, null, 1))
+			MessageList.send_mce('info', this.replying_to, this.$root)
 		}
 		this.$root.onkeydown = e=>{
 			if ('Escape'==e.key) {
 				this.edit_comment(null)
 				this.reply_to_comment(null)
+				this.message_info.set_message(null)
 			}
 		}
 		
@@ -97,6 +98,10 @@ class PageView extends BaseView {
 		})
 		
 		this.$root.addEventListener('message_control', e=>{
+			if (e.detail.action=='info') {
+				e.stopPropagation()
+				this.message_info.set_message(e.detail.data)
+			}
 			if (e.detail.action=='edit') {
 				e.stopPropagation()
 				this.edit_comment(e.detail.data)
@@ -107,6 +112,9 @@ class PageView extends BaseView {
 				this.$textarea.focus()
 			}
 		})
+		
+		this.message_info = new MessageInfo()
+		this.$message_info.append(this.message_info.$root)
 	}
 	Render({message, content:[page], Mpinned:pinned, user, watch, Pcontent:[parent]}) {
 		this.page_id = page.id
@@ -514,6 +522,7 @@ PageView.template = HTML`
 		</scroll-inner>
 	</auto-scroller>
 	<div>
+	<div $=message_info class='inputPane'></div>
 	<div class='ROW inputPane replyPane'>
 		<button $=cancel_reply>×</button>
 		<button $=reply_info>⚙️</button>

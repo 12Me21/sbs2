@@ -802,6 +802,10 @@ view-root:not(.f-editing) .chat-edit-controls {
 .chat-controls-extra {
 	display: none;
 }
+/*message info*/
+.message-info {
+	border: 2px dashed black;
+}
 
 .file-page-image {
 	max-width: 100%;
