@@ -73,9 +73,14 @@ class PageView extends BaseView {
 			this.reply_to_comment(null)
 			this.$textarea.focus()
 		}
+		this.$reply_info.onclick = e=>{
+			alert(JSON.stringify(this.replying_to, null, 1))
+		}
 		this.$root.onkeydown = e=>{
-			if ('Escape'==e.key)
+			if ('Escape'==e.key) {
 				this.edit_comment(null)
+				this.reply_to_comment(null)
+			}
 		}
 		
 		this.$watching.onchange = Draw.event_lock(done=>{
@@ -511,6 +516,7 @@ PageView.template = HTML`
 	<div>
 	<div class='ROW inputPane replyPane'>
 		<button $=cancel_reply>×</button>
+		<button $=reply_info>⚙️</button>
 		<div class='FILL bar ellipsis' style='--bar-height: 1rem; align-self: center; contain: strict; font-size: 0.8em; margin-left: 0.5em;'><!-- this is i think the proper way to use the old 'bar' system -->
 			⤴️ <b>Replying to</b>&#32;
 			<span class='user-label'><img class='item avatar' $=replying_to_avatar><span class='entity-title pre' $=replying_to_name></span></span>: <span $=replying_to_text class=pre></span>

@@ -381,16 +381,24 @@ class MessageList {
 	static show_controls(elem) {
 		if (elem == this.controls_message) // shouldn't happen?
 			return
-		if (elem)
+		if (elem) {
 			elem.before(this.controls)
-		else
+		} else
 			this.controls.remove()
 		this.controls_message = elem
+		// pick them
+		if (elem) {
+			let block = elem.closest("message-block")
+			let me = block && +block.dataset.uid == Req.uid
+			this.control_buttons.reply.hidden = me
+			this.control_buttons.edit.hidden = !me
+		}
 	}
 	
 	static init() {
 		// draw the message controls
 		this.controls = document.createElement('message-controls')
+		this.control_buttons = {__proto__:null}
 		// draw the things
 		let handler = ev=>{
 			let action = ev.currentTarget.dataset.action
@@ -408,6 +416,7 @@ class MessageList {
 			btn.tabIndex=-1
 			btn.append(label)
 			this.controls.append(btn)
+			this.control_buttons[action] = btn
 		}
 		btn('info', "⚙️")
 		btn('edit', "✏️")
