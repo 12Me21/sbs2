@@ -573,7 +573,12 @@ MessageList.draw_block = function(comment, part) {
 MessageList.init()
 Object.seal(MessageList)
 
+// fallback message_control handler, if events arent handled by the View
 document.addEventListener('message_control', ev=>{
 	if (ev.detail.action=='info' || ev.detail.action=='raw')
 		alert(JSON.stringify(ev.detail.data, null, 1)) // <small heart>
+	if (ev.detail.action=='link') {
+		navigator.clipboard.writeText(`sbs:comments?ids=${ev.detail.data.id}`)
+		print("copied link")
+	}
 })

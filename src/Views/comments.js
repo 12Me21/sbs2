@@ -67,7 +67,6 @@ class CommentsView extends BaseView {
 				this.message_info.set_message(e.detail.data)
 			}
 		})
-
 	}
 	
 	Render({message:comments, content:pages}) {

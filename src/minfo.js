@@ -1,9 +1,13 @@
 'use strict'
 
+// this component goes inside an existing View, and allows selecting a message and sending message_control events of it.
+// unfinished
+// note that the parent is responsible for actually handling these events (e.g. going into edit mode when the edit button is clicked) and not all parents will support all event types.
+
 class MessageInfo {
 	constructor() {
 		new.target.template(this)
-		this.current = null
+		this.current = null // todo: allow selecting multiple and have a ui for this somehow (specifically for rethreading and linking to logs)
 		this.control_buttons = {__proto__:null}
 		// yeah
 		let btn = (action, label)=>{
@@ -15,9 +19,10 @@ class MessageInfo {
 			this.$controls.append(btn)
 			this.control_buttons[action] = btn
 		}
-		btn('raw', "📠")
-		btn('edit', "✏️")
-		btn('reply', "⤴️")
+		btn('raw', "📠raw")
+		btn('edit', "✏️edit")
+		btn('reply', "⤴️reply")
+		btn('link', "🔗link")
 		this.$close.onclick = ev=>{ this.set_message(null) }
 		
 		this.set_message(null)
@@ -30,6 +35,7 @@ class MessageInfo {
 		}
 		this.$root.hidden = !data
 		this.current = data
+		this.$close.focus() // i guess
 	}
 }
 

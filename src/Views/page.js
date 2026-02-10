@@ -111,6 +111,10 @@ class PageView extends BaseView {
 				this.reply_to_comment(e.detail.data)
 				this.$textarea.focus()
 			}
+			if (e.detail.action=='link') {
+				e.stopPropagation()
+				this.Insert_Text(`sbs:comments?ids=${e.detail.data.id}`)
+			}
 		})
 		
 		this.message_info = new MessageInfo()
