@@ -85,6 +85,10 @@
 	--T-border-color: #000;
 	--T-image-border: 1px solid #808080;
 	--chat-dim-color: #666;
+	
+	--T-table-border: 1px solid #888;
+	--T-table-outer-border: 3px solid #888;
+	--T-table-thick-border: 4px solid #888;
 	/* bg */
 	--T-bg: #292929;
 	--T-box-bg: #444;
