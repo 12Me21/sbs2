@@ -546,7 +546,7 @@ form-table > .wide.label {
 	/*border-radius: 3px;*/
 	background: var(--T-avatar-bg);
 }
-time {
+time:not(.Markup *) {
 	font-size: 0.875em;
 	color: var(--T-time-color);
 	vertical-align: baseline;
