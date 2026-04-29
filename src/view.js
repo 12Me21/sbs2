@@ -36,6 +36,13 @@ Markup.renderer.url_scheme['https:'] = (url, thing)=>{
 		if (url.pathname.startsWith("/api/File/raw/"))
 			url.host = "qcs.shsbs.xyz"
 	}
+	let bsky = Settings.values.bsky_client
+	if (bsky && bsky!="https://bsky.app/") {
+		if (url.host == "bsky.app") {
+			let href = url.href.replace(/^https:[/][/]bsky.app[/]/,bsky)
+			return href
+		}
+	}
 	return url.href	
 }
 
@@ -308,6 +315,11 @@ Settings.add({
 	update(value) { // bad
 		View.toggle_observer(value=='on')
 	},
+})
+
+Settings.add({
+	name: 'bsky_client', label: "Bluesky Client", type: 'text',
+	default: 'https://bsky.app/',
 })
 
 class TestView extends BaseView {
