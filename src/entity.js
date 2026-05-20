@@ -115,6 +115,13 @@ for (let name in ABOUT.details.types) {
 			value: Object.freeze([]),
 			writable: true,
 		}
+		proto_desc.ReactedWith = {
+			value: Object.freeze({}),
+			writable: true,
+		}
+		// TODO: one thing to ask -- if i edit on a "replied" value, will LinkedUsers populate?
+		// why is ReactedWith not being set on messages in display_live?
+		// why is ReactedWith not set in the message cache?? is there a message cache?
 	}
 	if (name == 'watch') {
 		// FIXME: this could possibly happen before it's defined
@@ -253,7 +260,7 @@ const Entity = NAMESPACE({
 	},
 	
 	// link user data with comments
-	link_comments({message, user, content, replies}) {
+	link_comments({message, user, content, replies, engagement}) {
 		replies?.forEach((r) => {
 			r.Author = new Author(r, user[~r.createUserId], content?.[~r.contentId])
 		})
@@ -265,6 +272,13 @@ const Entity = NAMESPACE({
 				m.values.replyingTo ? replies?.[~m.values.replyingTo] : null
 			)
 			m.LinkedUsers = m.uidsInText.map(uid => user[~uid]).filter(v => v)
+			if (Object.keys(m.engagement).length) {
+				m.ReactedWith = {}
+				for (const type of Object.keys(m.engagement)) {
+					let r = engagement?.find(e => e.messageId == m.id && e.type == type);
+					if (r) m.ReactedWith[type] = r
+				}
+			}
 		}
 	},
 	

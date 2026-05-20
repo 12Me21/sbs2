@@ -200,7 +200,7 @@ let Act = {
 			
 			/// sidebar messages ///
 			// TODO: ensure that these are displayed BEFORE any websocket new messages
-			Sidebar.display_messages(objects.message, true)
+			do_when_ready(_=>Sidebar.display_messages(objects.message, true))
 			
 			/// activity tab ///
 			for (let act of objects.activity)

@@ -22,7 +22,9 @@ class PageView extends BaseView {
 				requests: [
 					{type: 'content', fields: "*", query: `${field} = @key`},
 					{name: 'Pcontent', type: 'content', fields: "*", query: `id = @content.parentId`},
+					{name: 'Pengagement', type: 'content_engagement', fields: "*", query: "contentId IN @content.id"},
 					{type: 'message', fields: "*", query: "contentId IN @content.id AND !notdeleted()", order: 'id_desc', limit: 30},
+					{name: 'engagement', type: 'message_engagement', fields: "*", query: "messageId IN @message.id"},
 					{name: 'replies', type: 'message', fields: '*', query: "id in @message.values.replyingTo AND id NOT IN @message.id"},
 					{name: 'Mpinned', type: 'message', fields: "*", query: "id IN @content.values.pinned"},
 					{type: 'user', fields: "*", query: "id IN @content.createUserId OR id IN @message.createUserId OR id IN @message.editUserId OR id IN @Mpinned.createUserId OR id IN @Mpinned.editUserId OR id IN @replies.createUserId"},
