@@ -49,6 +49,10 @@ function switch_tab(next, no_focus) {
 		next.focus()
 }
 
+function is_ordered_elem(node) {
+	return node?.dataset?.ordered != null
+}
+
 document.addEventListener('focusout', e=>{
 	let focused = e.target
 	let new_focus = e.relatedTarget
@@ -62,7 +66,7 @@ document.addEventListener('focusout', e=>{
 				focused.tabIndex = -1
 		}
 		let parent = focused.parentNode
-		if (parent.dataset.ordered!=null) {
+		if (is_ordered_elem(parent)) {
 			if (!parent.contains(new_focus)) {
 				// focus moving OUT of an ordered element
 				parent.tabIndex = 0 // make it focusable again
@@ -71,7 +75,7 @@ document.addEventListener('focusout', e=>{
 		}
 	}
 	// focus moving into an ordered element
-	if (new_focus && new_focus.dataset.ordered!=null) {
+	if (is_ordered_elem(new_focus)) {
 		// transfer focus to the first item instead
 		new_focus.tabIndex=-1
 		try_focus(order_first(new_focus))
@@ -111,7 +115,7 @@ function order_neighbor(elem, dir) {
 		return best
 }
 function get_neighbor(elem, dir) {
-	if (elem.parentNode.dataset.ordered!=null)
+	if (is_ordered_elem(elem.parentNode))
 		return order_neighbor(elem, dir)
 	return dir<0 ? elem.previousElementSibling : elem.nextElementSibling
 }
